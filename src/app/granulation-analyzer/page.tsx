@@ -286,39 +286,41 @@ export default function GranulationAnalyzerPage() {
                 variant: 'destructive'
               })
             } else if (eventName === 'done') {
+              const successFlag = payload.success !== false
+              const payloadContent = typeof payload.content === 'string' ? payload.content : undefined
+              const payloadError = typeof payload.error === 'string' ? payload.error : undefined
+
               setAnalyses((prev) => {
                 const existing = prev[modelId]
                 if (!existing) return prev
 
-                const successFlag = payload.success
-                const payloadContent = typeof payload.content === 'string' ? payload.content : existing.content
-                const payloadError = typeof payload.error === 'string' ? payload.error : existing.error
-                const isError = successFlag === false || !!payloadError
-                const nextStatus: AnalysisStatus = isError
-                  ? 'error'
-                  : existing.status === 'error'
-                    ? 'error'
-                    : 'success'
+                const isError = !successFlag || !!payloadError
+                const nextStatus: AnalysisStatus = isError ? 'error' : 'success'
 
                 return {
                   ...prev,
                   [modelId]: {
                     ...existing,
                     status: nextStatus,
-                    content: payloadContent,
+                    content: isError ? existing.content : (payloadContent ?? existing.content),
                     endedAt: Date.now(),
-                    error: nextStatus === 'error' ? (payloadError || '分析失敗') : null
+                    error: isError ? (payloadError || '分析失敗') : null
                   }
                 }
               })
-              showToast({
-                title: successFlag === false ? '分析失敗' : '分析完成',
-                description:
-                  payload.success === false
-                    ? payload.error || 'AI 分析時發生錯誤'
-                    : `${MODEL_CONFIG.find(m => m.id === modelId)?.name || modelId} 的分析已完成。`,
-                variant: successFlag === false ? 'destructive' : 'default'
-              })
+
+              if (!successFlag || payloadError) {
+                showToast({
+                  title: '分析失敗',
+                  description: payloadError || 'AI 分析時發生錯誤',
+                  variant: 'destructive'
+                })
+              } else {
+                showToast({
+                  title: '分析完成',
+                  description: `${MODEL_CONFIG.find(m => m.id === modelId)?.name || modelId} 的分析已完成。`
+                })
+              }
             }
           } catch (error) {
             console.error('解析流式資料錯誤:', error)
