@@ -11,7 +11,7 @@ import { fetchWithTimeout } from '@/lib/api-client'
 import { formatDateOnly, formatNumber } from '@/lib/utils'
 import { sumWorkUnits } from '@/lib/worklog'
 import type { ProductionOrder, OrderWorklog, WorklogWithOrder } from '@/types'
-import { Plus, FileText, ArrowRight, Calendar, Timer, ClipboardList, Clock3, Wand2, FlaskConical, ClipboardCheck, CalendarDays } from 'lucide-react'
+import { Plus, FileText, ArrowRight, Calendar, Timer, ClipboardList, Clock3, Wand2, FlaskConical, ClipboardCheck, CalendarDays, Download } from 'lucide-react'
 
 const QUICK_CARD_PADDING = 'px-4 py-4 sm:px-6 sm:py-6'
 const MINI_CARD_PADDING = 'px-3 sm:px-3.5 py-3'
@@ -368,6 +368,50 @@ export function HomePageClient() {
             <p className="text-xs text-slate-500 leading-relaxed mt-3">
               整合工時、訂單與品質指標，自動輸出標準化工作單，支援列印與 CSV 匯出。
             </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white/70 border border-white/75 px-4 py-5 sm:px-6 sm:py-6 shadow-[0_6px_20px_rgba(15,32,77,0.08)]">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="icon-container icon-container-gradient-emerald">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-800">參考資料下載</h3>
+                <p className="text-xs text-slate-500">生產培訓與風險管理文件</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 space-y-3">
+            <a
+              href="/pdf/膠囊生產培訓手冊（香港版-修訂版）.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 rounded-xl bg-white/70 border border-white/80 px-4 py-3 hover:border-emerald-200 hover:bg-emerald-50/30 transition group"
+            >
+              <div className="mt-0.5">
+                <Download className="h-4 w-4 text-emerald-600 group-hover:text-emerald-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold text-slate-800 group-hover:text-emerald-700">膠囊生產培訓手冊（香港版-修訂版）</h4>
+                <p className="text-xs text-slate-500 mt-1">完整生產流程與操作規範</p>
+              </div>
+            </a>
+            <a
+              href="/pdf/保健品行業常見生產風險原料清單.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 rounded-xl bg-white/70 border border-white/80 px-4 py-3 hover:border-emerald-200 hover:bg-emerald-50/30 transition group"
+            >
+              <div className="mt-0.5">
+                <Download className="h-4 w-4 text-emerald-600 group-hover:text-emerald-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold text-slate-800 group-hover:text-emerald-700">保健品行業常見生產風險原料清單</h4>
+                <p className="text-xs text-slate-500 mt-1">風險原料辨識與管控指南</p>
+              </div>
+            </a>
           </div>
         </div>
 
