@@ -289,20 +289,35 @@ export default function GranulationAnalyzerPage() {
               setAnalyses((prev) => {
                 const existing = prev[modelId]
                 if (!existing) return prev
+
+                const successFlag = payload.success
+                const payloadContent = typeof payload.content === 'string' ? payload.content : existing.content
+                const payloadError = typeof payload.error === 'string' ? payload.error : existing.error
+                const isError = successFlag === false || !!payloadError
+                const nextStatus: AnalysisStatus = isError
+                  ? 'error'
+                  : existing.status === 'error'
+                    ? 'error'
+                    : 'success'
+
                 return {
                   ...prev,
                   [modelId]: {
                     ...existing,
-                    status: payload.success ? 'success' : 'error',
-                    content: payload.success ? payload.content : existing.content,
+                    status: nextStatus,
+                    content: payloadContent,
                     endedAt: Date.now(),
-                    error: payload.success ? null : payload.error || '分析失敗'
+                    error: nextStatus === 'error' ? (payloadError || '分析失敗') : null
                   }
                 }
               })
               showToast({
-                title: '分析完成',
-                description: `${MODEL_CONFIG.find(m => m.id === modelId)?.name || modelId} 的分析已完成。`
+                title: successFlag === false ? '分析失敗' : '分析完成',
+                description:
+                  payload.success === false
+                    ? payload.error || 'AI 分析時發生錯誤'
+                    : `${MODEL_CONFIG.find(m => m.id === modelId)?.name || modelId} 的分析已完成。`,
+                variant: successFlag === false ? 'destructive' : 'default'
               })
             }
           } catch (error) {
