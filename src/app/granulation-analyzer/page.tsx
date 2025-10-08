@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
@@ -102,8 +102,10 @@ export default function GranulationAnalyzerPage() {
   const [hasRequested, setHasRequested] = useState(false)
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [reasoningEnabled, setReasoningEnabled] = useState<Record<string, boolean>>({})
+  const [consensus, setConsensus] = useState<GranulationAnalysis | null>(null)
 
   const controllerRef = useRef<AbortController | null>(null)
+  const consensusControllerRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('granulation-reasoning-pref')
@@ -121,6 +123,13 @@ export default function GranulationAnalyzerPage() {
   useEffect(() => {
     localStorage.setItem('granulation-reasoning-pref', JSON.stringify(reasoningEnabled))
   }, [reasoningEnabled])
+
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.abort()
+      consensusControllerRef.current?.abort()
+    }
+  }, [])
 
   const handleSmartImport = (importedIngredients: any[]) => {
     try {
@@ -162,6 +171,13 @@ export default function GranulationAnalyzerPage() {
     setIsAnalyzing(true)
     setHasRequested(true)
     setGlobalError(null)
+    setConsensus(null)
+
+    controllerRef.current?.abort()
+    controllerRef.current = new AbortController()
+    consensusControllerRef.current?.abort()
+    consensusControllerRef.current = null
+
     setAnalyses(
       MODEL_CONFIG.reduce<Record<string, GranulationAnalysis>>((acc, model) => {
         acc[model.id] = {
@@ -175,10 +191,6 @@ export default function GranulationAnalyzerPage() {
       }, {})
     )
 
-    controllerRef.current?.abort()
-    const controller = new AbortController()
-    controllerRef.current = controller
-
     try {
       const response = await fetch('/api/ai/granulation-analyze', {
         method: 'POST',
@@ -191,7 +203,7 @@ export default function GranulationAnalyzerPage() {
             MODEL_CONFIG.filter(model => model.supportsReasoning).map(model => [model.id, !!reasoningEnabled[model.id]])
           )
         }),
-        signal: controller.signal
+        signal: controllerRef.current.signal
       })
 
       if (!response.ok || !response.body) {
@@ -309,14 +321,18 @@ export default function GranulationAnalyzerPage() {
       setAnalyses({})
     } finally {
       setIsAnalyzing(false)
+      controllerRef.current = null
     }
   }
 
   const clearAnalysis = () => {
     controllerRef.current?.abort()
     controllerRef.current = null
+    consensusControllerRef.current?.abort()
+    consensusControllerRef.current = null
     setAnalyses({})
     setGlobalError(null)
+    setConsensus(null)
   }
 
   const handleModelRetry = async (modelId: string) => {
@@ -450,6 +466,158 @@ export default function GranulationAnalyzerPage() {
   }, [analyses, hasRequested])
 
   const isAnyLoading = sortedAnalyses.some((item) => item.analysis.status === 'loading')
+  const successfulAnalysesCount = sortedAnalyses.filter((item) => item.analysis.status === 'success' && (item.analysis.content || '').trim()).length
+  const consensusStatus: AnalysisStatus = consensus?.status ?? 'idle'
+  const consensusDuration = formatDuration(consensus?.startedAt, consensus?.endedAt)
+
+  const generateConsensus = useCallback(async () => {
+    const successfulAnalyses = MODEL_CONFIG.filter((model) => {
+      const analysis = analyses[model.id]
+      return analysis?.status === 'success' && (analysis.content || '').trim()
+    })
+
+    if (successfulAnalyses.length < 2) {
+      showToast({
+        title: '資料不足',
+        description: '至少需要兩個模型成功輸出才能生成最終結論。',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    consensusControllerRef.current?.abort()
+    const controller = new AbortController()
+    consensusControllerRef.current = controller
+
+    setConsensus({
+      modelId: 'consensus',
+      modelName: '交叉驗證結論',
+      content: '',
+      status: 'loading',
+      startedAt: Date.now()
+    })
+
+    try {
+      const response = await fetch('/api/ai/granulation-consensus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ingredients: ingredients.filter((ing) => ing.materialName && ing.unitContentMg > 0),
+          analyses: MODEL_CONFIG.map((model) => ({
+            modelId: model.id,
+            modelName: model.name,
+            content: analyses[model.id]?.content || ''
+          })).filter((item) => item.content.trim()),
+          enableReasoning: Boolean(reasoningEnabled['deepseek/deepseek-chat-v3.1'])
+        }),
+        signal: controller.signal
+      })
+
+      if (!response.ok || !response.body) {
+        const errorText = await response.text().catch(() => '')
+        throw new Error(errorText || '最終結論服務暫時無法使用')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const events = buffer.split('\n\n')
+        buffer = events.pop() || ''
+
+        for (const block of events) {
+          if (!block.trim()) continue
+
+          const [eventLine, dataLine] = block.split('\n')
+          if (!eventLine || !dataLine) continue
+
+          const eventName = eventLine.replace('event: ', '').trim()
+          const data = dataLine.replace('data: ', '')
+
+          try {
+            const payload = JSON.parse(data)
+
+            if (eventName === 'delta') {
+              const delta = payload.delta as string
+              if (!delta) continue
+              setConsensus((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      content: (prev.content || '') + delta
+                    }
+                  : prev
+              )
+            } else if (eventName === 'error') {
+              setConsensus((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      status: 'error',
+                      error: payload.error || '生成最終結論失敗',
+                      endedAt: Date.now()
+                    }
+                  : prev
+              )
+              showToast({
+                title: '生成失敗',
+                description: payload.error || '最終結論生成時發生錯誤。',
+                variant: 'destructive'
+              })
+            } else if (eventName === 'done') {
+              setConsensus((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      status: payload.success ? 'success' : 'error',
+                      content: payload.success ? payload.content || prev.content : prev.content,
+                      endedAt: Date.now(),
+                      error: payload.success ? null : payload.error || '生成最終結論失敗'
+                    }
+                  : prev
+              )
+            }
+          } catch (error) {
+            console.error('共識流資料解析錯誤:', error)
+          }
+        }
+      }
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') {
+        return
+      }
+
+      setConsensus((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'error',
+              error: error instanceof Error ? error.message : '生成最終結論失敗',
+              endedAt: Date.now()
+            }
+          : prev
+      )
+      showToast({
+        title: '生成失敗',
+        description: error instanceof Error ? error.message : '最終結論服務暫時無法使用。',
+        variant: 'destructive'
+      })
+    } finally {
+      consensusControllerRef.current = null
+    }
+  }, [analyses, ingredients, reasoningEnabled, showToast])
+
+  useEffect(() => {
+    const allSuccess = MODEL_CONFIG.every((model) => analyses[model.id]?.status === 'success')
+    if (allSuccess && !consensus && hasRequested && !isAnalyzing) {
+      generateConsensus()
+    }
+  }, [analyses, consensus, generateConsensus, hasRequested, isAnalyzing])
 
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
@@ -744,7 +912,63 @@ export default function GranulationAnalyzerPage() {
                 </div>
               </div>
             </Card>
-        )}
+          )}
+
+          {sortedAnalyses.length > 0 && (
+            <Card className="liquid-glass-card liquid-glass-card-elevated" interactive={false}>
+              <div className="liquid-glass-content">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="icon-container icon-container-violet">
+                      <CheckCircle className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-800">交叉驗證最終結論</h2>
+                      <p className="text-sm text-gray-500">綜合三個模型輸出，產生可執行的最終建議。</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                    {consensusDuration && (
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-white/70 px-2.5 py-1 rounded-full">
+                        <Clock className="h-3.5 w-3.5" />
+                        {consensusDuration}
+                      </span>
+                    )}
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium min-w-[72px] justify-center ${STATUS_BADGE_CLASS[consensusStatus]}`}>
+                      {STATUS_LABEL[consensusStatus]}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={generateConsensus}
+                      disabled={consensusStatus === 'loading' || successfulAnalysesCount < 2}
+                      className="flex items-center gap-2"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      生成最終結論
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="prose max-w-none overflow-x-auto">
+                    {consensus?.content ? (
+                      <MarkdownRenderer content={consensus.content} />
+                    ) : consensusStatus === 'loading' ? (
+                      <p className="text-sm text-gray-500">正在生成綜合結論...</p>
+                    ) : (
+                      <p className="text-sm text-gray-400">
+                        當至少有兩個模型完成分析後，可點擊「生成最終結論」獲取交叉驗證建議。
+                      </p>
+                    )}
+                  </div>
+                  {consensusStatus === 'loading' && (
+                    <span className="absolute bottom-0 left-0 w-2 h-5 bg-violet-500/70 animate-pulse" />
+                  )}
+                </div>
+              </div>
+            </Card>
+          )}
         </div>
       </main>
 
