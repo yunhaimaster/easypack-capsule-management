@@ -10,10 +10,21 @@ import Link from 'next/link'
 export default function HistoryPage() {
   const versionHistory = [
     {
-      version: 'v2.2.2',
-      date: '2025年10月5日',
+      version: 'v2.2.3',
+      date: '2025年10月9日',
       type: '最新版本',
       typeColor: 'bg-green-100 text-green-800 border-green-200',
+      features: [
+        '首頁新增參考資料下載區塊，提供生產培訓手冊與風險原料清單 PDF 下載',
+        '優化首頁訂單排序邏輯，優先顯示進行中訂單以改善日常工作流程',
+        '移除未完成的 RSS 新聞功能，確保系統穩定性與部署效率'
+      ]
+    },
+    {
+      version: 'v2.2.2',
+      date: '2025年10月5日',
+      type: '功能更新',
+      typeColor: 'bg-blue-100 text-blue-800 border-blue-200',
       features: [
         '首頁重構為四大重點模塊，新增工具導覽與最新更新摘要',
         '導航列、模態與 Toast 全面符合 WCAG 2.1 AA，支援鍵盤焦點與動態減敏',

@@ -424,8 +424,8 @@ export function HomePageClient() {
                 <CalendarDays className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-slate-800">2025年10月5日 · 版本更新</h3>
-                <p className="text-xs text-slate-500">最新版本：v2.2.2</p>
+                <h3 className="text-base font-semibold text-slate-800">2025年10月9日 · 版本更新</h3>
+                <p className="text-xs text-slate-500">最新版本：v2.2.3</p>
               </div>
             </div>
             <Link href="/history" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
@@ -433,9 +433,9 @@ export function HomePageClient() {
             </Link>
           </div>
           <ul className="mt-4 space-y-2 text-xs sm:text-sm text-slate-600">
-            <li>· 導航與首頁全面符合 WCAG 2.1 AA，新增焦點捕捉與動態減敏支援。</li>
-            <li>· 首頁優化為四大重點卡片，並加入工具導覽與最新更新摘要。</li>
-            <li>· 統一 API 錯誤提示與 Toast 無障礙標記，提升跨頁操作體驗。</li>
+            <li>· 首頁新增參考資料下載區塊，提供生產培訓手冊與風險原料清單。</li>
+            <li>· 優化首頁訂單排序邏輯，優先顯示進行中訂單以改善工作流程。</li>
+            <li>· 移除未完成的 RSS 新聞功能，確保系統穩定性與部署效率。</li>
           </ul>
         </div>
       </div>
