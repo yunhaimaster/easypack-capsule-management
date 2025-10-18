@@ -37,6 +37,7 @@ import { SmartTemplateImport } from '@/components/forms/smart-template-import'
 import { RecipeListItem } from '@/components/recipe-library/recipe-list-item'
 import { BatchAnalysisModal } from '@/components/recipe-library/batch-analysis-modal'
 import { AdvancedFilters } from '@/components/recipe-library/advanced-filters'
+import { RecipeActionsMenu } from '@/components/recipe-library/recipe-actions-menu'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
 
@@ -1109,7 +1110,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
                   <>生產 {recipe.productionCount} 次</>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <Button 
                   size="sm" 
                   variant="outline" 
@@ -1123,7 +1124,19 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
                   <span className="hidden sm:inline">查看</span>
                 </Button>
                 
-                {/* Actions moved to Quick Actions Menu (•••) */}
+                {/* Quick Actions Menu */}
+                <RecipeActionsMenu
+                  recipe={recipe}
+                  onView={(id) => router.push(`/recipe-library/${id}`)}
+                  onEdit={recipe.recipeType === 'template' ? (id) => router.push(`/recipe-library/${id}`) : undefined}
+                  onAnalyzeEffects={onAnalyzeEffects}
+                  onMarketingAnalysis={onMarketingAnalysis}
+                  onGranulationAnalysis={onGranulationAnalysis}
+                  onCreateOrder={recipe.recipeType === 'production' ? (id) => router.push(`/orders/new?recipeId=${id}`) : undefined}
+                  onExport={onExport}
+                  onDelete={onDelete}
+                  analysisStatus={getAnalysisStatus(recipe)}
+                />
               </div>
             </div>
           </div>
