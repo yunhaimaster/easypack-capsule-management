@@ -885,6 +885,15 @@ export default function RecipeLibraryPage() {
                 </div>
               </Card>
 
+              {/* Advanced Filters */}
+              <AdvancedFilters
+                selectedEffects={selectedEffects}
+                onEffectToggle={handleEffectToggle}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onClearAll={handleClearAllFilters}
+              />
+
               {/* Recipes Grid */}
               {loading ? (
                 <Card className="liquid-glass-card">
@@ -1054,6 +1063,15 @@ export default function RecipeLibraryPage() {
                   </div>
                 </div>
               </Card>
+
+              {/* Advanced Filters */}
+              <AdvancedFilters
+                selectedEffects={selectedEffects}
+                onEffectToggle={handleEffectToggle}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onClearAll={handleClearAllFilters}
+              />
 
               {/* Recipes Grid */}
               {loading ? (
