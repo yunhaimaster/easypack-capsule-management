@@ -264,6 +264,7 @@ npm run build
 3. ✅ Types are correct
 4. ✅ Code formatted
 5. ✅ Commit message is descriptive
+6. ✅ AI model parameters optimized (if AI changes made)
 
 ### Pre-push Checklist
 1. ✅ All commits have passed build test
@@ -272,6 +273,23 @@ npm run build
 4. ✅ Large changes are documented
 
 ---
+
+## AI Optimization Workflow
+
+### When Implementing AI Features
+1. **Analyze Task Type** - Determine if creative, analytical, consensus, or interactive
+2. **Select Optimal Parameters** - Use task-specific parameter guidelines
+3. **Estimate Token Usage** - Set appropriate max_tokens limits
+4. **Plan Cost Optimization** - Consider caching and model selection
+5. **Design Monitoring** - Plan metrics tracking and quality gates
+6. **Test and Verify** - Ensure AI optimization guidelines are followed
+
+### AI Development Checklist
+- ✅ Task-specific parameters selected (temperature, top_p, frequency_penalty, presence_penalty)
+- ✅ Cost optimization implemented (appropriate token limits, model selection)
+- ✅ Performance monitoring added (token usage, response time tracking)
+- ✅ Quality gates established (>85% relevance, >90% satisfaction, <2% error rate)
+- ✅ Parameter optimizer utility used (`src/lib/ai/parameter-optimizer.ts`)
 
 ## Quick Reference
 

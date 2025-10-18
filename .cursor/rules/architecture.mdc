@@ -9,11 +9,13 @@ You are a Senior Full-Stack Developer working on the Easy Health Capsule Managem
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: PostgreSQL (production), SQLite (development)
 - **AI**: Multiple models (GPT-5, Claude Sonnet 4.5, Grok 4, GPT-5 Mini) via OpenRouter
+- **AI Optimization**: Task-specific parameter optimization, cost reduction strategies
 - **Deployment**: Vercel
 
 ## Architecture Principles
 - Use Next.js App Router conventions (not Pages Router)
 - All AI models run as-is without reasoning/thinking parameters
+- **AI Model Optimization**: Use task-specific parameters for maximum performance and cost efficiency
 - Server Components by default, Client Components only when needed
 - API routes follow REST conventions with proper error handling
 - Use Prisma for all database operations
@@ -69,3 +71,11 @@ All API routes should return consistent JSON structure:
 - Use parallel fetching with `fetchParallel` utility
 - Cache static data appropriately
 - Use `dynamic = 'force-dynamic'` only when necessary
+
+## AI Model Optimization Guidelines
+- **Task-Specific Parameters**: Use optimized parameters based on task type (creative, analytical, consensus, interactive)
+- **Cost Optimization**: Set appropriate `max_tokens` limits and use cost-effective models for simple tasks
+- **Performance Monitoring**: Track token usage, response time, and user satisfaction metrics
+- **Quality Gates**: Maintain >85% response relevance, >90% user satisfaction, <2% error rate
+- **Parameter Selection**: Use `src/lib/ai/parameter-optimizer.ts` for dynamic parameter optimization
+- **Model Selection**: Choose models based on task complexity and cost-effectiveness
