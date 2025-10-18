@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -23,19 +23,24 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast-provider'
 import type { RecipeLibraryItem } from '@/types'
+import { cn } from '@/lib/utils'
 
-// Zod Schema - 只驗證必填欄位：配方名稱和產品名稱
+// Zod Schema - 包括配方資訊和原料清單
 const editRecipeSchema = z.object({
   recipeName: z.string().trim().min(1, '配方名稱不能為空').max(200, '配方名稱過長'),
   productName: z.string().trim().min(1, '產品名稱不能為空').max(200, '產品名稱過長'),
-  // 其他欄位都可以為空，不驗證
   description: z.string().optional().nullable(),
   capsuleSize: z.string().optional().nullable(),
   capsuleColor: z.string().optional().nullable(),
-  capsuleType: z.string().optional().nullable()
+  capsuleType: z.string().optional().nullable(),
+  // 🆕 原料清單
+  ingredients: z.array(z.object({
+    materialName: z.string().trim().min(1, '原料名稱不能為空'),
+    unitContentMg: z.number().positive('含量必須大於 0')
+  })).min(1, '至少需要一個原料')
 })
 
 type EditRecipeData = z.infer<typeof editRecipeSchema>
@@ -61,7 +66,8 @@ export function EditRecipeDialog({
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
+    control
   } = useForm<EditRecipeData>({
     resolver: zodResolver(editRecipeSchema),
     mode: 'onSubmit', // 只在提交時驗證
@@ -71,8 +77,16 @@ export function EditRecipeDialog({
       description: recipe.description || '',
       capsuleSize: recipe.capsuleSize || null,
       capsuleColor: recipe.capsuleColor || '',
-      capsuleType: recipe.capsuleType || null
+      capsuleType: recipe.capsuleType || null,
+      // 🆕 原料清單初始值
+      ingredients: recipe.ingredients || []
     }
+  })
+
+  // 🆕 使用 useFieldArray 管理原料清單
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'ingredients'
   })
 
   const onSubmit = async (data: EditRecipeData) => {
@@ -253,6 +267,92 @@ export function EditRecipeDialog({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* 🆕 原料清單編輯 */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-neutral-700 text-base font-semibold">
+                原料清單 *
+              </Label>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => append({ materialName: '', unitContentMg: 0 })}
+                className="flex items-center gap-1 transition-apple"
+              >
+                <Plus className="h-3 w-3" />
+                添加原料
+              </Button>
+            </div>
+
+            {fields.length === 0 && (
+              <p className="text-sm text-neutral-500 text-center py-4 border border-dashed border-neutral-300 rounded-lg">
+                尚未添加任何原料，點擊上方「添加原料」按鈕開始
+              </p>
+            )}
+
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-start gap-2 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+                  <div className="flex-1 grid grid-cols-2 gap-2">
+                    {/* 原料名稱 */}
+                    <div className="col-span-2 sm:col-span-1">
+                      <Input
+                        {...register(`ingredients.${index}.materialName` as const)}
+                        placeholder="原料名稱"
+                        className={cn(
+                          "transition-apple",
+                          errors.ingredients?.[index]?.materialName && "border-danger-500"
+                        )}
+                      />
+                      {errors.ingredients?.[index]?.materialName && (
+                        <p className="text-xs text-danger-600 mt-1">
+                          {errors.ingredients[index]?.materialName?.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* 單位含量 */}
+                    <div className="col-span-2 sm:col-span-1">
+                      <Input
+                        {...register(`ingredients.${index}.unitContentMg` as const, {
+                          valueAsNumber: true
+                        })}
+                        type="number"
+                        step="0.01"
+                        placeholder="含量 (mg)"
+                        className={cn(
+                          "transition-apple",
+                          errors.ingredients?.[index]?.unitContentMg && "border-danger-500"
+                        )}
+                      />
+                      {errors.ingredients?.[index]?.unitContentMg && (
+                        <p className="text-xs text-danger-600 mt-1">
+                          {errors.ingredients[index]?.unitContentMg?.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 刪除按鈕 */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => remove(index)}
+                    className="h-10 w-10 p-0 text-danger-600 hover:bg-danger-50 transition-apple shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            {errors.ingredients && typeof errors.ingredients.message === 'string' && (
+              <p className="text-sm text-danger-600">{errors.ingredients.message}</p>
+            )}
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">

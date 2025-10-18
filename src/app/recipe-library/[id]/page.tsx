@@ -50,7 +50,7 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [syncingNotes, setSyncingNotes] = useState(false)
-  const [editRecipeOpen, setEditRecipeOpen] = useState(false) // 🆕 编辑配方弹窗状态
+  const [editRecipeOpen, setEditRecipeOpen] = useState(false) // 🆕 編輯配方對話框狀態
 
   const fetchRecipe = useCallback(async () => {
     try {
@@ -336,7 +336,7 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                           className="flex items-center gap-2 transition-apple"
                         >
                           <Edit className="h-4 w-4" />
-                          编辑配方
+                          編輯配方
                         </Button>
                       )}
                     </div>
