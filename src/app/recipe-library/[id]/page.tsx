@@ -22,7 +22,11 @@ import {
   Sparkles,
   Brain,
   RefreshCw,
-  Trash2
+  Trash2,
+  FlaskConical,
+  Download,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 import {
@@ -32,10 +36,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useToast } from '@/components/ui/toast-provider'
 import type { RecipeLibraryItem } from '@/types'
 import { EditRecipeDialog } from '@/components/recipe-library/edit-recipe-dialog'
+import { IngredientWarnings } from '@/components/recipe-library/ingredient-warnings'
+import { AIInsightsPanel } from '@/components/recipe-library/ai-insights-panel'
 import { cn } from '@/lib/utils'
 
 export default function RecipeDetailPage({ params }: { params: { id: string } }) {
@@ -43,9 +55,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
   const { showToast } = useToast()
   const [recipe, setRecipe] = useState<RecipeLibraryItem | null>(null)
   const [loading, setLoading] = useState(true)
-  const [editNotesOpen, setEditNotesOpen] = useState(false)
-  const [editingNotes, setEditingNotes] = useState('')
-  const [savingNotes, setSavingNotes] = useState(false)
   const [reanalyzing, setReanalyzing] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -109,46 +118,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
     }
   }
 
-  const handleEditNotes = () => {
-    setEditingNotes(recipe?.notes || '')
-    setEditNotesOpen(true)
-  }
-
-  const handleSaveNotes = async () => {
-    if (!recipe) return
-    
-    try {
-      setSavingNotes(true)
-      const response = await fetch(`/api/recipes/${recipe.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: editingNotes })
-      })
-
-      const result = await response.json()
-      
-      if (result.success) {
-        showToast({
-          title: '備註已更新',
-          description: '生產備註已成功保存'
-        })
-        setEditNotesOpen(false)
-        fetchRecipe() // 重新加載配方數據
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (error) {
-      console.error('Save notes error:', error)
-      showToast({
-        title: '保存失敗',
-        description: error instanceof Error ? error.message : '無法保存備註',
-        variant: 'destructive'
-      })
-    } finally {
-      setSavingNotes(false)
-    }
-  }
-
   const handleExportToMarketing = () => {
     if (!recipe) return
     
@@ -159,6 +128,82 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
     
     localStorage.setItem('marketing_imported_ingredients', JSON.stringify(ingredientsData))
     router.push('/marketing-assistant')
+  }
+
+  const handleGranulationAnalysis = () => {
+    if (!recipe) return
+    const ingredientsData = recipe.ingredients.map(ing => ({
+      materialName: ing.materialName,
+      unitContentMg: ing.unitContentMg
+    }))
+    localStorage.setItem('granulation_imported_ingredients', JSON.stringify(ingredientsData))
+    router.push('/granulation-analyzer')
+  }
+
+  const handleExportToExcel = () => {
+    if (!recipe) return
+    
+    // Generate CSV with BOM for Excel compatibility
+    const BOM = '\uFEFF'
+    const headers = ['配方名稱', '客戶', '產品', '原料名稱', '含量 (mg)', 'AI 功效分析']
+    
+    const rows = recipe.ingredients.map(ing => [
+      recipe.recipeName,
+      recipe.customerName,
+      recipe.productName,
+      ing.materialName,
+      ing.unitContentMg.toString(),
+      recipe.aiEffectsAnalysis || ''
+    ])
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+    
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `配方_${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
+    
+    showToast({
+      title: '導出成功',
+      description: '配方已導出為 Excel 格式',
+      variant: 'default'
+    })
+  }
+
+  const handleExportToPDF = async () => {
+    if (!recipe) return
+    
+    try {
+      const response = await fetch('/api/recipes/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipeId: recipe.id })
+      })
+      
+      if (!response.ok) throw new Error('PDF 生成失敗')
+      
+      const blob = await response.blob()
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `配方_${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.html`
+      link.click()
+      
+      showToast({
+        title: '導出成功',
+        description: '配方已導出為 PDF 格式',
+        variant: 'default'
+      })
+    } catch (error) {
+      showToast({
+        title: '導出失敗',
+        description: '無法生成 PDF 文件',
+        variant: 'destructive'
+      })
+    }
   }
 
   const handleReanalyze = async () => {
@@ -301,15 +346,75 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                 返回配方庫
               </Button>
             </Link>
-            <Button 
-              variant="destructive" 
-              size="sm" 
-              className="flex items-center gap-2"
-              onClick={() => setDeleteDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-              刪除配方
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Export Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline">導出</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportToExcel}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    導出為 Excel/CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportToPDF}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    導出為 PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleExportToMarketing}>
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    導出到行銷助手
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleGranulationAnalysis}>
+                    <FlaskConical className="h-4 w-4 mr-2" />
+                    導出到製粒分析
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Granulation Analysis */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGranulationAnalysis}
+                className="flex items-center gap-2 text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
+              >
+                <FlaskConical className="h-4 w-4" />
+                <span className="hidden sm:inline">製粒分析</span>
+              </Button>
+              
+              {/* Marketing Analysis (template only) */}
+              {recipe.recipeType === 'template' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportToMarketing}
+                  className="flex items-center gap-2 text-orange-600 hover:text-orange-700 border-orange-200 hover:border-orange-300"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden sm:inline">行銷分析</span>
+                </Button>
+              )}
+              
+              {/* Delete Button */}
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                className="flex items-center gap-2"
+                onClick={() => setDeleteDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">刪除</span>
+              </Button>
+            </div>
           </div>
 
           {/* Title Card */}
@@ -409,15 +514,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                       {recipe.aiEffectsAnalysis ? '重新分析功效' : '分析功效'}
                     </span>
                     <span className="sm:hidden">分析功效</span>
-                  </Button>
-                  <Button
-                    onClick={handleExportToMarketing}
-                    variant="outline"
-                    className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white border-0 hover:brightness-110 flex-1 sm:flex-none"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    <span className="hidden sm:inline">導出到行銷助手</span>
-                    <span className="sm:hidden">導出行銷</span>
                   </Button>
                   <Button
                     onClick={handleCreateOrder}
@@ -562,6 +658,9 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                   </div>
                 </div>
               </Card>
+
+              {/* Ingredient Warnings */}
+              <IngredientWarnings ingredients={recipe.ingredients} recipeId={recipe.id} />
             </div>
 
             {/* Right Column - Details */}
@@ -596,6 +695,9 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                 </div>
               </Card>
 
+              {/* AI Insights Panel */}
+              <AIInsightsPanel recipe={recipe} />
+
               {/* Category & Tags */}
               {(recipe.category || (recipe.tags && recipe.tags.length > 0)) && (
                 <Card className="liquid-glass-card liquid-glass-card-elevated">
@@ -618,42 +720,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                           </div>
                         </div>
                       )}
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {/* Production Notes & Edit History */}
-              {recipe.notes && (
-                <Card className="liquid-glass-card liquid-glass-card-elevated">
-                  <div className="liquid-glass-content">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-semibold text-neutral-800">生產備註與編輯歷史</h2>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleEditNotes}
-                        className="flex items-center gap-1"
-                      >
-                        <Edit className="h-3 w-3" />
-                        編輯
-                      </Button>
-                    </div>
-                    {/* 🆕 优化显示：分段显示备注和编辑历史 */}
-                    <div className="text-sm max-h-60 overflow-y-auto space-y-3">
-                      {recipe.notes.split('\n\n---\n').map((entry, idx) => (
-                        <div
-                          key={idx}
-                          className={cn(
-                            'whitespace-pre-wrap',
-                            entry.startsWith('[编辑记录]')
-                              ? 'text-primary-600 text-xs border-l-2 border-primary-300 pl-3 py-1 bg-primary-50 rounded-r'
-                              : 'text-neutral-600'
-                          )}
-                        >
-                          {entry}
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </Card>
@@ -689,43 +755,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
       </main>
 
       <LiquidGlassFooter />
-
-      {/* Edit Notes Dialog */}
-      <Dialog open={editNotesOpen} onOpenChange={setEditNotesOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>編輯生產備註</DialogTitle>
-            <DialogDescription>
-              更新配方的製程問題記錄和品管備註
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              value={editingNotes}
-              onChange={(e) => setEditingNotes(e.target.value)}
-              placeholder="輸入生產備註、製程問題或品管注意事項..."
-              rows={10}
-              className="resize-none"
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setEditNotesOpen(false)}
-                disabled={savingNotes}
-              >
-                取消
-              </Button>
-              <Button
-                onClick={handleSaveNotes}
-                disabled={savingNotes}
-              >
-                {savingNotes && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                保存
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
