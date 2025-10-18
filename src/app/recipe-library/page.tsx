@@ -45,7 +45,7 @@ export default function RecipeLibraryPage() {
   const { showToast } = useToast()
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'production' | 'template'>('production')
+  const [activeTab, setActiveTab] = useState<'production' | 'template'>('template')
   
   // View mode state (list or card)
   const [viewMode, setViewMode] = useState<'list' | 'card'>('list')
