@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import type { RecipeSearchFilters, RecipeLibraryItem } from '@/types'
+import { getRecipeCategories, EFFECT_CATEGORIES } from '@/lib/parse-effects'
 
 // 標記為動態路由（因為使用了查詢參數）
 export const dynamic = 'force-dynamic'
@@ -130,6 +131,27 @@ export async function GET(request: NextRequest) {
       sourceType: recipe.sourceType as 'order' | 'manual' | 'batch_import' // 🆕 類型轉換
     }))
 
+    // 計算類別統計（基於所有符合 where 條件的配方，不僅限於當前頁）
+    const allRecipesForCounts = await prisma.recipeLibrary.findMany({
+      where,
+      select: {
+        id: true,
+        aiEffectsAnalysis: true
+      }
+    })
+
+    const categoryCounts: Record<string, number> = { all: allRecipesForCounts.length }
+    
+    Object.keys(EFFECT_CATEGORIES).forEach(key => {
+      categoryCounts[key] = allRecipesForCounts.filter(recipe => 
+        getRecipeCategories(recipe.aiEffectsAnalysis).includes(key)
+      ).length
+    })
+    
+    categoryCounts.uncategorized = allRecipesForCounts.filter(recipe => 
+      getRecipeCategories(recipe.aiEffectsAnalysis).includes('uncategorized')
+    ).length
+
     return NextResponse.json({
       success: true,
       data: {
@@ -139,7 +161,8 @@ export async function GET(request: NextRequest) {
           limit,
           total: ingredientName ? formattedRecipes.length : total,
           totalPages: ingredientName ? Math.ceil(formattedRecipes.length / limit) : Math.ceil(total / limit)
-        }
+        },
+        categoryCounts // 🆕 添加類別統計
       }
     })
 

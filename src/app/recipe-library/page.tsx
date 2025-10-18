@@ -87,6 +87,7 @@ export default function RecipeLibraryPage() {
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({ all: 0 })
   
   // Advanced filters state
   const [selectedEffects, setSelectedEffects] = useState<string[]>([])
@@ -116,6 +117,7 @@ export default function RecipeLibraryPage() {
         setRecipes(result.data.recipes)
         setTotal(result.data.pagination.total)
         setTotalPages(result.data.pagination.totalPages)
+        setCategoryCounts(result.data.categoryCounts || { all: 0 }) // 🆕 設置類別統計
       } else {
         showToast({
           title: '載入失敗',
@@ -698,22 +700,7 @@ export default function RecipeLibraryPage() {
     return filtered
   }, [recipes, effectFilter, selectedEffects, sortBy])
 
-  // Get category counts
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: recipes.length }
-    
-    Object.keys(EFFECT_CATEGORIES).forEach(key => {
-      counts[key] = recipes.filter(recipe => 
-        getRecipeCategories(recipe.aiEffectsAnalysis).includes(key)
-      ).length
-    })
-    
-    counts.uncategorized = recipes.filter(recipe => 
-      getRecipeCategories(recipe.aiEffectsAnalysis).includes('uncategorized')
-    ).length
-    
-    return counts
-  }, [recipes])
+  // Note: categoryCounts is now fetched from API instead of calculated here
 
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
