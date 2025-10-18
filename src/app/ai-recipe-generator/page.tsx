@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { Button } from '@/components/ui/button'
@@ -10,11 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card'
 import { IconContainer } from '@/components/ui/icon-container'
 import { ModelBadge } from '@/components/ui/model-badge'
-import { AIRecipeRequest } from '@/types/v2-types'
-import { Sparkles, Loader2, Copy, RefreshCw, MessageCircle, Send, AlertCircle, Clock, Repeat2 } from 'lucide-react'
+import type { AIRecipeRequest } from '@/types/v2-types'
+import { Sparkles, Loader2, Copy, MessageCircle, Send, AlertCircle, Clock, Repeat2 } from 'lucide-react'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { AIDisclaimer } from '@/components/ui/ai-disclaimer'
-import Link from 'next/link'
 
 type AnalysisStatus = 'idle' | 'loading' | 'success' | 'error'
 

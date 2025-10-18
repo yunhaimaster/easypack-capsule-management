@@ -85,6 +85,14 @@ export const productionOrderSchema = z.object({
     .positive('生產數量必須為正數')
     .min(1, '生產數量不能小於1')
     .max(5000000, '生產數量不能超過5,000,000粒'),
+  unitWeightMg: z
+    .number()
+    .positive('單粒重量必須大於0')
+    .default(500),
+  batchTotalWeightMg: z
+    .number()
+    .positive('批次總重量必須大於0')
+    .default(0),
   completionDate: z.string().optional(),
   processIssues: z
     .string()
