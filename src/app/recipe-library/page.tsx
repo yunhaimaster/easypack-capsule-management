@@ -38,6 +38,7 @@ import { useToast } from '@/components/ui/toast-provider'
 import { SmartTemplateImport } from '@/components/forms/smart-template-import'
 import { RecipeListItem } from '@/components/recipe-library/recipe-list-item'
 import { BatchAnalysisModal } from '@/components/recipe-library/batch-analysis-modal'
+import { BulkActionsBar } from '@/components/recipe-library/bulk-actions-bar'
 import { AdvancedFilters } from '@/components/recipe-library/advanced-filters'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
@@ -90,6 +91,10 @@ export default function RecipeLibraryPage() {
   // Advanced filters state
   const [selectedEffects, setSelectedEffects] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name' | 'usage' | 'ingredients'>('newest')
+  
+  // Bulk selection state
+  const [selectedRecipes, setSelectedRecipes] = useState<Set<string>>(new Set())
+  const [selectionMode, setSelectionMode] = useState(false)
 
   // Fetch recipes
   const fetchRecipes = useCallback(async () => {
@@ -531,10 +536,124 @@ export default function RecipeLibraryPage() {
       console.error('Delete recipe error:', error)
       showToast({
         title: '刪除失敗',
-        description: '無法連接到服務器',
+        description: '無法連接到伺服器',
         variant: 'destructive'
       })
     }
+  }
+
+  // Bulk selection handlers
+  const handleToggleSelection = (recipeId: string) => {
+    setSelectedRecipes(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(recipeId)) {
+        newSet.delete(recipeId)
+      } else {
+        newSet.add(recipeId)
+      }
+      return newSet
+    })
+  }
+
+  const handleClearSelection = () => {
+    setSelectedRecipes(new Set())
+    setSelectionMode(false)
+  }
+
+  const handleBulkAnalyze = async () => {
+    const recipesToAnalyze = recipes.filter(r => selectedRecipes.has(r.id) && !r.aiEffectsAnalysis)
+    if (recipesToAnalyze.length === 0) {
+      showToast({
+        title: '無需分析',
+        description: '所選配方都已分析過',
+        variant: 'default'
+      })
+      return
+    }
+
+    setUnanalyzedRecipes(recipesToAnalyze)
+    setShowBatchAnalysisModal(true)
+  }
+
+  const handleBulkExport = () => {
+    const selectedRecipesList = recipes.filter(r => selectedRecipes.has(r.id))
+    if (selectedRecipesList.length === 0) return
+
+    // Create CSV for all selected recipes
+    let csvContent = '\uFEFF' // UTF-8 BOM
+
+    selectedRecipesList.forEach((recipe, index) => {
+      if (index > 0) csvContent += '\n\n'
+      
+      csvContent += `=== 配方 ${index + 1}: ${recipe.recipeName} ===\n`
+      csvContent += `產品名稱,${recipe.productName || ''}\n`
+      csvContent += `客戶名稱,${recipe.customerName || ''}\n\n`
+      
+      csvContent += '原料清單\n'
+      csvContent += '序號,原料名稱,單位含量(mg)\n'
+      recipe.ingredients.forEach((ing, idx) => {
+        csvContent += `${idx + 1},"${ing.materialName}",${ing.unitContentMg}\n`
+      })
+      
+      if (recipe.aiEffectsAnalysis) {
+        csvContent += '\nAI 功效分析\n'
+        csvContent += `"${recipe.aiEffectsAnalysis.replace(/"/g, '""')}"\n`
+      }
+    })
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `批量配方_${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    showToast({
+      title: '導出成功',
+      description: `已導出 ${selectedRecipesList.length} 個配方`,
+      variant: 'default'
+    })
+  }
+
+  const handleBulkDelete = async () => {
+    const selectedRecipesList = recipes.filter(r => selectedRecipes.has(r.id))
+    if (selectedRecipesList.length === 0) return
+
+    // eslint-disable-next-line no-alert
+    if (!window.confirm(`確定要刪除 ${selectedRecipesList.length} 個配方嗎？此操作無法撤銷。`)) {
+      return
+    }
+
+    let successCount = 0
+    let failCount = 0
+
+    for (const recipe of selectedRecipesList) {
+      try {
+        const response = await fetch(`/api/recipes/${recipe.id}`, {
+          method: 'DELETE'
+        })
+        const result = await response.json()
+        if (result.success) {
+          successCount++
+        } else {
+          failCount++
+        }
+      } catch (error) {
+        failCount++
+      }
+    }
+
+    showToast({
+      title: successCount > 0 ? '刪除完成' : '刪除失敗',
+      description: `成功刪除 ${successCount} 個，失敗 ${failCount} 個`,
+      variant: failCount > 0 ? 'destructive' : 'default'
+    })
+
+    handleClearSelection()
+    fetchRecipes()
   }
 
   // Filter and sort recipes
@@ -1091,6 +1210,15 @@ export default function RecipeLibraryPage() {
         onClose={() => setShowBatchAnalysisModal(false)}
         recipes={unanalyzedRecipes}
         onComplete={handleBatchAnalysisComplete}
+      />
+
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={selectedRecipes.size}
+        onBulkAnalyze={handleBulkAnalyze}
+        onBulkExport={handleBulkExport}
+        onBulkDelete={handleBulkDelete}
+        onClearSelection={handleClearSelection}
       />
     </div>
   )

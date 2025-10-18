@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Beaker, Sparkles, Eye, Edit, Package, ShoppingCart, TrendingUp, Brain } from 'lucide-react'
 import type { RecipeLibraryItem } from '@/types'
 import { cn } from '@/lib/utils'
@@ -24,6 +25,8 @@ interface RecipeListItemProps {
   onCopy?: (id: string) => void
   onExport?: (id: string) => void
   onDelete?: (id: string) => void
+  selected?: boolean
+  onToggleSelection?: (id: string) => void
 }
 
 export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onCopy, onExport, onDelete }: RecipeListItemProps) {
