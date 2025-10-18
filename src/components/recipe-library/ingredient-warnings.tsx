@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Loader2, Copy, Check } from 'lucide-react'
+import { useToast } from '@/components/ui/toast-provider'
 import type { RecipeIngredient } from '@/types'
 
 interface IngredientWarningsProps {
@@ -21,9 +22,11 @@ interface IngredientWarning {
 }
 
 export function IngredientWarnings({ ingredients, recipeId }: IngredientWarningsProps) {
+  const { showToast } = useToast()
   const [warnings, setWarnings] = useState<IngredientWarning[]>([])
   const [loading, setLoading] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const analyzeInteractions = async () => {
     setLoading(true)
@@ -50,6 +53,27 @@ export function IngredientWarnings({ ingredients, recipeId }: IngredientWarnings
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleCopyAllWarnings = () => {
+    if (warnings.length === 0) return
+
+    const formattedText = warnings.map((w, index) => `
+${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '高風險' : w.severity === 'medium' ? '中風險' : '低風險'}]
+⚠️ ${w.warning}
+💡 建議：${w.recommendation}
+    `).join('\n---\n')
+
+    navigator.clipboard.writeText(formattedText.trim())
+      .then(() => {
+        setCopied(true)
+        showToast({ title: '複製成功', description: '相互作用分析已複製到剪貼板' })
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err)
+        showToast({ title: '複製失敗', description: '無法複製分析結果', variant: 'destructive' })
+      })
   }
 
   if (!analyzed) {
@@ -108,11 +132,22 @@ export function IngredientWarnings({ ingredients, recipeId }: IngredientWarnings
   return (
     <Card className="liquid-glass-card border-warning-200">
       <div className="liquid-glass-content">
-        <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle className="h-5 w-5 text-warning-600" />
-          <h3 className="text-sm font-semibold text-warning-800">
-            發現 {warnings.length} 個潛在相互作用
-          </h3>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-warning-600" />
+            <h3 className="text-sm font-semibold text-warning-800">
+              發現 {warnings.length} 個潛在相互作用
+            </h3>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopyAllWarnings}
+            className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
+          >
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            複製全部
+          </Button>
         </div>
         <div className="space-y-3">
           {warnings.map((warning, index) => (
