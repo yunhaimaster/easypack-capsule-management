@@ -74,14 +74,8 @@ export default function RecipeLibraryPage() {
   // Template import state
   const [importingTemplates, setImportingTemplates] = useState(false)
 
-  // AI analysis state
-  const [analyzing, setAnalyzing] = useState(false)
-  const [pendingAnalysisCount, setPendingAnalysisCount] = useState(0)
-  const [analysisProgress, setAnalysisProgress] = useState<{
-    analyzed: number
-    failed: number
-    total: number
-  } | null>(null)
+  // Individual analysis state
+  const [analyzingRecipeId, setAnalyzingRecipeId] = useState<string | null>(null)
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
@@ -242,33 +236,18 @@ export default function RecipeLibraryPage() {
     }
   }
 
-  // Fetch pending analysis count
-  const fetchPendingAnalysisCount = async () => {
+  // Individual recipe analysis
+  const handleAnalyzeEffects = async (recipeId: string) => {
     try {
-      const response = await fetch('/api/recipes/batch-analyze-effects')
-      const result = await response.json()
-      if (result.success) {
-        setPendingAnalysisCount(result.data.pendingCount)
-      }
-    } catch (error) {
-      console.error('Fetch pending count error:', error)
-    }
-  }
-
-  // Batch analyze effects
-  const handleBatchAnalyze = async () => {
-    try {
-      setAnalyzing(true)
-      setAnalysisProgress({ analyzed: 0, failed: 0, total: pendingAnalysisCount })
+      setAnalyzingRecipeId(recipeId)
       
-      // Show initial toast
       showToast({
-        title: '開始批量分析',
-        description: `正在分析 ${pendingAnalysisCount} 個配方，這可能需要幾分鐘...`,
+        title: '開始分析',
+        description: '正在分析配方功效...',
         variant: 'default'
       })
 
-      const response = await fetch('/api/recipes/batch-analyze-effects', {
+      const response = await fetch(`/api/recipes/${recipeId}/analyze-effects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
@@ -277,31 +256,27 @@ export default function RecipeLibraryPage() {
 
       if (result.success) {
         showToast({
-          title: '批量分析完成',
-          description: result.message,
+          title: '分析完成',
+          description: '配方功效已成功分析',
           variant: 'default'
         })
-        setAnalysisProgress(null)
-        fetchRecipes()
-        fetchPendingAnalysisCount()
+        fetchRecipes()  // Refresh list to show new effects
       } else {
         showToast({
-          title: 'AI 分析失敗',
-          description: result.error,
+          title: '分析失敗',
+          description: result.error || '無法分析配方功效',
           variant: 'destructive'
         })
-        setAnalysisProgress(null)
       }
     } catch (error) {
-      console.error('Batch analyze error:', error)
+      console.error('Analyze effects error:', error)
       showToast({
-        title: 'AI 分析失敗',
+        title: '分析失敗',
         description: '無法連接到服務器',
         variant: 'destructive'
       })
-      setAnalysisProgress(null)
     } finally {
-      setAnalyzing(false)
+      setAnalyzingRecipeId(null)
     }
   }
 
@@ -309,7 +284,6 @@ export default function RecipeLibraryPage() {
   useEffect(() => {
     fetchRecipes()
     fetchCounts()
-    fetchPendingAnalysisCount()
   }, [fetchRecipes, fetchCounts])
 
   // Load import stats when opening dialog
@@ -501,73 +475,10 @@ export default function RecipeLibraryPage() {
                         <span className="hidden sm:inline">批量導入配方</span>
                         <span className="sm:hidden">導入配方</span>
                       </Button>
-                      {pendingAnalysisCount > 0 && (
-                        <Button
-                          onClick={handleBatchAnalyze}
-                          disabled={analyzing}
-                          variant="outline"
-                          className="flex items-center gap-2 bg-gradient-to-r from-primary-500 to-indigo-500 text-white border-0 flex-1 sm:flex-none"
-                        >
-                          {analyzing ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Brain className="h-4 w-4" />
-                          )}
-                          <span className="hidden sm:inline">分析功效 ({pendingAnalysisCount})</span>
-                          <span className="sm:hidden">分析功效</span>
-                        </Button>
-                      )}
                     </div>
                   </div>
                 </div>
               </Card>
-
-              {/* Analysis Progress */}
-              {analysisProgress && (
-                <Card className="liquid-glass-card liquid-glass-card-elevated">
-                  <div className="liquid-glass-content p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary-600" />
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-neutral-800">正在批量分析配方</h3>
-                          <p className="text-sm text-neutral-600">
-                            請勿關閉此頁面，分析過程約需 {Math.ceil(analysisProgress.total * 0.5 / 60)} - {Math.ceil(analysisProgress.total * 1 / 60)} 分鐘
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {/* Progress Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-neutral-600">
-                            處理進度：正在分析第 1-20 批配方
-                          </span>
-                          <span className="font-medium text-primary-600">
-                            預計剩餘 {analysisProgress.total} 個
-                          </span>
-                        </div>
-                        <div className="w-full bg-neutral-200 rounded-full h-3 overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-primary-500 to-indigo-500 rounded-full transition-all duration-500 relative overflow-hidden"
-                            style={{ width: '5%' }}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Tips */}
-                      <Alert className="bg-primary-50 border-primary-200">
-                        <Brain className="h-4 w-4 text-primary-600" />
-                        <AlertDescription className="text-sm text-primary-800">
-                          <strong>提示：</strong>系統正在使用 AI 分析每個配方的原料組成和功效。完成後將自動刷新列表。
-                        </AlertDescription>
-                      </Alert>
-                    </div>
-                  </div>
-                </Card>
-              )}
 
               {/* Effect Filter */}
               <Card className="liquid-glass-card">
@@ -642,6 +553,7 @@ export default function RecipeLibraryPage() {
                   router={router} 
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
+                  onAnalyzeEffects={handleAnalyzeEffects}
                 />
               )}
 
@@ -699,22 +611,6 @@ export default function RecipeLibraryPage() {
                         onImport={handleBatchImportTemplates}
                         disabled={importingTemplates}
                       />
-                      {pendingAnalysisCount > 0 && (
-                        <Button
-                          onClick={handleBatchAnalyze}
-                          disabled={analyzing}
-                          variant="outline"
-                          className="flex items-center gap-2 bg-gradient-to-r from-primary-500 to-indigo-500 text-white border-0 flex-1 sm:flex-none"
-                        >
-                          {analyzing ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Brain className="h-4 w-4" />
-                          )}
-                          <span className="hidden sm:inline">分析功效 ({pendingAnalysisCount})</span>
-                          <span className="sm:hidden">分析功效</span>
-                        </Button>
-                      )}
                       {importingTemplates && (
                         <div className="flex items-center gap-2 text-sm text-primary-600">
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -799,6 +695,7 @@ export default function RecipeLibraryPage() {
                   router={router} 
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
+                  onAnalyzeEffects={handleAnalyzeEffects}
                 />
               )}
 
@@ -915,11 +812,12 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
-  onMarketingAnalysis?: (id: string) => void
+  onMarketingAnalysis?: (id: string) => void,
+  onAnalyzeEffects?: (id: string) => void
 }) {
   // List View
   if (viewMode === 'list') {
@@ -936,6 +834,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis }: {
             } : undefined}
             onCreateOrder={recipe.recipeType === 'production' ? (id) => router.push(`/orders/new?recipeId=${id}`) : undefined}
             onMarketingAnalysis={recipe.recipeType === 'template' ? onMarketingAnalysis : undefined}
+            onAnalyzeEffects={onAnalyzeEffects}
           />
         ))}
       </div>

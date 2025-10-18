@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Beaker, Sparkles, Eye, Edit, Package, ShoppingCart, TrendingUp } from 'lucide-react'
+import { Beaker, Sparkles, Eye, Edit, Package, ShoppingCart, TrendingUp, Brain } from 'lucide-react'
 import type { RecipeLibraryItem } from '@/types'
 import { cn } from '@/lib/utils'
 import { getEffectsSummary } from '@/lib/parse-effects'
@@ -15,9 +15,10 @@ interface RecipeListItemProps {
   onEdit?: (id: string) => void
   onCreateOrder?: (id: string) => void
   onMarketingAnalysis?: (id: string) => void
+  onAnalyzeEffects?: (id: string) => void
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -78,6 +79,21 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
               </Button>
             )}
             
+            {/* Show analyze button if recipe has no effects analysis */}
+            {!recipe.aiEffectsAnalysis && onAnalyzeEffects && (
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onAnalyzeEffects(recipe.id)
+                }}
+                className="flex items-center gap-1.5 h-8 text-xs bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Brain className="h-3.5 w-3.5" />
+                <span>分析功效</span>
+              </Button>
+            )}
+            
             {/* Template recipes: Show marketing analysis button */}
             {isTemplate && onMarketingAnalysis && (
               <Button
@@ -111,6 +127,18 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           
           {/* 操作按鈕 - 移動版（僅圖標） */}
           <div className="flex lg:hidden items-center gap-1.5 shrink-0">
+            {!recipe.aiEffectsAnalysis && onAnalyzeEffects && (
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onAnalyzeEffects(recipe.id)
+                }}
+                className="h-8 w-8 p-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Brain className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               size="sm"
               variant="ghost"
