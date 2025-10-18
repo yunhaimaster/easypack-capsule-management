@@ -3,14 +3,19 @@ import { prisma } from '@/lib/prisma'
 import type { RecipeLibraryItem, UpdateRecipeData } from '@/types'
 import { z } from 'zod'
 
-// Zod Schema for editing recipe fields - 簡化驗證，只檢查必填欄位
+// Zod Schema for editing recipe fields - 包含原料清單
 const editRecipeSchema = z.object({
   recipeName: z.string().trim().min(1, '配方名稱不能為空').max(200, '配方名稱過長').optional(),
   productName: z.string().trim().min(1, '產品名稱不能為空').max(200, '產品名稱過長').optional(),
   description: z.string().optional().nullable(),
   capsuleSize: z.string().optional().nullable(),
   capsuleColor: z.string().optional().nullable(),
-  capsuleType: z.string().optional().nullable()
+  capsuleType: z.string().optional().nullable(),
+  // 🆕 原料清單
+  ingredients: z.array(z.object({
+    materialName: z.string().trim().min(1, '原料名稱不能為空'),
+    unitContentMg: z.number().positive('含量必須大於 0')
+  })).min(1, '至少需要一個原料').optional()
 })
 
 /**
@@ -109,7 +114,8 @@ export async function PUT(
       'description',
       'capsuleSize',
       'capsuleColor',
-      'capsuleType'
+      'capsuleType',
+      'ingredients' // 🆕 允許編輯原料清單
     ]
 
     // 構建更新資料（只包含白名单字段）
@@ -122,7 +128,12 @@ export async function PUT(
         if (value === 'none') {
           value = null
         }
-        updateData[field] = value
+        // 🆕 特殊處理：ingredients 需要 JSON 序列化
+        if (field === 'ingredients' && Array.isArray(value)) {
+          updateData[field] = JSON.stringify(value)
+        } else {
+          updateData[field] = value
+        }
       }
     }
 
@@ -134,14 +145,22 @@ export async function PUT(
       description: '配方描述',
       capsuleSize: '膠囊大小',
       capsuleColor: '膠囊颜色',
-      capsuleType: '膠囊类型'
+      capsuleType: '膠囊类型',
+      ingredients: '原料清單' // 🆕 添加原料清單追蹤
     }
 
     for (const [field, label] of Object.entries(fieldLabels)) {
       if (updateData[field] !== undefined && updateData[field] !== (existingRecipe as any)[field]) {
-        const oldValue = (existingRecipe as any)[field] || '（空）'
-        const newValue = updateData[field] || '（空）'
-        changes.push(`${label}：${oldValue} → ${newValue}`)
+        // 🆕 特殊處理原料清單的顯示
+        if (field === 'ingredients') {
+          const oldIngredients = JSON.parse(existingRecipe.ingredients as string)
+          const newIngredients = JSON.parse(updateData[field] as string)
+          changes.push(`${label}：已更新（${oldIngredients.length} → ${newIngredients.length} 個原料）`)
+        } else {
+          const oldValue = (existingRecipe as any)[field] || '（空）'
+          const newValue = updateData[field] || '（空）'
+          changes.push(`${label}：${oldValue} → ${newValue}`)
+        }
       }
     }
 
