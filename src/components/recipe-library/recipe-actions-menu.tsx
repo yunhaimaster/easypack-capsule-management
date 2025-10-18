@@ -160,7 +160,7 @@ export function RecipeActionsMenu({
             className="cursor-pointer"
           >
             <Copy className="h-4 w-4 mr-2" />
-            複製配方
+            製作副本
           </DropdownMenuItem>
         )}
 
@@ -174,7 +174,7 @@ export function RecipeActionsMenu({
             className="cursor-pointer"
           >
             <Download className="h-4 w-4 mr-2" />
-            導出配方
+            導出為 Excel
           </DropdownMenuItem>
         )}
 

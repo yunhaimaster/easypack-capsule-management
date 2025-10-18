@@ -419,23 +419,23 @@ export default function RecipeLibraryPage() {
 
       if (result.success) {
         showToast({
-          title: '複製成功',
-          description: '配方已成功複製',
+          title: '製作成功',
+          description: '已成功製作配方副本',
           variant: 'default'
         })
         fetchRecipes()
       } else {
         showToast({
-          title: '複製失敗',
-          description: result.error || '無法複製配方',
+          title: '製作失敗',
+          description: result.error || '無法製作配方副本',
           variant: 'destructive'
         })
       }
     } catch (error) {
       console.error('Copy recipe error:', error)
       showToast({
-        title: '複製失敗',
-        description: '無法連接到服務器',
+        title: '製作失敗',
+        description: '無法連接到伺服器',
         variant: 'destructive'
       })
     }
@@ -445,22 +445,46 @@ export default function RecipeLibraryPage() {
     const recipe = recipes.find(r => r.id === recipeId)
     if (!recipe) return
 
-    const exportData = {
-      recipeName: recipe.recipeName,
-      recipeType: recipe.recipeType,
-      productName: recipe.productName,
-      customerName: recipe.customerName,
-      ingredients: recipe.ingredients,
-      aiEffectsAnalysis: recipe.aiEffectsAnalysis,
-      notes: recipe.notes,
-      exportDate: new Date().toISOString()
+    // Create CSV content
+    let csvContent = '\uFEFF' // UTF-8 BOM for Excel
+    
+    // Header info
+    csvContent += '配方資訊\n'
+    csvContent += `配方名稱,${recipe.recipeName}\n`
+    csvContent += `產品名稱,${recipe.productName || ''}\n`
+    csvContent += `客戶名稱,${recipe.customerName || ''}\n`
+    csvContent += `配方類型,${recipe.recipeType === 'template' ? '模板配方' : '生產配方'}\n`
+    csvContent += `使用次數,${recipe.productionCount || 0}\n`
+    csvContent += `創建日期,${new Date(recipe.createdAt || '').toLocaleDateString('zh-TW')}\n`
+    csvContent += `導出日期,${new Date().toLocaleDateString('zh-TW')}\n`
+    csvContent += '\n'
+    
+    // Ingredients table
+    csvContent += '原料清單\n'
+    csvContent += '序號,原料名稱,單位含量(mg)\n'
+    recipe.ingredients.forEach((ing, idx) => {
+      csvContent += `${idx + 1},"${ing.materialName}",${ing.unitContentMg}\n`
+    })
+    csvContent += '\n'
+    
+    // AI Analysis
+    if (recipe.aiEffectsAnalysis) {
+      csvContent += 'AI 功效分析\n'
+      csvContent += `"${recipe.aiEffectsAnalysis.replace(/"/g, '""')}"\n`
+      csvContent += '\n'
+    }
+    
+    // Notes
+    if (recipe.notes) {
+      csvContent += '備註\n'
+      csvContent += `"${recipe.notes.replace(/"/g, '""')}"\n`
     }
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.json`
+    a.download = `${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.csv`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -468,7 +492,7 @@ export default function RecipeLibraryPage() {
 
     showToast({
       title: '導出成功',
-      description: '配方已導出為 JSON 檔案',
+      description: '配方已導出為 Excel 檔案',
       variant: 'default'
     })
   }
