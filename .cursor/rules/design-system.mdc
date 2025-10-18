@@ -1,0 +1,378 @@
+---
+alwaysApply: true
+---
+
+You are a Senior Front-End Developer working with the Easy Health Design System.
+
+## Design System Overview
+
+This project uses a **unified design system** based on Apple Human Interface Guidelines (HIG).
+
+### ✅ Completion Status (2025-10-17)
+- **100% color system unified** - 528+ hardcoded colors → 0 remaining
+- **56 files migrated** to semantic colors
+- **All UI components** use design tokens
+- **Zero technical debt** in color system
+
+### Core Principles
+
+1. **Component-First Architecture**
+   - Use unified components instead of hardcoded classes
+   - All UI elements managed through reusable components
+   - "Change once, update everywhere" philosophy
+
+2. **Semantic Naming**
+   - Use semantic color names (primary, success, danger) not specific colors (blue, green, red)
+   - Use design tokens for all style values
+   - Never hardcode colors, spacing, or other design values
+
+3. **Apple HIG Standards**
+   - 300ms standard animation duration
+   - cubic-bezier(0.4, 0, 0.2, 1) easing function
+   - 44x44px minimum touch targets
+   - Smooth transitions and interactions
+
+---
+
+## Core Components
+
+### IconContainer
+
+Unified icon container replacing all hardcoded `icon-container-*` classes.
+
+**Usage:**
+```tsx
+import { IconContainer } from '@/components/ui/icon-container'
+import { Plus } from 'lucide-react'
+
+<IconContainer 
+  icon={Plus} 
+  variant="primary"  // primary | secondary | success | warning | danger | info | neutral
+  size="md"         // sm | md | lg
+  className="icon-interactive-apple"  // Optional: add interactions
+/>
+```
+
+**When to use each variant:**
+- `primary` - Main actions, brand color (blue)
+- `secondary` - Secondary actions, auxiliary features (cyan)
+- `success` - Success states, create actions (green)
+- `warning` - Warnings, caution (orange)
+- `danger` - Errors, destructive actions (red)
+- `info` - Information, explanations (purple)
+- `neutral` - Default, general info (gray)
+
+### ModelBadge
+
+Unified AI model badges.
+
+**Usage:**
+```tsx
+import { ModelBadge, ConsensusBadge } from '@/components/ui/model-badge'
+
+<ModelBadge model="gpt" />        // GPT-5
+<ModelBadge model="claude" />     // Claude
+<ModelBadge model="grok" />       // Grok
+<ModelBadge model="gpt-mini" />   // GPT-5 Mini
+<ModelBadge model="deepseek" />   // DeepSeek
+<ConsensusBadge />                // Cross-model consensus
+```
+
+### Card
+
+Unified card component with multiple variants.
+
+**Usage:**
+```tsx
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+
+// Glass style (default - maintains current liquid glass aesthetic)
+<Card className="liquid-glass-card liquid-glass-card-elevated">
+  <div className="liquid-glass-content p-6">
+    <CardTitle>Title</CardTitle>
+    <CardContent>Content</CardContent>
+  </div>
+</Card>
+
+// Apple standard style
+<Card variant="elevated" appleStyle interactive>
+  Content
+</Card>
+```
+
+**Props:**
+- `variant`: 'glass' (default) | 'elevated' | 'default' | 'flat'
+- `interactive`: Enable hover/active effects (default: true)
+- `appleStyle`: Use Apple HIG rounded corners (default: false)
+
+---
+
+## Design Tokens
+
+### Color System (Semantic)
+
+**Text colors:**
+```tsx
+text-neutral-800  // Primary text (dark gray)
+text-neutral-600  // Secondary text (medium gray)
+text-neutral-500  // Tertiary text (light gray)
+```
+
+**Background colors:**
+```tsx
+bg-primary-500    // Brand primary (blue)
+bg-success-500    // Success (green)
+bg-danger-500     // Error (red)
+bg-warning-500    // Warning (orange)
+bg-info-500       // Info (purple)
+```
+
+**Gradients (use semantic colors):**
+```tsx
+// ✅ Correct
+bg-gradient-to-r from-primary-500 to-primary-600
+
+// ❌ Wrong
+bg-gradient-to-r from-blue-500 to-blue-600
+```
+
+### Spacing (4pt Grid)
+
+```tsx
+p-1   // 4px
+p-2   // 8px
+p-3   // 12px
+p-4   // 16px
+p-6   // 24px (standard card padding)
+p-8   // 32px
+```
+
+### Border Radius
+
+```tsx
+rounded-apple-sm  // 8px - buttons, badges
+rounded-apple-md  // 12px - cards
+rounded-apple-lg  // 16px - modals
+rounded-apple-xl  // 20px - hero sections
+```
+
+### Shadows
+
+```tsx
+shadow-apple-sm   // Subtle
+shadow-apple-md   // Standard
+shadow-apple-lg   // Elevated
+shadow-apple-xl   // Modal/dialog
+```
+
+---
+
+## Animation System
+
+### Standard Transitions (Apple HIG)
+
+```tsx
+// Use these classes for all animations
+transition-apple          // 300ms standard
+transition-apple-fast     // 200ms fast
+transition-apple-instant  // 100ms instant
+```
+
+### Touch Feedback
+
+```tsx
+// iOS-style press feedback
+<Button className="touch-feedback">
+  Press scales to 0.97
+</Button>
+
+// Card hover feedback
+<Card className="touch-feedback-hover">
+  Hover lifts -2px, active scales 0.98
+</Card>
+
+// Apple-style card interactions
+<Card className="card-interactive-apple">
+  Hover lifts -4px with shadow, active scales 0.98
+</Card>
+```
+
+### Interactive Elements
+
+```tsx
+// Button press
+button-press-apple        // Active scales to 0.97
+
+// Icon hover
+icon-interactive-apple    // Hover scale 1.1, active 0.95
+```
+
+---
+
+## Accessibility
+
+### Minimum Touch Targets
+
+All interactive elements automatically get `min-height: 44px` and `min-width: 44px`.
+
+### Focus Ring
+
+```tsx
+// Automatically applied to all interactive elements
+*:focus-visible {
+  outline: 2px solid rgba(42, 150, 209, 0.6);
+  outline-offset: 2px;
+}
+
+// Custom focus style
+<Button className="focus-apple">Focused button</Button>
+```
+
+### Screen Reader
+
+```tsx
+// Screen reader only
+<span className="sr-only">For screen readers only</span>
+
+// Show on focus
+<a className="sr-only-focusable" href="#main">Skip to content</a>
+```
+
+### Motion Preferences
+
+System automatically respects `prefers-reduced-motion`. All animations become instant if user has reduced motion enabled.
+
+---
+
+## Do's and Don'ts
+
+### ✅ DO
+
+```tsx
+// ✅ Use unified components
+<IconContainer icon={Plus} variant="success" size="md" />
+
+// ✅ Use semantic colors
+<Button className="bg-primary-500 hover:bg-primary-600">
+
+// ✅ Use design tokens
+<div className="p-6 rounded-apple-md shadow-apple-md">
+
+// ✅ Use Apple standard animations
+<Button className="transition-apple hover:scale-105">
+```
+
+### ❌ DON'T
+
+```tsx
+// ❌ Hardcoded icon containers
+<div className="icon-container icon-container-blue">
+  <Plus />
+</div>
+
+// ❌ Specific color names
+<Button className="bg-blue-500">
+
+// ❌ Hardcoded values
+<div style={{ boxShadow: '0 6px 20px rgba(15,32,77,0.08)' }}>
+
+// ❌ Non-standard animation duration
+<Button className="transition-all duration-150">
+```
+
+---
+
+## Migration Guide
+
+### Replace Hardcoded Icons
+
+**Before:**
+```tsx
+<div className="icon-container icon-container-emerald">
+  <Plus className="h-5 w-5 text-white" />
+</div>
+```
+
+**After:**
+```tsx
+<IconContainer icon={Plus} variant="success" size="md" />
+```
+
+### Replace Hardcoded Colors
+
+**Before:**
+```tsx
+<h3 className="text-emerald-600">Title</h3>
+<p className="text-slate-600">Content</p>
+<Button className="bg-blue-600">Button</Button>
+```
+
+**After:**
+```tsx
+<h3 className="text-success-600">Title</h3>
+<p className="text-neutral-600">Content</p>
+<Button className="bg-primary-600">Button</Button>
+```
+
+---
+
+## Important Files
+
+- **Design Tokens**: `src/lib/ui/design-tokens.ts`
+- **Animation System**: `src/lib/ui/apple-animations.ts`
+- **Global Styles**: `src/app/globals.css`
+- **Component Library**: `src/components/ui/`
+- **Documentation**: `docs/DESIGN_SYSTEM.md`
+
+---
+
+## Quick Reference
+
+**Most Common Patterns:**
+
+```tsx
+// Feature card
+<Card className="liquid-glass-card liquid-glass-card-interactive">
+  <div className="liquid-glass-content p-6">
+    <IconContainer icon={YourIcon} variant="primary" size="md" />
+    <h3 className="text-neutral-800">Title</h3>
+    <p className="text-neutral-600">Description</p>
+  </div>
+</Card>
+
+// Action button
+<Button className="
+  bg-gradient-to-r from-primary-500 to-primary-600 
+  hover:from-primary-600 hover:to-primary-700
+  transition-all duration-300
+  touch-feedback
+">
+  Action
+</Button>
+
+// AI model badge
+<div className="flex items-center gap-2">
+  <ModelBadge model="gpt" />
+  <span className="text-neutral-600">Analysis result...</span>
+</div>
+```
+
+---
+
+## 🔍 Quick Verification
+
+### Check for Hardcoded Colors (Should return 0)
+```bash
+grep -r "text-gray-\|text-slate-\|text-blue-\|text-emerald-\|text-violet-" src/ --include="*.tsx" | grep -v "text-neutral-\|text-primary-\|text-success-\|text-info-"
+```
+
+### Verify Semantic Colors Usage
+```bash
+grep -r "text-neutral-\|text-primary-\|text-success-\|text-info-\|text-warning-\|text-danger-" src/ --include="*.tsx" | wc -l
+```
+
+---
+
+**Remember**: Always use the unified design system. Never hardcode colors, spacing, or create one-off styles!
+
+**📚 Full Documentation**: See `docs/DESIGN_SYSTEM.md` and `docs/MIGRATION_GUIDE.md` for complete details.

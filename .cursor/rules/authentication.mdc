@@ -1,0 +1,166 @@
+---
+alwaysApply: true
+---
+
+You are a Security Specialist for authentication.
+
+## Authentication System
+
+### Current Implementation
+- Simple localStorage-based authentication
+- Single shared login code stored in `LOGIN` environment variable
+- No individual user accounts
+- Designed for internal team use only
+
+### Security Rules
+
+#### Environment Variables
+- **NEVER** hardcode passwords or secrets in code
+- **ALWAYS** use environment variables for sensitive data
+- **NEVER** expose `LOGIN` value to client-side logs
+- Store in `.env.local` (development) and Vercel env vars (production)
+
+```bash
+# .env.local
+LOGIN="2356"
+```
+
+#### Password Validation
+Always use timing-safe comparison to prevent timing attacks:
+```typescript
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+const isValid = timingSafeEqual(
+  password.trim(), 
+  (process.env.LOGIN || '2356').trim()
+)
+```
+
+### Authentication Flow
+
+#### 1. Login Process
+```
+User enters code → /api/auth/login → Validate → Set localStorage → Redirect
+```
+
+#### 2. Session Check
+```
+Page load → Check localStorage → useAuth hook → Protect/Allow access
+```
+
+#### 3. Logout
+```
+Logout button → Clear localStorage → Redirect to /login
+```
+
+### Implementation Details
+
+#### API Route (`/api/auth/login`)
+```typescript
+export async function POST(request: NextRequest) {
+  const { password } = await request.json()
+  
+  if (!password) {
+    return NextResponse.json(
+      { success: false, error: '請輸入登入碼' },
+      { status: 400 }
+    )
+  }
+
+  const correctPassword = (process.env.LOGIN || '2356').trim()
+  const isValid = timingSafeEqual(password.trim(), correctPassword)
+
+  if (isValid) {
+    return NextResponse.json({ success: true })
+  } else {
+    return NextResponse.json(
+      { success: false, error: '登入碼錯誤' },
+      { status: 401 }
+    )
+  }
+}
+```
+
+#### Client Auth Provider
+```typescript
+export function AuthProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated')
+    setIsAuthenticated(authStatus === 'true')
+  }, [])
+
+  const login = () => {
+    setIsAuthenticated(true)
+    localStorage.setItem('isAuthenticated', 'true')
+  }
+
+  const logout = () => {
+    setIsAuthenticated(false)
+    localStorage.removeItem('isAuthenticated')
+  }
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+```
+
+### Protected Routes
+Wrap protected pages with `ProtectedLayout`:
+```typescript
+import { ProtectedLayout } from '@/components/auth/protected-layout'
+
+export default function OrdersPage() {
+  return (
+    <ProtectedLayout>
+      <OrdersContent />
+    </ProtectedLayout>
+  )
+}
+```
+
+### Security Best Practices
+
+#### Do's ✅
+- Use environment variables for secrets
+- Use timing-safe password comparison
+- Clear auth state completely on logout
+- Show generic error messages (don't reveal why login failed)
+- Trim input before comparison
+
+#### Don'ts ❌
+- Don't log passwords or auth tokens
+- Don't expose internal error details to users
+- Don't store passwords in localStorage (only store auth state flag)
+- Don't reveal whether a login code exists
+- Don't implement "remember me" for shared access codes
+
+### Important Limitations
+⚠️ **Current System Limitations:**
+- NOT suitable for production with sensitive data
+- NO individual user accounts or permissions
+- NO session management or expiration
+- NO password reset or recovery
+- Designed for internal tool with single shared access
+
+### If Individual Accounts Needed
+If you need proper multi-user authentication:
+1. Implement JWT with HTTP-only cookies
+2. Add user database table
+3. Hash passwords with bcrypt
+4. Implement proper session management
+5. Add role-based access control (RBAC)
+6. Consider using NextAuth.js or similar
+
+**For now**: Current simple system is adequate for internal team tool.

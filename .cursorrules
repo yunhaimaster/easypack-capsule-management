@@ -1,0 +1,360 @@
+# MCP Servers Integration Guide
+
+You are an AI assistant with access to powerful MCP (Model Context Protocol) servers. **You MUST actively use these tools** when they can improve your work quality, efficiency, or problem-solving capabilities.
+
+## Available MCP Servers
+
+### 1. Sequential Thinking (`mcp_sequential-thinking_sequentialthinking`)
+
+**Purpose**: Deep reasoning, complex problem-solving, multi-step analysis
+
+**When to Use**:
+- ✅ Debugging complex issues with multiple potential causes
+- ✅ Architectural decisions requiring careful analysis
+- ✅ Performance optimization with trade-offs
+- ✅ Refactoring large codebases
+- ✅ Analyzing user feedback to identify root causes
+- ✅ Planning multi-step implementations
+- ✅ Evaluating multiple solution approaches
+
+**When NOT to Use**:
+- ❌ Simple, straightforward tasks
+- ❌ Well-defined problems with obvious solutions
+- ❌ Quick bug fixes with clear causes
+
+**Example Usage**:
+```typescript
+// User reports: "Password verification appears even when editing notes"
+// ✅ GOOD: Use sequential thinking to:
+// 1. Analyze the authentication flow
+// 2. Identify all trigger points
+// 3. Compare expected vs actual behavior
+// 4. Trace data flow through components
+// 5. Generate hypothesis and verify
+```
+
+**Best Practices**:
+- Start with 5-10 thoughts, adjust as needed
+- Use revisions when discovering new information
+- Branch when exploring alternatives
+- Always conclude with actionable solution
+
+---
+
+### 2. BrightData Web Scraping (`mcp_brightdata-mcp_`)
+
+**Purpose**: Real-time web data, search engine results, content extraction
+
+**When to Use**:
+- ✅ Researching latest library versions/features
+- ✅ Finding current best practices
+- ✅ Checking npm package compatibility
+- ✅ Gathering pricing information
+- ✅ Researching competitor features
+- ✅ Finding documentation for obscure libraries
+- ✅ Validating external API availability
+
+**When NOT to Use**:
+- ❌ Information you already know
+- ❌ Internal codebase questions
+- ❌ When Context7 can provide documentation
+
+**Available Tools**:
+- `search_engine` - Google/Bing/Yandex search
+- `search_engine_batch` - Multiple searches at once
+- `scrape_as_markdown` - Extract webpage content
+- `scrape_batch` - Scrape multiple pages
+
+**Example Usage**:
+```typescript
+// User asks: "What's the latest Next.js App Router authentication pattern?"
+// ✅ GOOD: Use search_engine to find current docs/articles
+
+// User asks: "Are there any known issues with Prisma 6.x?"
+// ✅ GOOD: Search for recent discussions/issues
+```
+
+**Best Practices**:
+- Use specific search queries
+- Batch multiple searches when possible
+- Verify information recency
+- Cross-reference multiple sources
+
+---
+
+### 3. Context7 Library Documentation (`mcp_context7_`)
+
+**Purpose**: Up-to-date library documentation and API references
+
+**When to Use**:
+- ✅ Learning new library APIs
+- ✅ Verifying correct usage patterns
+- ✅ Finding library-specific best practices
+- ✅ Checking available hooks/methods
+- ✅ Understanding library architecture
+- ✅ Getting migration guides
+- ✅ Finding code examples
+
+**When NOT to Use**:
+- ❌ General programming concepts
+- ❌ Custom/internal libraries
+- ❌ Very new libraries (may not be indexed)
+
+**Available Tools**:
+- `resolve-library-id` - Find library by name (MUST call first)
+- `get-library-docs` - Fetch documentation (requires library ID)
+
+**Example Usage**:
+```typescript
+// User: "How do I use React Hook Form with TypeScript?"
+// Step 1: resolve-library-id("react-hook-form")
+// Step 2: get-library-docs(libraryId, topic: "typescript")
+
+// User: "What's new in Next.js 15?"
+// Step 1: resolve-library-id("next.js")
+// Step 2: get-library-docs(libraryId, topic: "version 15")
+```
+
+**Best Practices**:
+- Always call `resolve-library-id` first (unless user provides exact ID)
+- Use focused topics to get relevant docs
+- Increase token limit for comprehensive info
+- Combine with codebase_search for integration
+
+---
+
+## Decision Matrix: Which Tool to Use?
+
+| Scenario | Tool to Use | Why |
+|----------|------------|-----|
+| "Why does X happen when Y?" | Sequential Thinking | Complex cause analysis needed |
+| "What's the latest version of X?" | BrightData | Real-time information |
+| "How do I use library X?" | Context7 | Library documentation |
+| "This bug is weird, not sure why" | Sequential Thinking | Root cause investigation |
+| "Find competitor pricing" | BrightData | Web scraping needed |
+| "Show me Next.js examples" | Context7 | Official documentation |
+| "Optimize this algorithm" | Sequential Thinking | Trade-off analysis |
+| "What's trending in X tech?" | BrightData | Current trends research |
+
+---
+
+## Integration Workflow
+
+### Problem-Solving Workflow
+
+```mermaid
+flowchart TD
+    A[User Request] --> B{Complexity?}
+    B -->|Simple| C[Direct Solution]
+    B -->|Complex| D[Sequential Thinking]
+    D --> E{Need External Info?}
+    E -->|Library Docs| F[Context7]
+    E -->|Web Research| G[BrightData]
+    E -->|No| H[Implement Solution]
+    F --> H
+    G --> H
+```
+
+### Research Workflow
+
+```
+1. User asks about external library/concept
+2. Check if Context7 has it (most efficient)
+3. If not, use BrightData to search
+4. If complex decision, use Sequential Thinking
+5. Implement solution
+```
+
+---
+
+## Mandatory Usage Rules
+
+### ⚠️ MUST Use Sequential Thinking When:
+1. User reports unexpected behavior
+2. Multiple possible root causes exist
+3. Solution requires architectural changes
+4. Performance optimization with trade-offs
+5. Refactoring affects multiple components
+
+### ⚠️ MUST Use Context7 When:
+1. User asks "how to use [library]"
+2. Implementing features with external libraries
+3. User mentions specific library version
+4. Migration between library versions
+5. Debugging library-specific issues
+
+### ⚠️ MUST Use BrightData When:
+1. User asks "what's the latest..."
+2. Need current best practices
+3. Researching pricing/features
+4. Finding real-world examples
+5. Checking package compatibility
+
+---
+
+## Anti-Patterns (Don't Do This)
+
+### ❌ BAD: Guessing without thinking
+```
+User: "Password prompt appears when editing notes"
+AI: "Try removing the password check" ← NO ANALYSIS
+```
+
+### ✅ GOOD: Use Sequential Thinking
+```
+User: "Password prompt appears when editing notes"
+AI: [Uses sequential thinking to analyze flow]
+    → Identifies logic flaw
+    → Proposes tested solution
+```
+
+---
+
+### ❌ BAD: Using outdated knowledge
+```
+User: "Show me Next.js 15 features"
+AI: [Lists features from training data, possibly outdated]
+```
+
+### ✅ GOOD: Fetch current docs
+```
+User: "Show me Next.js 15 features"
+AI: [Uses Context7 to get latest Next.js docs]
+    → Provides accurate, current information
+```
+
+---
+
+### ❌ BAD: Not researching when needed
+```
+User: "Is Prisma 6 stable?"
+AI: "Yes, it should be" ← GUESSING
+```
+
+### ✅ GOOD: Search for current info
+```
+User: "Is Prisma 6 stable?"
+AI: [Uses BrightData to search recent discussions]
+    → Provides evidence-based answer
+```
+
+---
+
+## Proactive Usage
+
+Don't wait for explicit requests. Use MCP servers proactively when:
+
+1. **You're uncertain** → Sequential Thinking
+2. **You need current info** → BrightData
+3. **You need library docs** → Context7
+
+Example:
+```typescript
+// User: "Add authentication to the app"
+// ✅ GOOD: Proactively use Context7 to check latest NextAuth.js patterns
+// ✅ GOOD: Use Sequential Thinking to plan architecture
+// ❌ BAD: Just implement based on memory
+```
+
+---
+
+## Quality Checklist
+
+Before responding to complex requests, ask yourself:
+
+- [ ] Could Sequential Thinking improve my analysis?
+- [ ] Do I need current information? (BrightData)
+- [ ] Am I using a library? (Context7)
+- [ ] Is my knowledge up-to-date?
+- [ ] Would research improve my answer?
+
+If any answer is "yes", use the appropriate MCP server.
+
+---
+
+## Examples from This Project
+
+### Good Usage Example 1: Password Verification Bug
+
+```typescript
+// User: "Password prompt appears when editing notes, data not saved"
+
+// ✅ Used Sequential Thinking to:
+// 1. Analyze authentication flow
+// 2. Identify field protection logic
+// 3. Trace data submission flow
+// 4. Compare protected vs unprotected fields
+// 5. Identify root cause: Over-broad password check
+// 6. Design solution: Smart field detection
+// 7. Implement fix: Frontend + Backend
+// 8. Test and verify
+
+// Result: Precise fix with full understanding
+```
+
+### Good Usage Example 2: Library Integration
+
+```typescript
+// User: "Add form validation with Zod"
+
+// ✅ Should use Context7 to:
+// 1. Get latest Zod documentation
+// 2. Check React Hook Form integration
+// 3. Find TypeScript patterns
+// 4. Verify best practices
+
+// Then implement with confidence
+```
+
+### Good Usage Example 3: Research Task
+
+```typescript
+// User: "What's the best state management for Next.js 14?"
+
+// ✅ Should use BrightData to:
+// 1. Search recent articles/discussions
+// 2. Check trending solutions
+// 3. Gather community consensus
+// 4. Find benchmark comparisons
+
+// Then provide informed recommendation
+```
+
+---
+
+## Performance Tips
+
+1. **Batch Operations**: Use batch search when researching multiple topics
+2. **Parallel Calls**: Can use Context7 + BrightData simultaneously
+3. **Cache Results**: Reference previous searches in same conversation
+4. **Focused Queries**: More specific = better results
+
+---
+
+## Final Reminder
+
+🎯 **Your goal**: Provide the highest quality, most accurate, well-researched solutions.
+
+🛠️ **Your tools**: Sequential Thinking, BrightData, Context7
+
+⚡ **Your approach**: Use tools proactively, not reactively
+
+💡 **Your mindset**: "Can an MCP server improve my work?" → If yes, use it!
+
+---
+
+## Quick Reference
+
+| Need | Tool | Function |
+|------|------|----------|
+| Deep analysis | Sequential Thinking | `sequentialthinking` |
+| Web search | BrightData | `search_engine` |
+| Library docs | Context7 | `resolve-library-id` → `get-library-docs` |
+| Multi-step reasoning | Sequential Thinking | `sequentialthinking` |
+| Real-time info | BrightData | `search_engine` |
+| Code examples | Context7 | `get-library-docs` |
+
+---
+
+**Remember**: These tools exist to make you more effective. Use them!
+

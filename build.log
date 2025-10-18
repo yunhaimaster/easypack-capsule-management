@@ -1,0 +1,48 @@
+
+> easypack-capsule-management-v1@1.0.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.17.1) to ./node_modules/@prisma/client in 53ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+   ▲ Next.js 14.0.4
+   - Environments: .env.local, .env.production
+   - Experiments (use at your own risk):
+     · typedRoutes
+
+   Creating an optimized production build ...
+
+
+Source path: /Users/yunhaimaster/Library/Mobile Documents/com~apple~CloudDocs/Downloads/capsuleDB/src/app/globals.css
+Setting up new context...
+Finding changed files: 9.2ms
+Reading changed files: 136.871ms
+Sorting candidates: 7.086ms
+Generate rules: 94.518ms
+Build stylesheet: 2.298ms
+Potential classes:  13653
+Active contexts:  1
+JIT TOTAL: 349.75ms
+
+
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/app/api/recipes/[id]/route.ts:28:11
+Type error: Type '{ sourceOrderIds: string[]; ingredients: any; tags: string[]; id: string; customerName: string; productName: string; unitWeightMg: number; capsuleColor: string | null; capsuleSize: string | null; ... 17 more ...; sourceType: string; }' is not assignable to type 'RecipeLibraryItem'.
+  Types of property 'recipeType' are incompatible.
+    Type 'string' is not assignable to type '"production" | "template"'.
+
+[0m [90m 26 |[39m[0m
+[0m [90m 27 |[39m     [90m// 轉換資料格式[39m[0m
+[0m[31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m formattedRecipe[33m:[39m [33mRecipeLibraryItem[39m [33m=[39m {[0m
+[0m [90m    |[39m           [31m[1m^[22m[39m[0m
+[0m [90m 29 |[39m       [33m...[39mrecipe[33m,[39m[0m
+[0m [90m 30 |[39m       sourceOrderIds[33m:[39m [33mJSON[39m[33m.[39mparse(recipe[33m.[39msourceOrderIds) [36mas[39m string[][33m,[39m[0m
+[0m [90m 31 |[39m       ingredients[33m:[39m [33mJSON[39m[33m.[39mparse(recipe[33m.[39mingredients)[33m,[39m[0m

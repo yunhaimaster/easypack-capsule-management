@@ -1,0 +1,286 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ProductionOrder {
+  id                       String         @id @default(cuid())
+  customerName             String // 客戶名稱
+  productName              String         @default("未命名產品") // 產品名字
+  productionQuantity       Int // 生產數量
+  unitWeightMg             Float // 單粒總重量（計算）
+  batchTotalWeightMg       Float // 批次總重量（計算）
+  completionDate           DateTime? // 完工日期
+  processIssues            String? // 製程問題記錄
+  qualityNotes             String? // 品管備註
+  capsuleColor             String? // 膠囊顏色
+  capsuleSize              String? // 膠囊大小 (#1, #0, #00)
+  capsuleType              String? // 膠囊成份 (明膠胃溶, 植物胃溶, 明膠腸溶, 植物腸溶)
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  customerService          String? // 客服姓名
+  actualProductionQuantity Int? // 實際生產完成數量（粒）
+  materialYieldQuantity    Int? // 材料實際可做數量（粒）
+  lockPassword             String? // 4 位數密碼保護（nullable）
+  ingredients              Ingredient[]
+  worklogs                 OrderWorklog[]
+
+  @@index([completionDate, createdAt])
+  @@map("production_orders")
+}
+
+model Ingredient {
+  id                 String          @id @default(cuid())
+  orderId            String
+  materialName       String // 原料品名
+  unitContentMg      Float // 單粒含量
+  isCustomerProvided Boolean         @default(true) // 是否客戶指定
+  isCustomerSupplied Boolean         @default(true) // 是否客戶提供
+  order              ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([materialName])
+  @@map("ingredients")
+}
+
+model OrderWorklog {
+  id                  String   @id @default(cuid())
+  orderId             String
+  workDate            DateTime
+  headcount           Int
+  startTime           String   @db.VarChar(5)
+  endTime             String   @db.VarChar(5)
+  notes               String?
+  effectiveMinutes    Int
+  calculatedWorkUnits Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  order ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, workDate])
+  @@index([workDate, createdAt])
+  @@map("order_worklogs")
+}
+
+// ===== v2.0 新增模型 =====
+
+model AIRecipe {
+  id               String   @id @default(cuid())
+  name             String // 配方名稱
+  description      String? // 配方描述
+  targetEffect     String // 目標功效
+  targetAudience   String? // 目標受眾
+  dosageForm       String   @default("capsule") // 劑型 (capsule, tablet, powder)
+  ingredients      String   @db.Text // 原料列表 (JSON as String)
+  dosage           String   @db.Text // 劑量信息 (JSON as String)
+  efficacyScore    Float? // 功效評分 (0-10)
+  safetyScore      Float? // 安全性評分 (0-10)
+  costAnalysis     String?  @db.Text // 成本分析 (JSON as String)
+  regulatoryStatus String? // 法規狀態
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([name])
+  @@index([isActive, createdAt])
+  @@index([targetEffect])
+  @@map("ai_recipes")
+}
+
+model IngredientPrice {
+  id           String    @id @default(cuid())
+  materialName String // 原料名稱
+  supplier     String // 供應商
+  price        Float // 價格
+  currency     String    @default("HKD") // 貨幣
+  unit         String    @default("kg") // 單位
+  minimumOrder Float? // 最小訂購量
+  leadTime     String? // 交貨期
+  quality      String    @default("A") // 質量等級 (A, B, C)
+  source       String? // 數據來源
+  validFrom    DateTime  @default(now()) // 有效期開始
+  validTo      DateTime? // 有效期結束
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([materialName, supplier])
+  @@index([validFrom, validTo])
+  @@index([quality])
+  @@map("ingredient_prices")
+}
+
+model ProductEfficacy {
+  id                String   @id @default(cuid())
+  ingredientName    String // 原料名稱
+  effect            String // 功效
+  evidenceLevel     String // 證據等級 (A, B, C, D)
+  dosage            Float // 劑量
+  scientificBasis   String?  @db.Text // 科學依據
+  clinicalTrials    String?  @db.Text // 臨床試驗數據 (JSON as String)
+  safetyProfile     String?  @db.Text // 安全性檔案 (JSON as String)
+  interactions      String?  @db.Text // 相互作用 (JSON as String)
+  contraindications String?  @db.Text // 禁忌症 (JSON as String)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([ingredientName, effect])
+  @@index([evidenceLevel])
+  @@index([isActive])
+  @@map("product_efficacy")
+}
+
+model WorkOrder {
+  id                   String    @id @default(cuid())
+  orderId              String // 關聯的訂單ID
+  orderNumber          String    @unique // 工作單號
+  productName          String // 產品名稱
+  batchSize            Int // 批次大小
+  productionSteps      String    @db.Text // 生產步驟 (JSON as String)
+  qualityControlPoints String    @db.Text // 質量控制點 (JSON as String)
+  riskAssessment       String?   @db.Text // 風險評估 (JSON as String)
+  isoCompliant         Boolean   @default(true) // ISO 合規
+  isoStandard          String    @default("ISO 9001") // ISO 標準
+  status               String    @default("draft") // 狀態 (draft, approved, in_progress, completed)
+  approvedBy           String? // 批准人
+  approvedAt           DateTime? // 批准時間
+  generatedAt          DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([orderId])
+  @@index([status, generatedAt])
+  @@index([orderNumber])
+  @@map("work_orders")
+}
+
+model QCFile {
+  id                 String    @id @default(cuid())
+  workOrderId        String // 關聯的工作單ID
+  testMethods        String    @db.Text // 測試方法 (JSON as String)
+  acceptanceCriteria String    @db.Text // 接受標準 (JSON as String)
+  inspectionRecords  String?   @db.Text // 檢驗記錄 (JSON as String)
+  isoStandard        String    @default("ISO 9001") // ISO 標準
+  testResults        String?   @db.Text // 測試結果 (JSON as String)
+  inspector          String? // 檢驗員
+  inspectedAt        DateTime? // 檢驗時間
+  status             String    @default("pending") // 狀態 (pending, in_progress, completed, failed)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([workOrderId])
+  @@index([status, createdAt])
+  @@index([inspector])
+  @@map("qc_files")
+}
+
+model ProductDatabase {
+  id               String   @id @default(cuid())
+  productName      String // 產品名稱
+  category         String? // 分類
+  formula          String   @db.Text // 配方 (JSON as String)
+  efficacy         String?  @db.Text // 功效 (JSON as String)
+  safety           String?  @db.Text // 安全性 (JSON as String)
+  regulatoryStatus String?  @db.Text // 法規狀態 (JSON as String)
+  version          String   @default("1.0") // 版本
+  isActive         Boolean  @default(true)
+  tags             String?  @db.Text // 標籤 (JSON as String)
+  notes            String?  @db.Text // 備註
+  createdBy        String? // 創建者
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([productName])
+  @@index([category, isActive])
+  @@index([createdBy])
+  @@map("product_database")
+}
+
+model AdCopy {
+  id                  String   @id @default(cuid())
+  productId           String? // 關聯的產品ID
+  targetMarket        String // 目標市場
+  language            String   @default("zh-TW") // 語言
+  copyType            String // 廣告詞類型 (headline, description, benefit, warning)
+  content             String   @db.Text // 廣告詞內容
+  regulatoryCompliant Boolean  @default(false) // 法規合規
+  evidenceBased       Boolean  @default(false) // 基於證據
+  aiGenerated         Boolean  @default(true) // AI 生成
+  version             String   @default("1.0") // 版本
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([productId])
+  @@index([targetMarket, language])
+  @@index([copyType, isActive])
+  @@map("ad_copies")
+}
+
+// ===== 配方庫系統 =====
+
+model RecipeLibrary {
+  id          String  @id @default(cuid())
+  recipeName  String // 配方名稱
+  description String? @db.Text // 配方描述
+
+  // 來源訊息（支援多個訂單）
+  sourceOrderIds String @db.Text // JSON: ["order1", "order2"]
+  customerName   String // 客戶名稱
+  productName    String // 產品名稱
+
+  // 配方內容
+  ingredients  String @db.Text // JSON: RecipeIngredient[]
+  unitWeightMg Float // 單粒總重量
+
+  // 🔑 去重關鍵：配方指紋（唯一索引）
+  recipeFingerprint String @unique // 基於客戶+產品+原料組合的 SHA-256 hash
+
+  // 膠囊規格
+  capsuleColor String? // 膠囊顏色
+  capsuleSize  String? // 膠囊大小 (#1, #0, #00)
+  capsuleType  String? // 膠囊類型
+
+  // 分類與標籤
+  category String? // 分類
+  tags     String? @db.Text // JSON: string[]
+
+  // 統計數據
+  productionCount  Int       @default(1) // 生產次數（相同配方生產了多少次）
+  usageCount       Int       @default(0) // 創建訂單次數（從此配方創建了多少新訂單）
+  lastUsedAt       DateTime? // 最後使用日期（用於創建新訂單）
+  lastProductionAt DateTime? // 最後生產日期
+
+  // 元數據
+  notes     String?  @db.Text // 備註
+  isActive  Boolean  @default(true) // 是否啟用
+  createdBy String? // 創建者
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // AI 功效分析
+  aiEffectsAnalysis String?   @db.Text // AI 分析的配方功效
+  aiAnalyzedAt      DateTime? // AI 分析時間
+
+  // 🆕 配方類型與來源
+  recipeType String @default("production") // "production" | "template"
+  sourceType String @default("order") // "order" | "manual" | "batch_import"
+
+  @@index([customerName])
+  @@index([productName])
+  @@index([recipeName])
+  @@index([category, isActive])
+  @@index([productionCount])
+  @@index([usageCount])
+  @@index([createdAt])
+  @@index([recipeType])
+  @@index([sourceType])
+  @@map("recipe_library")
+}

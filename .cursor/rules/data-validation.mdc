@@ -1,0 +1,100 @@
+---
+alwaysApply: true
+---
+
+You are a Data Validation Specialist.
+
+## Form Validation
+
+### Required Libraries
+- React Hook Form for form state management
+- Zod for schema validation
+- Use `zodResolver` to connect them
+
+### Validation Patterns
+
+#### Basic Form Setup
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const schema = z.object({
+  customerName: z.string().min(1, "客戶名稱為必填項").max(100),
+  productName: z.string().min(1, "產品名稱為必填項").max(200),
+  productionQuantity: z.number().positive("數量必須大於0"),
+})
+
+const form = useForm({
+  resolver: zodResolver(schema),
+  defaultValues: {...}
+})
+```
+
+#### Array Field Validation
+```typescript
+const schema = z.object({
+  ingredients: z.array(z.object({
+    materialName: z.string().min(1, "原料名稱不能為空"),
+    unitContentMg: z.number().positive("含量必須大於0")
+  })).min(1, "至少需要一個原料")
+})
+```
+
+#### Optional Fields
+```typescript
+const schema = z.object({
+  notes: z.string().optional().nullable(),
+  customerService: z.string().optional().nullable(),
+})
+```
+
+### Error Messages
+- Use Traditional Chinese (Hong Kong style)
+- Be specific and actionable
+- Show field-level errors inline
+- Display form-level errors at the top
+
+### Common Validation Rules
+- Customer Name: 1-100 characters, required
+- Product Name: 1-200 characters, required
+- Production Quantity: positive integer, required
+- Material Name: 1-200 characters, required, no empty strings after trim
+- Unit Content: positive number, max 2 decimal places
+- Dates: valid ISO date strings
+- Times: HH:MM format (00:00 to 23:59)
+
+### Best Practices
+- Validate on blur for individual fields
+- Validate on submit for entire form
+- Disable submit button during validation/submission
+- Clear errors when user starts correcting
+- Use controlled components for all inputs
+- Sanitize strings (trim whitespace)
+- Use `refine()` for complex validation logic
+- Create reusable validators for common patterns
+
+### Error Display
+```typescript
+// Field-level error
+{errors.customerName && (
+  <p className="text-sm text-red-600">{errors.customerName.message}</p>
+)}
+
+// Form-level error with toast
+if (!result.success) {
+  showToast({
+    title: '驗證失敗',
+    description: result.error,
+    variant: 'destructive'
+  })
+}
+```
+
+### Validation Helpers
+Use helpers from `src/lib/validations.ts`:
+- `productionOrderSchema` - Production order form
+- `ingredientSchema` - Ingredient fields
+- `worklogSchema` - Work log entries
+- `sanitizeString()` - Clean user input
+- `createStringValidator()` - Reusable string validation

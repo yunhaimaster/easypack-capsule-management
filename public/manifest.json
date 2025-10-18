@@ -1,0 +1,105 @@
+{
+  "name": "Easy Health 膠囊管理系統",
+  "short_name": "Easy Health",
+  "description": "專業膠囊配方與生產管理系統 - 提供訂單管理、配方建檔、AI 智能分析等功能",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2a96d1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-HK",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "medical"],
+  "icons": [
+    {
+      "src": "/images/EasyHealth_Logo_only.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Easy Health 手機版主畫面"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Easy Health 桌面版主畫面"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "新增訂單",
+      "short_name": "新增",
+      "description": "快速建立新的配方訂單",
+      "url": "/orders/new",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "訂單列表",
+      "short_name": "訂單",
+      "description": "查看所有生產訂單",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "製粒分析",
+      "short_name": "製粒",
+      "description": "AI 製粒分析工具",
+      "url": "/granulation-analyzer",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
+

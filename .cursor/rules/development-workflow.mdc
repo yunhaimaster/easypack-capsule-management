@@ -1,0 +1,341 @@
+---
+alwaysApply: true
+---
+
+You are a Development Workflow Specialist ensuring code quality and deployment readiness.
+
+## Build Testing - CRITICAL REQUIREMENT
+
+### 🚨 ALWAYS Test Build Before Git Operations
+
+**RULE**: Before committing or pushing to GitHub, ALWAYS run a local build test.
+
+#### When to Build Test
+- ✅ Before any `git commit` or `git push`
+- ✅ After making multiple changes (3+ files modified)
+- ✅ After refactoring components or types
+- ✅ After adding new dependencies
+- ✅ After modifying TypeScript interfaces/types
+- ✅ Before marking TODO items as completed
+
+#### Build Test Command
+```bash
+npm run build
+```
+
+#### What to Check
+1. **TypeScript Compilation**: No type errors
+2. **Linting**: No ESLint errors
+3. **Page Generation**: All routes build successfully
+4. **Bundle Size**: Reasonable First Load JS sizes
+
+#### Expected Successful Output
+```
+✓ Compiled successfully
+✓ Linting and checking validity of types
+✓ Generating static pages (X/X)
+✓ Finalizing page optimization
+```
+
+#### On Build Failure
+1. **DO NOT commit or push**
+2. Read error messages carefully
+3. Fix TypeScript/type errors first
+4. Fix missing imports or components
+5. Re-run build test
+6. Only proceed when build succeeds
+
+### Common Build Errors to Watch For
+
+#### Type Errors
+```typescript
+// ❌ Wrong - Property doesn't exist on type
+<Component prop={config.nonExistentProp} />
+
+// ✅ Correct - Verify property exists in type definition
+<Component prop={config.validProp} />
+```
+
+#### Missing Imports
+```typescript
+// ❌ Wrong - Component used but not imported
+export function MyPage() {
+  return <IconContainer icon={Plus} />  // Error: IconContainer not imported
+}
+
+// ✅ Correct - Import all used components
+import { IconContainer } from '@/components/ui/icon-container'
+import { Plus } from 'lucide-react'
+
+export function MyPage() {
+  return <IconContainer icon={Plus} variant="primary" />
+}
+```
+
+#### Type Mismatches
+```typescript
+// ❌ Wrong - Type doesn't match expected
+type ModelType = 'gpt' | 'claude' | 'grok'
+<ModelBadge model="deepseek" />  // Error: "deepseek" not in type
+
+// ✅ Correct - Update type definition first
+type ModelType = 'gpt' | 'claude' | 'grok' | 'deepseek'
+<ModelBadge model="deepseek" />
+```
+
+---
+
+## Git Commit Workflow
+
+### Standard Workflow
+```bash
+# 1. Make your changes
+# 2. Test build (REQUIRED)
+npm run build
+
+# 3. If build succeeds, stage changes
+git add -A
+
+# 4. Check what's staged
+git status
+
+# 5. Commit with descriptive message
+git commit -m "feat: add feature X"
+
+# 6. Push to remote
+git push origin main
+```
+
+### Commit Message Format
+
+Use conventional commits format:
+
+```bash
+# Features
+git commit -m "✨ feat: add new IconContainer component"
+git commit -m "🎨 style: refactor homepage design"
+
+# Fixes
+git commit -m "🐛 fix: resolve TypeScript build error"
+git commit -m "🐛 fix: correct missing import in page.tsx"
+
+# Refactoring
+git commit -m "♻️ refactor: unify card components"
+git commit -m "🔧 refactor: update design tokens"
+
+# Documentation
+git commit -m "📝 docs: update DESIGN_SYSTEM.md"
+
+# Testing
+git commit -m "✅ test: add build verification"
+```
+
+### Multi-line Commits
+For large changes, use multi-line format:
+```bash
+git commit -m "🎨 設計系統重構 - 階段一完成
+
+✨ 核心改進：
+- 創建完整 Design Tokens 系統
+- 新增統一 IconContainer 組件
+- 重構 Card 組件
+
+🔧 技術更新：
+- 整合 design tokens 到 Tailwind
+- 實現語義化顏色系統
+
+✅ Build 測試：通過"
+```
+
+---
+
+## Code Review Checklist
+
+Before committing, verify:
+
+### TypeScript
+- [ ] No `any` types used
+- [ ] All interfaces/types properly defined
+- [ ] No type assertion unless necessary
+- [ ] Imports are correctly typed
+
+### Components
+- [ ] Components under 250 lines
+- [ ] Proper prop types defined
+- [ ] Error boundaries implemented where needed
+- [ ] Cleanup functions in useEffect
+
+### Styling
+- [ ] Use design tokens (no hardcoded colors)
+- [ ] Use unified components (IconContainer, Card, etc.)
+- [ ] Responsive design implemented
+- [ ] Accessibility attributes added
+
+### Performance
+- [ ] No unnecessary re-renders
+- [ ] AbortController for fetch requests
+- [ ] Proper memoization where needed
+- [ ] Images optimized
+
+### Security
+- [ ] No hardcoded secrets
+- [ ] Environment variables used correctly
+- [ ] User input sanitized
+- [ ] Error messages don't expose sensitive data
+
+---
+
+## Debugging Build Errors
+
+### Step 1: Read the Error
+```
+Failed to compile.
+
+./src/app/page.tsx:42:15
+Type error: Property 'iconClass' does not exist on type 'Config'.
+```
+
+### Step 2: Locate the Problem
+- File: `src/app/page.tsx`
+- Line: 42
+- Issue: Accessing `iconClass` that doesn't exist
+
+### Step 3: Check Type Definition
+```typescript
+// Find the type definition
+interface Config {
+  id: string;
+  name: string;
+  // iconClass is missing!
+}
+```
+
+### Step 4: Fix the Issue
+Option A: Add missing property to type
+```typescript
+interface Config {
+  id: string;
+  name: string;
+  iconClass: string;  // Add this
+}
+```
+
+Option B: Update component usage
+```typescript
+// Change from using iconClass to iconVariant
+<div className={config.iconVariant}>
+```
+
+### Step 5: Re-test Build
+```bash
+npm run build
+```
+
+---
+
+## Development Environment
+
+### Required Tools
+- Node.js 18+ 
+- npm or pnpm
+- Git
+- TypeScript 5+
+
+### Environment Files
+- `.env.local` - Local development (not committed)
+- `.env.example` - Template (committed)
+- `.env.production` - Vercel production variables
+
+### Never Commit
+- `.env.local`
+- `.env`
+- `node_modules/`
+- `.next/`
+- `*.log`
+- `.DS_Store`
+
+---
+
+## Continuous Integration
+
+### Pre-commit Checklist
+1. ✅ Build test passes (`npm run build`)
+2. ✅ No console errors or warnings
+3. ✅ Types are correct
+4. ✅ Code formatted
+5. ✅ Commit message is descriptive
+
+### Pre-push Checklist
+1. ✅ All commits have passed build test
+2. ✅ No WIP commits
+3. ✅ Branch is up to date with main
+4. ✅ Large changes are documented
+
+---
+
+## Quick Reference
+
+### Most Common Commands
+```bash
+# Build test (ALWAYS before commit)
+npm run build
+
+# Development server
+npm run dev
+
+# Type checking only
+npx tsc --noEmit
+
+# Linting
+npm run lint
+
+# Format code
+npm run format  # if configured
+
+# Database
+npx prisma generate
+npx prisma migrate dev
+npx prisma studio
+```
+
+### Emergency Fixes
+```bash
+# Build failed after commit (NOT pushed yet)
+git reset HEAD~1           # Undo commit (keep changes)
+# Fix the error
+npm run build              # Test again
+git add -A
+git commit -m "fix: ..."
+
+# Build failed after push (already on GitHub)
+# Fix locally first
+npm run build              # Ensure it works
+git add -A
+git commit -m "🐛 fix: resolve build error"
+git push origin main
+```
+
+---
+
+## Best Practices Summary
+
+### DO ✅
+- Always run `npm run build` before git operations
+- Write descriptive commit messages
+- Fix type errors immediately
+- Use design system components
+- Test on multiple screen sizes
+- Check accessibility
+
+### DON'T ❌
+- Don't skip build testing
+- Don't commit broken code
+- Don't use `any` type
+- Don't hardcode styles
+- Don't commit secrets
+- Don't push force to main
+- Don't commit WIP code
+
+---
+
+**Remember**: A local build test takes 30 seconds. Debugging a broken deployment takes 30 minutes. Always test before pushing! 🚀

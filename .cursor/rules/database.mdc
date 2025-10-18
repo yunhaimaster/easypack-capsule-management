@@ -1,0 +1,193 @@
+---
+alwaysApply: true
+---
+
+You are a Database Specialist working with Prisma ORM.
+
+## Database Access
+
+### Prisma Client Usage
+- **ALWAYS** use the singleton Prisma client from `lib/prisma.ts`
+- **NEVER** create new PrismaClient instances
+- **NEVER** use `new PrismaClient()` directly in code
+
+```typescript
+// Good ✅
+import { prisma } from '@/lib/prisma'
+
+// Bad ❌
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+```
+
+### Query Best Practices
+
+#### Efficient Queries
+```typescript
+// Good - Select only needed fields
+const orders = await prisma.productionOrder.findMany({
+  select: {
+    id: true,
+    customerName: true,
+    productName: true,
+    productionStatus: true
+  },
+  take: 30,
+  orderBy: { createdAt: 'desc' }
+})
+
+// Bad - Fetches everything including relations
+const orders = await prisma.productionOrder.findMany()
+```
+
+#### Relations
+```typescript
+// Include relations only when needed
+const order = await prisma.productionOrder.findUnique({
+  where: { id },
+  include: {
+    ingredients: true,  // Only include when displaying details
+    worklogs: true
+  }
+})
+```
+
+#### Pagination
+```typescript
+// Always paginate large datasets
+const { skip, take } = { skip: page * limit, take: limit }
+const orders = await prisma.productionOrder.findMany({
+  skip,
+  take,
+  orderBy: { createdAt: 'desc' }
+})
+```
+
+### Transactions
+Use transactions for related operations:
+```typescript
+await prisma.$transaction(async (tx) => {
+  const order = await tx.productionOrder.create({
+    data: orderData
+  })
+  
+  await tx.ingredient.createMany({
+    data: ingredients.map(ing => ({
+      ...ing,
+      orderId: order.id
+    }))
+  })
+})
+```
+
+### Migrations
+
+#### Development
+```bash
+# Create migration
+npx prisma migrate dev --name description_of_change
+
+# Reset database (careful!)
+npx prisma migrate reset
+```
+
+#### Production
+```bash
+# Deploy migrations
+npx prisma migrate deploy
+
+# Generate client
+npx prisma generate
+```
+
+### Schema Best Practices
+
+#### Indexing
+Add indexes for frequently queried fields:
+```prisma
+model ProductionOrder {
+  id String @id @default(cuid())
+  customerName String
+  
+  @@index([customerName])
+  @@index([createdAt])
+  @@index([productionStatus])
+}
+```
+
+#### Relations
+Define proper cascades:
+```prisma
+model Ingredient {
+  id String @id @default(cuid())
+  orderId String
+  order ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId])
+}
+```
+
+#### Field Types
+- Use `@db.Text` for long JSON strings
+- Use `DateTime` with `@default(now())` for timestamps
+- Use `Float` for decimal numbers
+- Use `Boolean` with `@default()` for flags
+
+### Data Integrity
+- Define NOT NULL constraints in schema
+- Use `@unique` for unique fields
+- Set proper default values
+- Use enums for fixed value sets
+- Validate data before inserting
+
+### Common Queries
+
+#### Create with Relations
+```typescript
+const order = await prisma.productionOrder.create({
+  data: {
+    customerName: "...",
+    ingredients: {
+      createMany: {
+        data: ingredientsArray
+      }
+    }
+  }
+})
+```
+
+#### Update with Relations
+```typescript
+await prisma.productionOrder.update({
+  where: { id },
+  data: {
+    customerName: "...",
+    ingredients: {
+      deleteMany: {},  // Remove old
+      createMany: {    // Add new
+        data: newIngredients
+      }
+    }
+  }
+})
+```
+
+#### Complex Filtering
+```typescript
+const orders = await prisma.productionOrder.findMany({
+  where: {
+    AND: [
+      { customerName: { contains: search } },
+      { productionStatus: status },
+      { createdAt: { gte: startDate } }
+    ]
+  }
+})
+```
+
+### Performance Tips
+- Use `select` instead of `include` when possible
+- Limit `take` to reasonable numbers (30-100)
+- Add indexes for WHERE, ORDER BY, and JOIN fields
+- Use `findUnique` instead of `findFirst` when possible
+- Batch operations with `createMany`, `updateMany`

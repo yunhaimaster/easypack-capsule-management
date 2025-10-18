@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2a96d1; }
+        canvas { display: none; }
+        .preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .preview img {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: #2a96d1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1a7aa8;
+        }
+        .instructions {
+            background: #f0f9ff;
+            border-left: 4px solid #2a96d1;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Easy Health PWA Icon Generator</h1>
+        
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Click "Generate Icons" button below</li>
+                <li>Right-click each preview image and "Save Image As..."</li>
+                <li>Save to the /public folder with the exact names shown</li>
+            </ol>
+        </div>
+
+        <button onclick="generateIcons()">Generate Icons</button>
+        
+        <div id="previews"></div>
+        
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        async function generateIcons() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const previews = document.getElementById('previews');
+            previews.innerHTML = '';
+
+            // Load SVG
+            const response = await fetch('/images/EasyHealth_Logo_only.svg');
+            const svgText = await response.text();
+            
+            // Create SVG image
+            const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+            const img = new Image();
+
+            const sizes = [
+                { size: 192, name: 'icon-192.png', label: '192x192 (Android)' },
+                { size: 512, name: 'icon-512.png', label: '512x512 (Android)' },
+                { size: 180, name: 'apple-touch-icon.png', label: '180x180 (iOS)' }
+            ];
+
+            img.onload = function() {
+                sizes.forEach(({ size, name, label }) => {
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    // Fill with white background
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, size, size);
+                    
+                    // Draw SVG
+                    ctx.drawImage(img, 0, 0, size, size);
+                    
+                    // Create download link
+                    const dataUrl = canvas.toDataURL('image/png');
+                    
+                    const preview = document.createElement('div');
+                    preview.className = 'preview';
+                    preview.innerHTML = `
+                        <img src="${dataUrl}" width="${size > 192 ? 192 : size}" alt="${name}">
+                        <div><strong>${label}</strong></div>
+                        <div style="font-size: 12px; color: #666;">${name}</div>
+                        <a href="${dataUrl}" download="${name}">
+                            <button style="font-size: 14px; padding: 8px 16px;">Download</button>
+                        </a>
+                    `;
+                    previews.appendChild(preview);
+                });
+                
+                URL.revokeObjectURL(url);
+            };
+
+            img.src = url;
+        }
+    </script>
+</body>
+</html>
+

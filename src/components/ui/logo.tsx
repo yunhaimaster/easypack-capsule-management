@@ -1,0 +1,85 @@
+'use client'
+
+import { cn } from '@/lib/utils'
+import Image from 'next/image'
+
+interface LogoProps {
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  variant?: 'default' | 'text' | 'icon'
+  className?: string
+}
+
+const sizeClasses = {
+  sm: 'h-6 w-6',
+  md: 'h-8 w-8', 
+  lg: 'h-12 w-12',
+  xl: 'h-16 w-16'
+}
+
+const textSizeClasses = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-xl',
+  xl: 'text-2xl'
+}
+
+export function Logo({ size = 'md', variant = 'default', className }: LogoProps) {
+  if (variant === 'icon') {
+    return (
+      <div className={cn(
+        'flex items-center justify-center',
+        sizeClasses[size],
+        className
+      )}>
+        {/* Clean logo display - no background container needed */}
+        <svg 
+          viewBox="0 0 156.97 217.98" 
+          className="w-full h-full"
+          fill="none"
+        >
+          <defs>
+            <style>
+              {`.cls-1 { fill: #44bac6; }
+               .cls-2 { fill: #2a588c; }`}
+            </style>
+          </defs>
+          <path className="cls-2" d="M156.97,55.19v.48c-.12,47.01-.2,94.47-.24,142.4-.59,11.2-10.14,20.05-21.33,19.9V35.29c9.57-.23,18.22,6.46,20.67,15.64l.9,4.26h0Z"/>
+          <path className="cls-2" d="M21.34,35.29v182.68c-10.72.19-19.9-8.07-21.3-18.61l-.04-144.78c.95-10.8,10.42-19.58,21.34-19.29Z"/>
+          <path className="cls-2" d="M121.74,21.39H35v-9.71c0-5.22,4.02-10.16,9.06-11.32,22.35-.7,44.84-.15,67.24-.28,5.28.5,10.45,5.73,10.45,11.12v10.19h-.01Z"/>
+          <path className="cls-2" d="M121.74,217.97H35v-21.34h67.46c.83,0,3.21.63,4.14.9,8.94,2.57,14.99,11.23,15.15,20.44h-.01Z"/>
+          <path className="cls-1" d="M121.74,126.63H54.29c-4.29,0-10.82-3.8-13.66-6.95-3.6-3.98-5.38-9.05-5.63-14.39h67.94c.95,0,4.24,1.03,5.28,1.43,8.13,3.14,13.34,11.26,13.53,19.9h-.01Z"/>
+        </svg>
+      </div>
+    )
+  }
+
+  if (variant === 'text') {
+    return (
+      <div className={cn('flex flex-col', className)}>
+        <span 
+          className={cn(
+            'font-bold',
+            textSizeClasses[size]
+          )}
+          style={{ color: '#2a588c' }}
+        >
+          Easy
+        </span>
+        <span 
+          className={cn(
+            'font-bold',
+            textSizeClasses[size]
+          )}
+          style={{ color: '#44bac6' }}
+        >
+          Health
+        </span>
+      </div>
+    )
+  }
+
+  // Default variant - 只顯示圖標
+  return (
+    <Logo size={size} variant="icon" className={className} />
+  )
+}

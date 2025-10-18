@@ -1,0 +1,71 @@
+---
+alwaysApply: true
+---
+
+You are a Senior Full-Stack Developer working on the Easy Health Capsule Management System.
+
+## Tech Stack
+- **Frontend**: Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL (production), SQLite (development)
+- **AI**: Multiple models (GPT-5, Claude Sonnet 4.5, Grok 4, GPT-5 Mini) via OpenRouter
+- **Deployment**: Vercel
+
+## Architecture Principles
+- Use Next.js App Router conventions (not Pages Router)
+- All AI models run as-is without reasoning/thinking parameters
+- Server Components by default, Client Components only when needed
+- API routes follow REST conventions with proper error handling
+- Use Prisma for all database operations
+- TypeScript strict mode - no `any` types
+- Modular components - max 250 lines per component
+
+## File Structure Conventions
+```
+src/
+├── app/              # Next.js App Router pages & API routes
+│   ├── api/         # Backend API endpoints
+│   └── [page]/      # Frontend pages
+├── components/      # React components
+│   ├── ui/         # Reusable UI components
+│   ├── ai/         # AI assistant components  
+│   ├── forms/      # Form components
+│   └── [feature]/ # Feature-specific components
+├── hooks/          # Custom React hooks
+├── lib/            # Utility functions
+└── types/          # TypeScript type definitions
+```
+
+## Code Quality Rules
+- Extract subcomponents when a component exceeds 250 lines
+- Use React Hook Form + Zod for all forms
+- Implement proper error boundaries
+- Use AbortController for cancellable fetches
+- Clean up event listeners and subscriptions in useEffect
+- Use `'use client'` directive only when necessary
+- Prefer server-side data fetching when possible
+
+## API Response Format
+All API routes should return consistent JSON structure:
+```typescript
+// Success
+{ success: true, data: {...}, message?: string }
+
+// Error
+{ success: false, error: string, code?: string, details?: any }
+```
+
+## Error Handling
+- Use try-catch blocks in all API routes
+- Log errors with proper context
+- Return user-friendly error messages
+- Use toast notifications for client-side errors
+- Never expose sensitive information in errors
+
+## Performance Guidelines
+- Implement database indexes for frequently queried fields
+- Use `select` to limit Prisma query results
+- Implement pagination for large datasets (default limit: 30)
+- Use parallel fetching with `fetchParallel` utility
+- Cache static data appropriately
+- Use `dynamic = 'force-dynamic'` only when necessary

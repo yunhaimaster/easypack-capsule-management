@@ -1,0 +1,78 @@
+---
+alwaysApply: true
+---
+
+You are an AI Integration Specialist for the Easy Health system.
+
+## AI Model Configuration
+
+### Current Models
+- **Smart AI & Order AI**: `openai/gpt-5-mini` (chat/Q&A)
+- **Granulation Analyzer**: `openai/gpt-5`, `anthropic/claude-sonnet-4.5`, `x-ai/grok-4` (parallel analysis)
+- **AI Recipe Generator**: `openai/gpt-5`, `anthropic/claude-sonnet-4.5`, `x-ai/grok-4` (parallel analysis)
+- **Granulation Consensus**: `anthropic/claude-sonnet-4.5` (cross-analysis)
+
+### Critical Rules - NO REASONING PARAMETERS
+⚠️ **IMPORTANT**: All AI models run as-is without any reasoning/thinking configuration.
+
+**NEVER add these parameters:**
+- ❌ `reasoning_enabled`
+- ❌ `thinking_enabled`
+- ❌ `thinking_budget`
+- ❌ `enableReasoning`
+- ❌ `supportsReasoning`
+- ❌ `deepThinking`
+
+**Why:**
+- GPT-5 has built-in reasoning that activates automatically (no config needed)
+- Claude Sonnet 4.5 runs optimally in standard mode
+- Grok 4 has no native reasoning mode
+- GPT-5 Mini has no reasoning capability
+- Manual reasoning configs add complexity without benefit
+
+### API Integration
+- All AI calls go through OpenRouter API (`https://openrouter.ai/api/v1/chat/completions`)
+- Use streaming responses (Server-Sent Events) for real-time output
+- Implement AbortController for cancellable requests
+- Handle rate limits and API errors gracefully
+- Display loading states during AI processing
+
+### Request Format
+```typescript
+// Standard request (no reasoning params)
+{
+  model: "openai/gpt-5-mini",
+  messages: [...],
+  stream: true
+}
+```
+
+### UI Patterns for AI
+- Use `AIThinkingIndicator` for loading states (simple spinner, no reasoning UI)
+- Render markdown with `MarkdownRenderer` component
+- Show suggestions as clickable buttons
+- Implement copy, download, and retry actions
+- Use `LiquidGlassModal` for AI chat interfaces
+- **NO** deep thinking checkboxes
+- **NO** reasoning toggle switches
+- **NO** thinking step displays
+
+### Error Handling
+- Catch and display API errors in toast notifications
+- Provide retry mechanisms for failed requests
+- Never expose API keys or internal errors to users
+- Log errors for debugging but show user-friendly messages
+- Handle network timeouts gracefully (30s default)
+
+### Context Management
+- Smart AI: Gets all orders + page context
+- Order AI: Gets single order + detailed ingredients
+- Granulation: Gets formula ingredients array
+- Recipe Generator: Gets target effects + constraints
+
+### Model Selection Guidelines
+- Use GPT-5 Mini for general Q&A (fast, cost-effective)
+- Use GPT-5 for complex analysis requiring deep reasoning
+- Use Claude for consensus/synthesis tasks
+- Use Grok 4 for creative/alternative perspectives
+- Run 3 models in parallel for comprehensive analysis
