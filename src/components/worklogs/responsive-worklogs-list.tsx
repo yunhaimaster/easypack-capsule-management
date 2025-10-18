@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 
-import { CalendarDays, Clock3, ArrowUpDown, ArrowUp, ArrowDown, Download, Filter, RefreshCw, Loader2, ChevronDown } from 'lucide-react'
+import { CalendarDays, Clock3, ArrowUpDown, ArrowUp, ArrowDown, Download, Filter, RefreshCw, Loader2, ChevronDown, Pencil, Trash2 } from 'lucide-react'
 import { DateTime } from 'luxon'
 
 import { WorklogWithOrder } from '@/types'
@@ -10,6 +10,9 @@ import { WorklogFilter } from '@/components/worklogs/worklog-filter'
 import { LiquidGlassLoading } from '@/components/ui/liquid-glass-loading'
 import { useToast } from '@/components/ui/toast-provider'
 import { fetchWithTimeout } from '@/lib/api-client'
+import { IconContainer } from '@/components/ui/icon-container'
+import { EditWorklogDialog } from './edit-worklog-dialog'
+import { DeleteWorklogDialog } from './delete-worklog-dialog'
 
 interface Pagination {
   page: number
@@ -26,6 +29,8 @@ export function ResponsiveWorklogsList() {
   const [error, setError] = useState<string | null>(null)
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const abortControllerRef = useRef<AbortController | null>(null)
+  const [editingWorklog, setEditingWorklog] = useState<WorklogWithOrder | null>(null)
+  const [deletingWorklog, setDeletingWorklog] = useState<WorklogWithOrder | null>(null)
 
   const [filters, setFilters] = useState({
     orderKeyword: '',
@@ -225,20 +230,21 @@ export function ResponsiveWorklogsList() {
                 <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">工作時段</th>
                 <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">總工時</th>
                 <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">備註</th>
+                <th className="text-center py-3 px-4 font-medium text-neutral-900 text-sm">操作</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-neutral-500">載入中...</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500">載入中...</td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-red-500">{error}</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-red-500">{error}</td>
                 </tr>
               ) : worklogs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-neutral-500">目前沒有工時紀錄</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500">目前沒有工時紀錄</td>
                 </tr>
               ) : (
                 worklogs.map((worklog) => (
@@ -267,6 +273,24 @@ export function ResponsiveWorklogsList() {
                     <td className="py-4 px-4 align-top text-sm text-neutral-800">
                       <div className="max-w-xs text-sm text-neutral-600 leading-relaxed">
                         {worklog.notes ? worklog.notes : <span className="text-neutral-400">無備註</span>}
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 align-top text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => setEditingWorklog(worklog)}
+                          className="p-1.5 rounded-md hover:bg-info-50 text-info-600 hover:text-info-700 transition-colors"
+                          aria-label="編輯工時記錄"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingWorklog(worklog)}
+                          className="p-1.5 rounded-md hover:bg-danger-50 text-danger-600 hover:text-danger-700 transition-colors"
+                          aria-label="刪除工時記錄"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -355,6 +379,24 @@ export function ResponsiveWorklogsList() {
                     {worklog.notes ? worklog.notes : '無備註'}
                   </p>
                 </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => setEditingWorklog(worklog)}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-info-50 border border-info-200 text-info-700 text-sm font-medium hover:bg-info-100 transition-colors"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    編輯
+                  </button>
+                  <button
+                    onClick={() => setDeletingWorklog(worklog)}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-danger-50 border border-danger-200 text-danger-700 text-sm font-medium hover:bg-danger-100 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    刪除
+                  </button>
+                </div>
               </div>
             </div>
           ))
@@ -378,6 +420,20 @@ export function ResponsiveWorklogsList() {
           </div>
         )}
       </div>
+
+      {/* Dialogs */}
+      <EditWorklogDialog
+        isOpen={!!editingWorklog}
+        worklog={editingWorklog}
+        onClose={() => setEditingWorklog(null)}
+        onSuccess={fetchWorklogs}
+      />
+      <DeleteWorklogDialog
+        isOpen={!!deletingWorklog}
+        worklog={deletingWorklog}
+        onClose={() => setDeletingWorklog(null)}
+        onSuccess={fetchWorklogs}
+      />
     </div>
   )
 }
