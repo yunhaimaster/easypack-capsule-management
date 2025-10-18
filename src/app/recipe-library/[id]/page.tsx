@@ -132,12 +132,16 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
 
   const handleGranulationAnalysis = () => {
     if (!recipe) return
-    const ingredientsData = recipe.ingredients.map(ing => ({
-      materialName: ing.materialName,
-      unitContentMg: ing.unitContentMg
-    }))
-    localStorage.setItem('granulation_imported_ingredients', JSON.stringify(ingredientsData))
-    router.push('/granulation-analyzer')
+    try {
+      const { exportRecipeToGranulation } = require('@/lib/granulation-export')
+      exportRecipeToGranulation(recipe.ingredients)
+    } catch (error) {
+      showToast({
+        title: '導出失敗',
+        description: '無法導出至製粒分析',
+        variant: 'destructive'
+      })
+    }
   }
 
   const handleExportToExcel = () => {
@@ -379,30 +383,6 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              
-              {/* Granulation Analysis */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleGranulationAnalysis}
-                className="flex items-center gap-2 text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
-              >
-                <FlaskConical className="h-4 w-4" />
-                <span className="hidden sm:inline">製粒分析</span>
-              </Button>
-              
-              {/* Marketing Analysis (template only) */}
-              {recipe.recipeType === 'template' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExportToMarketing}
-                  className="flex items-center gap-2 text-orange-600 hover:text-orange-700 border-orange-200 hover:border-orange-300"
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  <span className="hidden sm:inline">行銷分析</span>
-                </Button>
-              )}
               
               {/* Delete Button */}
               <Button 

@@ -357,14 +357,16 @@ export default function RecipeLibraryPage() {
     const recipe = recipes.find(r => r.id === recipeId)
     if (!recipe) return
 
-    // Store recipe data in localStorage for granulation analyzer
-    const ingredientsData = recipe.ingredients.map(ing => ({
-      materialName: ing.materialName,
-      unitContentMg: ing.unitContentMg
-    }))
-    
-    localStorage.setItem('granulation_imported_ingredients', JSON.stringify(ingredientsData))
-    router.push('/granulation-analyzer')
+    try {
+      const { exportRecipeToGranulation } = require('@/lib/granulation-export')
+      exportRecipeToGranulation(recipe.ingredients)
+    } catch (error) {
+      showToast({
+        title: '導出失敗',
+        description: '無法導出至製粒分析',
+        variant: 'destructive'
+      })
+    }
   }
 
   // Effect filter click handler

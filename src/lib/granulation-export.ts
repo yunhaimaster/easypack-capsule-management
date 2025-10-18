@@ -1,6 +1,6 @@
 /**
  * Granulation Export Utilities
- * 用於將訂單配方匯出至製粒分析頁面
+ * 用於將訂單配方/配方庫匯出至製粒分析頁面
  */
 
 import { ProductionOrder } from '@/types'
@@ -9,6 +9,11 @@ interface GranulationIngredient {
   materialName: string
   unitContentMg: number
   isCustomerProvided: boolean
+}
+
+interface RecipeIngredient {
+  materialName: string
+  unitContentMg: number
 }
 
 const STORAGE_KEY = 'granulation-import-data'
@@ -142,4 +147,35 @@ export function validateOrderForGranulation(order: ProductionOrder): {
   }
 
   return { valid: true }
+}
+
+/**
+ * 將配方庫配方匯出至製粒分析頁面
+ * @param ingredients 配方原料陣列
+ */
+export function exportRecipeToGranulation(ingredients: RecipeIngredient[]): void {
+  if (!ingredients || ingredients.length === 0) {
+    throw new Error('配方沒有原料')
+  }
+
+  // 轉換原料格式（配方庫沒有 isCustomerProvided 字段）
+  const granulationIngredients: GranulationIngredient[] = ingredients.map((ing) => ({
+    materialName: ing.materialName,
+    unitContentMg: ing.unitContentMg,
+    isCustomerProvided: false // 配方庫默認為 false
+  }))
+
+  try {
+    // 使用 sessionStorage 儲存配方資料
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(granulationIngredients))
+    }
+  } catch (error) {
+    console.error('無法儲存至 sessionStorage:', error)
+  }
+
+  // 執行導航
+  if (typeof window !== 'undefined') {
+    window.location.href = '/granulation-analyzer?source=recipe'
+  }
 }

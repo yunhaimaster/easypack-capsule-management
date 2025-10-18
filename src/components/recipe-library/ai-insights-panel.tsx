@@ -3,15 +3,8 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Loader2, 
-  AlertTriangle, 
-  DollarSign, 
-  Lightbulb, 
-  ChevronDown,
-  ChevronUp
-} from 'lucide-react'
+import { Loader2, Lightbulb } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import type { RecipeLibraryItem } from '@/types'
 
 interface AIInsightsPanelProps {
@@ -19,62 +12,12 @@ interface AIInsightsPanelProps {
 }
 
 export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
-  const [riskAssessment, setRiskAssessment] = useState<any>(null)
-  const [priceEstimation, setPriceEstimation] = useState<any>(null)
-  const [alternatives, setAlternatives] = useState<any>(null)
-  
-  const [loadingRisk, setLoadingRisk] = useState(false)
-  const [loadingPrice, setLoadingPrice] = useState(false)
-  const [loadingAlternatives, setLoadingAlternatives] = useState(false)
-  
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const [suggestions, setSuggestions] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [analyzed, setAnalyzed] = useState(false)
 
-  const analyzeRisk = async () => {
-    setLoadingRisk(true)
-    try {
-      const materials = recipe.ingredients.map(ing => ing.materialName)
-      const response = await fetch('/api/ai/assess-risk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ materials })
-      })
-      const data = await response.json()
-      setRiskAssessment(data.assessments)
-      setExpandedSection('risk')
-    } catch (error) {
-      console.error('Risk assessment error:', error)
-    } finally {
-      setLoadingRisk(false)
-    }
-  }
-
-  const analyzePrices = async () => {
-    setLoadingPrice(true)
-    try {
-      const analyses = await Promise.all(
-        recipe.ingredients.map(async (ing) => {
-          const response = await fetch('/api/ai/price-analysis', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              materialName: ing.materialName,
-              analysisType: 'quick'
-            })
-          })
-          return response.json()
-        })
-      )
-      setPriceEstimation(analyses)
-      setExpandedSection('price')
-    } catch (error) {
-      console.error('Price analysis error:', error)
-    } finally {
-      setLoadingPrice(false)
-    }
-  }
-
-  const suggestAlternatives = async () => {
-    setLoadingAlternatives(true)
+  const analyzeSuggestions = async () => {
+    setLoading(true)
     try {
       const response = await fetch('/api/recipes/suggest-alternatives', {
         method: 'POST',
@@ -85,140 +28,87 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
         })
       })
       const data = await response.json()
-      setAlternatives(data.suggestions)
-      setExpandedSection('alternatives')
+      
+      if (data.success && data.suggestions) {
+        setSuggestions(data.suggestions)
+        setAnalyzed(true)
+      }
     } catch (error) {
-      console.error('Alternatives error:', error)
+      console.error('Suggestions error:', error)
     } finally {
-      setLoadingAlternatives(false)
+      setLoading(false)
     }
   }
 
   return (
     <Card className="liquid-glass-card liquid-glass-card-elevated">
       <div className="liquid-glass-content">
-        <h2 className="text-lg font-semibold text-neutral-800 mb-4">
-          AI 智能分析
-        </h2>
-        
-        <div className="space-y-3">
-          {/* Risk Assessment */}
-          <div className="border border-neutral-200 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-3 bg-neutral-50">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-warning-600" />
-                <span className="font-medium text-neutral-800">風險評估</span>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={analyzeRisk}
-                disabled={loadingRisk}
-              >
-                {loadingRisk ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : riskAssessment ? (
-                  expandedSection === 'risk' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
-                ) : (
-                  '分析'
-                )}
-              </Button>
-            </div>
-            {expandedSection === 'risk' && riskAssessment && (
-              <div className="p-3 space-y-2">
-                {riskAssessment.map((assessment: any, index: number) => (
-                  <div key={index} className="p-2 bg-white border border-neutral-200 rounded">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium">{assessment.materialName}</span>
-                      <Badge
-                        variant={
-                          assessment.riskLevel === '高風險' ? 'destructive' :
-                          assessment.riskLevel === '中風險' ? 'default' : 'secondary'
-                        }
-                      >
-                        {assessment.riskLevel}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-neutral-600">
-                      {assessment.riskReasons?.[0] || assessment.technicalNotes}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Price Estimation */}
-          <div className="border border-neutral-200 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-3 bg-neutral-50">
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-success-600" />
-                <span className="font-medium text-neutral-800">成本估算</span>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={analyzePrices}
-                disabled={loadingPrice}
-              >
-                {loadingPrice ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : priceEstimation ? (
-                  expandedSection === 'price' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
-                ) : (
-                  '分析'
-                )}
-              </Button>
-            </div>
-            {expandedSection === 'price' && priceEstimation && (
-              <div className="p-3">
-                <p className="text-xs text-neutral-600">
-                  價格分析功能正在開發中，將提供詳細的成本估算和優化建議。
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Alternatives & Improvements */}
-          <div className="border border-neutral-200 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-3 bg-neutral-50">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary-600" />
-                <span className="font-medium text-neutral-800">優化建議</span>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={suggestAlternatives}
-                disabled={loadingAlternatives}
-              >
-                {loadingAlternatives ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : alternatives ? (
-                  expandedSection === 'alternatives' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
-                ) : (
-                  '分析'
-                )}
-              </Button>
-            </div>
-            {expandedSection === 'alternatives' && alternatives && (
-              <div className="p-3 space-y-2">
-                {alternatives.map((suggestion: any, index: number) => (
-                  <div key={index} className="p-2 bg-primary-50 border border-primary-200 rounded">
-                    <p className="text-sm text-primary-800 font-medium mb-1">
-                      {suggestion.title}
-                    </p>
-                    <p className="text-xs text-primary-700">
-                      {suggestion.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="flex items-center gap-2 mb-3">
+          <Lightbulb className="h-5 w-5 text-primary-600" />
+          <h2 className="text-lg font-semibold text-neutral-800">AI 優化建議</h2>
         </div>
+
+        {!analyzed ? (
+          <div className="space-y-3">
+            <p className="text-sm text-neutral-600">
+              AI 分析配方並提供成本優化、功效提升、原料替代和製程改善建議
+            </p>
+            <Button
+              onClick={analyzeSuggestions}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  分析中...
+                </>
+              ) : (
+                <>
+                  <Lightbulb className="h-4 w-4" />
+                  開始分析
+                </>
+              )}
+            </Button>
+          </div>
+        ) : (
+          <ScrollArea className="max-h-96">
+            <div className="space-y-3 pr-3">
+              {suggestions.map((suggestion: any, index: number) => (
+                <div 
+                  key={index} 
+                  className="p-3 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-primary-900">
+                      {index + 1}. {suggestion.title}
+                    </h3>
+                    {suggestion.priority && (
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        suggestion.priority === 'high' 
+                          ? 'bg-danger-100 text-danger-700'
+                          : suggestion.priority === 'medium'
+                          ? 'bg-warning-100 text-warning-700'
+                          : 'bg-neutral-100 text-neutral-600'
+                      }`}>
+                        {suggestion.priority === 'high' ? '高' : suggestion.priority === 'medium' ? '中' : '低'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-primary-800 mb-2">
+                    {suggestion.description}
+                  </p>
+                  {suggestion.impact && (
+                    <p className="text-xs text-primary-600 bg-white/50 p-2 rounded">
+                      💡 預期效果：{suggestion.impact}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </Card>
   )
 }
-

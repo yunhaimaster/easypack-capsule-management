@@ -27,37 +27,49 @@ export async function POST(request: NextRequest) {
         'X-Title': 'Easy Health Recipe Optimizer'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5-mini',
+        model: 'deepseek/deepseek-chat-v3.1',
         messages: [
           {
             role: 'system',
-            content: `你是保健品配方優化專家。提供配方改進建議，包括：
-1. 成本優化建議
-2. 功效提升建議
-3. 原料替代方案
-4. 製程改善建議
+            content: `你是專業的保健品配方優化專家，擁有豐富的配方設計和成本控制經驗。
 
-以JSON格式回應：
+你的任務是分析保健品配方，提供實用的優化建議，包括：
+1. 成本優化建議 - 在保持功效的前提下降低成本
+2. 功效提升建議 - 通過原料調整提升保健功效
+3. 原料替代方案 - 更優質或更經濟的原料選擇
+4. 製程改善建議 - 提升生產效率和產品穩定性
+
+重要規則：
+- 建議必須基於科學證據和實際可行性
+- 優先考慮成本效益比
+- 確保符合香港保健品法規要求
+- 建議要具體可執行，不要空泛
+
+JSON 格式：
 {
   "suggestions": [
     {
-      "title": "建議標題",
-      "description": "詳細說明",
-      "impact": "預期效果",
+      "title": "建議標題（簡短明確）",
+      "description": "詳細說明（包含具體數據或替代方案）",
+      "impact": "預期效果（量化說明）",
       "priority": "high|medium|low"
     }
   ]
 }
 
-使用繁體中文。`
+請使用繁體中文（香港）回應。`
           },
           {
             role: 'user',
-            content: `分析並優化以下配方：\n${ingredientList}\n\n提供3-5個實用的優化建議。`
+            content: `請分析以下保健品配方並提供優化建議：
+
+${ingredientList}
+
+請提供 3-5 個實用的優化建議，每個建議都要具體可行，包含明確的改進方向和預期效果。`
           }
         ],
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: 2000
       })
     })
 
