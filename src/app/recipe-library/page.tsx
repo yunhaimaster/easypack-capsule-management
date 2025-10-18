@@ -101,9 +101,11 @@ export default function RecipeLibraryPage() {
   const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true)
+      // When filters are active, fetch all recipes to enable proper filtering
+      const hasActiveFilters = selectedEffects.length > 0
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '12',
+        page: hasActiveFilters ? '1' : page.toString(),
+        limit: hasActiveFilters ? '1000' : '12', // Fetch all when filtering
         keyword: searchKeyword,
         recipeType: activeTab, // 🆕 根據標籤頁篩選
         sortBy: 'createdAt',
@@ -135,7 +137,7 @@ export default function RecipeLibraryPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, searchKeyword, activeTab, showToast])
+  }, [page, searchKeyword, activeTab, selectedEffects, showToast])
 
   // Fetch counts for both types
   const fetchCounts = useCallback(async () => {
@@ -831,47 +833,6 @@ export default function RecipeLibraryPage() {
                 </div>
               </Card>
 
-              {/* Effect Filter */}
-              <Card className="liquid-glass-card">
-                <div className="liquid-glass-content p-4">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge 
-                      onClick={() => setEffectFilter('all')} 
-                      variant={effectFilter === 'all' ? 'default' : 'outline'}
-                      className="cursor-pointer hover:bg-primary-100 transition-colors"
-                    >
-                      全部 ({categoryCounts.all})
-                    </Badge>
-                    
-                    {Object.entries(EFFECT_CATEGORIES).map(([key, category]) => {
-                      const count = categoryCounts[key] || 0
-                      if (count === 0) return null
-                      
-                      return (
-                        <Badge 
-                          key={key}
-                          onClick={() => setEffectFilter(key)} 
-                          variant={effectFilter === key ? 'default' : 'outline'}
-                          className="cursor-pointer hover:bg-primary-100 transition-colors"
-                        >
-                          {category.name} ({count})
-                        </Badge>
-                      )
-                    })}
-                    
-                    {categoryCounts.uncategorized > 0 && (
-                      <Badge 
-                        onClick={() => setEffectFilter('uncategorized')} 
-                        variant={effectFilter === 'uncategorized' ? 'default' : 'outline'}
-                        className="cursor-pointer hover:bg-neutral-100 transition-colors"
-                      >
-                        未分類 ({categoryCounts.uncategorized})
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </Card>
-
               {/* Advanced Filters */}
               <AdvancedFilters
                 selectedEffects={selectedEffects}
@@ -925,8 +886,8 @@ export default function RecipeLibraryPage() {
                 />
               )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
+              {/* Pagination - 只在沒有進階篩選時顯示 */}
+              {totalPages > 1 && selectedEffects.length === 0 && (
                 <Pagination 
                   page={page} 
                   totalPages={totalPages}
@@ -1010,47 +971,6 @@ export default function RecipeLibraryPage() {
                 </div>
               </Card>
 
-              {/* Effect Filter */}
-              <Card className="liquid-glass-card">
-                <div className="liquid-glass-content p-4">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge 
-                      onClick={() => setEffectFilter('all')} 
-                      variant={effectFilter === 'all' ? 'default' : 'outline'}
-                      className="cursor-pointer hover:bg-primary-100 transition-colors"
-                    >
-                      全部 ({categoryCounts.all})
-                    </Badge>
-                    
-                    {Object.entries(EFFECT_CATEGORIES).map(([key, category]) => {
-                      const count = categoryCounts[key] || 0
-                      if (count === 0) return null
-                      
-                      return (
-                        <Badge 
-                          key={key}
-                          onClick={() => setEffectFilter(key)} 
-                          variant={effectFilter === key ? 'default' : 'outline'}
-                          className="cursor-pointer hover:bg-primary-100 transition-colors"
-                        >
-                          {category.name} ({count})
-                        </Badge>
-                      )
-                    })}
-                    
-                    {categoryCounts.uncategorized > 0 && (
-                      <Badge 
-                        onClick={() => setEffectFilter('uncategorized')} 
-                        variant={effectFilter === 'uncategorized' ? 'default' : 'outline'}
-                        className="cursor-pointer hover:bg-neutral-100 transition-colors"
-                      >
-                        未分類 ({categoryCounts.uncategorized})
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </Card>
-
               {/* Advanced Filters */}
               <AdvancedFilters
                 selectedEffects={selectedEffects}
@@ -1104,8 +1024,8 @@ export default function RecipeLibraryPage() {
                 />
               )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
+              {/* Pagination - 只在沒有進階篩選時顯示 */}
+              {totalPages > 1 && selectedEffects.length === 0 && (
                 <Pagination 
                   page={page} 
                   totalPages={totalPages}
