@@ -94,9 +94,6 @@ export const getCachedRecipes = unstable_cache(
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          ingredients: true,
-        },
       }),
       prisma.recipeLibrary.count({ where }),
     ])
@@ -119,9 +116,6 @@ export const getCachedRecipe = unstable_cache(
   async (id: string) => {
     return await prisma.recipeLibrary.findUnique({
       where: { id },
-      include: {
-        ingredients: true,
-      },
     })
   },
   ['recipe-detail'],
