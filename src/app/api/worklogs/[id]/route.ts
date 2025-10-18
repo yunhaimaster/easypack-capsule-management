@@ -23,10 +23,14 @@ const updateWorklogSchema = z.object({
   path: ['endTime']
 })
 
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  
   try {
-    const { id: worklogId } = await params
+    const worklogId = id
     const body = await request.json()
     const data = updateWorklogSchema.parse(body)
 
@@ -94,7 +98,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   } catch (error) {
     logger.error('更新工時記錄錯誤', {
       error: error instanceof Error ? error.message : String(error),
-      worklogId: params.id,
+      worklogId: id,
     })
 
     if (error instanceof z.ZodError) {
@@ -113,10 +117,14 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   }
 }
 
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  
   try {
-    const { id: worklogId } = await params
+    const worklogId = id
 
     // 验证工时记录存在
     const existingWorklog = await prisma.orderWorklog.findUnique({
@@ -156,7 +164,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
   } catch (error) {
     logger.error('刪除工時記錄錯誤', {
       error: error instanceof Error ? error.message : String(error),
-      worklogId: params.id,
+      worklogId: id,
     })
 
     return jsonError(500, {

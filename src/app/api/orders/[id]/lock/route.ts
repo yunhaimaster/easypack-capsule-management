@@ -22,6 +22,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  
   try {
     const body = await request.json()
     const { password } = body
@@ -42,7 +43,7 @@ export async function POST(
     }
 
     await prisma.productionOrder.update({
-      where: { id },
+      where: { id: id },
       data: { lockPassword: password }
     })
 
@@ -67,9 +68,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  
   try {
     await prisma.productionOrder.update({
-      where: { id },
+      where: { id: id },
       data: { lockPassword: null }
     })
 

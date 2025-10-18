@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { OrdersPageClient } from '@/components/orders/orders-page-client'
-import { StreamingOrdersPage } from '@/components/orders/streaming-orders-list'
-import { LoadingFallback } from '@/components/ui/streaming-layout'
+import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
+import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 
 export const metadata: Metadata = {
   title: '生產訂單管理｜Easy Health 膠囊管理系統',
@@ -18,11 +17,5 @@ export const metadata: Metadata = {
 }
 
 export default function OrdersPage() {
-  return (
-    <StreamingOrdersPage>
-      <Suspense fallback={<LoadingFallback message="Loading orders..." />}>
-        <OrdersPageClient />
-      </Suspense>
-    </StreamingOrdersPage>
-  )
+  return <OrdersPageClient />
 }

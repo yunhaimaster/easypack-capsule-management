@@ -21,6 +21,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  
   try {
     const body = await request.json()
     const { password } = body
@@ -33,7 +34,7 @@ export async function POST(
     }
 
     const order = await prisma.productionOrder.findUnique({
-      where: { id },
+      where: { id: id },
       select: { lockPassword: true }
     })
 

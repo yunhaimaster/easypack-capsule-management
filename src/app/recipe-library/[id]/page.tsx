@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, use } from 'react';
+import { useState, useEffect, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
@@ -50,11 +50,10 @@ import { IngredientWarnings } from '@/components/recipe-library/ingredient-warni
 import { AIInsightsPanel } from '@/components/recipe-library/ai-insights-panel'
 import { cn } from '@/lib/utils'
 
-export default function RecipeDetailPage(props: { params: Promise<{ id: string }> }) {
-  const params = use(props.params);
-  const { id: recipeId } = params
+export default function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { showToast } = useToast()
+  const { id } = use(params)
   const [recipe, setRecipe] = useState<RecipeLibraryItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [reanalyzing, setReanalyzing] = useState(false)
@@ -66,7 +65,7 @@ export default function RecipeDetailPage(props: { params: Promise<{ id: string }
   const fetchRecipe = useCallback(async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/recipes/${recipeId}`)
+      const response = await fetch(`/api/recipes/${id}`)
       const result = await response.json()
 
       if (result.success) {
@@ -89,7 +88,7 @@ export default function RecipeDetailPage(props: { params: Promise<{ id: string }
     } finally {
       setLoading(false)
     }
-  }, [recipeId, showToast, router])
+  }, [id, showToast, router])
 
   useEffect(() => {
     fetchRecipe()
@@ -100,15 +99,15 @@ export default function RecipeDetailPage(props: { params: Promise<{ id: string }
       if (!recipe) return
       
       // 先調用 use API 更新使用統計
-      await fetch(`/api/recipes/${recipeId}/use`)
+      await fetch(`/api/recipes/${id}/use`)
       
       // 🆕 根據配方類型選擇不同的跳轉方式
       if (recipe.recipeType === 'template') {
         // 模板配方：使用 fromTemplate 參數
-        router.push(`/orders/new?fromTemplate=${recipeId}`)
+        router.push(`/orders/new?fromTemplate=${id}`)
       } else {
         // 生產配方：使用 recipeId 參數
-        router.push(`/orders/new?recipeId=${recipeId}`)
+        router.push(`/orders/new?recipeId=${id}`)
       }
     } catch (error) {
       console.error('Create order error:', error)
