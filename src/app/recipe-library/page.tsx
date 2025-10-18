@@ -399,55 +399,6 @@ export default function RecipeLibraryPage() {
   }
 
   // Recipe action handlers
-  const handleCopyRecipe = async (recipeId: string) => {
-    const recipe = recipes.find(r => r.id === recipeId)
-    if (!recipe) return
-
-    try {
-      const recipeData = {
-        recipeName: `${recipe.recipeName} (副本)`,
-        recipeType: recipe.recipeType,
-        ingredients: recipe.ingredients.map(ing => ({
-          materialName: ing.materialName,
-          unitContentMg: ing.unitContentMg
-        })),
-        productName: recipe.productName,
-        customerName: recipe.customerName,
-        notes: recipe.notes
-      }
-
-      const response = await fetch('/api/recipes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipeData)
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        showToast({
-          title: '製作成功',
-          description: '已成功製作配方副本',
-          variant: 'default'
-        })
-        fetchRecipes()
-      } else {
-        showToast({
-          title: '製作失敗',
-          description: result.error || '無法製作配方副本',
-          variant: 'destructive'
-        })
-      }
-    } catch (error) {
-      console.error('Copy recipe error:', error)
-      showToast({
-        title: '製作失敗',
-        description: '無法連接到伺服器',
-        variant: 'destructive'
-      })
-    }
-  }
-
   const handleExportRecipe = (recipeId: string) => {
     const recipe = recipes.find(r => r.id === recipeId)
     if (!recipe) return
@@ -876,7 +827,6 @@ export default function RecipeLibraryPage() {
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
                   onEffectFilterClick={handleEffectFilterClick}
-                  onCopy={handleCopyRecipe}
                   onExport={handleExportRecipe}
                   onDelete={handleDeleteRecipe}
                   selectedRecipes={selectedRecipes}
@@ -1014,7 +964,6 @@ export default function RecipeLibraryPage() {
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
                   onEffectFilterClick={handleEffectFilterClick}
-                  onCopy={handleCopyRecipe}
                   onExport={handleExportRecipe}
                   onDelete={handleDeleteRecipe}
                   selectedRecipes={selectedRecipes}
@@ -1152,7 +1101,7 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onCopy, onExport, onDelete, selectedRecipes, onToggleSelection }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onExport, onDelete, selectedRecipes, onToggleSelection }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
@@ -1161,7 +1110,6 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
   analyzingRecipeId?: string | null,
   failedRecipes?: Set<string>,
   onEffectFilterClick?: (category: string) => void,
-  onCopy?: (id: string) => void,
   onExport?: (id: string) => void,
   onDelete?: (id: string) => void,
   selectedRecipes?: Set<string>,
@@ -1192,7 +1140,6 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             onAnalyzeEffects={onAnalyzeEffects}
             analysisStatus={getAnalysisStatus(recipe)}
             onEffectFilterClick={onEffectFilterClick}
-            onCopy={onCopy}
             onExport={onExport}
             onDelete={onDelete}
             selected={selectedRecipes?.has(recipe.id)}

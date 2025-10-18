@@ -22,14 +22,13 @@ interface RecipeListItemProps {
   onAnalyzeEffects?: (id: string) => void
   analysisStatus?: 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed'
   onEffectFilterClick?: (category: string) => void
-  onCopy?: (id: string) => void
   onExport?: (id: string) => void
   onDelete?: (id: string) => void
   selected?: boolean
   onToggleSelection?: (id: string) => void
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onCopy, onExport, onDelete, selected, onToggleSelection }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onExport, onDelete, selected, onToggleSelection }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -164,7 +163,6 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
               onAnalyzeEffects={onAnalyzeEffects}
               onMarketingAnalysis={onMarketingAnalysis}
               onCreateOrder={onCreateOrder}
-              onCopy={onCopy}
               onExport={onExport}
               onDelete={onDelete}
               analysisStatus={analysisStatus}

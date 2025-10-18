@@ -14,7 +14,6 @@ import {
   Brain,
   TrendingUp,
   ShoppingCart,
-  Copy,
   Download,
   Trash2,
   MoreVertical,
@@ -29,7 +28,6 @@ interface RecipeActionsMenuProps {
   onAnalyzeEffects?: (id: string) => void
   onMarketingAnalysis?: (id: string) => void
   onCreateOrder?: (id: string) => void
-  onCopy?: (id: string) => void
   onExport?: (id: string) => void
   onDelete?: (id: string) => void
   analysisStatus?: 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed'
@@ -42,7 +40,6 @@ export function RecipeActionsMenu({
   onAnalyzeEffects,
   onMarketingAnalysis,
   onCreateOrder,
-  onCopy,
   onExport,
   onDelete,
   analysisStatus
@@ -149,20 +146,6 @@ export function RecipeActionsMenu({
         )}
 
         <DropdownMenuSeparator />
-
-        {/* Copy */}
-        {onCopy && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              onCopy(recipe.id)
-            }}
-            className="cursor-pointer"
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            製作副本
-          </DropdownMenuItem>
-        )}
 
         {/* Export */}
         {onExport && (
