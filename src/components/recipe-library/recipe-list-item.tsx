@@ -29,7 +29,7 @@ interface RecipeListItemProps {
   onToggleSelection?: (id: string) => void
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onCopy, onExport, onDelete }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onCopy, onExport, onDelete, selected, onToggleSelection }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -40,13 +40,25 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
         "hover:shadow-apple-md transition-apple",
         "cursor-pointer",
         // 左側彩色邊框
-        isTemplate ? "border-l-4 border-l-primary-500" : "border-l-4 border-l-success-500"
+        isTemplate ? "border-l-4 border-l-primary-500" : "border-l-4 border-l-success-500",
+        // 選中狀態
+        selected && "ring-2 ring-primary-500 border-primary-500 bg-primary-50/30"
       )}
       onClick={() => onView(recipe.id)}
     >
       <div className="p-4">
         {/* 第一行：圖標 + 配方名稱 + 操作按鈕 */}
         <div className="flex items-center gap-3 mb-2">
+          {/* Checkbox for bulk selection */}
+          {onToggleSelection && (
+            <Checkbox
+              checked={selected || false}
+              onCheckedChange={() => onToggleSelection(recipe.id)}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0"
+            />
+          )}
+          
           {/* 圖標 */}
           <IconContainer 
             icon={isTemplate ? Sparkles : Beaker} 

@@ -924,6 +924,8 @@ export default function RecipeLibraryPage() {
                   onCopy={handleCopyRecipe}
                   onExport={handleExportRecipe}
                   onDelete={handleDeleteRecipe}
+                  selectedRecipes={selectedRecipes}
+                  onToggleSelection={handleToggleSelection}
                 />
               )}
 
@@ -1092,6 +1094,8 @@ export default function RecipeLibraryPage() {
                   onCopy={handleCopyRecipe}
                   onExport={handleExportRecipe}
                   onDelete={handleDeleteRecipe}
+                  selectedRecipes={selectedRecipes}
+                  onToggleSelection={handleToggleSelection}
                 />
               )}
 
@@ -1225,7 +1229,7 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onCopy, onExport, onDelete }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onCopy, onExport, onDelete, selectedRecipes, onToggleSelection }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
@@ -1236,7 +1240,9 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
   onEffectFilterClick?: (category: string) => void,
   onCopy?: (id: string) => void,
   onExport?: (id: string) => void,
-  onDelete?: (id: string) => void
+  onDelete?: (id: string) => void,
+  selectedRecipes?: Set<string>,
+  onToggleSelection?: (id: string) => void
 }) {
   // Get analysis status for a recipe
   const getAnalysisStatus = (recipe: RecipeLibraryItem): 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed' => {
@@ -1266,6 +1272,8 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             onCopy={onCopy}
             onExport={onExport}
             onDelete={onDelete}
+            selected={selectedRecipes?.has(recipe.id)}
+            onToggleSelection={onToggleSelection}
           />
         ))}
       </div>
