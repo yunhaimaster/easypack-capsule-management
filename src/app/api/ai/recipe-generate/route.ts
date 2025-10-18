@@ -89,11 +89,11 @@ export async function POST(request: NextRequest) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請為我生成一個${targetEffect}的${dosageForm || '膠囊'}配方` }
       ],
-      max_tokens: 8000,
-      temperature: 0.3,
-      top_p: 0.95,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
+      max_tokens: 6000,
+      temperature: 0.7,
+      top_p: 0.9,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.1,
       stream: true
     }
 

@@ -130,7 +130,8 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: 'openai/gpt-4.1-mini', // 使用快速且準確的模型
         messages,
-        temperature: 0.1, // 降低隨機性，提高準確度
+        temperature: 0.1, // 低溫度確保準確的模板解析
+        top_p: 0.9,       // 優化準確性與效率平衡
         response_format: { type: 'json_object' }
       })
     })

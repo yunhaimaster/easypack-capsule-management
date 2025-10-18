@@ -59,11 +59,12 @@ export async function POST(request: NextRequest) {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: text }
         ],
-        max_tokens: 32000,       // 設置到極限，支持超長文本翻譯
-        temperature: 0.05,       // 極低溫度，確保翻譯準確性
-        top_p: 0.95,            // 提高 top_p
+        max_tokens: 16000,       // 優化 token 使用，支持長文本翻譯
+        temperature: 0.1,        // 低溫度確保翻譯準確性，適度提高一致性
+        top_p: 0.9,             // 優化 top_p 平衡準確性與效率
         frequency_penalty: 0.0,  // 翻譯不需要懲罰重複
-        presence_penalty: 0.0    // 翻譯不需要懲罰存在
+        presence_penalty: 0.0,   // 翻譯不需要懲罰存在
+        stream: false            // 翻譯任務不需要流式輸出
       })
     })
 

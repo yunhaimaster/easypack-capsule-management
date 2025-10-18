@@ -67,11 +67,11 @@ ${JSON.stringify(priceData, null, 2)}
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `請分析${materialName}的價格趨勢和採購建議` }
         ],
-        max_tokens: 8000,
-        temperature: 0.1,
-        top_p: 0.95,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
+        max_tokens: 6000,       // 優化 token 使用
+        temperature: 0.2,       // 適度提高分析深度
+        top_p: 0.9,            // 優化分析準確性
+        frequency_penalty: 0.0,  // 允許重複關鍵分析點
+        presence_penalty: 0.0,   // 不避免重要分析概念
         ...(enableReasoning && {
           reasoning: {
             effort: "high"

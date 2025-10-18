@@ -150,8 +150,11 @@ async function generateWithModel(
             content: prompt
           }
         ],
-        temperature: 0.8,
-        max_tokens: 4000
+        temperature: 0.7,        // 高創意用於標籤設計
+        top_p: 0.9,             // 平衡創意與一致性
+        max_tokens: 3000,       // 優化 token 使用
+        frequency_penalty: 0.1,  // 減少重複設計元素
+        presence_penalty: 0.1    // 鼓勵新穎設計概念
       }),
       signal: controller.signal
     })

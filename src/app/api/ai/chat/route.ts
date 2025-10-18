@@ -89,11 +89,11 @@ AI回答：${aiResponse}
 格式要求：問題應該簡潔明瞭，適合忙碌的用戶快速理解。`
           }
         ],
-        max_tokens: 1000,        // 建議生成也增加，確保完整
-        temperature: 0.3,        // 降低溫度，提高一致性
-        top_p: 0.95,            // 提高 top_p
-        frequency_penalty: 0.0,  // 移除懲罰
-        presence_penalty: 0.0    // 移除懲罰
+        max_tokens: 800,         // 優化 token 使用
+        temperature: 0.5,        // 平衡創意與一致性
+        top_p: 0.9,             // 優化多樣性
+        frequency_penalty: 0.1,  // 減少重複建議
+        presence_penalty: 0.1    // 鼓勵新話題
       })
     })
 
