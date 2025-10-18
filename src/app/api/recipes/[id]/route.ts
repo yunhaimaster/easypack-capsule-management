@@ -24,10 +24,10 @@ const editRecipeSchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const recipe = await prisma.recipeLibrary.findUnique({
       where: { id }
@@ -70,10 +70,10 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json() as UpdateRecipeData
 
     // 檢查配方是否存在
@@ -218,10 +218,10 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // 檢查配方是否存在
     const existingRecipe = await prisma.recipeLibrary.findUnique({

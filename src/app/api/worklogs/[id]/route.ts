@@ -25,10 +25,10 @@ const updateWorklogSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const worklogId = params.id
+    const { id: worklogId } = await params
     const body = await request.json()
     const data = updateWorklogSchema.parse(body)
 
@@ -117,10 +117,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const worklogId = params.id
+    const { id: worklogId } = await params
 
     // 验证工时记录存在
     const existingWorklog = await prisma.orderWorklog.findUnique({

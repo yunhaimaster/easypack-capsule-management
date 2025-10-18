@@ -17,11 +17,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const order = await prisma.productionOrder.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         ingredients: true,
         worklogs: {
@@ -66,16 +67,17 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { verificationPassword, ...orderData } = body
     const validatedData = productionOrderSchema.parse(orderData)
     
     // 檢查訂單是否有密碼鎖且是否修改了客戶指定的原料
     const existingOrder = await prisma.productionOrder.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { 
         lockPassword: true, 
         ingredients: {
@@ -193,7 +195,7 @@ export async function PUT(
     })
 
     const order = await prisma.productionOrder.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         customerName: orderPayload.customerName,
         productName: orderPayload.productName,
@@ -263,11 +265,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.productionOrder.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: '訂單刪除成功' })

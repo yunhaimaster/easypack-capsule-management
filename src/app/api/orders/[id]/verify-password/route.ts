@@ -18,8 +18,9 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const body = await request.json()
     const { password } = body
@@ -32,7 +33,7 @@ export async function POST(
     }
 
     const order = await prisma.productionOrder.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { lockPassword: true }
     })
 
@@ -53,16 +54,16 @@ export async function POST(
     const isValid = timingSafeEqual(password.trim(), order.lockPassword.trim())
 
     if (isValid) {
-      logger.info('密碼驗證成功', { orderId: params.id })
+      logger.info('密碼驗證成功', { orderId: id })
       return NextResponse.json({ success: true, valid: true })
     } else {
-      logger.warn('密碼驗證失敗', { orderId: params.id })
+      logger.warn('密碼驗證失敗', { orderId: id })
       return NextResponse.json({ success: true, valid: false })
     }
   } catch (error) {
     logger.error('密碼驗證錯誤', {
       error: error instanceof Error ? error.message : String(error),
-      orderId: params.id
+      orderId: id
     })
     return NextResponse.json(
       { success: false, error: '密碼驗證失敗' },

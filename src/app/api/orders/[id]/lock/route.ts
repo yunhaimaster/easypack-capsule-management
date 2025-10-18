@@ -19,8 +19,9 @@ function timingSafeEqual(a: string, b: string): boolean {
 // POST - 設定/修改密碼
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const body = await request.json()
     const { password } = body
@@ -41,17 +42,17 @@ export async function POST(
     }
 
     await prisma.productionOrder.update({
-      where: { id: params.id },
+      where: { id },
       data: { lockPassword: password }
     })
 
-    logger.info('訂單密碼鎖設定成功', { orderId: params.id })
+    logger.info('訂單密碼鎖設定成功', { orderId: id })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     logger.error('設定密碼鎖錯誤', {
       error: error instanceof Error ? error.message : String(error),
-      orderId: params.id
+      orderId: id
     })
     return NextResponse.json(
       { success: false, error: '設定密碼鎖失敗' },
@@ -63,21 +64,22 @@ export async function POST(
 // DELETE - 移除密碼
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     await prisma.productionOrder.update({
-      where: { id: params.id },
+      where: { id },
       data: { lockPassword: null }
     })
 
-    logger.info('訂單密碼鎖移除成功', { orderId: params.id })
+    logger.info('訂單密碼鎖移除成功', { orderId: id })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     logger.error('移除密碼鎖錯誤', {
       error: error instanceof Error ? error.message : String(error),
-      orderId: params.id
+      orderId: id
     })
     return NextResponse.json(
       { success: false, error: '移除密碼鎖失敗' },

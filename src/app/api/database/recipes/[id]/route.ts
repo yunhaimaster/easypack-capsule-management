@@ -5,11 +5,12 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const product = await prisma.productDatabase.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!product) {
@@ -50,13 +51,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { productName, category, formula, efficacy, safety, tags, notes, isActive } = await request.json()
 
     const product = await prisma.productDatabase.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         productName,
         category,
@@ -101,11 +103,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.productDatabase.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({
