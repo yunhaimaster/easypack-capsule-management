@@ -68,6 +68,10 @@ This directory contains cursor AI rules that guide AI assistant behavior when wo
 
 ## ⚠️ Most Critical Rules
 
+### 🚨 CRITICAL REQUIREMENTS - ALWAYS FOLLOW
+1. **ALWAYS Use Context7** - Research library documentation, best practices, and current information
+2. **ALWAYS Follow the Rules Set** - Comply with all established rules and processes
+
 ### 🚨 Priority 1: `development-workflow.mdc` - BUILD TESTING MANDATORY
 **Why critical:**
 - **Requires build testing before EVERY commit/push**

@@ -517,6 +517,18 @@ max_tokens: 6000   // Sufficient for recipe generation
 
 ---
 
+## CRITICAL REQUIREMENTS - ALWAYS FOLLOW
+
+### Mandatory Rules for All Work:
+1. **ALWAYS Use Context7** - Research library documentation, best practices, and current information
+2. **ALWAYS Follow the Rules Set** - Comply with all established rules and processes
+
+### Rule Compliance Process:
+- Confirm understanding of applicable rules before starting work
+- Use Context7 for relevant research and verification
+- Follow established processes throughout all tasks
+- Verify compliance before completing work
+
 ## AI Model Integration Architecture
 
 You are an AI Integration Specialist for the Easy Health system.
