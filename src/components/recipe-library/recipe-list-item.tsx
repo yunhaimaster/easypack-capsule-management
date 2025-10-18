@@ -151,6 +151,20 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
             >
               <Eye className="h-4 w-4" />
             </Button>
+            
+            {/* Quick Actions Menu for Mobile */}
+            <RecipeActionsMenu
+              recipe={recipe}
+              onView={onView}
+              onEdit={onEdit}
+              onAnalyzeEffects={onAnalyzeEffects}
+              onMarketingAnalysis={onMarketingAnalysis}
+              onGranulationAnalysis={onGranulationAnalysis}
+              onCreateOrder={onCreateOrder}
+              onExport={onExport}
+              onDelete={onDelete}
+              analysisStatus={analysisStatus}
+            />
           </div>
         </div>
         
