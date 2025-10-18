@@ -120,8 +120,8 @@ export function RecipeActionsMenu({
           </DropdownMenuItem>
         )}
 
-        {/* Marketing Analysis (templates only) */}
-        {isTemplate && onMarketingAnalysis && (
+        {/* Marketing Analysis (all recipes) */}
+        {onMarketingAnalysis && (
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation()

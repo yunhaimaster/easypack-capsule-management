@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Beaker, Sparkles, Eye, Edit, Package, ShoppingCart, Brain } from 'lucide-react'
+import { Beaker, Sparkles, Eye, Edit, Package, Brain } from 'lucide-react'
 import type { RecipeLibraryItem } from '@/types'
 import { cn } from '@/lib/utils'
 import { getEffectsSummary } from '@/lib/parse-effects'
@@ -108,21 +108,6 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
               >
                 <Brain className="h-3.5 w-3.5" />
                 <span>分析功效</span>
-              </Button>
-            )}
-            
-            {/* Production recipes: Show create order button */}
-            {!isTemplate && onCreateOrder && (
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onCreateOrder(recipe.id)
-                }}
-                className="flex items-center gap-1.5 h-8 text-xs bg-gradient-to-r from-primary-500 to-primary-600"
-              >
-                <ShoppingCart className="h-3.5 w-3.5" />
-                <span>創建訂單</span>
               </Button>
             )}
             

@@ -1023,7 +1023,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
               router.push(`/recipe-library/${id}`)
             } : undefined}
             onCreateOrder={recipe.recipeType === 'production' ? (id) => router.push(`/orders/new?recipeId=${id}`) : undefined}
-            onMarketingAnalysis={recipe.recipeType === 'template' ? onMarketingAnalysis : undefined}
+            onMarketingAnalysis={onMarketingAnalysis}
             onGranulationAnalysis={onGranulationAnalysis}
             onAnalyzeEffects={onAnalyzeEffects}
             analysisStatus={getAnalysisStatus(recipe)}
