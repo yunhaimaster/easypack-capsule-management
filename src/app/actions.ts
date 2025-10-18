@@ -280,3 +280,83 @@ export async function deleteRecipe(recipeId: string) {
     throw new Error('刪除配方失敗')
   }
 }
+
+// Optimistic Actions for React 19 useOptimistic
+export async function createOrderOptimistic(formData: FormData) {
+  const rawData = {
+    customerName: formData.get('customerName'),
+    productName: formData.get('productName'),
+    productionQuantity: Number(formData.get('productionQuantity')),
+    unitWeightMg: Number(formData.get('unitWeightMg')) || 500,
+    batchTotalWeightMg: Number(formData.get('batchTotalWeightMg')) || 0,
+    notes: formData.get('notes'),
+    customerService: formData.get('customerService'),
+  }
+
+  const result = productionOrderSchema.safeParse(rawData)
+
+  if (!result.success) {
+    throw new Error('Validation failed: ' + JSON.stringify(result.error.flatten().fieldErrors))
+  }
+
+  try {
+    const order = await prisma.productionOrder.create({
+      data: result.data as any,
+    })
+
+    logger.info('Order created successfully', { orderId: order.id })
+    revalidatePath('/orders')
+    return { success: true, orderId: order.id, order }
+  } catch (error) {
+    logger.error('Failed to create order', { error })
+    throw new Error('Failed to create order')
+  }
+}
+
+export async function updateOrderOptimistic(orderId: string, formData: FormData) {
+  const rawData = {
+    customerName: formData.get('customerName'),
+    productName: formData.get('productName'),
+    productionQuantity: Number(formData.get('productionQuantity')),
+    unitWeightMg: Number(formData.get('unitWeightMg')) || 500,
+    batchTotalWeightMg: Number(formData.get('batchTotalWeightMg')) || 0,
+    notes: formData.get('notes'),
+    customerService: formData.get('customerService'),
+  }
+
+  const result = productionOrderSchema.safeParse(rawData)
+
+  if (!result.success) {
+    throw new Error('Validation failed: ' + JSON.stringify(result.error.flatten().fieldErrors))
+  }
+
+  try {
+    const order = await prisma.productionOrder.update({
+      where: { id: orderId },
+      data: result.data as any,
+    })
+
+    logger.info('Order updated successfully', { orderId })
+    revalidatePath('/orders')
+    revalidatePath(`/orders/${orderId}`)
+    return { success: true, order }
+  } catch (error) {
+    logger.error('Failed to update order', { error, orderId })
+    throw new Error('Failed to update order')
+  }
+}
+
+export async function deleteOrderOptimistic(orderId: string) {
+  try {
+    await prisma.productionOrder.delete({
+      where: { id: orderId },
+    })
+
+    logger.info('Order deleted successfully', { orderId })
+    revalidatePath('/orders')
+    return { success: true, orderId }
+  } catch (error) {
+    logger.error('Failed to delete order', { error, orderId })
+    throw new Error('Failed to delete order')
+  }
+}
