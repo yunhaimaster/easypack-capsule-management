@@ -17,7 +17,8 @@ import {
   Download,
   Trash2,
   MoreVertical,
-  RotateCcw
+  RotateCcw,
+  FlaskConical
 } from 'lucide-react'
 import type { RecipeLibraryItem } from '@/types'
 
@@ -27,6 +28,7 @@ interface RecipeActionsMenuProps {
   onEdit?: (id: string) => void
   onAnalyzeEffects?: (id: string) => void
   onMarketingAnalysis?: (id: string) => void
+  onGranulationAnalysis?: (id: string) => void // 🆕 製粒分析
   onCreateOrder?: (id: string) => void
   onExport?: (id: string) => void
   onDelete?: (id: string) => void
@@ -39,6 +41,7 @@ export function RecipeActionsMenu({
   onEdit,
   onAnalyzeEffects,
   onMarketingAnalysis,
+  onGranulationAnalysis,
   onCreateOrder,
   onExport,
   onDelete,
@@ -124,10 +127,24 @@ export function RecipeActionsMenu({
               e.stopPropagation()
               onMarketingAnalysis(recipe.id)
             }}
-            className="cursor-pointer"
+            className="cursor-pointer text-orange-600 focus:text-orange-700"
           >
             <TrendingUp className="h-4 w-4 mr-2" />
             行銷分析
+          </DropdownMenuItem>
+        )}
+
+        {/* Granulation Analysis */}
+        {onGranulationAnalysis && (
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              onGranulationAnalysis(recipe.id)
+            }}
+            className="cursor-pointer text-purple-600 focus:text-purple-700"
+          >
+            <FlaskConical className="h-4 w-4 mr-2" />
+            製粒分析
           </DropdownMenuItem>
         )}
 

@@ -352,6 +352,21 @@ export default function RecipeLibraryPage() {
     router.push('/marketing-assistant')
   }
 
+  // 🆕 製粒分析處理
+  const handleGranulationAnalysis = (recipeId: string) => {
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    // Store recipe data in localStorage for granulation analyzer
+    const ingredientsData = recipe.ingredients.map(ing => ({
+      materialName: ing.materialName,
+      unitContentMg: ing.unitContentMg
+    }))
+    
+    localStorage.setItem('granulation_imported_ingredients', JSON.stringify(ingredientsData))
+    router.push('/granulation-analyzer')
+  }
+
   // Effect filter click handler
   const handleEffectFilterClick = (category: string) => {
     setEffectFilter(category)
@@ -823,6 +838,7 @@ export default function RecipeLibraryPage() {
                   router={router} 
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
+                  onGranulationAnalysis={handleGranulationAnalysis}
                   onAnalyzeEffects={handleAnalyzeEffects}
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
@@ -960,6 +976,7 @@ export default function RecipeLibraryPage() {
                   router={router} 
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
+                  onGranulationAnalysis={handleGranulationAnalysis}
                   onAnalyzeEffects={handleAnalyzeEffects}
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
@@ -1101,11 +1118,12 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onExport, onDelete, selectedRecipes, onToggleSelection }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulationAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onExport, onDelete, selectedRecipes, onToggleSelection }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
   onMarketingAnalysis?: (id: string) => void,
+  onGranulationAnalysis?: (id: string) => void,
   onAnalyzeEffects?: (id: string) => void,
   analyzingRecipeId?: string | null,
   failedRecipes?: Set<string>,
@@ -1137,6 +1155,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             } : undefined}
             onCreateOrder={recipe.recipeType === 'production' ? (id) => router.push(`/orders/new?recipeId=${id}`) : undefined}
             onMarketingAnalysis={recipe.recipeType === 'template' ? onMarketingAnalysis : undefined}
+            onGranulationAnalysis={onGranulationAnalysis}
             onAnalyzeEffects={onAnalyzeEffects}
             analysisStatus={getAnalysisStatus(recipe)}
             onEffectFilterClick={onEffectFilterClick}
