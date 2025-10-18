@@ -8,6 +8,14 @@ interface MarkdownRendererProps {
 }
 
 export function MarkdownRenderer({ content, className = '', whiteText = false }: MarkdownRendererProps) {
+  // Generate ID from text content
+  const generateId = (children: any): string => {
+    const text = typeof children === 'string' ? children : 
+      Array.isArray(children) ? children.join('') : 
+      children?.toString() || ''
+    return text.replace(/[^\w\s]/g, '').replace(/\s+/g, '-').toLowerCase()
+  }
+
   return (
     <div className={`prose prose-sm max-w-none ${className}`}>
       <ReactMarkdown
@@ -19,13 +27,19 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
               {children}
             </h1>
           ),
-          h2: ({ children }) => (
-            <h2 className={`text-base font-semibold mb-2 mt-3 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
-              {children}
-            </h2>
-          ),
+          h2: ({ children }) => {
+            const id = `section-${generateId(children)}`
+            return (
+              <h2 
+                id={id}
+                className={`text-base font-semibold mb-3 mt-6 first:mt-0 pb-2 border-b border-neutral-200 scroll-mt-20 ${whiteText ? 'text-white border-white/20' : 'text-neutral-900'}`}
+              >
+                {children}
+              </h2>
+            )
+          },
           h3: ({ children }) => (
-            <h3 className={`text-sm font-medium mb-1 mt-2 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
+            <h3 className={`text-sm font-medium mb-2 mt-4 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
               {children}
             </h3>
           ),
@@ -81,34 +95,34 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
           ),
           // 自定義表格樣式
           table: ({ children }) => (
-            <div className="overflow-x-auto mb-2">
-              <table className="min-w-full border border-neutral-200 rounded">
+            <div className="overflow-x-auto mb-4 rounded-lg border border-neutral-200 shadow-sm">
+              <table className="min-w-full divide-y divide-neutral-200">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-neutral-50">
+            <thead className="bg-neutral-100">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-neutral-200">
+            <tbody className="divide-y divide-neutral-200 bg-white">
               {children}
             </tbody>
           ),
           tr: ({ children }) => (
-            <tr className="hover:bg-neutral-50">
+            <tr className="hover:bg-neutral-50 transition-colors">
               {children}
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-3 py-2 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="px-3 py-2 text-sm text-neutral-900">
+            <td className="px-4 py-3 text-sm text-neutral-900">
               {children}
             </td>
           ),

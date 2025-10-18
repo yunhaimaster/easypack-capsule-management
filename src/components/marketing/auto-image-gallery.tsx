@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Download, ImageIcon, CheckCircle } from 'lucide-react'
+import { Loader2, Download, ImageIcon, CheckCircle, X } from 'lucide-react'
 import { buildChineseImagePrompt, getImageTypeLabel } from '@/components/marketing/prompt-helpers'
 import { useToast } from '@/components/ui/toast-provider'
 
@@ -21,6 +21,7 @@ interface GeneratedImage {
   imageUrl: string | null
   status: 'pending' | 'generating' | 'success' | 'error'
   error?: string
+  generationTime?: number
 }
 
 export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoImageGalleryProps) {
@@ -29,6 +30,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   const [isGenerating, setIsGenerating] = useState(false)
   const [productName, setProductName] = useState<string>('Premium Wellness Formula')
   const hasGeneratedRef = useRef(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     hasGeneratedRef.current = false
@@ -122,9 +124,17 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
       // ========== STEP 3: Define generation function (captures productName in closure) ==========
       const generateAllImages = async (prompts: GeneratedImage[]) => {
         setIsGenerating(true)
+        abortControllerRef.current = new AbortController()
 
         for (let i = 0; i < prompts.length; i++) {
+          // Check if aborted
+          if (abortControllerRef.current?.signal.aborted) {
+            setIsGenerating(false)
+            return
+          }
+
           const prompt = prompts[i]
+          const startTime = Date.now()
           
           // 更新狀態為生成中
           setImages(prev => prev.map((img, idx) => 
@@ -141,10 +151,12 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                 type: prompt.type,
                 width: 1024,
                 height: 1024
-              })
+              }),
+              signal: abortControllerRef.current.signal
             })
 
             const data = await response.json()
+            const generationTime = Math.round((Date.now() - startTime) / 1000)
 
             if (data.success && data.data?.imageUrl) {
               setImages(prev => prev.map((img, idx) => 
@@ -152,13 +164,18 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   ...img, 
                   imageUrl: data.data.imageUrl, 
                   status: 'success',
-                  error: undefined
+                  error: undefined,
+                  generationTime
                 } : img
               ))
             } else {
               throw new Error(data.error || '圖像生成失敗')
             }
           } catch (error) {
+            if ((error as DOMException)?.name === 'AbortError') {
+              setIsGenerating(false)
+              return
+            }
             const errorMsg = error instanceof Error ? error.message : '生成失敗'
             setImages(prev => prev.map((img, idx) => 
               idx === i ? { 
@@ -176,9 +193,11 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         }
 
         setIsGenerating(false)
+        abortControllerRef.current = null
+        const successCount = images.filter(p => p.imageUrl).length
         showToast({
           title: '圖像生成完成',
-          description: `已成功生成 ${prompts.filter(p => p.imageUrl).length} 張 Easy Health 包裝設計圖`,
+          description: `已成功生成 ${successCount} 張 Easy Health 包裝設計圖`,
           variant: 'default'
         })
       }
@@ -186,6 +205,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
       // 自動開始生成圖像
       generateAllImages(extractedPrompts)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysisContent, isAnalysisComplete, isGenerating, showToast])
 
   const regenerateImage = async (index: number, image: GeneratedImage) => {
@@ -281,18 +301,106 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     return null
   }
 
+  const cancelGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      setIsGenerating(false)
+      showToast({
+        title: '已取消生成',
+        description: '圖片生成已停止',
+        variant: 'default'
+      })
+    }
+  }
+
+  const downloadAllImages = () => {
+    const successImages = images.filter(img => img.imageUrl && img.status === 'success')
+    if (successImages.length === 0) {
+      showToast({ 
+        title: '沒有可下載的圖片', 
+        description: '請等待圖片生成完成',
+        variant: 'destructive' 
+      })
+      return
+    }
+    
+    successImages.forEach((img, index) => {
+      setTimeout(() => {
+        downloadImage(img.imageUrl!, img.label)
+      }, index * 500) // 每張圖片間隔 500ms 避免阻塞
+    })
+    
+    showToast({
+      title: '批量下載已開始',
+      description: `正在下載 ${successImages.length} 張圖片...`
+    })
+  }
+
+  const completedCount = images.filter(img => img.status === 'success').length
+  const totalCount = images.length
+  const generatingCount = images.filter(img => img.status === 'generating').length
+
   return (
     <Card className="liquid-glass-card liquid-glass-card-elevated" interactive={false}>
       <div className="liquid-glass-content">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="icon-container icon-container-emerald">
-            <ImageIcon className="h-5 w-5 text-white" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="icon-container icon-container-emerald">
+              <ImageIcon className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-neutral-800">AI 包裝設計圖像</h2>
+              <p className="text-sm text-neutral-500">
+                自動生成 4 種風格的產品包裝視覺 ({completedCount}/{totalCount} 已完成)
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-neutral-800">AI 包裝設計圖像</h2>
-            <p className="text-sm text-neutral-500">自動生成 4 種風格的產品包裝視覺</p>
+          <div className="flex items-center gap-2">
+            {isGenerating && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={cancelGeneration}
+                className="flex items-center gap-2 border-red-300 text-red-600 hover:bg-danger-50"
+              >
+                <X className="h-4 w-4" />
+                取消生成
+              </Button>
+            )}
+            {completedCount > 0 && (
+              <Button
+                type="button"
+                onClick={downloadAllImages}
+                disabled={isGenerating}
+                className="bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 text-white transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
+              >
+                <Download className="h-4 w-4" />
+                下載全部圖片
+              </Button>
+            )}
           </div>
         </div>
+        
+        {/* Overall Progress Bar */}
+        {isGenerating && (
+          <div className="mb-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-primary-700">
+                正在生成圖片... ({completedCount}/{totalCount})
+              </span>
+              <span className="text-xs text-primary-600">
+                {generatingCount > 0 && '生成中'}
+              </span>
+            </div>
+            <div className="w-full h-2 bg-primary-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary-500 transition-all duration-300"
+                style={{ width: `${(completedCount / totalCount) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+        
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {images.map((image, index) => (
@@ -309,7 +417,12 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   </span>
                 )}
                 {image.status === 'success' && (
-                  <span className="text-xs text-success-600">✓ 完成</span>
+                  <span className="text-xs text-success-600 flex items-center gap-1">
+                    ✓ 完成
+                    {image.generationTime && (
+                      <span className="text-neutral-400">({image.generationTime}s)</span>
+                    )}
+                  </span>
                 )}
                 {image.status === 'error' && (
                   <span className="text-xs text-red-600">✗ 失敗</span>

@@ -1,10 +1,11 @@
 'use client'
 
+import { useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
-import { Sparkles, Copy, RefreshCw, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Sparkles, Copy, RefreshCw, Clock, CheckCircle, AlertCircle, Loader2, List } from 'lucide-react'
 
 type AnalysisStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -35,6 +36,31 @@ const STATUS_LABEL: Record<AnalysisStatus, string> = {
 export function MarketingAnalysis({ content, status, error, duration, loadingElapsedMs = 0, onCopy, onRetry }: MarketingAnalysisProps) {
   const loadingSeconds = Math.floor(loadingElapsedMs / 1000)
   const showDelayNotice = status === 'loading' && loadingSeconds >= 45
+
+  // Extract H2 headings for Table of Contents
+  const tableOfContents = useMemo(() => {
+    if (!content) return []
+    const headings: Array<{ id: string; title: string }> = []
+    const lines = content.split('\n')
+    
+    lines.forEach((line) => {
+      const h2Match = line.match(/^## (.+)$/)
+      if (h2Match) {
+        const title = h2Match[1].trim()
+        const id = `section-${title.replace(/[^\w\s]/g, '').replace(/\s+/g, '-').toLowerCase()}`
+        headings.push({ id, title })
+      }
+    })
+    
+    return headings
+  }, [content])
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   return (
     <Card className="liquid-glass-card liquid-glass-card-elevated" interactive={false}>
@@ -88,6 +114,28 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
           </div>
         </div>
 
+        {/* Table of Contents */}
+        {tableOfContents.length > 0 && status === 'success' && (
+          <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+            <div className="flex items-center gap-2 mb-3">
+              <List className="h-4 w-4 text-neutral-600" />
+              <h3 className="text-sm font-semibold text-neutral-800">目錄</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {tableOfContents.map((item, index) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="text-left px-3 py-2 text-xs text-neutral-700 hover:bg-white hover:text-primary-600 rounded transition-colors border border-transparent hover:border-primary-200"
+                >
+                  <span className="font-medium text-neutral-500 mr-2">{index}.</span>
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="relative">
           {status === 'error' ? (
             <div className="flex items-start gap-3 p-4 rounded-lg border border-red-200 bg-danger-50 text-red-700">
@@ -102,19 +150,37 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
               {content ? (
                 <MarkdownRenderer content={content} />
               ) : status === 'loading' ? (
-                <>
-                  <p className="text-sm text-neutral-500">正在生成行銷分析…</p>
-                  <div className="w-full h-2 bg-gray-200/60 rounded-full overflow-hidden">
-                    <div className="h-full bg-info-500/70 animate-pulse" style={{ width: `${Math.min(100, (loadingSeconds / 60) * 100)}%` }} />
+                <div className="space-y-4">
+                  {/* Skeleton Loader */}
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-neutral-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-neutral-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+                    <div className="h-6 bg-neutral-300 rounded w-1/2 mt-4"></div>
+                    <div className="h-4 bg-neutral-200 rounded w-4/5"></div>
+                    <div className="h-4 bg-neutral-200 rounded w-3/5"></div>
                   </div>
-                  {showDelayNotice ? (
-                    <p className="text-xs text-neutral-400">
-                      GPT-5 需要較長時間整理詳細內容，請稍候或稍後回來查看結果。
-                    </p>
-                  ) : (
-                    <p className="text-xs text-neutral-400">通常需要 20-40 秒完成，請稍候。</p>
-                  )}
-                </>
+                  
+                  {/* Progress Indicator */}
+                  <div className="mt-6 p-4 bg-info-50 rounded-lg border border-info-200">
+                    <p className="text-sm font-medium text-info-700 mb-2">正在生成行銷分析…</p>
+                    <div className="w-full h-2 bg-info-100 rounded-full overflow-hidden mb-2">
+                      <div 
+                        className="h-full bg-info-500 transition-all duration-300"
+                        style={{ width: `${Math.min(100, (loadingSeconds / 60) * 100)}%` }}
+                      />
+                    </div>
+                    {showDelayNotice ? (
+                      <p className="text-xs text-info-600">
+                        DeepSeek Chat v3.1 深度思考中，請稍候或稍後回來查看結果...
+                      </p>
+                    ) : (
+                      <p className="text-xs text-info-600">
+                        預計需要 20-40 秒，DeepSeek 正在分析成分合規性與市場策略...
+                      </p>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <p className="text-sm text-neutral-400">按「開始分析」後，此處會顯示詳細的行銷策略與包裝建議。</p>
               )}
