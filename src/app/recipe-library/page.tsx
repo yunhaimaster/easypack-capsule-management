@@ -30,9 +30,7 @@ import {
   Brain,
   Sparkles,
   List,
-  LayoutGrid,
-  TrendingUp,
-  ShoppingCart
+  LayoutGrid
 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast-provider'
 import { SmartTemplateImport } from '@/components/forms/smart-template-import'
@@ -1292,35 +1290,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
                   <span className="hidden sm:inline">查看</span>
                 </Button>
                 
-                {/* Template recipes: Show marketing analysis button */}
-                {recipe.recipeType === 'template' && onMarketingAnalysis && (
-                  <Button
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onMarketingAnalysis(recipe.id)
-                    }}
-                    className="flex items-center gap-1 text-xs bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-                  >
-                    <TrendingUp className="h-3 w-3" />
-                    <span className="hidden sm:inline">行銷分析</span>
-                  </Button>
-                )}
-                
-                {/* Production recipes: Show create order button */}
-                {recipe.recipeType === 'production' && (
-                  <Button
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      router.push(`/orders/new?recipeId=${recipe.id}`)
-                    }}
-                    className="flex items-center gap-1 text-xs bg-gradient-to-r from-primary-500 to-primary-600"
-                  >
-                    <ShoppingCart className="h-3 w-3" />
-                    <span className="hidden sm:inline">創建訂單</span>
-                  </Button>
-                )}
+                {/* Actions moved to Quick Actions Menu (•••) */}
               </div>
             </div>
           </div>
