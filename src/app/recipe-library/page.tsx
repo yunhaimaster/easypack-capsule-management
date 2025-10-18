@@ -37,6 +37,7 @@ import {
 import { useToast } from '@/components/ui/toast-provider'
 import { SmartTemplateImport } from '@/components/forms/smart-template-import'
 import { RecipeListItem } from '@/components/recipe-library/recipe-list-item'
+import { BatchAnalysisModal } from '@/components/recipe-library/batch-analysis-modal'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
 
@@ -77,6 +78,10 @@ export default function RecipeLibraryPage() {
   // Individual analysis state
   const [analyzingRecipeId, setAnalyzingRecipeId] = useState<string | null>(null)
   const [failedRecipes, setFailedRecipes] = useState<Set<string>>(new Set())
+  
+  // Batch analysis state
+  const [showBatchAnalysisModal, setShowBatchAnalysisModal] = useState(false)
+  const [unanalyzedRecipes, setUnanalyzedRecipes] = useState<RecipeLibraryItem[]>([])
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
@@ -345,6 +350,22 @@ export default function RecipeLibraryPage() {
     })
   }
 
+  // Batch analysis handlers
+  const handleOpenBatchAnalysis = () => {
+    const unanalyzed = recipes.filter(r => !r.aiEffectsAnalysis)
+    setUnanalyzedRecipes(unanalyzed)
+    setShowBatchAnalysisModal(true)
+  }
+
+  const handleBatchAnalysisComplete = () => {
+    fetchRecipes() // Refresh the list
+    showToast({
+      title: '批量分析完成',
+      description: '配方列表已更新',
+      variant: 'default'
+    })
+  }
+
   // Filter recipes by effect category
   const filteredRecipes = useMemo(() => {
     if (effectFilter === 'all') return recipes
@@ -608,6 +629,26 @@ export default function RecipeLibraryPage() {
                           className="pl-10"
                         />
                       </div>
+                      
+                      {/* Batch Analysis Button */}
+                      {(() => {
+                        const unanalyzedCount = recipes.filter(r => !r.aiEffectsAnalysis).length
+                        return unanalyzedCount > 0 ? (
+                          <Button
+                            size="sm"
+                            onClick={handleOpenBatchAnalysis}
+                            className="h-9 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shrink-0"
+                          >
+                            <Brain className="h-4 w-4 mr-2" />
+                            <span className="hidden sm:inline">分析全部</span>
+                            <span className="sm:hidden">全部</span>
+                            <Badge className="ml-2 bg-white/20 text-white border-0">
+                              {unanalyzedCount}
+                            </Badge>
+                          </Button>
+                        ) : null
+                      })()}
+                      
                       {/* View Mode Toggle */}
                       <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-lg">
                         <Button
@@ -834,6 +875,14 @@ export default function RecipeLibraryPage() {
       </Dialog>
 
       <LiquidGlassFooter />
+
+      {/* Batch Analysis Modal */}
+      <BatchAnalysisModal
+        isOpen={showBatchAnalysisModal}
+        onClose={() => setShowBatchAnalysisModal(false)}
+        recipes={unanalyzedRecipes}
+        onComplete={handleBatchAnalysisComplete}
+      />
     </div>
   )
 }
