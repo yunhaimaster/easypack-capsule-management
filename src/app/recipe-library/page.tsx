@@ -77,6 +77,11 @@ export default function RecipeLibraryPage() {
   // AI analysis state
   const [analyzing, setAnalyzing] = useState(false)
   const [pendingAnalysisCount, setPendingAnalysisCount] = useState(0)
+  const [analysisProgress, setAnalysisProgress] = useState<{
+    analyzed: number
+    failed: number
+    total: number
+  } | null>(null)
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
@@ -254,11 +259,12 @@ export default function RecipeLibraryPage() {
   const handleBatchAnalyze = async () => {
     try {
       setAnalyzing(true)
+      setAnalysisProgress({ analyzed: 0, failed: 0, total: pendingAnalysisCount })
       
       // Show initial toast
       showToast({
         title: '開始批量分析',
-        description: `正在分析 ${pendingAnalysisCount} 個配方，請稍候...`,
+        description: `正在分析 ${pendingAnalysisCount} 個配方，這可能需要幾分鐘...`,
         variant: 'default'
       })
 
@@ -275,6 +281,7 @@ export default function RecipeLibraryPage() {
           description: result.message,
           variant: 'default'
         })
+        setAnalysisProgress(null)
         fetchRecipes()
         fetchPendingAnalysisCount()
       } else {
@@ -283,6 +290,7 @@ export default function RecipeLibraryPage() {
           description: result.error,
           variant: 'destructive'
         })
+        setAnalysisProgress(null)
       }
     } catch (error) {
       console.error('Batch analyze error:', error)
@@ -291,6 +299,7 @@ export default function RecipeLibraryPage() {
         description: '無法連接到服務器',
         variant: 'destructive'
       })
+      setAnalysisProgress(null)
     } finally {
       setAnalyzing(false)
     }
@@ -512,6 +521,53 @@ export default function RecipeLibraryPage() {
                   </div>
                 </div>
               </Card>
+
+              {/* Analysis Progress */}
+              {analysisProgress && (
+                <Card className="liquid-glass-card liquid-glass-card-elevated">
+                  <div className="liquid-glass-content p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary-600" />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-neutral-800">正在批量分析配方</h3>
+                          <p className="text-sm text-neutral-600">
+                            請勿關閉此頁面，分析過程約需 {Math.ceil(analysisProgress.total * 0.5 / 60)} - {Math.ceil(analysisProgress.total * 1 / 60)} 分鐘
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-neutral-600">
+                            處理進度：正在分析第 1-20 批配方
+                          </span>
+                          <span className="font-medium text-primary-600">
+                            預計剩餘 {analysisProgress.total} 個
+                          </span>
+                        </div>
+                        <div className="w-full bg-neutral-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-primary-500 to-indigo-500 rounded-full transition-all duration-500 relative overflow-hidden"
+                            style={{ width: '5%' }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tips */}
+                      <Alert className="bg-primary-50 border-primary-200">
+                        <Brain className="h-4 w-4 text-primary-600" />
+                        <AlertDescription className="text-sm text-primary-800">
+                          <strong>提示：</strong>系統正在使用 AI 分析每個配方的原料組成和功效。完成後將自動刷新列表。
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  </div>
+                </Card>
+              )}
 
               {/* Effect Filter */}
               <Card className="liquid-glass-card">
