@@ -76,6 +76,7 @@ export default function RecipeLibraryPage() {
 
   // Individual analysis state
   const [analyzingRecipeId, setAnalyzingRecipeId] = useState<string | null>(null)
+  const [failedRecipes, setFailedRecipes] = useState<Set<string>>(new Set())
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
@@ -240,6 +241,12 @@ export default function RecipeLibraryPage() {
   const handleAnalyzeEffects = async (recipeId: string) => {
     try {
       setAnalyzingRecipeId(recipeId)
+      // Remove from failed list when retrying
+      setFailedRecipes(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(recipeId)
+        return newSet
+      })
       
       showToast({
         title: '開始分析',
@@ -262,6 +269,8 @@ export default function RecipeLibraryPage() {
         })
         fetchRecipes()  // Refresh list to show new effects
       } else {
+        // Mark as failed
+        setFailedRecipes(prev => new Set(prev).add(recipeId))
         showToast({
           title: '分析失敗',
           description: result.error || '無法分析配方功效',
@@ -270,6 +279,8 @@ export default function RecipeLibraryPage() {
       }
     } catch (error) {
       console.error('Analyze effects error:', error)
+      // Mark as failed
+      setFailedRecipes(prev => new Set(prev).add(recipeId))
       showToast({
         title: '分析失敗',
         description: '無法連接到服務器',
@@ -554,6 +565,8 @@ export default function RecipeLibraryPage() {
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
                   onAnalyzeEffects={handleAnalyzeEffects}
+                  analyzingRecipeId={analyzingRecipeId}
+                  failedRecipes={failedRecipes}
                 />
               )}
 
@@ -696,6 +709,8 @@ export default function RecipeLibraryPage() {
                   viewMode={viewMode}
                   onMarketingAnalysis={handleMarketingAnalysis}
                   onAnalyzeEffects={handleAnalyzeEffects}
+                  analyzingRecipeId={analyzingRecipeId}
+                  failedRecipes={failedRecipes}
                 />
               )}
 
@@ -812,13 +827,22 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
   onMarketingAnalysis?: (id: string) => void,
-  onAnalyzeEffects?: (id: string) => void
+  onAnalyzeEffects?: (id: string) => void,
+  analyzingRecipeId?: string | null,
+  failedRecipes?: Set<string>
 }) {
+  // Get analysis status for a recipe
+  const getAnalysisStatus = (recipe: RecipeLibraryItem): 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed' => {
+    if (analyzingRecipeId === recipe.id) return 'analyzing'
+    if (failedRecipes?.has(recipe.id)) return 'failed'
+    if (recipe.aiEffectsAnalysis) return 'analyzed'
+    return 'not-analyzed'
+  }
   // List View
   if (viewMode === 'list') {
     return (
@@ -835,6 +859,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             onCreateOrder={recipe.recipeType === 'production' ? (id) => router.push(`/orders/new?recipeId=${id}`) : undefined}
             onMarketingAnalysis={recipe.recipeType === 'template' ? onMarketingAnalysis : undefined}
             onAnalyzeEffects={onAnalyzeEffects}
+            analysisStatus={getAnalysisStatus(recipe)}
           />
         ))}
       </div>

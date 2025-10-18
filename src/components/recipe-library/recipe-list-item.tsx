@@ -8,6 +8,7 @@ import { Beaker, Sparkles, Eye, Edit, Package, ShoppingCart, TrendingUp, Brain }
 import type { RecipeLibraryItem } from '@/types'
 import { cn } from '@/lib/utils'
 import { getEffectsSummary } from '@/lib/parse-effects'
+import { AnalysisStatusBadge } from './analysis-status-badge'
 
 interface RecipeListItemProps {
   recipe: RecipeLibraryItem
@@ -16,9 +17,10 @@ interface RecipeListItemProps {
   onCreateOrder?: (id: string) => void
   onMarketingAnalysis?: (id: string) => void
   onAnalyzeEffects?: (id: string) => void
+  analysisStatus?: 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed'
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -44,10 +46,19 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
             className="shrink-0"
           />
           
-          {/* 配方名稱 */}
-          <h3 className="flex-1 font-semibold text-neutral-800 truncate text-sm lg:text-base">
-            {recipe.recipeName}
-          </h3>
+          {/* 配方名稱 + 狀態 */}
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <h3 className="font-semibold text-neutral-800 truncate text-sm lg:text-base">
+              {recipe.recipeName}
+            </h3>
+            {analysisStatus && (
+              <AnalysisStatusBadge 
+                status={analysisStatus}
+                onRetry={analysisStatus === 'failed' && onAnalyzeEffects ? () => onAnalyzeEffects(recipe.id) : undefined}
+                className="shrink-0"
+              />
+            )}
+          </div>
           
           {/* 操作按鈕 - 桌面版 */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
