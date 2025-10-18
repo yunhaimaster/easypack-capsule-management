@@ -27,32 +27,49 @@ export async function POST(request: NextRequest) {
         'X-Title': 'Easy Health Interaction Analyzer'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5-mini',
+        model: 'deepseek/deepseek-chat-v3.1',
         messages: [
           {
             role: 'system',
-            content: `你是保健品配方專家。分析原料相互作用，只回報實際存在的重要相互作用。以JSON格式回應：
+            content: `你是專業的保健品配方專家和藥物相互作用專家。分析以下保健品原料之間的相互作用，基於科學文獻和臨床證據。
+
+重要規則：
+1. 只回報實際存在且有科學依據的重要相互作用
+2. 不要過度警告或虛構風險
+3. 若沒有顯著的相互作用，返回空數組
+4. 嚴格按照JSON格式回應
+
+JSON格式：
 {
   "warnings": [
     {
-      "ingredient1": "原料1",
-      "ingredient2": "原料2",
+      "ingredient1": "原料1名稱",
+      "ingredient2": "原料2名稱",
       "severity": "high|medium|low",
-      "warning": "相互作用說明",
-      "recommendation": "處理建議"
+      "warning": "相互作用的具體說明（基於科學證據）",
+      "recommendation": "專業的處理建議"
     }
   ]
 }
 
-如果沒有重要相互作用，返回空數組。使用繁體中文。`
+風險等級標準：
+- high: 可能導致嚴重健康問題或顯著降低療效
+- medium: 可能影響療效或引起輕微不適
+- low: 理論上可能存在但臨床意義不大
+
+請使用繁體中文（香港）回應。`
           },
           {
             role: 'user',
-            content: `分析以下原料的相互作用：\n${ingredientList}`
+            content: `請分析以下保健品原料的相互作用：
+
+${ingredientList}
+
+請基於科學文獻和臨床證據，識別任何重要的原料相互作用。如果沒有顯著的相互作用，請返回空數組。`
           }
         ],
         temperature: 0.3,
-        max_tokens: 1000
+        max_tokens: 2000
       })
     })
 
