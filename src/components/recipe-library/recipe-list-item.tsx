@@ -9,6 +9,7 @@ import type { RecipeLibraryItem } from '@/types'
 import { cn } from '@/lib/utils'
 import { getEffectsSummary } from '@/lib/parse-effects'
 import { AnalysisStatusBadge } from './analysis-status-badge'
+import { EffectBadges } from './effect-badges'
 
 interface RecipeListItemProps {
   recipe: RecipeLibraryItem
@@ -18,9 +19,10 @@ interface RecipeListItemProps {
   onMarketingAnalysis?: (id: string) => void
   onAnalyzeEffects?: (id: string) => void
   analysisStatus?: 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed'
+  onEffectFilterClick?: (category: string) => void
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -188,55 +190,17 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
             </>
           )}
           
-          {/* 效果標籤 - 智能解析與顯示 */}
-          {recipe.aiEffectsAnalysis && (() => {
-            const summary = getEffectsSummary(recipe.aiEffectsAnalysis, 50)
-            
-            if (summary.allEffects.length === 0) return null
-            
-            return (
-              <>
-                <span className="hidden sm:inline text-neutral-400">·</span>
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-1.5 flex-wrap cursor-pointer">
-                        <Badge 
-                          variant="secondary" 
-                          className="bg-primary-50 text-primary-700 text-xs max-w-[280px] truncate hover:bg-primary-100 transition-colors"
-                        >
-                          {summary.firstEffect}
-                        </Badge>
-                        {summary.hasMultiple && (
-                          <Badge 
-                            variant="outline"
-                            className="text-primary-600 border-primary-300 text-xs px-1.5 py-0 hover:bg-primary-50 transition-colors"
-                          >
-                            +{summary.remainingCount}
-                          </Badge>
-                        )}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-md">
-                      <div className="space-y-2">
-                        <p className="font-semibold text-xs text-primary-700 mb-2">
-                          功效說明（共 {summary.allEffects.length} 項）
-                        </p>
-                        <ol className="space-y-1.5 text-xs">
-                          {summary.allEffects.map((effect, idx) => (
-                            <li key={idx} className="flex gap-2">
-                              <span className="text-primary-600 font-medium shrink-0">{idx + 1}.</span>
-                              <span className="text-neutral-700">{effect}</span>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </>
-            )
-          })()}
+          {/* 效果標籤 - 視覺化分類顯示 */}
+          {recipe.aiEffectsAnalysis && (
+            <>
+              <span className="hidden sm:inline text-neutral-400">·</span>
+              <EffectBadges 
+                effectsAnalysis={recipe.aiEffectsAnalysis}
+                maxBadges={3}
+                onFilterClick={onEffectFilterClick}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

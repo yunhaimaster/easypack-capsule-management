@@ -335,6 +335,16 @@ export default function RecipeLibraryPage() {
     router.push('/marketing-assistant')
   }
 
+  // Effect filter click handler
+  const handleEffectFilterClick = (category: string) => {
+    setEffectFilter(category)
+    showToast({
+      title: '已套用篩選',
+      description: `正在顯示「${category}」類別的配方`,
+      variant: 'default'
+    })
+  }
+
   // Filter recipes by effect category
   const filteredRecipes = useMemo(() => {
     if (effectFilter === 'all') return recipes
@@ -567,6 +577,7 @@ export default function RecipeLibraryPage() {
                   onAnalyzeEffects={handleAnalyzeEffects}
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
+                  onEffectFilterClick={handleEffectFilterClick}
                 />
               )}
 
@@ -711,6 +722,7 @@ export default function RecipeLibraryPage() {
                   onAnalyzeEffects={handleAnalyzeEffects}
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
+                  onEffectFilterClick={handleEffectFilterClick}
                 />
               )}
 
@@ -827,14 +839,15 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
   onMarketingAnalysis?: (id: string) => void,
   onAnalyzeEffects?: (id: string) => void,
   analyzingRecipeId?: string | null,
-  failedRecipes?: Set<string>
+  failedRecipes?: Set<string>,
+  onEffectFilterClick?: (category: string) => void
 }) {
   // Get analysis status for a recipe
   const getAnalysisStatus = (recipe: RecipeLibraryItem): 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed' => {
@@ -860,6 +873,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             onMarketingAnalysis={recipe.recipeType === 'template' ? onMarketingAnalysis : undefined}
             onAnalyzeEffects={onAnalyzeEffects}
             analysisStatus={getAnalysisStatus(recipe)}
+            onEffectFilterClick={onEffectFilterClick}
           />
         ))}
       </div>
