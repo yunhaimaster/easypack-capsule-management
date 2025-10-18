@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { getEffectsSummary } from '@/lib/parse-effects'
 import { AnalysisStatusBadge } from './analysis-status-badge'
 import { EffectBadges } from './effect-badges'
+import { RecipeActionsMenu } from './recipe-actions-menu'
 
 interface RecipeListItemProps {
   recipe: RecipeLibraryItem
@@ -20,9 +21,12 @@ interface RecipeListItemProps {
   onAnalyzeEffects?: (id: string) => void
   analysisStatus?: 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed'
   onEffectFilterClick?: (category: string) => void
+  onCopy?: (id: string) => void
+  onExport?: (id: string) => void
+  onDelete?: (id: string) => void
 }
 
-export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick }: RecipeListItemProps) {
+export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarketingAnalysis, onAnalyzeEffects, analysisStatus, onEffectFilterClick, onCopy, onExport, onDelete }: RecipeListItemProps) {
   const isTemplate = recipe.recipeType === 'template'
   
   return (
@@ -136,6 +140,20 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
                 <span>創建訂單</span>
               </Button>
             )}
+            
+            {/* Actions Menu */}
+            <RecipeActionsMenu
+              recipe={recipe}
+              onView={onView}
+              onEdit={onEdit}
+              onAnalyzeEffects={onAnalyzeEffects}
+              onMarketingAnalysis={onMarketingAnalysis}
+              onCreateOrder={onCreateOrder}
+              onCopy={onCopy}
+              onExport={onExport}
+              onDelete={onDelete}
+              analysisStatus={analysisStatus}
+            />
           </div>
           
           {/* 操作按鈕 - 移動版（僅圖標） */}

@@ -366,6 +366,128 @@ export default function RecipeLibraryPage() {
     })
   }
 
+  // Recipe action handlers
+  const handleCopyRecipe = async (recipeId: string) => {
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    try {
+      const recipeData = {
+        recipeName: `${recipe.recipeName} (副本)`,
+        recipeType: recipe.recipeType,
+        ingredients: recipe.ingredients.map(ing => ({
+          materialName: ing.materialName,
+          unitContentMg: ing.unitContentMg
+        })),
+        productName: recipe.productName,
+        customerName: recipe.customerName,
+        notes: recipe.notes
+      }
+
+      const response = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(recipeData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showToast({
+          title: '複製成功',
+          description: '配方已成功複製',
+          variant: 'default'
+        })
+        fetchRecipes()
+      } else {
+        showToast({
+          title: '複製失敗',
+          description: result.error || '無法複製配方',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      console.error('Copy recipe error:', error)
+      showToast({
+        title: '複製失敗',
+        description: '無法連接到服務器',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const handleExportRecipe = (recipeId: string) => {
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    const exportData = {
+      recipeName: recipe.recipeName,
+      recipeType: recipe.recipeType,
+      productName: recipe.productName,
+      customerName: recipe.customerName,
+      ingredients: recipe.ingredients,
+      aiEffectsAnalysis: recipe.aiEffectsAnalysis,
+      notes: recipe.notes,
+      exportDate: new Date().toISOString()
+    }
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    showToast({
+      title: '導出成功',
+      description: '配方已導出為 JSON 檔案',
+      variant: 'default'
+    })
+  }
+
+  const handleDeleteRecipe = async (recipeId: string) => {
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    // eslint-disable-next-line no-alert
+    if (!window.confirm(`確定要刪除配方「${recipe.recipeName}」嗎？此操作無法撤銷。`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/recipes/${recipeId}`, {
+        method: 'DELETE'
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showToast({
+          title: '刪除成功',
+          description: '配方已成功刪除',
+          variant: 'default'
+        })
+        fetchRecipes()
+      } else {
+        showToast({
+          title: '刪除失敗',
+          description: result.error || '無法刪除配方',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      console.error('Delete recipe error:', error)
+      showToast({
+        title: '刪除失敗',
+        description: '無法連接到服務器',
+        variant: 'destructive'
+      })
+    }
+  }
+
   // Filter recipes by effect category
   const filteredRecipes = useMemo(() => {
     if (effectFilter === 'all') return recipes
@@ -599,6 +721,9 @@ export default function RecipeLibraryPage() {
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
                   onEffectFilterClick={handleEffectFilterClick}
+                  onCopy={handleCopyRecipe}
+                  onExport={handleExportRecipe}
+                  onDelete={handleDeleteRecipe}
                 />
               )}
 
@@ -764,6 +889,9 @@ export default function RecipeLibraryPage() {
                   analyzingRecipeId={analyzingRecipeId}
                   failedRecipes={failedRecipes}
                   onEffectFilterClick={handleEffectFilterClick}
+                  onCopy={handleCopyRecipe}
+                  onExport={handleExportRecipe}
+                  onDelete={handleDeleteRecipe}
                 />
               )}
 
@@ -888,7 +1016,7 @@ export default function RecipeLibraryPage() {
 }
 
 // Recipe Grid Component
-function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick }: { 
+function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeEffects, analyzingRecipeId, failedRecipes, onEffectFilterClick, onCopy, onExport, onDelete }: { 
   recipes: RecipeLibraryItem[], 
   router: any, 
   viewMode: 'list' | 'card',
@@ -896,7 +1024,10 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
   onAnalyzeEffects?: (id: string) => void,
   analyzingRecipeId?: string | null,
   failedRecipes?: Set<string>,
-  onEffectFilterClick?: (category: string) => void
+  onEffectFilterClick?: (category: string) => void,
+  onCopy?: (id: string) => void,
+  onExport?: (id: string) => void,
+  onDelete?: (id: string) => void
 }) {
   // Get analysis status for a recipe
   const getAnalysisStatus = (recipe: RecipeLibraryItem): 'analyzed' | 'analyzing' | 'failed' | 'not-analyzed' => {
@@ -923,6 +1054,9 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onAnalyzeE
             onAnalyzeEffects={onAnalyzeEffects}
             analysisStatus={getAnalysisStatus(recipe)}
             onEffectFilterClick={onEffectFilterClick}
+            onCopy={onCopy}
+            onExport={onExport}
+            onDelete={onDelete}
           />
         ))}
       </div>
