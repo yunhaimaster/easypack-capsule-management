@@ -358,3 +358,239 @@ If any answer is "yes", use the appropriate MCP server.
 
 **Remember**: These tools exist to make you more effective. Use them!
 
+---
+
+## AI Model Parameter Optimization Guide
+
+You are an AI Model Optimization Specialist. **You MUST apply these optimization principles** when working with AI models to ensure maximum performance, cost efficiency, and output quality.
+
+### AI Model Parameter Optimization Rules
+
+#### 1. Task-Specific Parameter Selection
+
+**Creative Tasks** (Recipe Generation, Marketing Content, Label Design):
+```typescript
+{
+  temperature: 0.6-0.8,        // High creativity
+  top_p: 0.9-0.95,            // Good diversity
+  frequency_penalty: 0.1-0.2,  // Reduce repetition
+  presence_penalty: 0.1        // Encourage new topics
+}
+```
+
+**Analytical Tasks** (Granulation Analysis, Ingredient Analysis, Price Analysis):
+```typescript
+{
+  temperature: 0.2-0.4,        // Balanced precision
+  top_p: 0.9-0.95,            // Focused but flexible
+  frequency_penalty: 0.0,      // Allow key term repetition
+  presence_penalty: 0.0        // Don't avoid important concepts
+}
+```
+
+**Consensus Tasks** (Granulation Consensus, Synthesis):
+```typescript
+{
+  temperature: 0.1-0.2,        // Maximum consistency
+  top_p: 0.9-0.95,            // Focused synthesis
+  frequency_penalty: 0.0,      // Allow repeated conclusions
+  presence_penalty: 0.0        // Don't avoid key points
+}
+```
+
+**Interactive Tasks** (Chat, Suggestions, Q&A):
+```typescript
+{
+  temperature: 0.4-0.6,        // Engaging but consistent
+  top_p: 0.9-0.95,            // Good variety
+  frequency_penalty: 0.1,      // Reduce repetitive suggestions
+  presence_penalty: 0.1        // Encourage new topics
+}
+```
+
+#### 2. Cost Optimization Strategies
+
+**Token Usage Optimization:**
+- Set `max_tokens` based on actual needs (not maximum allowed)
+- Use dynamic token limits based on task complexity
+- Implement caching for repeated similar queries
+- Monitor and track token consumption per endpoint
+
+**Model Selection Guidelines:**
+- Use cost-effective models for simple tasks
+- Reserve premium models for complex analytical work
+- Implement tiered model selection based on query complexity
+- Consider response time vs cost trade-offs
+
+#### 3. Performance Monitoring Requirements
+
+**Mandatory Metrics Tracking:**
+- Token usage per request
+- Response time and quality
+- Cost per successful task completion
+- User satisfaction and engagement metrics
+
+**Quality Gates:**
+- Response relevance score > 85%
+- Cost efficiency ratio < 0.1 tokens per character output
+- User satisfaction > 90%
+- Error rate < 2%
+
+#### 4. AI Model Usage Decision Matrix
+
+| Task Type | Model Preference | Temperature | Max Tokens | Priority |
+|-----------|------------------|-------------|------------|----------|
+| Creative Content | GPT-5, Claude | 0.6-0.8 | 6000-8000 | High |
+| Analysis | DeepSeek, GPT-5 | 0.2-0.4 | 4000-8000 | High |
+| Consensus | Claude, DeepSeek | 0.1-0.2 | 2000-4000 | Medium |
+| Interactive | GPT-5 Mini, GPT-5 | 0.4-0.6 | 800-2000 | High |
+
+#### 5. Parameter Optimization Workflow
+
+**Before Implementing AI Features:**
+1. **Analyze Task Type** - Determine if creative, analytical, consensus, or interactive
+2. **Select Optimal Parameters** - Use task-specific parameter guidelines
+3. **Estimate Token Usage** - Set appropriate max_tokens limits
+4. **Plan Cost Optimization** - Consider caching and model selection
+5. **Design Monitoring** - Plan metrics tracking and quality gates
+
+**During Implementation:**
+1. **Use Parameter Optimizer** - Leverage `src/lib/ai/parameter-optimizer.ts`
+2. **Implement Dynamic Selection** - Adjust parameters based on task complexity
+3. **Add Cost Monitoring** - Track token usage and costs
+4. **Test Quality Gates** - Verify response quality and relevance
+
+**After Deployment:**
+1. **Monitor Performance** - Track metrics and user satisfaction
+2. **Optimize Parameters** - Adjust based on real usage patterns
+3. **A/B Test Variations** - Compare different parameter configurations
+4. **Update Guidelines** - Refine optimization rules based on results
+
+#### 6. Anti-Patterns (Don't Do This)
+
+**❌ BAD: Using default parameters for all tasks**
+```typescript
+// Don't use the same parameters for all AI endpoints
+const defaultParams = { temperature: 0.7, max_tokens: 8000 }
+```
+
+**✅ GOOD: Task-specific optimization**
+```typescript
+// Use optimized parameters based on task type
+const creativeParams = { temperature: 0.7, max_tokens: 6000, frequency_penalty: 0.1 }
+const analyticalParams = { temperature: 0.3, max_tokens: 8000, frequency_penalty: 0.0 }
+```
+
+**❌ BAD: Ignoring cost optimization**
+```typescript
+// Don't set unnecessarily high token limits
+max_tokens: 32000  // Too high for most tasks
+```
+
+**✅ GOOD: Optimized token usage**
+```typescript
+// Set appropriate limits based on actual needs
+max_tokens: 16000  // Optimized for translation tasks
+max_tokens: 6000   // Sufficient for recipe generation
+```
+
+#### 7. Integration with Existing Tools
+
+**Use Sequential Thinking for:**
+- Complex AI parameter optimization decisions
+- Analyzing AI model performance trade-offs
+- Planning AI feature architecture
+
+**Use Context7 for:**
+- Researching latest AI model capabilities
+- Finding AI optimization best practices
+- Understanding model-specific parameters
+
+**Use BrightData for:**
+- Researching AI model pricing and availability
+- Finding current AI optimization benchmarks
+- Checking competitor AI implementations
+
+---
+
+**AI Optimization Goal**: Achieve maximum performance and quality while minimizing costs through intelligent parameter selection and continuous optimization.
+
+---
+
+## AI Model Integration Architecture
+
+You are an AI Integration Specialist for the Easy Health system.
+
+### AI Model Configuration
+
+#### Current Models
+- **Smart AI & Order AI**: `openai/gpt-5-mini` (chat/Q&A)
+- **Granulation Analyzer**: `openai/gpt-5`, `anthropic/claude-sonnet-4.5`, `x-ai/grok-4` (parallel analysis)
+- **AI Recipe Generator**: `openai/gpt-5`, `anthropic/claude-sonnet-4.5`, `x-ai/grok-4` (parallel analysis)
+- **Granulation Consensus**: `anthropic/claude-sonnet-4.5` (cross-analysis)
+
+### Critical Rules - NO REASONING PARAMETERS
+⚠️ **IMPORTANT**: All AI models run as-is without any reasoning/thinking configuration.
+
+**NEVER add these parameters:**
+- ❌ `reasoning_enabled`
+- ❌ `thinking_enabled`
+- ❌ `thinking_budget`
+- ❌ `enableReasoning`
+- ❌ `supportsReasoning`
+- ❌ `deepThinking`
+
+**Why:**
+- GPT-5 has built-in reasoning that activates automatically (no config needed)
+- Claude Sonnet 4.5 runs optimally in standard mode
+- Grok 4 has no native reasoning mode
+- GPT-5 Mini has no reasoning capability
+- Manual reasoning configs add complexity without benefit
+
+### API Integration
+- All AI calls go through OpenRouter API (`https://openrouter.ai/api/v1/chat/completions`)
+- Use streaming responses (Server-Sent Events) for real-time output
+- Implement AbortController for cancellable requests
+- Handle rate limits and API errors gracefully
+- Display loading states during AI processing
+
+### Request Format
+```typescript
+// Standard request (no reasoning params)
+{
+  model: "openai/gpt-5-mini",
+  messages: [...],
+  stream: true
+}
+```
+
+### UI Patterns for AI
+- Use `AIThinkingIndicator` for loading states (simple spinner, no reasoning UI)
+- Render markdown with `MarkdownRenderer` component
+- Show suggestions as clickable buttons
+- Implement copy, download, and retry actions
+- Use `LiquidGlassModal` for AI chat interfaces
+- **NO** deep thinking checkboxes
+- **NO** reasoning toggle switches
+- **NO** thinking step displays
+
+### Error Handling
+- Catch and display API errors in toast notifications
+- Provide retry mechanisms for failed requests
+- Never expose API keys or internal errors to users
+- Log errors for debugging but show user-friendly messages
+- Handle network timeouts gracefully (30s default)
+
+### Context Management
+- Smart AI: Gets all orders + page context
+- Order AI: Gets single order + detailed ingredients
+- Granulation: Gets formula ingredients array
+- Recipe Generator: Gets target effects + constraints
+
+### Model Selection Guidelines
+- Use GPT-5 Mini for general Q&A (fast, cost-effective)
+- Use GPT-5 for complex analysis requiring deep reasoning
+- Use Claude for consensus/synthesis tasks
+- Use Grok 4 for creative/alternative perspectives
+- Run 3 models in parallel for comprehensive analysis
+
