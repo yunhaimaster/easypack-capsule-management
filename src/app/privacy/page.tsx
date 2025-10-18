@@ -1,5 +1,3 @@
-'use client'
-
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'

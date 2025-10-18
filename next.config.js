@@ -11,6 +11,16 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     webpackMemoryOptimizations: true,
   },
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+    minimumCacheTTL: 86400, // 24 hours
+  },
 }
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({

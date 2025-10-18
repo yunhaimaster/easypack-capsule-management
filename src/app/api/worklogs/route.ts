@@ -7,6 +7,7 @@ import { DateTime } from 'luxon'
 import { calculateWorkUnits } from '@/lib/worklog'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 180 // 3 minutes
 
 const worklogFilterSchema = z.object({
   orderKeyword: z.string().optional(),

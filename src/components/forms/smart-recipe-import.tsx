@@ -517,8 +517,9 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                         alt="上傳的配方圖片"
                         width={800}
                         height={600}
+                        quality={85}
+                        sizes="(max-width: 768px) 100vw, 800px"
                         className="w-full h-auto max-h-[300px] object-contain"
-                        unoptimized
                       />
                     </div>
                   </div>

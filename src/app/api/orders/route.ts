@@ -9,6 +9,7 @@ import { logger } from '@/lib/logger'
 import { jsonSuccess, jsonError } from '@/lib/api-response'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 300 // 5 minutes
 
 export async function GET(request: NextRequest) {
   try {

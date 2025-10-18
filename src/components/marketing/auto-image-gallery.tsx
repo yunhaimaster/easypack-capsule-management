@@ -446,7 +446,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                     alt={getImageTypeLabel(image.type)}
                     fill
                     className="object-contain"
-                    unoptimized
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 )}
               {image.status === 'error' && (
