@@ -38,6 +38,7 @@ import { useToast } from '@/components/ui/toast-provider'
 import { SmartTemplateImport } from '@/components/forms/smart-template-import'
 import { RecipeListItem } from '@/components/recipe-library/recipe-list-item'
 import { BatchAnalysisModal } from '@/components/recipe-library/batch-analysis-modal'
+import { AdvancedFilters } from '@/components/recipe-library/advanced-filters'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
 
@@ -85,6 +86,10 @@ export default function RecipeLibraryPage() {
   
   // Effect filter state
   const [effectFilter, setEffectFilter] = useState<string>('all')
+  
+  // Advanced filters state
+  const [selectedEffects, setSelectedEffects] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name' | 'usage' | 'ingredients'>('newest')
 
   // Fetch recipes
   const fetchRecipes = useCallback(async () => {
@@ -350,6 +355,26 @@ export default function RecipeLibraryPage() {
     })
   }
 
+  // Advanced filter handlers
+  const handleEffectToggle = (effect: string) => {
+    setSelectedEffects(prev => 
+      prev.includes(effect) 
+        ? prev.filter(e => e !== effect)
+        : [...prev, effect]
+    )
+  }
+
+  const handleClearAllFilters = () => {
+    setSelectedEffects([])
+    setEffectFilter('all')
+    setSortBy('newest')
+    showToast({
+      title: '已清除篩選',
+      description: '所有篩選條件已重置',
+      variant: 'default'
+    })
+  }
+
   // Batch analysis handlers
   const handleOpenBatchAnalysis = () => {
     const unanalyzed = recipes.filter(r => !r.aiEffectsAnalysis)
@@ -488,15 +513,47 @@ export default function RecipeLibraryPage() {
     }
   }
 
-  // Filter recipes by effect category
+  // Filter and sort recipes
   const filteredRecipes = useMemo(() => {
-    if (effectFilter === 'all') return recipes
+    let filtered = [...recipes]
     
-    return recipes.filter(recipe => {
-      const categories = getRecipeCategories(recipe.aiEffectsAnalysis)
-      return categories.includes(effectFilter)
+    // Apply effect filter (legacy single filter)
+    if (effectFilter !== 'all') {
+      filtered = filtered.filter(recipe => {
+        const categories = getRecipeCategories(recipe.aiEffectsAnalysis)
+        return categories.includes(effectFilter)
+      })
+    }
+    
+    // Apply multi-select effect filters
+    if (selectedEffects.length > 0) {
+      filtered = filtered.filter(recipe => {
+        const categories = getRecipeCategories(recipe.aiEffectsAnalysis)
+        // AND logic: recipe must have all selected effects
+        return selectedEffects.every(effect => categories.includes(effect))
+      })
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        case 'oldest':
+          return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+        case 'name':
+          return a.recipeName.localeCompare(b.recipeName, 'zh-TW')
+        case 'usage':
+          return (b.productionCount || 0) - (a.productionCount || 0)
+        case 'ingredients':
+          return (b.ingredients?.length || 0) - (a.ingredients?.length || 0)
+        default:
+          return 0
+      }
     })
-  }, [recipes, effectFilter])
+    
+    return filtered
+  }, [recipes, effectFilter, selectedEffects, sortBy])
 
   // Get category counts
   const categoryCounts = useMemo(() => {
