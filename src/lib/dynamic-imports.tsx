@@ -21,11 +21,39 @@ export function createDynamicImport(
 
 // Pre-configured dynamic imports for common components
 export const DynamicComponents = {
-  // Note: These components will be added as they become available
-  // ModernForm: createDynamicImport(
-  //   () => import('@/components/forms/modern-form').then(mod => ({ default: mod.ModernForm })),
-  //   { ssr: false }
-  // ),
+  // Marketing components - heavy and not critical for initial load
+  MarketingAssistant: createDynamicImport(
+    () => import('@/components/marketing/marketing-analysis').then(mod => ({ default: mod.MarketingAnalysis })),
+    { ssr: false }
+  ),
+  ImageGenerator: createDynamicImport(
+    () => import('@/components/marketing/image-generator').then(mod => ({ default: mod.ImageGenerator })),
+    { ssr: false }
+  ),
+  BlueprintGenerator: createDynamicImport(
+    () => import('@/components/marketing/blueprint-generator').then(mod => ({ default: mod.BlueprintGenerator })),
+    { ssr: false }
+  ),
+  
+  // Recipe library components - large datasets
+  RecipeLibrary: createDynamicImport(
+    () => import('@/components/recipe-library/recipe-list-item').then(mod => ({ default: mod.RecipeListItem })),
+    { ssr: false }
+  ),
+  BatchAnalysisModal: createDynamicImport(
+    () => import('@/components/recipe-library/batch-analysis-modal').then(mod => ({ default: mod.BatchAnalysisModal })),
+    { ssr: false }
+  ),
+  
+  // AI components - heavy processing
+  SmartAIAssistant: createDynamicImport(
+    () => import('@/components/ai/smart-ai-assistant').then(mod => ({ default: mod.SmartAIAssistant })),
+    { ssr: false }
+  ),
+  AIAssistant: createDynamicImport(
+    () => import('@/components/ai/ai-assistant').then(mod => ({ default: mod.AIAssistant })),
+    { ssr: false }
+  ),
 }
 
 // Lazy loading utility for images

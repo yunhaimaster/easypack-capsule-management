@@ -216,12 +216,12 @@ export default function AIRecipeGeneratorPage() {
               // Ignore, handled after loop
             }
           } catch (err) {
-            console.error('解析 AI 流式資料錯誤:', err)
+            // console.error('解析 AI 流式資料錯誤:', err)
           }
         }
       }
     } catch (err) {
-      console.error('AI 配方生成錯誤:', err)
+      // console.error('AI 配方生成錯誤:', err)
       setError(err instanceof Error ? err.message : '配方生成失敗，請稍後再試')
     } finally {
       setIsGenerating(false)
@@ -250,7 +250,7 @@ export default function AIRecipeGeneratorPage() {
         await navigator.clipboard.writeText(content)
         // 可以在這裡添加複製成功的提示
       } catch (err) {
-        console.error('複製失敗:', err)
+        // console.error('複製失敗:', err)
       }
     }
   }
@@ -343,7 +343,7 @@ export default function AIRecipeGeneratorPage() {
               }))
             }
           } catch (error) {
-            console.error('解析重試回應失敗:', error)
+            // console.error('解析重試回應失敗:', error)
           }
         }
       }
