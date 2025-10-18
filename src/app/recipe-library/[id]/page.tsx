@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
@@ -50,7 +50,9 @@ import { IngredientWarnings } from '@/components/recipe-library/ingredient-warni
 import { AIInsightsPanel } from '@/components/recipe-library/ai-insights-panel'
 import { cn } from '@/lib/utils'
 
-export default function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function RecipeDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
+  const { id: recipeId } = params
   const router = useRouter()
   const { showToast } = useToast()
   const [recipe, setRecipe] = useState<RecipeLibraryItem | null>(null)
@@ -60,15 +62,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
   const [deleting, setDeleting] = useState(false)
   const [syncingNotes, setSyncingNotes] = useState(false)
   const [editRecipeOpen, setEditRecipeOpen] = useState(false) // 🆕 編輯配方對話框狀態
-  const [recipeId, setRecipeId] = useState<string>('')
-
-  // Handle async params
-  useEffect(() => {
-    params.then(({ id }) => setRecipeId(id))
-  }, [params])
 
   const fetchRecipe = useCallback(async () => {
-    if (!recipeId) return
     try {
       setLoading(true)
       const response = await fetch(`/api/recipes/${recipeId}`)

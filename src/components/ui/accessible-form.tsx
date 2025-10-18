@@ -62,15 +62,15 @@ export function FormField({
   // Clone child and pass accessibility props
   const childWithProps = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, {
+      return React.cloneElement(child as any, {
         id,
         'aria-invalid': !!error,
         'aria-describedby': [errorId, helperId, descriptionId]
           .filter(Boolean)
           .join(' ') || undefined,
         'aria-required': required,
-        ...child.props,
-      } as any)
+        ...(child.props as Record<string, any>),
+      })
     }
     return child
   })
