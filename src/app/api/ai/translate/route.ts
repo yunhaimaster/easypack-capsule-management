@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,11 +15,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 從環境變數獲取 API 配置
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       console.error('OpenRouter API 密鑰未配置')
       return NextResponse.json(
         { error: '翻譯服務暫時無法使用，請稍後再試' },
@@ -45,34 +45,28 @@ export async function POST(request: NextRequest) {
 
 請翻譯以下文字：`
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Easy Health Translation Service'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: text }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: text }
+      ],
+      {
         max_tokens: 16000,       // 優化 token 使用，支持長文本翻譯
         temperature: 0.1,        // 低溫度確保翻譯準確性，適度提高一致性
         top_p: 0.9,             // 優化 top_p 平衡準確性與效率
         frequency_penalty: 0.0,  // 翻譯不需要懲罰重複
         presence_penalty: 0.0,   // 翻譯不需要懲罰存在
         stream: false            // 翻譯任務不需要流式輸出
-      })
-    })
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API 錯誤:', errorText)
-      throw new Error('翻譯服務暫時無法使用')
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const translatedText = data.choices?.[0]?.message?.content

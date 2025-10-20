@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,10 +15,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務暫時無法使用，請稍後再試' },
         { status: 500 }
@@ -41,36 +42,28 @@ export async function POST(request: NextRequest) {
 
 注意：請提供具體的價格數據、供應商名稱和聯繫方式，以便用戶可以直接使用。`
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Easy Health AI Web Price Search'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `請搜索${materialName}的最新價格信息，包括供應商、價格、質量等級等詳細信息` }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `請搜索${materialName}的最新價格信息，包括供應商、價格、質量等級等詳細信息` }
+      ],
+      {
         max_tokens: 8000,
         temperature: 0.3,
         top_p: 0.95,
         frequency_penalty: 0.0,
-        presence_penalty: 0.0
-      })
-    })
+        presence_penalty: 0.0,
+        stream: false
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API 錯誤:', errorText)
-      return NextResponse.json(
-        { success: false, error: 'AI 服務暫時無法回應，請稍後再試' },
-        { status: 500 }
-      )
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const aiResponse = data.choices?.[0]?.message?.content || ''
@@ -108,10 +101,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務暫時無法使用，請稍後再試' },
         { status: 500 }
@@ -129,34 +121,26 @@ export async function GET(request: NextRequest) {
 
 請使用香港書面語繁體中文回答，信息要準確且最新。`
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Easy Health AI Quick Price Search'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `請快速搜索${materialName}的最新價格` }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `請快速搜索${materialName}的最新價格` }
+      ],
+      {
         max_tokens: 8000,
         temperature: 0.3,
-        top_p: 0.95
-      })
-    })
+        top_p: 0.95,
+        stream: false
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API 錯誤:', errorText)
-      return NextResponse.json(
-        { success: false, error: 'AI 服務暫時無法回應，請稍後再試' },
-        { status: 500 }
-      )
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const aiResponse = data.choices?.[0]?.message?.content || ''
