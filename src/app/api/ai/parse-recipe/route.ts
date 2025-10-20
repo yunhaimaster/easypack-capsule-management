@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
+import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,11 +17,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 從環境變數獲取 API 配置
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       logger.error('OpenRouter API 密鑰未配置')
       return NextResponse.json(
         { error: 'AI 服務暫時無法使用，請稍後再試' },
@@ -151,44 +152,39 @@ export async function POST(request: NextRequest) {
     // 根據輸入類型選擇不同的模型
     const model = image ? 'qwen/qwen3-vl-235b-a22b-instruct' : 'deepseek/deepseek-chat-v3.1'
     
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Easy Health Recipe Parser'
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: image 
-          ? [
-              { role: 'system', content: systemPrompt },
-              { 
-                role: 'user', 
-                content: [
-                  { type: 'text', text: userPrompt },
-                  { type: 'image_url', image_url: { url: image } }
-                ]
-              }
-            ]
-          : [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ],
+    const payload = buildBaseRequest(
+      model,
+      image 
+        ? [
+            { role: 'system', content: systemPrompt },
+            { 
+              role: 'user', 
+              content: [
+                { type: 'text', text: userPrompt },
+                { type: 'image_url', image_url: { url: image } }
+              ]
+            }
+          ]
+        : [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+      {
         max_tokens: 32000,       // 設置到極限，確保複雜配方完整解析
         temperature: 0.05,       // 極低溫度，確保解析精確度
         top_p: 0.95,            // 提高 top_p
         frequency_penalty: 0.0,  // 移除懲罰，保持解析一致性
-        presence_penalty: 0.0    // 移除懲罰
-      })
-    })
+        presence_penalty: 0.0,   // 移除懲罰
+        stream: false
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      logger.error('OpenRouter API 錯誤', { errorText })
-      throw new Error('OpenRouter API 請求失敗')
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     logger.debug('配方解析 API 回應', {

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
+import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,10 +10,9 @@ export async function POST(request: NextRequest) {
   try {
     const { materialName, analysisType, enableReasoning } = await request.json()
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務暫時無法使用，請稍後再試' },
         { status: 500 }
@@ -53,41 +55,33 @@ ${JSON.stringify(priceData, null, 2)}
 
 請使用香港書面語繁體中文回答，確保分析專業、準確且實用。`
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Easy Health AI Price Analyzer'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `請分析${materialName}的價格趨勢和採購建議` }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `請分析${materialName}的價格趨勢和採購建議` }
+      ],
+      {
         max_tokens: 6000,       // 優化 token 使用
         temperature: 0.2,       // 適度提高分析深度
         top_p: 0.9,            // 優化分析準確性
         frequency_penalty: 0.0,  // 允許重複關鍵分析點
         presence_penalty: 0.0,   // 不避免重要分析概念
+        stream: false,
         ...(enableReasoning && {
           reasoning: {
             effort: "high"
           }
         })
-      })
-    })
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API 錯誤:', errorText)
-      return NextResponse.json(
-        { success: false, error: 'AI 服務暫時無法回應，請稍後再試' },
-        { status: 500 }
-      )
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const aiResponse = data.choices?.[0]?.message?.content || ''
