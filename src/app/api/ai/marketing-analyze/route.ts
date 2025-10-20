@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
+import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
+import { validateApiKey, validateIngredients } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
-
-const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-const MODEL_ID = 'deepseek/deepseek-chat-v3.1'
 
 const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總監與包裝設計顧問，擅長結合市場洞察、品牌定位與法規要求。
 
@@ -194,65 +194,53 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients } = await request.json()
 
-    if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
-      return NextResponse.json({ error: '請提供要分析的配方原料' }, { status: 400 })
+    // Validate ingredients
+    const ingredientValidation = validateIngredients(ingredients)
+    if (!ingredientValidation.valid) {
+      return NextResponse.json({ error: ingredientValidation.error }, { status: 400 })
     }
 
-    const filteredIngredients = ingredients
-      .filter((ing: any) => ing?.materialName && Number(ing?.unitContentMg) > 0)
-      .map((ing: any) => ({
-        materialName: String(ing.materialName),
-        unitContentMg: Number(ing.unitContentMg)
-      }))
+    const filteredIngredients = ingredientValidation.data!
 
-    if (filteredIngredients.length === 0) {
-      return NextResponse.json({ error: '至少提供一項有效原料' }, { status: 400 })
-    }
-
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json({ error: 'AI 服務暫時無法使用，請稍後再試' }, { status: 500 })
     }
 
     const systemPrompt = buildSystemPrompt()
     const userPrompt = `請為以下膠囊產品配方生成完整的行銷策略與包裝設計方案：\n\n${formatIngredients(filteredIngredients)}\n\n請提供詳細且符合香港法規的行銷建議。`
 
-    const encoder = new TextEncoder()
+    const encoder = createSSEEncoder()
 
     const stream = new ReadableStream({
       async start(controller) {
         const sendEvent = (event: string, data: Record<string, unknown>) => {
-          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
+          sendSSEEvent(controller, encoder, event, data)
         }
 
         try {
-          const response = await fetch(OPENROUTER_API_URL, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-              'Content-Type': 'application/json',
-              'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-              'X-Title': 'Marketing Assistant - DeepSeek Chat v3.1'
-            },
-            body: JSON.stringify({
-              model: MODEL_ID,
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-              ],
+          const payload = buildBaseRequest(
+            'deepseek/deepseek-chat-v3.1',
+            [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            {
               max_tokens: 12000,
               temperature: 0.4,
               top_p: 0.9,
               frequency_penalty: 0.0,
               presence_penalty: 0.1,
               stream: true
-            })
-          })
+            }
+          )
 
-          if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(errorText || '模型請求失敗')
-          }
+          const response = await fetchOpenRouter(
+            payload,
+            process.env.OPENROUTER_API_KEY!,
+            process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+          )
 
           if (!response.body) {
             throw new Error('模型沒有返回任何資料')
@@ -267,8 +255,8 @@ export async function POST(request: NextRequest) {
             if (done) break
 
             buffer += decoder.decode(value, { stream: true })
-            const events = buffer.split('\n\n')
-            buffer = events.pop() || ''
+            const { events, remaining } = parseStreamBuffer(buffer)
+            buffer = remaining
 
             for (const eventBlock of events) {
               const lines = eventBlock.split('\n')
@@ -308,13 +296,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive'
-      }
-    })
+    return createStreamResponse(stream)
   } catch (error) {
     logger.error('行銷分析總體錯誤', {
       error: error instanceof Error ? error.message : String(error)
