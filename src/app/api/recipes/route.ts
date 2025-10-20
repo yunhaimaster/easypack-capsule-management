@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const capsuleSize = searchParams.get('capsuleSize') || undefined
     const capsuleType = searchParams.get('capsuleType') || undefined
     const recipeType = searchParams.get('recipeType') as 'production' | 'template' | 'all' | null // 🆕 配方類型篩選
+    const effectCategories = searchParams.get('effectCategories')?.split(',').filter(Boolean) || [] // 🆕 功效類別篩選
     const dateFrom = searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined
     const dateTo = searchParams.get('dateTo') ? new Date(searchParams.get('dateTo')!) : undefined
     const page = parseInt(searchParams.get('page') || '1')
@@ -41,15 +42,36 @@ export async function GET(request: NextRequest) {
       where.AND.push({ recipeType })
     }
 
-    // 關鍵字搜尋（配方名稱、客戶、產品）
+    // 關鍵字搜尋（配方名稱、客戶、產品、描述、功效）
     if (keyword) {
       where.AND.push({
         OR: [
           { recipeName: { contains: keyword, mode: 'insensitive' } },
           { customerName: { contains: keyword, mode: 'insensitive' } },
-          { productName: { contains: keyword, mode: 'insensitive' } }
+          { productName: { contains: keyword, mode: 'insensitive' } },
+          { description: { contains: keyword, mode: 'insensitive' } },
+          { aiEffectsAnalysis: { contains: keyword, mode: 'insensitive' } }
         ]
       })
+    }
+
+    // 🆕 功效類別篩選（服務器端）
+    if (effectCategories.length > 0) {
+      const effectConditions = effectCategories.map(category => {
+        const categoryData = EFFECT_CATEGORIES[category as keyof typeof EFFECT_CATEGORIES]
+        const keywords = categoryData?.keywords || []
+        if (keywords.length === 0) return null
+        
+        return {
+          OR: keywords.map(keyword => ({
+            aiEffectsAnalysis: { contains: keyword, mode: 'insensitive' as const }
+          }))
+        }
+      }).filter(Boolean)
+      
+      if (effectConditions.length > 0) {
+        where.AND.push(...effectConditions)
+      }
     }
 
     // 客戶名稱
@@ -93,30 +115,49 @@ export async function GET(request: NextRequest) {
       delete where.AND
     }
 
+    // 🆕 原料篩選（使用優化的方法）
+    let recipeIdsToFilter: string[] | null = null
+    if (ingredientName) {
+      // 使用 raw SQL 查詢符合原料條件的配方 ID（利用 GIN 索引）
+      const matchingRecipes = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id 
+        FROM recipe_library 
+        WHERE is_active = true
+        AND EXISTS (
+          SELECT 1 
+          FROM jsonb_array_elements(ingredients::jsonb) AS ing
+          WHERE LOWER(ing->>'materialName') LIKE LOWER(${`%${ingredientName}%`})
+        )
+      `
+      recipeIdsToFilter = matchingRecipes.map(r => r.id)
+      
+      // 如果沒有匹配的配方，返回空結果
+      if (recipeIdsToFilter.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: {
+            recipes: [],
+            pagination: { page, limit, total: 0, totalPages: 0 },
+            categoryCounts: { all: 0 }
+          }
+        })
+      }
+      
+      // 將原料篩選條件加入 where
+      where.AND = where.AND || []
+      where.AND.push({ id: { in: recipeIdsToFilter } })
+    }
+
     // 查詢總數
     const total = await prisma.recipeLibrary.count({ where })
 
     // 查詢配方列表
-    let recipes = await prisma.recipeLibrary.findMany({
+    const recipes = await prisma.recipeLibrary.findMany({
       where,
       orderBy: { [sortBy]: sortOrder },
       skip: (page - 1) * limit,
       take: limit
     })
-
-    // 如果需要按原料篩選，需要在查詢後過濾（因為 JSON 欄位無法直接查詢）
-    if (ingredientName) {
-      recipes = recipes.filter(recipe => {
-        try {
-          const ingredients = JSON.parse(recipe.ingredients) as Array<{ materialName: string }>
-          return ingredients.some(ing =>
-            ing.materialName.toLowerCase().includes(ingredientName.toLowerCase())
-          )
-        } catch {
-          return false
-        }
-      })
-    }
 
     // 轉換資料格式
     const formattedRecipes: RecipeLibraryItem[] = recipes.map(recipe => ({
@@ -131,26 +172,29 @@ export async function GET(request: NextRequest) {
       sourceType: recipe.sourceType as 'order' | 'manual' | 'batch_import' // 🆕 類型轉換
     }))
 
-    // 計算類別統計（基於所有符合 where 條件的配方，不僅限於當前頁）
-    const allRecipesForCounts = await prisma.recipeLibrary.findMany({
-      where,
-      select: {
-        id: true,
-        aiEffectsAnalysis: true
-      }
-    })
-
-    const categoryCounts: Record<string, number> = { all: allRecipesForCounts.length }
+    // 🆕 優化：類別統計只在未選擇功效篩選時計算
+    let categoryCounts: Record<string, number> = { all: total }
     
-    Object.keys(EFFECT_CATEGORIES).forEach(key => {
-      categoryCounts[key] = allRecipesForCounts.filter(recipe => 
-        getRecipeCategories(recipe.aiEffectsAnalysis).includes(key)
+    // 如果沒有功效篩選，計算各類別數量
+    if (effectCategories.length === 0) {
+      const allRecipesForCounts = await prisma.recipeLibrary.findMany({
+        where,
+        select: {
+          id: true,
+          aiEffectsAnalysis: true
+        }
+      })
+      
+      Object.keys(EFFECT_CATEGORIES).forEach(key => {
+        categoryCounts[key] = allRecipesForCounts.filter(recipe => 
+          getRecipeCategories(recipe.aiEffectsAnalysis).includes(key)
+        ).length
+      })
+      
+      categoryCounts.uncategorized = allRecipesForCounts.filter(recipe => 
+        getRecipeCategories(recipe.aiEffectsAnalysis).includes('uncategorized')
       ).length
-    })
-    
-    categoryCounts.uncategorized = allRecipesForCounts.filter(recipe => 
-      getRecipeCategories(recipe.aiEffectsAnalysis).includes('uncategorized')
-    ).length
+    }
 
     return NextResponse.json({
       success: true,

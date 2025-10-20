@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -18,6 +19,8 @@ interface AdvancedFiltersProps {
   onEffectToggle: (effect: string) => void
   sortBy: 'newest' | 'oldest' | 'name' | 'usage' | 'ingredients'
   onSortChange: (sort: 'newest' | 'oldest' | 'name' | 'usage' | 'ingredients') => void
+  ingredientFilter?: string
+  onIngredientFilterChange?: (value: string) => void
   onClearAll: () => void
   className?: string
 }
@@ -27,10 +30,12 @@ export function AdvancedFilters({
   onEffectToggle,
   sortBy,
   onSortChange,
+  ingredientFilter = '',
+  onIngredientFilterChange,
   onClearAll,
   className
 }: AdvancedFiltersProps) {
-  const hasActiveFilters = selectedEffects.length > 0
+  const hasActiveFilters = selectedEffects.length > 0 || ingredientFilter.length > 0
 
   return (
     <Card className="liquid-glass-card">
@@ -53,6 +58,19 @@ export function AdvancedFilters({
             </Button>
           )}
         </div>
+
+        {/* Ingredient Search */}
+        {onIngredientFilterChange && (
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-neutral-700">原料搜索</label>
+            <Input
+              placeholder="搜索原料名稱（如：維生素C）"
+              value={ingredientFilter}
+              onChange={(e) => onIngredientFilterChange(e.target.value)}
+              className="h-9"
+            />
+          </div>
+        )}
 
         {/* Sort */}
         <div className="space-y-2">
@@ -120,7 +138,9 @@ export function AdvancedFilters({
         {/* Active Filters Summary */}
         {hasActiveFilters && (
           <div className="pt-2 border-t text-xs text-neutral-600">
-            已選擇 {selectedEffects.length} 個類別
+            {selectedEffects.length > 0 && `已選擇 ${selectedEffects.length} 個類別`}
+            {selectedEffects.length > 0 && ingredientFilter && ' · '}
+            {ingredientFilter && `搜索原料: ${ingredientFilter}`}
           </div>
         )}
       </div>

@@ -92,21 +92,28 @@ export default function RecipeLibraryPage() {
   // Advanced filters state
   const [selectedEffects, setSelectedEffects] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name' | 'usage' | 'ingredients'>('newest')
+  const [ingredientFilter, setIngredientFilter] = useState<string>('')
+  const [quickFilter, setQuickFilter] = useState<string | null>(null)
 
   // Fetch recipes
   const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true)
-      // When filters are active, fetch all recipes to enable proper filtering
-      const hasActiveFilters = selectedEffects.length > 0
+      // 🆕 優化：始終分頁，服務器端處理功效篩選和原料搜索
       const params = new URLSearchParams({
-        page: hasActiveFilters ? '1' : page.toString(),
-        limit: hasActiveFilters ? '1000' : '12', // Fetch all when filtering
+        page: page.toString(),
+        limit: '12', // 始終分頁
         keyword: searchKeyword,
         recipeType: activeTab, // 🆕 根據標籤頁篩選
+        effectCategories: selectedEffects.join(','), // 🆕 傳給後端
         sortBy: 'createdAt',
         sortOrder: 'desc'
       })
+      
+      // 添加原料篩選（如果有）
+      if (ingredientFilter) {
+        params.set('ingredientName', ingredientFilter)
+      }
 
       const response = await fetch(`/api/recipes?${params}`)
       const result = await response.json()
@@ -133,7 +140,7 @@ export default function RecipeLibraryPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, searchKeyword, activeTab, selectedEffects, showToast])
+  }, [page, searchKeyword, activeTab, selectedEffects, ingredientFilter, showToast])
 
   // Fetch counts for both types
   const fetchCounts = useCallback(async () => {
@@ -393,11 +400,41 @@ export default function RecipeLibraryPage() {
     setSelectedEffects([])
     setEffectFilter('all')
     setSortBy('newest')
+    setIngredientFilter('')
+    setQuickFilter(null)
     showToast({
       title: '已清除篩選',
       description: '所有篩選條件已重置',
       variant: 'default'
     })
+  }
+
+  const handleQuickFilter = (filter: string) => {
+    if (quickFilter === filter) {
+      setQuickFilter(null) // Toggle off
+      return
+    }
+    
+    setQuickFilter(filter)
+    
+    // Apply quick filter logic
+    switch (filter) {
+      case 'recent':
+        setSortBy('newest')
+        break
+      case 'popular':
+        setSortBy('usage')
+        break
+      case 'vitaminC':
+        setIngredientFilter('維生素C')
+        break
+      case 'calcium':
+        setIngredientFilter('鈣')
+        break
+      case 'collagen':
+        setIngredientFilter('膠原蛋白')
+        break
+    }
   }
 
   // Batch analysis handlers
@@ -673,6 +710,46 @@ export default function RecipeLibraryPage() {
                         </Button>
                       </div>
                     </div>
+                    
+                    {/* Quick Filters */}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge 
+                        variant={quickFilter === 'recent' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('recent')}
+                      >
+                        🕒 最近生產
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'popular' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('popular')}
+                      >
+                        ⭐ 常用配方
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'vitaminC' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('vitaminC')}
+                      >
+                        🍊 含維生素C
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'calcium' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('calcium')}
+                      >
+                        🦴 含鈣配方
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'collagen' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('collagen')}
+                      >
+                        ✨ 含膠原蛋白
+                      </Badge>
+                    </div>
+
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Button
                         onClick={() => setShowImportDialog(true)}
@@ -693,6 +770,8 @@ export default function RecipeLibraryPage() {
                 onEffectToggle={handleEffectToggle}
                 sortBy={sortBy}
                 onSortChange={setSortBy}
+                ingredientFilter={ingredientFilter}
+                onIngredientFilterChange={setIngredientFilter}
                 onClearAll={handleClearAllFilters}
               />
 
@@ -807,6 +886,46 @@ export default function RecipeLibraryPage() {
                         </Button>
                       </div>
                     </div>
+                    
+                    {/* Quick Filters */}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge 
+                        variant={quickFilter === 'recent' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('recent')}
+                      >
+                        🕒 最近生產
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'popular' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('popular')}
+                      >
+                        ⭐ 常用配方
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'vitaminC' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('vitaminC')}
+                      >
+                        🍊 含維生素C
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'calcium' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('calcium')}
+                      >
+                        🦴 含鈣配方
+                      </Badge>
+                      <Badge 
+                        variant={quickFilter === 'collagen' ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all hover:bg-neutral-100"
+                        onClick={() => handleQuickFilter('collagen')}
+                      >
+                        ✨ 含膠原蛋白
+                      </Badge>
+                    </div>
+
                     <div className="flex flex-col sm:flex-row gap-2">
                       <SmartTemplateImport 
                         onImport={handleBatchImportTemplates}
@@ -829,6 +948,8 @@ export default function RecipeLibraryPage() {
                 onEffectToggle={handleEffectToggle}
                 sortBy={sortBy}
                 onSortChange={setSortBy}
+                ingredientFilter={ingredientFilter}
+                onIngredientFilterChange={setIngredientFilter}
                 onClearAll={handleClearAllFilters}
               />
 
