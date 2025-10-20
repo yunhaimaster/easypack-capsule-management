@@ -7,6 +7,17 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   typedRoutes: true,
+  // Optimize Vercel deployment by excluding heavy Prisma engines from function bundles
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@prisma/engines/**',
+      'node_modules/@prisma/client/node_modules/**',
+    ],
+  },
+  // Ensure Prisma Client is included only where needed
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/@prisma/client/**/*'],
+  },
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     webpackMemoryOptimizations: true,
