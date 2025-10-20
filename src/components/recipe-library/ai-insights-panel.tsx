@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, Lightbulb, Copy, Check } from 'lucide-react'
+import { Loader2, Lightbulb, Copy, Check, Clock } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useToast } from '@/components/ui/toast-provider'
 import type { RecipeLibraryItem } from '@/types'
@@ -18,28 +18,94 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
   const [loading, setLoading] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [elapsedTime, setElapsedTime] = useState(0)
+  const [progressMessage, setProgressMessage] = useState('')
+
+  // Progress tracking effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (loading) {
+      setElapsedTime(0)
+      interval = setInterval(() => {
+        setElapsedTime(prev => {
+          const newTime = prev + 1
+          // Update progress message based on elapsed time
+          if (newTime < 10) {
+            setProgressMessage('正在連接 AI 服務...')
+          } else if (newTime < 30) {
+            setProgressMessage('AI 正在分析配方...')
+          } else if (newTime < 60) {
+            setProgressMessage('AI 正在生成優化建議...')
+          } else if (newTime < 90) {
+            setProgressMessage('AI 正在完善分析結果...')
+          } else {
+            setProgressMessage('AI 分析時間較長，請稍候...')
+          }
+          return newTime
+        })
+      }, 1000)
+    } else {
+      setProgressMessage('')
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [loading])
 
   const analyzeSuggestions = async () => {
     setLoading(true)
+    setElapsedTime(0)
+    setProgressMessage('正在連接 AI 服務...')
+    
     try {
+      // Create AbortController for client-side timeout handling
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 130000) // 2 minutes + 10 seconds buffer
+
       const response = await fetch('/api/recipes/suggest-alternatives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           recipeId: recipe.id,
           ingredients: recipe.ingredients 
-        })
+        }),
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
       const data = await response.json()
       
       if (data.success && data.suggestions) {
         setSuggestions(data.suggestions)
         setAnalyzed(true)
+        showToast({
+          title: '分析完成',
+          description: `已生成 ${data.suggestions.length} 個優化建議`
+        })
+      } else {
+        throw new Error(data.error || '分析失敗')
       }
     } catch (error) {
       console.error('Suggestions error:', error)
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        showToast({
+          title: '分析超時',
+          description: 'AI 分析時間過長，請稍後再試',
+          variant: 'destructive'
+        })
+      } else {
+        showToast({
+          title: '分析失敗',
+          description: error instanceof Error ? error.message : '無法獲取優化建議，請重試',
+          variant: 'destructive'
+        })
+      }
     } finally {
       setLoading(false)
+      setElapsedTime(0)
+      setProgressMessage('')
     }
   }
 
@@ -120,6 +186,26 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
                 </>
               )}
             </Button>
+            
+            {loading && (
+              <div className="space-y-2 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-primary-600" />
+                  <span className="text-sm font-medium text-primary-800">
+                    已用時間：{Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
+                <p className="text-xs text-primary-600">
+                  {progressMessage}
+                </p>
+                <div className="w-full bg-primary-200 rounded-full h-1.5">
+                  <div 
+                    className="bg-primary-600 h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((elapsedTime / 120) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <ScrollArea className="h-[600px] pr-4">

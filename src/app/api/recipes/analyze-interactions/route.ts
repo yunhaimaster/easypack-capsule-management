@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
       .map((ing: any) => `${ing.materialName} (${ing.unitContentMg}mg)`)
       .join('\n')
 
+    // Create AbortController for timeout handling
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minutes timeout
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -70,8 +74,11 @@ ${ingredientList}
         ],
         temperature: 0.3,
         max_tokens: 2000
-      })
+      }),
+      signal: controller.signal
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       throw new Error('AI API 請求失敗')
@@ -79,6 +86,10 @@ ${ingredientList}
 
     const data = await response.json()
     const content = data.choices?.[0]?.message?.content?.trim()
+    
+    if (!content) {
+      throw new Error('AI 回應為空')
+    }
     
     // Parse JSON response
     const result = JSON.parse(content)
@@ -89,9 +100,17 @@ ${ingredientList}
     })
   } catch (error) {
     console.error('Analyze interactions error:', error)
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return NextResponse.json({
+        success: false,
+        error: '分析超時，請稍後再試'
+      }, { status: 408 })
+    }
+    
     return NextResponse.json({
       success: false,
-      error: '分析失敗'
+      error: '分析失敗，請重試'
     }, { status: 500 })
   }
 }

@@ -145,14 +145,17 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
 
   const { isDirty, resetDirty } = useDirtyForm(form as any, initialFormData)
 
-  // Keyboard shortcut for save (Cmd+S / Ctrl+S)
-  const handleKeyboardSave = () => {
-    if (!isSubmitting) {
-      handleSubmit(onSubmit)()
-    }
+  // Unified save handler for both keyboard shortcut and save button
+  const handleSave = async () => {
+    if (isSubmitting) return
+    
+    // Use handleSubmit to trigger form validation and submission
+    const submitHandler = handleSubmit(onSubmit)
+    await submitHandler()
   }
 
-  useSaveShortcut(handleKeyboardSave, !isSubmitting)
+  // Keyboard shortcut for save (Cmd+S / Ctrl+S)
+  useSaveShortcut(handleSave, !isSubmitting)
 
   // 計算單粒總重量
   const unitTotalWeight = watchedIngredients.reduce(
@@ -1318,7 +1321,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
 
       {/* Sticky Action Bar replaces bottom buttons */}
       <StickyActionBar
-        onSave={handleSubmit(onSubmit)}
+        onSave={handleSave}
         onCancel={() => router.back()}
         isDirty={isDirty}
         isSaving={isSubmitting}
