@@ -57,6 +57,10 @@ export interface OpenRouterRequestOptions {
   reasoning?: {
     effort: 'low' | 'medium' | 'high'
   }
+  modalities?: string[]
+  response_format?: {
+    type: 'json_object'
+  }
 }
 
 export interface ValidationResult<T> {

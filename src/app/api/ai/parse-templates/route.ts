@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 interface ParsedIngredient {
   materialName: string
@@ -31,7 +30,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'OpenRouter API Key 未配置' },
         { status: 500 }
@@ -119,31 +120,23 @@ export async function POST(request: NextRequest) {
     }
 
     // 調用 OpenRouter API
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-        'X-Title': 'Easy Health - Recipe Parser'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4.1-mini', // 使用快速且準確的模型
-        messages,
+    const payload = buildBaseRequest(
+      'openai/gpt-4.1-mini', // 使用快速且準確的模型
+      messages,
+      {
         temperature: 0.1, // 低溫度確保準確的模板解析
         top_p: 0.9,       // 優化準確性與效率平衡
+        stream: false,
         response_format: { type: 'json_object' }
-      })
-    })
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API error:', errorText)
-      return NextResponse.json(
-        { success: false, error: `AI 解析失敗: ${response.statusText}` },
-        { status: response.status }
-      )
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const content = data.choices?.[0]?.message?.content

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const MODEL_ID = 'google/gemini-2.5-flash-image'
 
 export const dynamic = 'force-dynamic'
@@ -17,50 +18,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const apiKey = process.env.OPENROUTER_API_KEY
-    if (!apiKey) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務尚未設定，請聯絡管理員' },
         { status: 500 }
       )
     }
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Packaging Image Generator'
-      },
-      body: JSON.stringify({
-        model: MODEL_ID,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Generate a professional packaging render. size ${width}x${height}px. Description: ${prompt}`
-              }
-            ]
-          }
-        ],
+    const payload = buildBaseRequest(
+      MODEL_ID,
+      [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: `Generate a professional packaging render. size ${width}x${height}px. Description: ${prompt}`
+            }
+          ]
+        }
+      ],
+      {
+        stream: false,
         modalities: ['image', 'text']
-      })
-    })
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      logger.error('圖像生成 API 失敗', {
-        status: response.status,
-        error: errorText
-      })
-      return NextResponse.json(
-        { success: false, error: '圖像生成請求失敗' },
-        { status: response.status }
-      )
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url
