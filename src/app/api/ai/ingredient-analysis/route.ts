@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // 嘗試獲取訂單數據進行分析
     let ordersData: any[] = []
     let ingredientsData: any[] = []
-    let productionData: any[] = []
+    const productionData: any[] = []
     
     try {
       // 獲取訂單數據

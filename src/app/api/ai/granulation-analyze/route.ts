@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
 
                 for (const eventBlock of events) {
                   const lines = eventBlock.split('\n')
-                  let dataPayload = ''
+                  const dataPayload = ''
 
                   for (const line of lines) {
                     if (line.startsWith('data:')) {
