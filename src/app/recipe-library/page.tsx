@@ -40,10 +40,12 @@ import { AdvancedFilters } from '@/components/recipe-library/advanced-filters'
 import { RecipeActionsMenu } from '@/components/recipe-library/recipe-actions-menu'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
+import { useRecipeReview } from '@/hooks/use-recipe-review'
 
 export default function RecipeLibraryPage() {
   const router = useRouter()
   const { showToast } = useToast()
+  const { openReview, drawer } = useRecipeReview()
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'production' | 'template'>('template')
@@ -212,42 +214,45 @@ export default function RecipeLibraryPage() {
 
   // Batch import templates
   const handleBatchImportTemplates = async (parsedRecipes: any[]) => {
-    try {
-      setImportingTemplates(true)
+    // Open review dialog instead of directly importing
+    openReview(parsedRecipes, async (selectedRecipes) => {
+      try {
+        setImportingTemplates(true)
 
-      const response = await fetch('/api/recipes/batch-import-templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipes: parsedRecipes })
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        showToast({
-          title: '導入完成',
-          description: result.message,
-          variant: 'default'
+        const response = await fetch('/api/recipes/batch-import-templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipes: selectedRecipes })
         })
-        fetchRecipes()
-        fetchCounts()
-      } else {
+
+        const result = await response.json()
+
+        if (result.success) {
+          showToast({
+            title: '導入完成',
+            description: result.message,
+            variant: 'default'
+          })
+          fetchRecipes()
+          fetchCounts()
+        } else {
+          showToast({
+            title: '導入失敗',
+            description: result.error,
+            variant: 'destructive'
+          })
+        }
+      } catch (error) {
+        console.error('Batch import templates error:', error)
         showToast({
           title: '導入失敗',
-          description: result.error,
+          description: '無法連接到服務器',
           variant: 'destructive'
         })
+      } finally {
+        setImportingTemplates(false)
       }
-    } catch (error) {
-      console.error('Batch import templates error:', error)
-      showToast({
-        title: '導入失敗',
-        description: '無法連接到服務器',
-        variant: 'destructive'
-      })
-    } finally {
-      setImportingTemplates(false)
-    }
+    })
   }
 
   // Individual recipe analysis
@@ -985,6 +990,9 @@ export default function RecipeLibraryPage() {
         recipes={unanalyzedRecipes}
         onComplete={handleBatchAnalysisComplete}
       />
+
+      {/* Recipe Review Drawer */}
+      {drawer}
     </div>
   )
 }
