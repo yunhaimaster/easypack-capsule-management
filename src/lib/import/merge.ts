@@ -89,7 +89,8 @@ export function dryRunMerge(current: IngredientItem[], imported: IngredientItem[
 export function mergeIngredientsSmart(
   current: IngredientItem[],
   imported: IngredientItem[],
-  selectedIds: Set<string>
+  selectedIds: Set<string>,
+  edits?: Map<string, { name: string; value: number }>
 ): IngredientItem[] {
   // Build lookup by normalized name for current
   const currentIndexByName = new Map<string, number>()
@@ -106,15 +107,19 @@ export function mergeIngredientsSmart(
 
     if (!selectedIds.has(normName)) continue
 
+    // Apply edits if available
+    const edit = edits?.get(normName)
+    const finalName = edit?.name || imp.materialName
+    const finalValue = edit?.value !== undefined ? edit.value : Number(isFinite(imp.unitContentMg as number) ? imp.unitContentMg : 0)
+
     const idx = currentIndexByName.get(normName)
-    const to = Number(isFinite(imp.unitContentMg as number) ? imp.unitContentMg : 0)
     if (idx === undefined) {
-      if (to > 0) {
-        result.push({ materialName: imp.materialName, unitContentMg: to })
+      if (finalValue > 0) {
+        result.push({ materialName: finalName, unitContentMg: finalValue })
       }
     } else {
-      if (to > 0) {
-        result[idx] = { ...result[idx], unitContentMg: to }
+      if (finalValue > 0) {
+        result[idx] = { ...result[idx], materialName: finalName, unitContentMg: finalValue }
       }
     }
   }

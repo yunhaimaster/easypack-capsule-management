@@ -16,9 +16,28 @@ export function useImportReview() {
     setIsOpen(true)
   }, [])
 
-  const handleApply = useCallback((selectedIds: Set<string>) => {
+  const handleApply = useCallback((selectedIds: Set<string>, edits: Map<string, { name: string; value: number }>) => {
     if (!context) return
-    const merged = mergeIngredientsSmart(context.current, context.imported, selectedIds)
+    
+    // Apply edits to imported items before merging
+    const editedImported = context.imported.map(item => {
+      // Find the normalized name for this item to match with edits
+      const normalizedName = item.materialName.trim().toLowerCase()
+      const edit = Array.from(edits.entries()).find(([id]) => {
+        // Check if this edit applies to this item
+        return id === normalizedName || edits.has(item.materialName)
+      })
+      
+      if (edit) {
+        return {
+          materialName: edit[1].name,
+          unitContentMg: edit[1].value
+        }
+      }
+      return item
+    })
+    
+    const merged = mergeIngredientsSmart(context.current, editedImported, selectedIds, edits)
     context.onApply(merged)
     setIsOpen(false)
     setDiff(null)
