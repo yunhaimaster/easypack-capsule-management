@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
+import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
+import { validateApiKey, validateIngredients } from '@/lib/api/validation'
+import { IngredientInput } from '@/types/api'
 
 export const dynamic = 'force-dynamic'
-
-const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-const MODEL_CATALOG = [
-  { id: 'deepseek/deepseek-chat-v3.1', name: 'DeepSeek Chat v3.1' },
-  { id: 'openai/gpt-4.1-mini', name: 'OpenAI GPT-4.1 Mini' },
-  { id: 'x-ai/grok-4-fast', name: 'xAI Grok 4 Fast' }
-]
 
 const buildSystemPrompt = () => `你是一個專業的膠囊配方製粒分析專家。
 
@@ -81,26 +77,21 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients, singleModel, reasoningMap } = await request.json()
 
-    if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
-      return NextResponse.json({ error: '請提供要分析的配方原料' }, { status: 400 })
+    // Validate ingredients
+    const ingredientValidation = validateIngredients(ingredients)
+    if (!ingredientValidation.valid) {
+      return NextResponse.json({ error: ingredientValidation.error }, { status: 400 })
     }
 
-    const filteredIngredients = ingredients
-      .filter((ing: any) => ing?.materialName && Number(ing?.unitContentMg) > 0)
-      .map((ing: any) => ({
-        materialName: String(ing.materialName),
-        unitContentMg: Number(ing.unitContentMg)
-      }))
+    const filteredIngredients = ingredientValidation.data!
 
-    if (filteredIngredients.length === 0) {
-      return NextResponse.json({ error: '至少提供一項有效原料' }, { status: 400 })
-    }
-
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json({ error: 'AI 服務暫時無法使用，請稍後再試' }, { status: 500 })
     }
 
+    const MODEL_CATALOG = getStandardModelCatalog()
     const selectedModels = singleModel
       ? MODEL_CATALOG.filter((model) => model.id === singleModel)
       : MODEL_CATALOG
@@ -112,45 +103,43 @@ export async function POST(request: NextRequest) {
     const systemPrompt = buildSystemPrompt()
     const userPrompt = `請分析以下配方是否需要製粒：\n\n${formatIngredients(filteredIngredients)}\n\n請提供詳細的製粒必要性分析。`
 
-    const basePayload = {
-      messages: [
+    const basePayload = buildBaseRequest(
+      'dummy-model', // Will be replaced per model
+      [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 8000,
-      temperature: 0.3,
-      top_p: 0.9,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
-      stream: true
-    }
+      {
+        max_tokens: 8000,
+        temperature: 0.3,
+        top_p: 0.9,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0
+      }
+    )
 
-    const encoder = new TextEncoder()
+    const encoder = createSSEEncoder()
 
     const stream = new ReadableStream({
       async start(controller) {
         const sendEvent = (event: string, data: Record<string, unknown>) => {
-          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
+          sendSSEEvent(controller, encoder, event, data)
         }
 
         await Promise.all(
           selectedModels.map(async (model) => {
             sendEvent('start', { modelId: model.id, modelName: model.name })
             try {
-              const response = await fetch(OPENROUTER_API_URL, {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-                  'Content-Type': 'application/json',
-                  'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-                  'X-Title': `Granulation Analyzer - ${model.name}`
-                },
-                body: JSON.stringify({
-                  ...basePayload,
-                  model: model.id
-                  // Removed all reasoning/thinking parameters - models run as-is
-                })
-              })
+              const payload = {
+                ...basePayload,
+                model: model.id
+              }
+              
+              const response = await fetchOpenRouter(
+                payload,
+                process.env.OPENROUTER_API_KEY!,
+                process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+              )
 
               if (!response.ok) {
                 const errorText = await response.text()
@@ -170,8 +159,8 @@ export async function POST(request: NextRequest) {
                 const { done, value } = await reader.read()
                 if (done) break
                 buffer += decoder.decode(value, { stream: true })
-                const events = buffer.split('\n\n')
-                buffer = events.pop() || ''
+                const { events, remaining } = parseStreamBuffer(buffer)
+                buffer = remaining
 
                 for (const eventBlock of events) {
                   const lines = eventBlock.split('\n')
@@ -217,13 +206,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive'
-      }
-    })
+    return createStreamResponse(stream)
   } catch (error) {
     logger.error('製粒分析總體錯誤', {
       error: error instanceof Error ? error.message : String(error)

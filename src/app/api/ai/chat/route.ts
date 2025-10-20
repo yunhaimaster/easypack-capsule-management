@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { CleanOrderData, OrderWithIngredients } from '@/types/api'
 
 export const dynamic = 'force-dynamic'
 
 // 清理訂單數據，移除系統內部ID，只保留用戶相關信息
-function cleanOrderData(orders: any[]): any[] {
+function cleanOrderData(orders: any[]): CleanOrderData[] {
   return orders.map(order => ({
     customerName: order.customerName,
     productName: order.productName,
@@ -362,8 +363,8 @@ ${JSON.stringify(cleanedRecentOrders, null, 2)}` : ''}
 
 ${cleanedOrders && cleanedOrders.length > 0 ? `完整的訂單數據庫統計：
 - 總訂單數：${cleanedOrders.length}
-- 未完工訂單數：${cleanedOrders.filter((order: any) => !order.completionDate).length}
-- 已完工訂單數：${cleanedOrders.filter((order: any) => order.completionDate).length}
+- 未完工訂單數：${cleanedOrders.filter((order: CleanOrderData) => !order.completionDate).length}
+- 已完工訂單數：${cleanedOrders.filter((order: CleanOrderData) => order.completionDate).length}
 
 當用戶詢問具體訂單信息時，請從以下完整數據中篩選：
 ${JSON.stringify(cleanedOrders, null, 2)}` : ''}

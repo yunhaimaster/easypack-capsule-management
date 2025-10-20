@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
+import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export const dynamic = 'force-dynamic'
-
-const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-const MODEL_CATALOG = [
-  { id: 'deepseek/deepseek-chat-v3.1', name: 'DeepSeek Chat v3.1' },
-  { id: 'openai/gpt-4.1-mini', name: 'OpenAI GPT-4.1 Mini' },
-  { id: 'x-ai/grok-4-fast', name: 'xAI Grok 4 Fast' }
-]
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,14 +17,16 @@ export async function POST(request: NextRequest) {
       singleModel
     } = await request.json()
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務暫時無法使用，請稍後再試' },
         { status: 500 }
       )
     }
 
+    const MODEL_CATALOG = getStandardModelCatalog()
     const selectedModels = singleModel
       ? MODEL_CATALOG.filter(model => model.id === singleModel)
       : MODEL_CATALOG
@@ -84,25 +81,27 @@ export async function POST(request: NextRequest) {
 
 ⚠️ 注意：生成的配方僅供理論參考，不能視為醫療建議，最終需結合法規與實驗驗證。`
 
-    const basePayload = {
-      messages: [
+    const basePayload = buildBaseRequest(
+      'dummy-model', // Will be replaced per model
+      [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請為我生成一個${targetEffect}的${dosageForm || '膠囊'}配方` }
       ],
-      max_tokens: 6000,
-      temperature: 0.7,
-      top_p: 0.9,
-      frequency_penalty: 0.1,
-      presence_penalty: 0.1,
-      stream: true
-    }
+      {
+        max_tokens: 6000,
+        temperature: 0.7,
+        top_p: 0.9,
+        frequency_penalty: 0.1,
+        presence_penalty: 0.1
+      }
+    )
 
-    const encoder = new TextEncoder()
+    const encoder = createSSEEncoder()
 
     const stream = new ReadableStream({
       async start(controller) {
         const sendEvent = (event: string, data: Record<string, unknown>) => {
-          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
+          sendSSEEvent(controller, encoder, event, data)
         }
 
         await Promise.all(
@@ -110,25 +109,16 @@ export async function POST(request: NextRequest) {
             sendEvent('start', { modelId: model.id, modelName: model.name })
 
             try {
-              const response = await fetch(OPENROUTER_API_URL, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                  'Content-Type': 'application/json',
-                  'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-                  'X-Title': `Easy Health AI Recipe Generator (${model.name})`
-                },
-                body: JSON.stringify({
-                  ...basePayload,
-                  model: model.id
-                  // Removed all reasoning/thinking parameters - models run as-is
-                })
-              })
-
-              if (!response.ok) {
-                const errorText = await response.text()
-                throw new Error(errorText || '模型請求失敗')
+              const payload = {
+                ...basePayload,
+                model: model.id
               }
+              
+              const response = await fetchOpenRouter(
+                payload,
+                process.env.OPENROUTER_API_KEY!,
+                process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+              )
 
               if (!response.body) {
                 throw new Error('模型沒有返回任何資料')
@@ -144,8 +134,8 @@ export async function POST(request: NextRequest) {
                 if (done) break
                 buffer += decoder.decode(value, { stream: true })
 
-                const events = buffer.split('\n\n')
-                buffer = events.pop() || ''
+                const { events, remaining } = parseStreamBuffer(buffer)
+                buffer = remaining
 
                 for (const eventBlock of events) {
                   const lines = eventBlock.split('\n')
@@ -192,13 +182,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive'
-      }
-    })
+    return createStreamResponse(stream)
   } catch (error) {
     console.error('AI 配方生成錯誤:', error)
     return NextResponse.json(

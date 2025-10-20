@@ -1,3 +1,138 @@
+# Quick Decision Guide
+
+**Use this for instant answers. Scroll down for detailed explanations.**
+
+## Should I use an MCP tool?
+- ✅ YES: Complex debugging, library research, current trends
+- ❌ NO: Fixing typos, obvious solutions, performance-critical paths
+- 📖 Details: See MCP Servers Integration section below
+
+## Which AI parameters?
+- Creative (recipes, marketing): temp 0.6-0.8, tokens 6000-8000
+- Analysis (granulation, ingredients): temp 0.2-0.4, tokens 4000-8000
+- Interactive (chat, Q&A): temp 0.4-0.6, tokens 800-2000
+- Simple tasks (typos, updates): temp 0.3, tokens 1000
+- 📖 Details: See AI Model Parameter Optimization section below
+
+## Can I skip build test?
+- ✅ YES: Hotfixes (use `npx tsc --noEmit`), tag commit with [HOTFIX]
+- ❌ NO: All other changes must run `npm run build`
+- 📖 Details: See Build Testing section in workspace rules
+
+## When can I deviate from design system?
+- ✅ YES: New UI pattern needed, extend with comment explaining
+- ❌ NO: Just preferences or "looks better"
+- 📖 Details: See docs/FLEXIBILITY_GUIDE.md
+
+## Rule conflict priority
+1. Security (always first)
+2. Build Stability (must deploy)
+3. Design Consistency (user experience)
+4. AI Optimization (performance/cost)
+5. Code Quality (maintainability)
+- 📖 Details: See docs/CONFLICT_RESOLUTION.md
+
+---
+
+## Flexibility & Exceptions
+
+### When to Skip MCP Tools
+✅ **Simple, well-understood tasks:**
+- Fixing typos in strings or comments
+- Adding existing design system classes
+- Updating configuration constants
+- Standard CRUD operations with established patterns
+- Bug fixes with obvious, verified solutions
+
+✅ **Performance-critical operations:**
+- Real-time features (websockets, streaming)
+- Build scripts and development tools
+- Hot path code optimizations
+
+⚠️ **Tool unavailability:**
+- MCP timeout (>30s): Proceed without, add comment
+- Context7 down: Try BrightData as fallback
+- All tools unavailable: Use existing knowledge, flag for review
+
+📖 More details: docs/FLEXIBILITY_GUIDE.md
+
+### Emergency Hotfix Procedure
+For production emergencies only:
+
+1. Run type check: `npx tsc --noEmit`
+2. Fix any type errors
+3. Commit with tag: `[HOTFIX] fix: description`
+4. Deploy immediately
+5. Run full `npm run build` in next regular commit
+
+### Simple Task AI Parameters
+For trivial operations (typos, CSS tweaks, string updates):
+```typescript
+{
+  temperature: 0.3,
+  max_tokens: 1000,
+  frequency_penalty: 0.0,
+  presence_penalty: 0.0
+}
+```
+
+### Tool Failure Fallbacks
+- **Sequential Thinking timeout**: Continue with direct analysis, note limitation
+- **Context7 unavailable**: Use BrightData to search documentation
+- **BrightData rate limited**: Use cached knowledge, mark answer as potentially outdated
+- **All MCP tools down**: Proceed with available information, add TODO to verify when tools return
+
+📖 More details: docs/FLEXIBILITY_GUIDE.md
+
+---
+
+## Conflict Resolution
+
+### Priority Hierarchy
+When rules conflict, follow this order:
+1. **Security** - Vulnerabilities, data protection, auth issues
+2. **Build Stability** - Must deploy successfully
+3. **Design Consistency** - User experience and accessibility
+4. **AI Optimization** - Performance and cost efficiency
+5. **Code Quality** - Maintainability and best practices
+
+### Quick Conflict Resolutions
+
+**Security vs Build Testing**
+→ Fix security immediately, type check only, full build after
+
+**Component Size vs Functionality**
+→ Keep together if splitting breaks cohesion, add explanatory comment
+
+**Design System vs Unique Requirement**
+→ Extend design system with new variant, document extension
+
+**AI Parameters vs Response Time**
+→ Reduce tokens or use faster model, document trade-off
+
+**Code Quality vs Deadline**
+→ Ship functional code, create tech debt ticket with TODO
+
+**MCP Tools vs Performance**
+→ Skip for simple/urgent tasks, document why
+
+**Build Test vs Hotfix Speed**
+→ Run type check only, tag [HOTFIX], full build in follow-up
+
+**Documentation vs Development Speed**
+→ Add inline comments, defer formal docs to follow-up
+
+### Decision Process
+1. Identify conflicting rules
+2. Check priority hierarchy
+3. Find matching scenario above
+4. Apply resolution
+5. Document decision in commit or comment
+
+📖 More scenarios: docs/CONFLICT_RESOLUTION.md
+
+---
+
 # MCP Servers Integration Guide
 
 You are an AI assistant with access to powerful MCP (Model Context Protocol) servers. **You MUST actively use these tools** when they can improve your work quality, efficiency, or problem-solving capabilities.
@@ -358,6 +493,51 @@ If any answer is "yes", use the appropriate MCP server.
 
 **Remember**: These tools exist to make you more effective. Use them!
 
+### Tool Failure Handling
+
+**MCP Server Timeout (>30s)**:
+- Don't wait indefinitely
+- Proceed with available knowledge
+- Add comment: `// MCP unavailable, proceeding with existing knowledge`
+- Flag for verification when tools return
+
+**Context7 Unavailable**:
+- Use BrightData as fallback for documentation
+- Search for "[library name] documentation" or "[library name] API reference"
+- Verify information recency
+
+**All Tools Down**:
+- Continue with existing knowledge base
+- Mark responses as potentially outdated
+- Add TODO to verify when tools return
+- Document in commit if making assumptions
+
+### Tool Combination Strategies
+
+**Complex Library Integration**:
+1. Sequential Thinking to plan architecture
+2. Context7 to get library documentation
+3. Implement with combined insights
+
+**Research + Analysis**:
+1. BrightData to gather current information
+2. Sequential Thinking to analyze options
+3. Make informed decision
+
+**Parallel Independent Calls**:
+- Context7 for library A + BrightData for library B (simultaneously)
+- Multiple BrightData searches in batch
+- Saves time when searches are independent
+
+**Example Workflow**:
+```typescript
+// User: "Add authentication with latest NextAuth.js"
+// 1. Context7: Get NextAuth.js docs
+// 2. Sequential Thinking: Plan integration with existing auth
+// 3. BrightData: Search for Next.js 14 App Router + NextAuth examples
+// 4. Implement combined solution
+```
+
 ---
 
 ## AI Model Parameter Optimization Guide
@@ -515,6 +695,65 @@ max_tokens: 6000   // Sufficient for recipe generation
 
 **AI Optimization Goal**: Achieve maximum performance and quality while minimizing costs through intelligent parameter selection and continuous optimization.
 
+### Simple Task Parameters
+
+For trivial operations that don't require creativity or deep analysis:
+
+```typescript
+// Use cases: Typos, CSS class additions, string updates, config changes
+{
+  model: "openai/gpt-5-mini",
+  temperature: 0.3,        // Low for consistency
+  max_tokens: 1000,        // Minimal for simple responses
+  frequency_penalty: 0.0,
+  presence_penalty: 0.0
+}
+```
+
+### Model Fallback Strategy
+
+**Primary Model Fails**:
+1. Try secondary model in same tier
+   - GPT-5 fails → Try Claude Sonnet 4.5
+   - Claude fails → Try GPT-5
+2. Document which model was used
+3. Compare quality if possible
+
+**All Models in Tier Fail**:
+1. Drop to lower tier (e.g., GPT-5 → GPT-5 Mini)
+2. Adjust expectations for response quality
+3. Document degradation in logs
+4. Retry original tier after cooldown
+
+**Complete API Failure**:
+1. Log error with timestamp
+2. Return user-friendly error message
+3. Provide manual alternative if possible
+4. Set up retry mechanism with exponential backoff
+
+### Parameter Experimentation
+
+**A/B Testing Parameters**:
+- Test on non-critical features first
+- Document results in commit message
+- Compare: quality, speed, cost, user satisfaction
+- Update guidelines if better parameters found
+
+**Example A/B Test**:
+```typescript
+// Test: Recipe generation temperature
+// A: temp 0.7 (current) vs B: temp 0.8 (test)
+// Metrics: creativity score, user rating, generation time
+// Result: [Document in commit]
+// Decision: [Keep A or switch to B]
+```
+
+**When to Experiment**:
+- Response quality is inconsistent
+- Costs are higher than expected
+- New model versions released
+- User feedback suggests improvements
+
 ---
 
 ## CRITICAL REQUIREMENTS - ALWAYS FOLLOW
@@ -605,4 +844,44 @@ You are an AI Integration Specialist for the Easy Health system.
 - Use Claude for consensus/synthesis tasks
 - Use Grok 4 for creative/alternative perspectives
 - Run 3 models in parallel for comprehensive analysis
+
+---
+
+## Additional Resources
+
+For more detailed guidance, see these documentation files:
+
+### Exception Handling & Flexibility
+📖 **docs/FLEXIBILITY_GUIDE.md**
+- When and how to bend the rules
+- Design system extension procedures
+- Performance-critical exemptions
+- Real-world examples from this project
+
+### Conflict Resolution
+📖 **docs/CONFLICT_RESOLUTION.md**
+- Priority hierarchy explained
+- 15+ common conflict scenarios with resolutions
+- Decision-making framework
+- Emergency procedures
+
+### Monitoring & Continuous Improvement
+📖 **docs/MONITORING_GUIDE.md**
+- Tracking build success, AI performance, design compliance
+- Using existing tools (Vercel, git, grep)
+- Quarterly review process
+- Red flags and improvements
+
+### Documentation Standards
+📖 **docs/DOCUMENTATION_STANDARDS.md**
+- When to document vs when it's optional
+- JSDoc templates
+- Component documentation
+- Lightweight ADR format
+- Inline comment guidelines
+
+---
+
+**Last Updated**: 2025-01-17
+**Version**: 2.0 (Enhanced with flexibility and conflict resolution)
 
