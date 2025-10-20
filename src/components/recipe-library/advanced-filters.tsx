@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { X, SlidersHorizontal } from 'lucide-react'
-import { EFFECT_CATEGORIES } from '@/lib/parse-effects'
+import { EFFECT_CATEGORIES, CATEGORY_GROUPS, getGroupedCategories } from '@/lib/parse-effects'
 
 interface AdvancedFiltersProps {
   selectedEffects: string[]
@@ -71,31 +71,50 @@ export function AdvancedFilters({
           </Select>
         </div>
 
-        {/* Effect Categories */}
-        <div className="space-y-2">
+        {/* Effect Categories - Grouped */}
+        <div className="space-y-3">
           <label className="text-xs font-medium text-neutral-700">
             功效類別 {selectedEffects.length > 0 && `(${selectedEffects.length})`}
           </label>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(EFFECT_CATEGORIES).map(([key, category]) => {
-              const isSelected = selectedEffects.includes(key)
+          
+          {/* Render groups */}
+          {Object.entries(CATEGORY_GROUPS)
+            .sort((a, b) => a[1].order - b[1].order)
+            .map(([groupKey, groupInfo]) => {
+              const groupCategories = Object.entries(EFFECT_CATEGORIES).filter(
+                ([_, cat]) => cat.group === groupKey
+              )
+              
+              if (groupCategories.length === 0) return null
+              
               return (
-                <Badge
-                  key={key}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all ${
-                    isSelected 
-                      ? 'bg-primary-600 hover:bg-primary-700' 
-                      : 'hover:bg-neutral-100'
-                  }`}
-                  onClick={() => onEffectToggle(key)}
-                >
-                  {category.name}
-                  {isSelected && <X className="h-3 w-3 ml-1" />}
-                </Badge>
+                <div key={groupKey} className="space-y-1.5">
+                  <div className="text-[10px] uppercase tracking-wide text-neutral-500 font-semibold">
+                    {groupInfo.name}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {groupCategories.map(([key, category]) => {
+                      const isSelected = selectedEffects.includes(key)
+                      return (
+                        <Badge
+                          key={key}
+                          variant={isSelected ? 'default' : 'outline'}
+                          className={`cursor-pointer transition-all text-xs ${
+                            isSelected 
+                              ? 'bg-primary-600 hover:bg-primary-700' 
+                              : 'hover:bg-neutral-100'
+                          }`}
+                          onClick={() => onEffectToggle(key)}
+                        >
+                          {category.name}
+                          {isSelected && <X className="h-3 w-3 ml-1" />}
+                        </Badge>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
-          </div>
         </div>
 
         {/* Active Filters Summary */}
