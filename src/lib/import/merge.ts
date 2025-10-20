@@ -86,6 +86,12 @@ export function dryRunMerge(current: IngredientItem[], imported: IngredientItem[
   }
 }
 
+function isEmptyIngredient(item: IngredientItem): boolean {
+  const name = (item.materialName || '').trim()
+  const value = Number(item.unitContentMg) || 0
+  return name === '' || value <= 0
+}
+
 export function mergeIngredientsSmart(
   current: IngredientItem[],
   imported: IngredientItem[],
@@ -122,6 +128,13 @@ export function mergeIngredientsSmart(
         result[idx] = { ...result[idx], materialName: finalName, unitContentMg: finalValue }
       }
     }
+  }
+
+  // Remove empty rows if we actually imported something
+  if (selectedIds.size > 0) {
+    const filtered = result.filter(item => !isEmptyIngredient(item))
+    // Ensure at least one row remains (placeholder for empty state)
+    return filtered.length > 0 ? filtered : [{ materialName: '', unitContentMg: 0 }]
   }
 
   return result
