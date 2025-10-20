@@ -339,11 +339,30 @@ export default function RecipeLibraryPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchKeyword])
 
+  // Ingredient filter with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1)
+      fetchRecipes()
+    }, 500)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ingredientFilter])
+
+  // Effect filter trigger
+  useEffect(() => {
+    setPage(1)
+    fetchRecipes()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEffects])
+
   // Reset page when changing tabs
   useEffect(() => {
     setPage(1)
     setSearchKeyword('')
     setEffectFilter('all')
+    setIngredientFilter('')
+    setSelectedEffects([])
   }, [activeTab])
 
   // Marketing analysis handler
