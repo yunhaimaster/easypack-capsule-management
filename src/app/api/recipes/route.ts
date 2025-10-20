@@ -14,14 +14,14 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
 
-    // 解析查詢參數
-    const keyword = searchParams.get('keyword') || undefined
-    const ingredientName = searchParams.get('ingredientName') || undefined
-    const customerName = searchParams.get('customerName') || undefined
-    const productName = searchParams.get('productName') || undefined
-    const category = searchParams.get('category') || undefined
-    const capsuleSize = searchParams.get('capsuleSize') || undefined
-    const capsuleType = searchParams.get('capsuleType') || undefined
+    // 解析查詢參數（確保空字符串被視為 undefined）
+    const keyword = searchParams.get('keyword')?.trim() || undefined
+    const ingredientName = searchParams.get('ingredientName')?.trim() || undefined
+    const customerName = searchParams.get('customerName')?.trim() || undefined
+    const productName = searchParams.get('productName')?.trim() || undefined
+    const category = searchParams.get('category')?.trim() || undefined
+    const capsuleSize = searchParams.get('capsuleSize')?.trim() || undefined
+    const capsuleType = searchParams.get('capsuleType')?.trim() || undefined
     const recipeType = searchParams.get('recipeType') as 'production' | 'template' | 'all' | null // 🆕 配方類型篩選
     const effectCategories = searchParams.get('effectCategories')?.split(',').filter(Boolean) || [] // 🆕 功效類別篩選
     const dateFrom = searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined

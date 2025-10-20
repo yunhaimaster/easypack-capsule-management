@@ -103,16 +103,22 @@ export default function RecipeLibraryPage() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '12', // 始終分頁
-        keyword: searchKeyword,
         recipeType: activeTab, // 🆕 根據標籤頁篩選
-        effectCategories: selectedEffects.join(','), // 🆕 傳給後端
         sortBy: 'createdAt',
         sortOrder: 'desc'
       })
       
-      // 添加原料篩選（如果有）
-      if (ingredientFilter) {
-        params.set('ingredientName', ingredientFilter)
+      // 只添加非空的搜索參數
+      if (searchKeyword && searchKeyword.trim()) {
+        params.set('keyword', searchKeyword.trim())
+      }
+      
+      if (selectedEffects.length > 0) {
+        params.set('effectCategories', selectedEffects.join(','))
+      }
+      
+      if (ingredientFilter && ingredientFilter.trim()) {
+        params.set('ingredientName', ingredientFilter.trim())
       }
 
       const response = await fetch(`/api/recipes?${params}`)
