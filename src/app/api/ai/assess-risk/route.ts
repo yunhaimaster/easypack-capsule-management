@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
 
 export async function POST(request: NextRequest) {
   try {
     const { materials } = await request.json()
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json({ error: 'OpenRouter API key not configured' }, { status: 500 })
     }
 
@@ -78,33 +79,28 @@ ${materials.map((material: string) => `- ${material}`).join('\n')}
 請基於你的專業經驗，從膠囊灌裝技術角度進行評估。
 語言要求：請使用香港書面語繁體中文，使用繁體中文字符和香港常用的專業術語，避免粵語口語。`
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://easypack-capsule.com',
-        'X-Title': 'Easy Health AI Risk Assessment'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      {
         max_tokens: 8000,
         temperature: 0.1,
         top_p: 0.95,
         frequency_penalty: 0.0,
-        presence_penalty: 0.0
-      })
-    })
+        presence_penalty: 0.0,
+        stream: false
+      }
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter API error:', errorText)
-      return NextResponse.json({ error: 'AI 風險評估服務暫時不可用' }, { status: 500 })
-    }
+    const response = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
+
 
     const data = await response.json()
     const content = data.choices?.[0]?.message?.content
