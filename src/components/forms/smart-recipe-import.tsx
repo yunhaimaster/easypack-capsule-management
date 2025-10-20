@@ -40,7 +40,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
   const [parseError, setParseError] = useState('')
   const [parseSummary, setParseSummary] = useState('')
   const [confidence, setConfidence] = useState<'高' | '中' | '低'>('中')
-  const [importMode, setImportMode] = useState<'text' | 'image'>('text')
+  const [importMode, setImportMode] = useState<'text' | 'image'>('image')
   const [isRecipeDragging, setIsRecipeDragging] = useState(false)
   const [isLoadingImage, setIsLoadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)

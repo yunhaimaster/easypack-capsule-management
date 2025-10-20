@@ -43,7 +43,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
   const [isParsing, setIsParsing] = useState(false)
   const [parsedRecipes, setParsedRecipes] = useState<ParsedRecipe[]>([])
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState<number | null>(null)
-  const [importMode, setImportMode] = useState<'text' | 'image'>('text')
+  const [importMode, setImportMode] = useState<'text' | 'image'>('image')
   const [isTemplateDragging, setIsTemplateDragging] = useState(false)
   const [isLoadingImage, setIsLoadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
