@@ -41,6 +41,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
   const [importText, setImportText] = useState('')
   const [importImages, setImportImages] = useState<string[]>([]) // 改為數組支持多圖
   const [isParsing, setIsParsing] = useState(false)
+  const [parsingProgress, setParsingProgress] = useState({ current: 0, total: 0 }) // 解析進度
   const [parsedRecipes, setParsedRecipes] = useState<ParsedRecipe[]>([])
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState<number | null>(null)
   const [importMode, setImportMode] = useState<'text' | 'image'>('image')
@@ -170,12 +171,15 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
 
     setIsParsing(true)
     setParsedRecipes([])
+    setParsingProgress({ current: 0, total: importMode === 'image' ? importImages.length : 1 })
 
     try {
       let allRecipes: ParsedRecipe[] = []
 
       if (importMode === 'text') {
         // 文字模式：單次請求
+        setParsingProgress({ current: 1, total: 1 })
+        
         const response = await fetch('/api/ai/parse-templates', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -196,6 +200,8 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
       } else {
         // 圖片模式：逐張解析
         for (let i = 0; i < importImages.length; i++) {
+          setParsingProgress({ current: i + 1, total: importImages.length })
+          
           showToast({
             title: '處理中',
             description: `正在解析第 ${i + 1} / ${importImages.length} 張圖片...`
@@ -239,6 +245,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
       })
     } finally {
       setIsParsing(false)
+      setParsingProgress({ current: 0, total: 0 })
     }
   }
 
@@ -385,7 +392,10 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                   {isParsing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      AI 解析中...
+                      {parsingProgress.total > 0 
+                        ? `AI 解析中 (${parsingProgress.current}/${parsingProgress.total})...`
+                        : 'AI 解析中...'
+                      }
                     </>
                   ) : (
                     <>
@@ -507,12 +517,16 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                   {isParsing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      AI 解析中...
+                      {parsingProgress.total > 0 
+                        ? `AI 解析中 (${parsingProgress.current}/${parsingProgress.total})...`
+                        : 'AI 解析中...'
+                      }
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
                       開始解析配方
+                      {importImages.length > 0 && ` (${importImages.length} 張圖片)`}
                     </>
                   )}
                 </Button>
