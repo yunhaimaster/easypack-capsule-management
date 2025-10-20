@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
+import { validateApiKey } from '@/lib/api/validation'
+import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
 
 export const dynamic = 'force-dynamic'
-
-const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
 
 interface ConsensusRequest {
   ingredients?: Array<{
@@ -80,8 +81,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (!OPENROUTER_API_KEY) {
+    // Validate API key
+    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
+    if (!apiKeyValidation.valid) {
       return NextResponse.json(
         { success: false, error: 'AI 服務暫時無法使用，請稍後再試' },
         { status: 500 }
@@ -98,43 +100,33 @@ ${formatAnalyses(analyses)}
 
 請綜合以上內容，產出單一最終結論與建議。`
 
-    const upstreamResponse = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://easypack-capsule-management.vercel.app',
-        'X-Title': 'Granulation Consensus Synthesizer'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
+    const payload = buildBaseRequest(
+      'deepseek/deepseek-chat-v3.1',
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      {
         temperature: 0.1,
         top_p: 0.95,
         stream: true
-        // Removed thinking_enabled - model runs as-is
-      })
-    })
+      }
+    )
 
-    if (!upstreamResponse.ok || !upstreamResponse.body) {
-      const errorText = await upstreamResponse.text().catch(() => '')
-      logger.error('Granulation consensus upstream error', {
-        status: upstreamResponse.status,
-        error: errorText
-      })
-      return new Response('Consensus upstream error', { status: 502 })
-    }
+    const upstreamResponse = await fetchOpenRouter(
+      payload,
+      process.env.OPENROUTER_API_KEY!,
+      process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
+    )
 
-    const encoder = new TextEncoder()
+
+    const encoder = createSSEEncoder()
     const decoder = new TextDecoder()
 
     const stream = new ReadableStream({
       async start(controller) {
         const sendEvent = (event: string, data: Record<string, unknown>) => {
-          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
+          sendSSEEvent(controller, encoder, event, data)
         }
 
         sendEvent('start', { modelId: 'consensus', modelName: '交叉驗證結論' })
@@ -149,8 +141,8 @@ ${formatAnalyses(analyses)}
             if (done) break
 
             buffer += decoder.decode(value, { stream: true })
-            const events = buffer.split('\n\n')
-            buffer = events.pop() || ''
+            const { events, remaining } = parseStreamBuffer(buffer)
+            buffer = remaining
 
             for (const block of events) {
               const dataLine = block.split('\n').find((line) => line.startsWith('data:'))
@@ -197,13 +189,7 @@ ${formatAnalyses(analyses)}
       }
     })
 
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream; charset=utf-8',
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive'
-      }
-    })
+    return createStreamResponse(stream)
   } catch (error) {
     logger.error('Granulation consensus handler error', {
       error: error instanceof Error ? error.message : String(error)
