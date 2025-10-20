@@ -1170,7 +1170,7 @@
 /* Interactive Liquid Glass Card */
 .liquid-glass-card-interactive {
   cursor: pointer;
-  user-select: none;
+  /* user-select: none; removed - 允許用戶複製卡片內的文字內容 */
 }
 
 .liquid-glass-card-interactive:active {
