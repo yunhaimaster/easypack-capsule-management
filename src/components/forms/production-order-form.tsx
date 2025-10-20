@@ -1031,7 +1031,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                                     return // 不更新值，保持原狀
                                   }
                                 }
-                                field.onChange(e)
+                                field.onChange(parseFloat(e.target.value) || 0)
                               }}
                             />
                           )}
