@@ -39,7 +39,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
   const { showToast } = useToast()
   const [isOpen, setIsOpen] = useState(false)
   const [importText, setImportText] = useState('')
-  const [importImage, setImportImage] = useState<string | null>(null)
+  const [importImages, setImportImages] = useState<string[]>([]) // 改為數組支持多圖
   const [isParsing, setIsParsing] = useState(false)
   const [parsedRecipes, setParsedRecipes] = useState<ParsedRecipe[]>([])
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState<number | null>(null)
@@ -49,30 +49,39 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const files = event.target.files
+    if (!files || files.length === 0) return
 
-    processImageFile(file)
+    processImageFiles(Array.from(files))
     event.target.value = ''
   }
 
-  const processImageFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      showToast({
-        title: '無效的檔案',
-        description: '請選擇圖片檔案 (JPG / PNG)。',
-        variant: 'destructive'
-      })
-      setIsTemplateDragging(false)
-      return
+  const processImageFiles = async (files: File[]) => {
+    // 驗證文件
+    const validFiles: File[] = []
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        showToast({
+          title: '跳過無效檔案',
+          description: `${file.name} 不是圖片檔案。`,
+          variant: 'destructive'
+        })
+        continue
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        showToast({
+          title: '檔案過大',
+          description: `${file.name} 大小超過 10MB，已跳過。`,
+          variant: 'destructive'
+        })
+        continue
+      }
+
+      validFiles.push(file)
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      showToast({
-        title: '檔案過大',
-        description: '圖片文件大小不能超過 10MB。',
-        variant: 'destructive'
-      })
+    if (validFiles.length === 0) {
       setIsTemplateDragging(false)
       return
     }
@@ -80,29 +89,33 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
     setIsLoadingImage(true)
     setIsTemplateDragging(false)
 
-    const reader = new FileReader()
-    
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      setImportImage(result)
+    // 讀取所有有效圖片
+    const imagePromises = validFiles.map(file => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target?.result as string)
+        reader.onerror = () => reject(new Error(`無法讀取 ${file.name}`))
+        reader.readAsDataURL(file)
+      })
+    })
+
+    try {
+      const results = await Promise.all(imagePromises)
+      setImportImages(prev => [...prev, ...results])
       setImportMode('image')
       setIsLoadingImage(false)
       showToast({
         title: '圖片已載入',
-        description: '圖片已成功上傳，可以開始解析。'
+        description: `已成功上傳 ${results.length} 張圖片，可以開始解析。`
       })
-    }
-    
-    reader.onerror = () => {
+    } catch (error) {
       setIsLoadingImage(false)
       showToast({
         title: '讀取失敗',
-        description: '無法讀取圖片檔案，請重試。',
+        description: '部分圖片無法讀取，請重試。',
         variant: 'destructive'
       })
     }
-    
-    reader.readAsDataURL(file)
   }
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -132,7 +145,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
     
     const files = event.dataTransfer.files
     if (files && files.length > 0) {
-      processImageFile(files[0])
+      processImageFiles(Array.from(files))
     }
   }
 
@@ -146,7 +159,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
       return
     }
     
-    if (importMode === 'image' && !importImage) {
+    if (importMode === 'image' && importImages.length === 0) {
       showToast({
         title: '缺少圖片',
         description: '請上傳要解析的配方圖片',
@@ -159,39 +172,64 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
     setParsedRecipes([])
 
     try {
-      const response = await fetch('/api/ai/parse-templates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: importMode === 'text' ? importText.trim() : undefined,
-          image: importMode === 'image' ? importImage : undefined
-        }),
-      })
+      let allRecipes: ParsedRecipe[] = []
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `解析失敗 (${response.status})`)
-      }
-
-      const data = await response.json()
-      
-      if (data.success && data.data?.recipes) {
-        const recipes = data.data.recipes as ParsedRecipe[]
-        
-        if (recipes.length === 0) {
-          throw new Error('未能解析到任何配方，請檢查格式')
-        }
-        
-        setParsedRecipes(recipes)
-        showToast({
-          title: '解析完成',
-          description: `成功解析 ${recipes.length} 個配方。`
+      if (importMode === 'text') {
+        // 文字模式：單次請求
+        const response = await fetch('/api/ai/parse-templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: importText.trim() })
         })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || `解析失敗 (${response.status})`)
+        }
+
+        const data = await response.json()
+        if (data.success && data.data?.recipes) {
+          allRecipes = data.data.recipes
+        } else {
+          throw new Error(data.error || '解析失敗')
+        }
       } else {
-        throw new Error(data.error || '解析失敗')
+        // 圖片模式：逐張解析
+        for (let i = 0; i < importImages.length; i++) {
+          showToast({
+            title: '處理中',
+            description: `正在解析第 ${i + 1} / ${importImages.length} 張圖片...`
+          })
+
+          const response = await fetch('/api/ai/parse-templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: importImages[i] })
+          })
+
+          if (!response.ok) {
+            console.error(`圖片 ${i + 1} 解析失敗`)
+            continue // 跳過失敗的圖片，繼續處理下一張
+          }
+
+          const data = await response.json()
+          if (data.success && data.data?.recipes) {
+            allRecipes = [...allRecipes, ...data.data.recipes]
+          }
+        }
       }
+
+      if (allRecipes.length === 0) {
+        throw new Error('未能解析到任何配方，請檢查格式')
+      }
+
+      setParsedRecipes(allRecipes)
+      showToast({
+        title: '解析完成',
+        description: importMode === 'image' 
+          ? `從 ${importImages.length} 張圖片中成功解析 ${allRecipes.length} 個配方`
+          : `成功解析 ${allRecipes.length} 個配方`
+      })
     } catch (error) {
       console.error('Parse error:', error)
       showToast({
@@ -241,11 +279,15 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
 
   const resetState = () => {
     setImportText('')
-    setImportImage(null)
-    setImportMode('text')
+    setImportImages([])
+    setImportMode('image') // 默認圖片模式
     setIsTemplateDragging(false)
     setParsedRecipes([])
     setSelectedRecipeIndex(null)
+  }
+
+  const removeImage = (index: number) => {
+    setImportImages(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleCancel = () => {
@@ -371,7 +413,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                     <Loader2 className="w-12 h-12 mx-auto mb-3 text-primary-500 animate-spin" />
                     <p className="text-sm text-primary-700 font-medium">載入圖片中...</p>
                   </div>
-                ) : !importImage ? (
+                ) : importImages.length === 0 ? (
                   <>
                     <div
                       className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
@@ -388,7 +430,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                       <p className={`font-medium ${isTemplateDragging ? 'text-success-700' : 'text-neutral-700'}`}>
                         {isTemplateDragging ? '放開以上傳圖片' : '拖放圖片至此'}
                       </p>
-                      <p className="text-neutral-500 text-xs mt-2">或點擊下方按鈕選擇文件</p>
+                      <p className="text-neutral-500 text-xs mt-2">支持多圖上傳 | 或點擊下方按鈕選擇文件</p>
                     </div>
                     <Button 
                       variant="outline"
@@ -397,7 +439,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                       size="sm"
                     >
                       <Upload className="w-4 h-4 mr-2" />
-                      選擇圖片文件
+                      選擇圖片文件（可多選）
                     </Button>
                   </>
                 ) : (
@@ -405,26 +447,45 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                     <div className="bg-success-50/80 rounded-lg p-3 border border-success-200 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-success-500" />
-                        <span className="text-sm font-medium text-success-700">圖片已上傳</span>
+                        <span className="text-sm font-medium text-success-700">已上傳 {importImages.length} 張圖片</span>
                       </div>
                       <Button
-                        onClick={() => setImportImage(null)}
+                        onClick={handleUploadClick}
                         variant="ghost"
                         size="sm"
                         className="text-success-600"
                       >
-                        更換
+                        添加更多
                       </Button>
                     </div>
-                    <div className="rounded-lg overflow-hidden border border-neutral-200">
-                      <Image
-                        src={importImage}
-                        alt="配方圖片"
-                        width={800}
-                        height={400}
-                        className="w-full h-auto max-h-[200px] object-contain bg-neutral-50"
-                        unoptimized
-                      />
+                    
+                    {/* 圖片縮略圖列表 */}
+                    <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+                      {importImages.map((img, index) => (
+                        <div key={index} className="relative rounded-lg overflow-hidden border border-neutral-200 group">
+                          <Image
+                            src={img}
+                            alt={`配方圖片 ${index + 1}`}
+                            width={400}
+                            height={200}
+                            className="w-full h-24 object-cover bg-neutral-50"
+                            unoptimized
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                            <Button
+                              onClick={() => removeImage(index)}
+                              variant="destructive"
+                              size="sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <div className="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -433,13 +494,14 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                   ref={fileInputRef}
                   type="file"
                   accept=".jpg,.jpeg,.png,.webp"
+                  multiple
                   className="sr-only"
                   onChange={handleImageUpload}
                 />
                 
                 <Button 
                   onClick={handleParse} 
-                  disabled={isParsing || !importImage}
+                  disabled={isParsing || importImages.length === 0}
                   className="w-full"
                 >
                   {isParsing ? (
