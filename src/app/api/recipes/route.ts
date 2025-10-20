@@ -115,40 +115,75 @@ export async function GET(request: NextRequest) {
       delete where.AND
     }
 
-    // 🆕 原料篩選（使用優化的方法）
-    let recipeIdsToFilter: string[] | null = null
+    // 🆕 原料篩選（後端過濾，因為 Prisma 不原生支持 JSONB 數組搜索）
+    let allRecipes: any[]
+    let filteredRecipes: any[]
+    
     if (ingredientName) {
-      // 使用 raw SQL 查詢符合原料條件的配方 ID（利用 GIN 索引）
-      const matchingRecipes = await prisma.$queryRaw<Array<{ id: string }>>`
-        SELECT id 
-        FROM recipe_library 
-        WHERE is_active = true
-        AND EXISTS (
-          SELECT 1 
-          FROM jsonb_array_elements(ingredients::jsonb) AS ing
-          WHERE LOWER(ing->>'materialName') LIKE LOWER(${`%${ingredientName}%`})
-        )
-      `
-      recipeIdsToFilter = matchingRecipes.map(r => r.id)
+      // 如果有原料篩選，我們需要獲取更多數據然後在內存中過濾
+      // 這不是最優的，但確保功能正常
+      allRecipes = await prisma.recipeLibrary.findMany({
+        where,
+        orderBy: { [sortBy]: sortOrder },
+      })
       
-      // 如果沒有匹配的配方，返回空結果
-      if (recipeIdsToFilter.length === 0) {
-        return NextResponse.json({
-          success: true,
-          data: {
-            recipes: [],
-            pagination: { page, limit, total: 0, totalPages: 0 },
-            categoryCounts: { all: 0 }
-          }
+      // 在內存中過濾包含指定原料的配方
+      filteredRecipes = allRecipes.filter(recipe => {
+        const ingredients = JSON.parse(recipe.ingredients)
+        return ingredients.some((ing: any) => 
+          ing.materialName.toLowerCase().includes(ingredientName.toLowerCase())
+        )
+      })
+      
+      // 手動分頁
+      const total = filteredRecipes.length
+      const totalPages = Math.ceil(total / limit)
+      const startIndex = (page - 1) * limit
+      const endIndex = startIndex + limit
+      const paginatedRecipes = filteredRecipes.slice(startIndex, endIndex)
+      
+      // 轉換資料格式
+      const formattedRecipes: RecipeLibraryItem[] = paginatedRecipes.map(recipe => ({
+        ...recipe,
+        sourceOrderIds: JSON.parse(recipe.sourceOrderIds) as string[],
+        ingredients: JSON.parse(recipe.ingredients),
+        tags: recipe.tags ? JSON.parse(recipe.tags) as string[] : [],
+        completionDate: recipe.lastProductionAt,
+        lastProductionAt: recipe.lastProductionAt,
+        notes: recipe.notes || undefined,
+        recipeType: recipe.recipeType as 'production' | 'template',
+        sourceType: recipe.sourceType as 'order' | 'manual' | 'batch_import'
+      }))
+      
+      // 類別統計（基於過濾後的結果）
+      let categoryCounts: Record<string, number> = { all: total }
+      if (effectCategories.length === 0) {
+        Object.keys(EFFECT_CATEGORIES).forEach(key => {
+          categoryCounts[key] = filteredRecipes.filter(recipe => 
+            getRecipeCategories(recipe.aiEffectsAnalysis).includes(key)
+          ).length
         })
+        categoryCounts.uncategorized = filteredRecipes.filter(recipe => 
+          getRecipeCategories(recipe.aiEffectsAnalysis).includes('uncategorized')
+        ).length
       }
       
-      // 將原料篩選條件加入 where
-      where.AND = where.AND || []
-      where.AND.push({ id: { in: recipeIdsToFilter } })
+      return NextResponse.json({
+        success: true,
+        data: {
+          recipes: formattedRecipes,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages
+          },
+          categoryCounts
+        }
+      })
     }
 
-    // 查詢總數
+    // 沒有原料篩選，正常查詢
     const total = await prisma.recipeLibrary.count({ where })
 
     // 查詢配方列表
