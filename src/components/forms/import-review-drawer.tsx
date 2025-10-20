@@ -124,7 +124,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
                 onChange={(e) => updateEdit(row.id, 'value', e.target.value)}
                 className="flex-1 h-8 text-sm"
                 placeholder="0"
-                step="0.01"
+                step="any"
               />
               <span className="text-xs text-neutral-600">mg</span>
             </div>

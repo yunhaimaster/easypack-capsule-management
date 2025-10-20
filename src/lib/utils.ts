@@ -13,6 +13,23 @@ export function formatNumber(num: number): string {
   return new Intl.NumberFormat('zh-TW').format(num)
 }
 
+/**
+ * Format ingredient weight with smart precision
+ * Removes trailing zeros but preserves necessary precision
+ * Supports up to 9 decimal places for micro-ingredients
+ * @param value - Weight value in mg
+ * @returns Formatted string with appropriate precision
+ */
+export function formatIngredientWeight(value: number | string | undefined | null): string {
+  if (value === undefined || value === null || value === '') return '0'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (isNaN(num) || !isFinite(num)) return '0'
+  
+  // Use JavaScript's default number formatting which removes trailing zeros
+  // This handles both large numbers (500) and small precise numbers (0.000000025)
+  return num.toString()
+}
+
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return '-'
   

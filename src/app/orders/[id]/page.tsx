@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Edit, Download, Brain, BookmarkPlus, Lock, Unlock } from 'lucide-react'
-import { formatDateOnly, formatNumber, convertWeight, calculateBatchWeight } from '@/lib/utils'
+import { formatDateOnly, formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight } from '@/lib/utils'
 import { ProductionOrder, OrderWorklog, RecipeLibraryItem } from '@/types'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
@@ -452,7 +452,7 @@ export default function OrderDetailPage() {
                     {order.ingredients.map((ingredient, index) => (
                       <TableRow key={index}>
                         <TableCell>{ingredient.materialName}</TableCell>
-                        <TableCell>{ingredient.unitContentMg.toFixed(3)}</TableCell>
+                        <TableCell>{formatIngredientWeight(ingredient.unitContentMg)}</TableCell>
                         <TableCell>
                           {ingredient.isCustomerProvided ? (
                             <span className="inline-flex items-center gap-1 text-success-600 text-xs sm:text-sm">
@@ -512,7 +512,7 @@ export default function OrderDetailPage() {
                       <div className="flex flex-col">
                         <span className="text-xs uppercase tracking-wide text-neutral-500 mb-1">單粒含量</span>
                         <span className="text-base font-semibold text-neutral-900">
-                          {ingredient.unitContentMg.toFixed(3)} mg
+                          {formatIngredientWeight(ingredient.unitContentMg)} mg
                         </span>
                       </div>
                       <div className="flex flex-col">

@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Info, Loader2, Upload, ArrowLeft, History } from 'lucide-react'
 import { FieldTranslator } from '@/components/ui/field-translator'
 import { SmartRecipeImport } from '@/components/forms/smart-recipe-import'
-import { formatNumber, convertWeight, calculateBatchWeight, copyToClipboard } from '@/lib/utils'
+import { formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight, copyToClipboard } from '@/lib/utils'
 import { calculateWorkUnits } from '@/lib/worklog'
 import { useRouter } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -1337,7 +1337,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
             <div className="text-center p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg border border-primary-200">
               <p className="text-sm text-primary-600 font-medium">單粒總重量</p>
               <p className="text-lg sm:text-xl font-semibold text-primary-800">
-                {typeof unitTotalWeight === 'number' ? unitTotalWeight.toFixed(3) : '0.000'} mg
+                {typeof unitTotalWeight === 'number' ? formatIngredientWeight(unitTotalWeight) : '0'} mg
               </p>
             </div>
             <div className="text-center p-4 bg-gradient-to-br from-success-50 to-success-100 rounded-lg border border-success-200">

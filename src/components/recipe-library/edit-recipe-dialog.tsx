@@ -321,7 +321,7 @@ export function EditRecipeDialog({
                           valueAsNumber: true
                         })}
                         type="number"
-                        step="0.01"
+                        step="any"
                         placeholder="含量 (mg)"
                         className={cn(
                           "transition-apple",

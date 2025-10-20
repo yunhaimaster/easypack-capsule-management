@@ -29,16 +29,16 @@ export function normalizeIngredientName(name: string): string {
 }
 
 export function parseUnitValue(value: string | number): number {
-  if (typeof value === 'number') return Number.isFinite(value) ? Number(value.toFixed(2)) : 0
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
   const raw = value.normalize('NFKC').trim().toLowerCase()
   if (!raw) return 0
   // Try mg/g/IU
   const mgMatch = raw.match(/([\d.]+)\s*mg/)
-  if (mgMatch) return Number(parseFloat(mgMatch[1]).toFixed(2))
+  if (mgMatch) return parseFloat(mgMatch[1])
   const gMatch = raw.match(/([\d.]+)\s*g/)
-  if (gMatch) return Number((parseFloat(gMatch[1]) * 1000).toFixed(2))
+  if (gMatch) return parseFloat(gMatch[1]) * 1000
   const numberOnly = raw.match(/^([\d.]+)$/)
-  if (numberOnly) return Number(parseFloat(numberOnly[1]).toFixed(2))
+  if (numberOnly) return parseFloat(numberOnly[1])
   // IU: vary by substance, keep as 0 to require explicit confirmation downstream
   const iuMatch = raw.match(/([\d.]+)\s*iu/)
   if (iuMatch) return 0
