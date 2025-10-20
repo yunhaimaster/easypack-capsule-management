@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/toast-provider'
 import { StickyActionBar } from '@/components/ui/sticky-action-bar'
 import { useSaveShortcut } from '@/hooks/use-keyboard-shortcut'
 import { useDirtyForm } from '@/hooks/use-dirty-form'
+import { useImportReview } from '@/hooks/use-import-review'
 
 interface ProductionOrderFormProps {
   initialData?: Partial<ProductionOrderFormData>
@@ -41,6 +42,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasStartedTyping, setHasStartedTyping] = useState(false)
   const pendingSubmitData = useRef<ProductionOrderFormData | null>(null)
+  const { openReview, drawer } = useImportReview()
 
   // 處理產品名字的智能預填
   const handleProductNameFocus = () => {
@@ -951,7 +953,42 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
               </h2>
               <div className="flex gap-2 flex-wrap">
                 <SmartRecipeImport 
-                  onImport={handleSmartImport}
+                  onImport={(imported) => {
+                    try {
+                      const importedList = (imported || []).map((ing: any) => ({
+                        materialName: String(ing.materialName || '').trim(),
+                        unitContentMg: Number(ing.unitContentMg) || 0
+                      })).filter((i: any) => i.materialName)
+
+                      const currentList = (watch('ingredients') || []).map((ing: any) => ({
+                        materialName: String(ing.materialName || '').trim(),
+                        unitContentMg: Number(ing.unitContentMg) || 0
+                      }))
+
+                      openReview(importedList, currentList, (merged) => {
+                        import('@/lib/import/merge').then(({ normalizeIngredientName }) => {
+                          const flagsByName = new Map<string, { isCustomerProvided: boolean; isCustomerSupplied: boolean }>()
+                          ;(watch('ingredients') || []).forEach((ing: any) => {
+                            flagsByName.set(normalizeIngredientName(ing.materialName), {
+                              isCustomerProvided: Boolean(ing.isCustomerProvided),
+                              isCustomerSupplied: Boolean(ing.isCustomerSupplied)
+                            })
+                          })
+                          const mergedWithFlags = (merged as any[]).map((m: any) => {
+                            const key = normalizeIngredientName(m.materialName)
+                            const flags = flagsByName.get(key) || { isCustomerProvided: true, isCustomerSupplied: false }
+                            return { ...m, ...flags }
+                          })
+                          setValue('ingredients', mergedWithFlags, { shouldValidate: true, shouldDirty: true })
+                          showToast({ title: '已套用導入', description: `已更新 ${merged.length} 項原料。` })
+                        }).catch(() => {
+                          setValue('ingredients', merged as any, { shouldValidate: true, shouldDirty: true })
+                        })
+                      })
+                    } catch (e) {
+                      handleSmartImport(imported)
+                    }
+                  }}
                   disabled={isSubmitting}
                 />
               </div>
@@ -1328,6 +1365,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         saveLabel="儲存配方"
         cancelLabel="取消"
       />
+      {drawer}
     </form>
   )
 }

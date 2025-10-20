@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/toast-provider'
 import { MarketingInput } from '@/components/marketing/marketing-input'
 import { MarketingAnalysis } from '@/components/marketing/marketing-analysis'
 import { AutoImageGallery } from '@/components/marketing/auto-image-gallery'
+import { useImportReview } from '@/hooks/use-import-review'
 import dynamic from 'next/dynamic'
 
 const SmartRecipeImport = dynamic(
@@ -39,6 +40,7 @@ export default function MarketingAssistantPage() {
   const [nowTick, setNowTick] = useState(Date.now())
 
   const controllerRef = useRef<AbortController | null>(null)
+  const { openReview, drawer } = useImportReview()
 
   useEffect(() => {
     return () => {
@@ -77,19 +79,19 @@ export default function MarketingAssistantPage() {
 
   const handleSmartImport = (importedIngredients: any[]) => {
     try {
-      const newIngredients = importedIngredients.length > 0
-        ? importedIngredients
-            .map((ing) => ({
-              materialName: String(ing.materialName || '').trim(),
-              unitContentMg: Number(ing.unitContentMg) || 0
-            }))
-            .filter((item) => item.materialName !== '')
-        : [{ materialName: '', unitContentMg: 0 }]
+      const imported = (importedIngredients || [])
+        .map((ing) => ({
+          materialName: String(ing.materialName || '').trim(),
+          unitContentMg: Number(ing.unitContentMg) || 0
+        }))
+        .filter((item) => item.materialName !== '')
 
-      setIngredients(newIngredients)
-      showToast({
-        title: '原料已導入',
-        description: '已套用智能導入的原料清單。'
+      openReview(imported, ingredients, (merged) => {
+        setIngredients(merged.length > 0 ? merged : [{ materialName: '', unitContentMg: 0 }])
+        showToast({
+          title: '已套用導入',
+          description: `已更新 ${merged.length} 項原料。`
+        })
       })
     } catch (error) {
       console.error('導入原料時發生錯誤:', error)
@@ -324,6 +326,7 @@ export default function MarketingAssistantPage() {
       </main>
 
       <LiquidGlassFooter />
+      {drawer}
     </div>
   )
 }
