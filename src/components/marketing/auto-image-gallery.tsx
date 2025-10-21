@@ -29,6 +29,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   const [images, setImages] = useState<GeneratedImage[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [productName, setProductName] = useState<string>('Premium Wellness Formula')
+  const [chineseProductName, setChineseProductName] = useState<string | undefined>(undefined)
   const hasGeneratedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -68,6 +69,20 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     
     const extractedProductName = extractProductName(analysisContent)
     setProductName(extractedProductName)  // Store in state for regenerateImage
+    
+    // Extract Chinese product name
+    const extractChineseProductName = (content: string): string | undefined => {
+      // Pattern: 建議產品中文名稱：美白煥膚膠囊
+      const pattern = /建議產品中文名稱[：:]\s*\*?\*?([^\n*]+?)\*?\*?(?:\n|$)/
+      const match = content.match(pattern)
+      if (match && match[1]) {
+        return match[1].trim()
+      }
+      return undefined
+    }
+    
+    const extractedChineseName = extractChineseProductName(analysisContent)
+    setChineseProductName(extractedChineseName)  // Store Chinese name in state
     
     // ========== STEP 2: Extract image prompts ==========
     const extractedPrompts: GeneratedImage[] = []
@@ -146,8 +161,13 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                // ========== CRITICAL: Pass productName here! ==========
-                prompt: buildChineseImagePrompt(prompt.prompt, prompt.type, extractedProductName),
+                // Pass both English and Chinese product names
+                prompt: buildChineseImagePrompt(
+                  prompt.prompt, 
+                  prompt.type, 
+                  extractedProductName,
+                  extractedChineseName
+                ),
                 type: prompt.type,
                 width: 1024,
                 height: 1024
@@ -216,8 +236,13 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // ========== CRITICAL: Use productName from state ==========
-          prompt: buildChineseImagePrompt(image.prompt, image.type, productName),
+          // Use both product names from state (add Chinese name to state)
+          prompt: buildChineseImagePrompt(
+            image.prompt, 
+            image.type, 
+            productName,
+            chineseProductName
+          ),
           type: image.type,
           width: 1024,
           height: 1024
