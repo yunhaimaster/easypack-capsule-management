@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loader2, Download, ImageIcon, CheckCircle, X } from 'lucide-react'
 import { buildChineseImagePrompt, getImageTypeLabel } from '@/components/marketing/prompt-helpers'
 import { useToast } from '@/components/ui/toast-provider'
+import { cn } from '@/lib/utils'
 
 interface AutoImageGalleryProps {
   analysisContent: string
@@ -24,6 +25,8 @@ interface GeneratedImage {
   generationTime?: number
   seed?: number // 保存使用的 seed
   isEditing?: boolean // 是否處於編輯狀態
+  width?: number // 圖片寬度
+  height?: number // 圖片高度
 }
 
 export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoImageGalleryProps) {
@@ -36,10 +39,40 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   const hasGeneratedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  // 頁面載入時恢復圖片
+  useEffect(() => {
+    const saved = localStorage.getItem('marketing_images_cache')
+    if (saved) {
+      try {
+        const { images: savedImages, timestamp } = JSON.parse(saved)
+        // 只恢復 24 小時內的圖片
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+          setImages(savedImages)
+        } else {
+          localStorage.removeItem('marketing_images_cache')
+        }
+      } catch (error) {
+        console.error('恢復圖片失敗:', error)
+        localStorage.removeItem('marketing_images_cache')
+      }
+    }
+  }, [])
+
+  // 圖片生成完成時保存到 localStorage
+  useEffect(() => {
+    if (images.length > 0 && images.some(img => img.status === 'success')) {
+      localStorage.setItem('marketing_images_cache', JSON.stringify({
+        images,
+        timestamp: Date.now()
+      }))
+    }
+  }, [images])
+
   useEffect(() => {
     hasGeneratedRef.current = false
     setImages([])
     setIsGenerating(false)
+    localStorage.removeItem('marketing_images_cache') // 清除舊圖片
   }, [analysisContent])
 
   // 自動提取 prompts 並生成圖像
@@ -90,31 +123,46 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     // ========== STEP 2: Extract image prompts ==========
     const extractedPrompts: GeneratedImage[] = []
     
-    // 提取四種類型的 Prompt - 支援多種格式
+    // 提取五種類型的 Prompt - 支援多種格式
     const promptPatterns = [
       { 
-        regex: /(?:\*\*)?(?:實拍瓶身|瓶身實拍|產品瓶身).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:情境|平鋪|香港)|$)/is, 
+        regex: /(?:\*\*)?(?:實拍瓶身|瓶身實拍|產品瓶身).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:情境|平鋪|香港|宣傳)|$)/is, 
         type: 'bottle', 
-        label: '實拍瓶身' 
+        label: '實拍瓶身',
+        width: 2048,
+        height: 2048
       },
       { 
-        regex: /(?:\*\*)?(?:情境|使用場景|生活場景).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:平鋪|香港)|$)/is, 
+        regex: /(?:\*\*)?(?:情境|使用場景|生活場景).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:平鋪|香港|宣傳)|$)/is, 
         type: 'lifestyle', 
-        label: '生活情境' 
+        label: '生活情境',
+        width: 2048,
+        height: 2048
       },
       { 
-        regex: /(?:\*\*)?(?:平鋪|俯拍|平面).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:香港)|##|$)/is, 
+        regex: /(?:\*\*)?(?:平鋪|俯拍|平面).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:香港|宣傳)|##|$)/is, 
         type: 'flatlay', 
-        label: '平鋪俯拍' 
+        label: '平鋪俯拍',
+        width: 2048,
+        height: 2048
       },
       {
-        regex: /(?:\*\*)?(?:香港製造|香港|Made in Hong Kong).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|##|$)/is,
+        regex: /(?:\*\*)?(?:香港製造|香港|Made in Hong Kong).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|(?:\*\*)?(?:宣傳)|##|$)/is,
         type: 'hongkong',
-        label: '香港製造'
+        label: '香港製造',
+        width: 2048,
+        height: 2048
+      },
+      {
+        regex: /(?:\*\*)?(?:宣傳海報|海報|Poster).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|##|$)/is,
+        type: 'poster',
+        label: '宣傳海報',
+        width: 3520,
+        height: 4704
       }
     ]
 
-    promptPatterns.forEach(({ regex, type, label }) => {
+    promptPatterns.forEach(({ regex, type, label, width, height }) => {
       const match = analysisContent.match(regex)
       if (match && match[1]) {
         const cleaned = match[1].trim()
@@ -129,7 +177,9 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
             label,
             prompt: cleaned,
             imageUrl: null,
-            status: 'pending'
+            status: 'pending',
+            width,
+            height
           })
         }
       }
@@ -176,8 +226,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   extractedChineseName
                 ),
                 type: prompt.type,
-                width: 2048,  // 2K resolution for better text quality
-                height: 2048,
+                width: prompt.width || 2048,  // Use specified width or default 2048
+                height: prompt.height || 2048, // Use specified height or default 2048
                 seed: sessionSeed // 🆕 Use consistent seed for all images
               }),
               signal: abortControllerRef.current.signal
@@ -256,8 +306,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
             chineseProductName
           ),
           type: image.type,
-          width: 2048,
-          height: 2048,
+          width: image.width || 2048,
+          height: image.height || 2048,
           seed: Math.floor(Math.random() * 1000000)
         })
       })
@@ -434,7 +484,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
             <div>
               <h2 className="text-lg font-semibold text-neutral-800">AI 包裝設計圖像</h2>
               <p className="text-sm text-neutral-500">
-                自動生成 4 種風格的產品包裝視覺 ({completedCount}/{totalCount} 已完成)
+                自動生成 5 種風格的產品包裝視覺 ({completedCount}/{totalCount} 已完成)
               </p>
             </div>
           </div>
@@ -512,7 +562,10 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                 )}
               </div>
 
-              <div className="relative rounded-lg overflow-hidden border border-neutral-200 bg-gray-50 w-full aspect-square">
+              <div className={cn(
+                "relative rounded-lg overflow-hidden border border-neutral-200 bg-gray-50 w-full",
+                image.type === 'poster' ? 'aspect-[3/4]' : 'aspect-square'
+              )}>
                 {image.status === 'pending' && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-sm text-neutral-400">等待生成...</span>
