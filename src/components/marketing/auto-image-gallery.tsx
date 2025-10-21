@@ -123,38 +123,38 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     // ========== STEP 2: Extract image prompts ==========
     const extractedPrompts: GeneratedImage[] = []
     
-    // 提取五種類型的 Prompt - 支援多種格式
+    // 提取五種類型的 Prompt - 使用明確的分隔符
     const promptPatterns = [
       { 
-        regex: /(?:\*\*)?(?:實拍瓶身|瓶身實拍|產品瓶身).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|$)/is, 
+        regex: /===PROMPT_START:BOTTLE===\s*\n*(.+?)\s*\n*===PROMPT_END===/is,
         type: 'bottle', 
         label: '實拍瓶身',
         width: 2048,
         height: 2048
       },
       { 
-        regex: /(?:\*\*)?(?:情境|使用場景|生活場景).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|$)/is, 
+        regex: /===PROMPT_START:LIFESTYLE===\s*\n*(.+?)\s*\n*===PROMPT_END===/is,
         type: 'lifestyle', 
         label: '生活情境',
         width: 2048,
         height: 2048
       },
       { 
-        regex: /(?:\*\*)?(?:平鋪|俯拍|平面).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|$)/is, 
+        regex: /===PROMPT_START:FLATLAY===\s*\n*(.+?)\s*\n*===PROMPT_END===/is,
         type: 'flatlay', 
         label: '平鋪俯拍',
         width: 2048,
         height: 2048
       },
       {
-        regex: /(?:\*\*)?(?:香港製造).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|$)/is,
+        regex: /===PROMPT_START:HONGKONG===\s*\n*(.+?)\s*\n*===PROMPT_END===/is,
         type: 'hongkong',
         label: '香港製造',
         width: 2048,
         height: 2048
       },
       {
-        regex: /(?:\*\*)?(?:宣傳海報|海報|Poster).*?Prompt[：:]\*\*?[\s]*\n*(.+?)(?=\n\n|$)/is,
+        regex: /===PROMPT_START:POSTER===\s*\n*(.+?)\s*\n*===PROMPT_END===/is,
         type: 'poster',
         label: '宣傳海報',
         width: 3520,
