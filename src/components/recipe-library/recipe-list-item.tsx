@@ -31,7 +31,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
   const isTemplate = recipe.recipeType === 'template'
   
   return (
-    <IngredientsPopup ingredients={recipe.ingredients}>
+    <IngredientsPopup ingredients={recipe.ingredients} side="top">
       <div
         className={cn(
           "group relative overflow-hidden rounded-apple-md bg-white/80 backdrop-blur-sm",

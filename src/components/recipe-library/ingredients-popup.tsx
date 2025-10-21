@@ -7,17 +7,18 @@ import { Package } from 'lucide-react'
 interface IngredientsPopupProps {
   ingredients: RecipeIngredient[]
   children: React.ReactNode
+  side?: 'top' | 'right' | 'bottom' | 'left'
 }
 
-export function IngredientsPopup({ ingredients, children }: IngredientsPopupProps) {
+export function IngredientsPopup({ ingredients, children, side = 'right' }: IngredientsPopupProps) {
   return (
     <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger asChild>
         {children}
       </HoverCardTrigger>
       <HoverCardContent 
-        side="right" 
-        align="start" 
+        side={side} 
+        align={side === 'top' || side === 'bottom' ? 'center' : 'start'} 
         className="w-80 lg:w-96 p-0"
         onClick={(e) => e.stopPropagation()}
       >
