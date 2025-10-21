@@ -168,7 +168,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         const cleaned = match[1].trim()
           .replace(/^\[|\]$/g, '') // 移除方括號
           .replace(/^["']|["']$/g, '') // 移除引號
-          .replace(/\n+/g, ' ') // 移除換行符
+          // ✅ 保留換行符！DeepSeek 的多段視覺指令需要結構
           .trim()
         
         if (cleaned.length > 10) {
