@@ -86,20 +86,97 @@ const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總�
 - 定義 3 項核心賣點，搭配生活場景或具象化結果。
 - **合規提醒**：僅能使用「支持」「有助於」等字眼，避免治療承諾。
 
-## 2.5. 產品英文命名
-請為此產品建議一個專業的英文名稱，遵循以下原則：
+## 2.5. 產品命名策略（中英文）
 
-**命名要求**：
-- 反映核心功效或主要成分特色
-- 易於國際市場傳播（2-4 個單字）
-- 符合保健品命名規範（避免醫療承諾用詞如 Cure、Heal、Treatment）
-- 可包含系列後綴（如 Plus、Pro、Elite、Advanced、Formula、Complex、Support）
+請為此產品建議一個具有營銷吸引力的中英文名稱，遵循以下原則：
+
+### 英文命名原則
+
+**核心要求**：
+1. **簡潔有力**：2-4 個單字，易讀易記
+2. **情感共鳴**：選用能引發情感聯想的正面詞彙
+3. **功效暗示**：巧妙暗示核心功效，但不做醫療承諾
+4. **高端定位**：使用提升品質感的系列後綴
+
+**推薦詞彙庫**（根據功效選擇）：
+
+| 功效類型 | 核心詞 | 效果詞 | 系列後綴 |
+|---------|--------|--------|---------|
+| **睡眠/放鬆** | Dream, Rest, Sleep, Night, Calm, Peace | Bliss, Serenity, Tranquil, Deep, Gentle | Elite, Plus, Pro, Advanced |
+| **美白/美容** | Glow, Radiance, Beauty, White, Bright, Luminous | Pearl, Crystal, Diamond, Pure, Flawless | Elite, Premium, Luxe, Supreme |
+| **能量/活力** | Energy, Power, Vital, Active, Dynamic, Peak | Boost, Force, Drive, Charge, Surge | Max, Ultra, Extreme, Turbo |
+| **腸道/消化** | Digest, Gut, Flora, Probiotic, Balance | Comfort, Harmony, Flow, Pure, Vitality | Plus, Pro, Complete, Advanced |
+| **免疫/健康** | Immune, Defense, Shield, Guard, Protect | Strength, Power, Fortress, Armor, Boost | Elite, Pro, Advanced, Max |
+| **骨骼/關節** | Bone, Joint, Flex, Move, Strong, Solid | Support, Care, Comfort, Freedom, Active | Elite, Pro, Advanced, Complete |
+| **專注/認知** | Focus, Mind, Brain, Neuro, Cognitive, Think | Sharp, Clear, Bright, Peak, Elite | Pro, Advanced, Elite, Premium |
+| **養生/傳統** | Herbal, Nature, Essence, Vital, Balance, Harmony | Wellness, Longevity, Youth, Restore, Renewal | Traditional, Classic, Premium, Elite |
+
+**命名公式**：
+- 公式 1：**[核心詞] + [效果詞]** （例：Sleep Bliss, Glow Pearl）
+- 公式 2：**[核心詞] + [系列後綴]** （例：NeuroMind Elite, FlexJoint Pro）
+- 公式 3：**[效果詞] + [核心詞] + [系列後綴]** （例：Deep Sleep Elite, Pure Immune Pro）
+
+**避免用詞**：
+- ❌ 醫療承諾：Cure, Heal, Treatment, Therapy, Medicine
+- ❌ 過度承諾：Miracle, Magic, Instant, Guaranteed
+- ❌ 負面聯想：Disease, Sick, Disorder, Problem
+
+### 中文命名原則
+
+**核心要求**：
+1. **簡潔有力**：3-6 個字，朗朗上口
+2. **易懂易記**：使用常用漢字，避免生僻字
+3. **意境優美**：營造美好聯想，符合中華文化審美
+4. **功效暗示**：巧妙融入功效暗示，但不做醫療承諾
+
+**推薦詞彙庫**（根據功效選擇）：
+
+| 功效類型 | 核心詞 | 效果詞 | 系列後綴 |
+|---------|--------|--------|---------|
+| **睡眠/放鬆** | 安眠、睡眠、夢鄉、寧神、靜心 | 深層、舒適、安穩、香甜、悠然 | 配方、膠囊、精華 |
+| **美白/美容** | 美白、亮顏、煥采、晶瑩、透白 | 淨透、水潤、柔嫩、細膩、光感 | 精華、配方、膠囊 |
+| **能量/活力** | 活力、能量、動力、元氣、精力 | 充沛、強勁、飽滿、持久、暢快 | 配方、膠囊、精華 |
+| **腸道/消化** | 腸道、消化、益生、順暢、輕盈 | 舒適、和諧、平衡、健康、清爽 | 配方、膠囊、精華 |
+| **免疫/健康** | 免疫、防護、守護、強健、康健 | 全面、堅固、活力、強效、優選 | 配方、膠囊、精華 |
+| **骨骼/關節** | 骨骼、關節、靈活、強健、穩固 | 舒適、活動、行動、輕鬆、靈動 | 配方、膠囊、精華 |
+| **專注/認知** | 專注、思維、記憶、睿思、腦力 | 敏銳、清晰、靈活、卓越、精英 | 配方、膠囊、精華 |
+| **養生/傳統** | 養生、滋養、調理、平衡、和諧 | 精粹、本草、天然、傳承、經典 | 配方、膠囊、精華 |
+
+**命名公式**：
+- 公式 1：**[核心詞] + [效果詞] + [系列後綴]** （例：睡眠安穩配方、美白淨透精華）
+- 公式 2：**[效果詞] + [核心詞] + [系列後綴]** （例：深層安眠配方、全面免疫精華）
+- 公式 3：**[核心詞] + [系列後綴]** （例：睿思配方、強健膠囊）
+
+**避免用詞**：
+- ❌ 醫療承諾：治療、醫治、根治、療效、藥物
+- ❌ 過度承諾：神效、特效、速效、立竿見影、包治
+- ❌ 負面聯想：疾病、病患、失調、障礙、問題
+
+### 命名範例
+
+**睡眠配方**：
+- 英文：Sleep Serenity Elite, Dream Bliss Plus, Deep Rest Pro
+- 中文：安眠寧神配方、深層睡眠精華、悠然夢鄉膠囊
+
+**美白配方**：
+- 英文：Radiance Pearl Elite, Glow Luminous Premium, Bright Crystal Pro
+- 中文：煥采珍珠精華、亮白透潤配方、晶瑩美肌膠囊
+
+**能量配方**：
+- 英文：Energy Surge Max, Vital Force Ultra, Power Peak Extreme
+- 中文：活力充沛配方、元氣強勁精華、動力暢快膠囊
+
+**專注配方**：
+- 英文：NeuroMind Elite, Focus Sharp Pro, Brain Peak Advanced
+- 中文：睿思安神配方、專注敏銳精華、腦力卓越膠囊
 
 **格式輸出（重要）**：
 請以以下格式明確標註，以便圖像生成系統提取（必須獨立一行，前後留空行）：
 
 **建議產品英文名稱：[Product Name]**
 **建議產品中文名稱：[Chinese Product Name]**
+
+**命名說明**：簡述選擇此名稱的理由（1-2 句話，說明如何與產品功效和目標客群契合）
 
 **品牌資訊**：
 - 英文品牌名：Easy Health
