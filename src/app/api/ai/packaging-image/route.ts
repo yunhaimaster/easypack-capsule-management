@@ -44,7 +44,7 @@ function getQualityLevel(width: number, height: number): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, width = 1024, height = 1024 } = await request.json()
+    const { prompt, width = 2048, height = 2048 } = await request.json()
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
@@ -62,29 +62,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Force 1:1 aspect ratio for packaging images (always square)
+    // Force 1:1 aspect ratio and 2K resolution for better text quality
     const aspectRatio = '1:1'
-    const quality = getQualityLevel(width, height)
+    const quality = '2K' // Force 2K for better text clarity on labels
+
+    // Enhance prompt with text quality instructions
+    const enhancedPrompt = `${prompt.trim()}
+
+CRITICAL TEXT RENDERING REQUIREMENTS:
+- All Chinese text must be sharp, clear, and highly legible
+- Text should have high contrast against background
+- Font rendering must be crisp with no blur or artifacts
+- Product name characters must be perfectly formed
+- Label text should be in focus and readable at all sizes`
 
     // Build Doubao SeeDream 4.0 API request
     // Reference: https://www.volcengine.com/docs/82379/1541523
     const payload = {
       model: MODEL_ID,
-      prompt: prompt.trim(),
+      prompt: enhancedPrompt,
       aspect_ratio: aspectRatio, // Force 1:1 for packaging images
-      size: quality, // Quality level: 1K, 2K, or 4K
+      size: quality, // Force 2K for better text quality
       response_format: 'url',
       seed: Math.floor(Math.random() * 1000000), // Random seed for variation
       num_inference_steps: 50, // Higher steps = better quality (recommended: 20-50)
       watermark: false, // Disable watermark for professional images
-      stream: false
+      stream: false // Non-streaming for stable quality
     }
 
-    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像', {
+    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像 (2K 高清)', {
       model: MODEL_ID,
       aspectRatio,
       quality,
-      promptLength: prompt.length,
+      resolution: '2048x2048',
+      promptLength: enhancedPrompt.length,
       inferenceSteps: 50
     })
 

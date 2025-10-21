@@ -169,8 +169,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   extractedChineseName
                 ),
                 type: prompt.type,
-                width: 1024,
-                height: 1024
+                width: 2048,  // 2K resolution for better text quality
+                height: 2048
               }),
               signal: abortControllerRef.current.signal
             })
@@ -244,8 +244,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
             chineseProductName
           ),
           type: image.type,
-          width: 1024,
-          height: 1024
+          width: 2048,  // 2K resolution for better text quality
+          height: 2048
         })
       })
 
