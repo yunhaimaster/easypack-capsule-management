@@ -12,7 +12,6 @@ const getDoubaoApiKey = () => {
 export const dynamic = 'force-dynamic'
 
 // SeeDream 4.0 supports specific aspect ratios
-// For 1:1 (square), we use '1:1' directly
 // Reference: https://www.volcengine.com/docs/82379/1541523
 function getAspectRatio(width: number, height: number): string {
   const ratio = width / height
@@ -22,9 +21,13 @@ function getAspectRatio(width: number, height: number): string {
   
   // For portrait
   if (ratio < 0.9) {
+    // 3:4 ratio (poster: 3520x4704 = 0.748...)
+    if (ratio >= 0.7 && ratio <= 0.8) return '3:4'
+    // 2:3 ratio
     if (ratio >= 0.6 && ratio <= 0.7) return '2:3'
+    // 9:16 ratio
     if (ratio >= 0.55 && ratio <= 0.65) return '9:16'
-    return '2:3' // Default portrait
+    return '3:4' // Default portrait
   }
   
   // For landscape
@@ -34,12 +37,19 @@ function getAspectRatio(width: number, height: number): string {
   return '1:1' // Default to square for packaging images
 }
 
-// Map dimension to quality level (1K, 2K, 4K)
+// Map dimension to quality level with actual dimensions
 function getQualityLevel(width: number, height: number): string {
+  // For poster (3520x4704), return exact dimensions
+  if (width === 3520 && height === 4704) {
+    return '3520x4704'
+  }
+  
   const maxDimension = Math.max(width, height)
-  if (maxDimension <= 1024) return '1K'
-  if (maxDimension <= 2048) return '2K'
-  return '4K'
+  if (maxDimension <= 1024) return '1024x1024'
+  if (maxDimension <= 2048) return '2048x2048'
+  
+  // For 4K images, return the requested dimensions
+  return `${width}x${height}`
 }
 
 export async function POST(request: NextRequest) {
@@ -62,9 +72,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Force 1:1 aspect ratio and 2K resolution for better text quality
-    const aspectRatio = '1:1'
-    const quality = '2048x2048' // Force 2048x2048 for better text clarity on labels
+    // Calculate aspect ratio and quality based on requested dimensions
+    const aspectRatio = getAspectRatio(width, height)
+    const quality = getQualityLevel(width, height)
 
     // Enhance prompt with text quality instructions
     const enhancedPrompt = `${prompt.trim()}
@@ -90,10 +100,11 @@ CRITICAL TEXT RENDERING REQUIREMENTS:
       stream: false // Non-streaming for stable quality
     }
 
-    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像 (2048x2048)', {
+    logger.info(`正在使用 Doubao SeeDream 4.0 生成圖像 (${quality})`, {
       model: MODEL_ID,
       aspectRatio,
       size: quality,
+      requestedDimensions: `${width}x${height}`,
       promptLength: enhancedPrompt.length,
       inferenceSteps: 50
     })
