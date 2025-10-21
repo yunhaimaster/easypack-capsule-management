@@ -34,24 +34,52 @@ DOUBAO_API_KEY="469fb1c5-8cd2-4c80-8375-e5f8ca3d91aa"
 
 ## API Request Format
 
+Based on [SeeDream 4.0 official documentation](https://www.volcengine.com/docs/82379/1541523):
+
 ```json
 {
   "model": "doubao-seedream-4-0-250828",
   "prompt": "Generate a professional packaging render...",
-  "response_format": "url",
+  "aspect_ratio": "1:1",
   "size": "2K",
-  "stream": false,
-  "watermark": false
+  "response_format": "url",
+  "seed": 123456,
+  "num_inference_steps": 50,
+  "guidance_scale": 7.5,
+  "watermark": false,
+  "stream": false
 }
 ```
 
-## Supported Sizes
+### Parameter Explanation
 
-| Requested Size | Doubao Format |
-|----------------|---------------|
-| ≤ 1024px       | 1K            |
-| ≤ 2048px       | 2K            |
-| > 2048px       | 4K            |
+- **aspect_ratio**: `"1:1"` - Forces square images for packaging (1024x1024, 2048x2048, etc.)
+- **size**: `"1K"`, `"2K"`, or `"4K"` - Quality level
+- **num_inference_steps**: `50` - Higher = better quality (default: 20-50)
+- **guidance_scale**: `7.5` - Balance between creativity and accuracy (default: 7-8)
+- **seed**: Random number for variation between generations
+- **watermark**: `false` - Professional output without watermark
+
+## Supported Configurations
+
+### Aspect Ratios (SeeDream 4.0)
+- **1:1** - Square (recommended for packaging)
+- **2:3** - Portrait
+- **3:2** - Landscape
+- **9:16** - Vertical
+- **16:9** - Horizontal
+
+**Current Setting**: All images forced to **1:1** for consistent packaging design.
+
+### Quality Levels
+
+| Requested Size | Output Format | Resolution |
+|----------------|---------------|------------|
+| ≤ 1024px       | 1K            | 1024x1024  |
+| ≤ 2048px       | 2K            | 2048x2048  |
+| > 2048px       | 4K            | 4096x4096  |
+
+**Current Default**: 1K (1024x1024) for fast generation
 
 ## Usage in Marketing Assistant
 

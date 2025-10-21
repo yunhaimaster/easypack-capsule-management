@@ -11,9 +11,31 @@ const getDoubaoApiKey = () => {
 
 export const dynamic = 'force-dynamic'
 
-// Map size to Doubao format
-function mapSizeToDoubao(width: number, height: number): string {
-  // Doubao supports: 1K, 2K, 4K
+// SeeDream 4.0 supports specific aspect ratios
+// For 1:1 (square), we use '1:1' directly
+// Reference: https://www.volcengine.com/docs/82379/1541523
+function getAspectRatio(width: number, height: number): string {
+  const ratio = width / height
+  
+  // For square or near-square images, use 1:1
+  if (ratio >= 0.9 && ratio <= 1.1) return '1:1'
+  
+  // For portrait
+  if (ratio < 0.9) {
+    if (ratio >= 0.6 && ratio <= 0.7) return '2:3'
+    if (ratio >= 0.55 && ratio <= 0.65) return '9:16'
+    return '2:3' // Default portrait
+  }
+  
+  // For landscape
+  if (ratio >= 1.4 && ratio <= 1.6) return '3:2'
+  if (ratio >= 1.7 && ratio <= 1.8) return '16:9'
+  
+  return '1:1' // Default to square for packaging images
+}
+
+// Map dimension to quality level (1K, 2K, 4K)
+function getQualityLevel(width: number, height: number): string {
   const maxDimension = Math.max(width, height)
   if (maxDimension <= 1024) return '1K'
   if (maxDimension <= 2048) return '2K'
@@ -40,22 +62,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const size = mapSizeToDoubao(width, height)
+    // Force 1:1 aspect ratio for packaging images (always square)
+    const aspectRatio = '1:1'
+    const quality = getQualityLevel(width, height)
 
-    // Build Doubao API request
+    // Build Doubao SeeDream 4.0 API request
+    // Reference: https://www.volcengine.com/docs/82379/1541523
     const payload = {
       model: MODEL_ID,
       prompt: prompt.trim(),
+      aspect_ratio: aspectRatio, // Force 1:1 for packaging images
+      size: quality, // Quality level: 1K, 2K, or 4K
       response_format: 'url',
-      size: size,
-      stream: false, // We'll use non-streaming for now
-      watermark: false // Disable watermark for professional packaging images
+      seed: Math.floor(Math.random() * 1000000), // Random seed for variation
+      num_inference_steps: 50, // Higher steps = better quality (default: 20-50)
+      guidance_scale: 7.5, // Creative vs accurate (default: 7-8)
+      watermark: false, // Disable watermark for professional images
+      stream: false
     }
 
-    logger.info('正在使用 Doubao SeeDream 生成圖像', {
+    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像', {
       model: MODEL_ID,
-      size,
-      promptLength: prompt.length
+      aspectRatio,
+      quality,
+      promptLength: prompt.length,
+      inferenceSteps: 50,
+      guidanceScale: 7.5
     })
 
     const response = await fetch(API_URL, {
