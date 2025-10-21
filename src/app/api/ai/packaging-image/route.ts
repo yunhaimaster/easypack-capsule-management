@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { buildBaseRequest, fetchOpenRouter } from '@/lib/ai/openrouter-utils'
-import { validateApiKey } from '@/lib/api/validation'
 
-const MODEL_ID = 'google/gemini-2.5-flash-image'
+const MODEL_ID = 'doubao-seedream-4-0-250828'
+const API_URL = 'https://ark.cn-beijing.volces.com/api/v3/images/generations'
+
+// Get API key from environment variable (fallback to hardcoded for backwards compatibility)
+const getDoubaoApiKey = () => {
+  return process.env.DOUBAO_API_KEY || '469fb1c5-8cd2-4c80-8375-e5f8ca3d91aa'
+}
 
 export const dynamic = 'force-dynamic'
+
+// Map size to Doubao format
+function mapSizeToDoubao(width: number, height: number): string {
+  // Doubao supports: 1K, 2K, 4K
+  const maxDimension = Math.max(width, height)
+  if (maxDimension <= 1024) return '1K'
+  if (maxDimension <= 2048) return '2K'
+  return '4K'
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,50 +32,67 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate API key
-    const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
-    if (!apiKeyValidation.valid) {
+    const apiKey = getDoubaoApiKey()
+    if (!apiKey) {
       return NextResponse.json(
         { success: false, error: 'AI 服務尚未設定，請聯絡管理員' },
         { status: 500 }
       )
     }
 
-    const payload = buildBaseRequest(
-      MODEL_ID,
-      [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Generate a professional packaging render. size ${width}x${height}px. Description: ${prompt}`
-            }
-          ]
-        }
-      ],
-      {
-        stream: false,
-        modalities: ['image', 'text']
-      }
-    )
+    const size = mapSizeToDoubao(width, height)
 
-    const response = await fetchOpenRouter(
-      payload,
-      process.env.OPENROUTER_API_KEY!,
-      'https://openrouter.ai/api/v1/chat/completions'
-    )
+    // Build Doubao API request
+    const payload = {
+      model: MODEL_ID,
+      prompt: prompt.trim(),
+      response_format: 'url',
+      size: size,
+      stream: false, // We'll use non-streaming for now
+      watermark: false // Disable watermark for professional packaging images
+    }
 
+    logger.info('正在使用 Doubao SeeDream 生成圖像', {
+      model: MODEL_ID,
+      size,
+      promptLength: prompt.length
+    })
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      logger.error('Doubao API 請求失敗', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      })
+      throw new Error(`API 請求失敗 (${response.status}): ${errorText}`)
+    }
 
     const data = await response.json()
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url
+    
+    // Doubao API response format: { data: [{ url: "..." }] }
+    const imageUrl = data.data?.[0]?.url
 
     if (!imageUrl) {
-      logger.error('Gemini 沒有回傳圖像', { data })
+      logger.error('Doubao 沒有回傳圖像', { data })
       return NextResponse.json(
         { success: false, error: '模型沒有回傳圖像資料' },
         { status: 502 }
       )
     }
+
+    logger.info('Doubao 圖像生成成功', {
+      imageUrl: imageUrl.substring(0, 50) + '...'
+    })
 
     return NextResponse.json({
       success: true,
