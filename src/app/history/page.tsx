@@ -10,6 +10,21 @@ import Link from 'next/link'
 export default function HistoryPage() {
   const versionHistory = [
     {
+      version: 'v2.6.0',
+      date: '2025年10月20日',
+      type: '功能優化',
+      typeColor: 'bg-primary-100 text-primary-800 border-primary-200',
+      features: [
+        '🔍 智能導入全面優化，新增「審查後應用」流程，導入配方前可檢視、編輯原料名稱與劑量，避免錯誤資料寫入',
+        '⚡ 配方搜索功能升級，新增原料名稱搜索，可依原料快速篩選配方（例如：搜尋「鈣」找出所有含鈣的配方）',
+        '🎯 進階篩選全面增強，配方庫支援功效類別多選、原料篩選、日期範圍、快速標籤等多維度搜索組合',
+        '📊 快速篩選標籤，新增「最近生產」、「熱門配方」、「高劑量維生素C」等常用快速篩選按鈕，一鍵切換',
+        '✨ 建立完整測試框架，整合 Jest 單元測試和 Playwright E2E 測試，確保代碼品質與功能穩定性',
+        '📈 監控系統正式上線，整合 Vercel Analytics 性能監控與事件追蹤，持續優化使用者體驗',
+        '🐛 修復原料搜索 Bug，解決搜索結果不正確的問題，確保所有篩選條件正確組合查詢'
+      ]
+    },
+    {
       version: 'v2.5.0',
       date: '2025年10月17日',
       type: '重大更新',

@@ -282,8 +282,8 @@ export function HomePageClient() {
               <div className="flex items-center gap-3">
                 <IconContainer icon={CalendarDays} variant="primary" size="md" />
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-800">2025年10月17日 · 重大更新</h3>
-                  <p className="text-xs text-neutral-500">最新版本：v2.5.0</p>
+                  <h3 className="text-base font-semibold text-neutral-800">2025年10月20日 · 功能優化</h3>
+                  <p className="text-xs text-neutral-500">最新版本：v2.6.0</p>
                 </div>
               </div>
               <Link 
@@ -295,24 +295,24 @@ export function HomePageClient() {
             </div>
             <ul className="space-y-2 text-xs sm:text-sm text-neutral-600">
               <li className="flex items-start gap-2">
-                <span className="text-info-500 mt-0.5">🏷️</span>
-                <span>模板配方系統上線，配方庫現在區分「生產配方」和「模板配方」，可以批量導入參考配方而不影響實際生產記錄</span>
+                <span className="text-primary-500 mt-0.5">🔍</span>
+                <span>智能導入優化，新增「審查後應用」功能，導入配方前可先檢視和編輯原料資料，支援圖片或文字解析</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-secondary-500 mt-0.5">🤖</span>
-                <span>AI 智能解析功能，支援文字輸入或圖片上傳，AI 自動識別配方原料與劑量，大幅加快配方建檔速度</span>
+                <span className="text-success-500 mt-0.5">⚡</span>
+                <span>配方搜索升級，新增原料搜索功能，支援依原料名稱快速篩選配方（如搜尋「鈣」找出所有含鈣配方）</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary-500 mt-0.5">📑</span>
-                <span>分類瀏覽升級，用 Tab 切換查看生產配方和模板配方，各自獨立搜尋和統計</span>
+                <span className="text-info-500 mt-0.5">🎯</span>
+                <span>進階篩選增強，配方庫新增功效類別多選、原料篩選、快速標籤等多維度搜索，找配方更快更準</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-success-500 mt-0.5">✨</span>
-                <span>全站視覺統一，所有頁面配色和按鈕樣式完全一致，卡片設計更精緻，視覺層次更清晰</span>
+                <span className="text-secondary-500 mt-0.5">✨</span>
+                <span>測試框架完善，建立 Jest 單元測試和 Playwright E2E 測試，確保代碼質量和功能穩定性</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">👆</span>
-                <span>觸控體驗提升，所有按鈕加大到最適合手指點按的尺寸，動畫效果遵循 Apple 標準更流暢</span>
+                <span className="text-warning-500 mt-0.5">📊</span>
+                <span>監控系統上線，整合 Vercel Analytics 性能追蹤和事件監控，持續優化用戶體驗</span>
               </li>
             </ul>
           </div>
