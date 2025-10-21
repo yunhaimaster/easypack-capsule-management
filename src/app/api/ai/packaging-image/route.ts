@@ -75,8 +75,7 @@ export async function POST(request: NextRequest) {
       size: quality, // Quality level: 1K, 2K, or 4K
       response_format: 'url',
       seed: Math.floor(Math.random() * 1000000), // Random seed for variation
-      num_inference_steps: 50, // Higher steps = better quality (default: 20-50)
-      guidance_scale: 7.5, // Creative vs accurate (default: 7-8)
+      num_inference_steps: 50, // Higher steps = better quality (recommended: 20-50)
       watermark: false, // Disable watermark for professional images
       stream: false
     }
@@ -86,8 +85,7 @@ export async function POST(request: NextRequest) {
       aspectRatio,
       quality,
       promptLength: prompt.length,
-      inferenceSteps: 50,
-      guidanceScale: 7.5
+      inferenceSteps: 50
     })
 
     const response = await fetch(API_URL, {

@@ -45,7 +45,6 @@ Based on [SeeDream 4.0 official documentation](https://www.volcengine.com/docs/8
   "response_format": "url",
   "seed": 123456,
   "num_inference_steps": 50,
-  "guidance_scale": 7.5,
   "watermark": false,
   "stream": false
 }
@@ -55,10 +54,11 @@ Based on [SeeDream 4.0 official documentation](https://www.volcengine.com/docs/8
 
 - **aspect_ratio**: `"1:1"` - Forces square images for packaging (1024x1024, 2048x2048, etc.)
 - **size**: `"1K"`, `"2K"`, or `"4K"` - Quality level
-- **num_inference_steps**: `50` - Higher = better quality (default: 20-50)
-- **guidance_scale**: `7.5` - Balance between creativity and accuracy (default: 7-8)
+- **num_inference_steps**: `50` - Higher = better quality (recommended: 20-50)
 - **seed**: Random number for variation between generations
 - **watermark**: `false` - Professional output without watermark
+
+**Note**: `guidance_scale` is NOT supported by SeeDream 4.0 (removed in latest version)
 
 ## Supported Configurations
 
