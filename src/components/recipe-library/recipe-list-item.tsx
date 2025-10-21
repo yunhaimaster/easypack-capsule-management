@@ -43,7 +43,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
         )}
         onClick={() => onView(recipe.id)}
       >
-      <div className="p-4">
+        <div className="p-4">
         {/* 第一行：圖標 + 配方名稱 + 操作按鈕 */}
         <div className="flex items-center gap-3 mb-2">
           {/* 圖標 */}
@@ -206,7 +206,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
             </>
           )}
         </div>
-      </div>
+        </div>
       </div>
     </IngredientsPopup>
   )
