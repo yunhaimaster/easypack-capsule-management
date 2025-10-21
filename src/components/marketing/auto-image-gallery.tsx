@@ -165,11 +165,11 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     promptPatterns.forEach(({ regex, type, label, width, height }) => {
       const match = analysisContent.match(regex)
       if (match && match[1]) {
+        // ✅ 最小化處理：只移除首尾引號，保留所有 DeepSeek 的內容
         const cleaned = match[1].trim()
-          .replace(/^\[|\]$/g, '') // 移除方括號
-          .replace(/^["']|["']$/g, '') // 移除引號
-          // ✅ 保留換行符！DeepSeek 的多段視覺指令需要結構
-          .trim()
+          .replace(/^["']|["']$/g, '') // 只移除引號
+          // 保留方括號結構！DeepSeek 的視覺指令格式需要
+          // 保留換行符！多段內容需要結構
         
         if (cleaned.length > 10) {
           extractedPrompts.push({
