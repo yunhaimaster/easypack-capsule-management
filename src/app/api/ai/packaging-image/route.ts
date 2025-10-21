@@ -44,7 +44,7 @@ function getQualityLevel(width: number, height: number): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, width = 2048, height = 2048 } = await request.json()
+    const { prompt, width = 2048, height = 2048, seed } = await request.json()
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
@@ -84,7 +84,7 @@ CRITICAL TEXT RENDERING REQUIREMENTS:
       aspect_ratio: aspectRatio, // Force 1:1 for packaging images
       size: quality, // Force 2K for better text quality
       response_format: 'url',
-      seed: Math.floor(Math.random() * 1000000), // Random seed for variation
+      seed: seed || Math.floor(Math.random() * 1000000), // Use provided seed or generate random
       num_inference_steps: 50, // Higher steps = better quality (recommended: 20-50)
       watermark: false, // Disable watermark for professional images
       stream: false // Non-streaming for stable quality
@@ -140,6 +140,7 @@ CRITICAL TEXT RENDERING REQUIREMENTS:
         imageUrl,
         prompt: prompt.trim(),
         model: MODEL_ID,
+        seed: payload.seed, // Return the seed used for generation
         timestamp: Date.now()
       }
     })

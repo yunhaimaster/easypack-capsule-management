@@ -140,6 +140,10 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
       const generateAllImages = async (prompts: GeneratedImage[]) => {
         setIsGenerating(true)
         abortControllerRef.current = new AbortController()
+        
+        // 🆕 Generate a consistent seed for all images in this batch
+        const sessionSeed = Math.floor(Math.random() * 1000000)
+        console.log('🎨 Using consistent seed for all images:', sessionSeed)
 
         for (let i = 0; i < prompts.length; i++) {
           // Check if aborted
@@ -170,7 +174,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                 ),
                 type: prompt.type,
                 width: 2048,  // 2K resolution for better text quality
-                height: 2048
+                height: 2048,
+                seed: sessionSeed // 🆕 Use consistent seed for all images
               }),
               signal: abortControllerRef.current.signal
             })
@@ -245,7 +250,9 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
           ),
           type: image.type,
           width: 2048,  // 2K resolution for better text quality
-          height: 2048
+          height: 2048,
+          // 🆕 Use new random seed for regeneration (allows trying different variations)
+          seed: Math.floor(Math.random() * 1000000)
         })
       })
 
