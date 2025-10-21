@@ -7,6 +7,16 @@
 - ❌ NO: Fixing typos, obvious solutions, performance-critical paths
 - 📖 Details: See MCP Servers Integration section below
 
+## Which MCP server should I use?
+- Complex analysis/debugging → Sequential Thinking
+- Library docs needed → Context7
+- Current info/research → BrightData
+- File operations → Filesystem MCP
+- Database operations → Prisma MCP (if installed)
+- GitHub operations → GitHub MCP (if installed)
+- Testing automation → Playwright MCP (if installed)
+- 📖 Details: See MCP Server Selection Guide below
+
 ## Which AI parameters?
 - Creative (recipes, marketing): temp 0.6-0.8, tokens 6000-8000
 - Analysis (granulation, ingredients): temp 0.2-0.4, tokens 4000-8000
@@ -255,6 +265,422 @@ You are an AI assistant with access to powerful MCP (Model Context Protocol) ser
 - Use focused topics to get relevant docs
 - Increase token limit for comprehensive info
 - Combine with codebase_search for integration
+
+---
+
+### 4. Filesystem MCP Tools (`mcp_filesystem_*`)
+
+**Purpose**: File and directory operations with security boundaries
+
+**When to Use**:
+- ✅ Batch file operations (read multiple files at once)
+- ✅ Directory traversal and inspection
+- ✅ File search across project
+- ✅ Creating directory structures
+- ✅ Moving/renaming files
+- ✅ Getting file metadata (size, timestamps)
+
+**When NOT to Use**:
+- ❌ Single file reads (use `read_file` tool)
+- ❌ Simple file edits (use `search_replace` tool)
+- ❌ Files outside allowed directories
+
+**Available Tools**:
+- `mcp_filesystem_read_file` - Read single file
+- `mcp_filesystem_read_multiple_files` - Batch read files
+- `mcp_filesystem_write_file` - Create or overwrite file
+- `mcp_filesystem_edit_file` - Line-based edits
+- `mcp_filesystem_list_directory` - List directory contents
+- `mcp_filesystem_directory_tree` - Recursive tree view
+- `mcp_filesystem_create_directory` - Create directories
+- `mcp_filesystem_move_file` - Move or rename files
+- `mcp_filesystem_search_files` - Search by pattern
+- `mcp_filesystem_get_file_info` - Get file metadata
+
+**Example Usage**:
+```typescript
+// Read multiple related files at once
+mcp_filesystem_read_multiple_files({
+  paths: [
+    "src/components/ui/card.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/modal.tsx"
+  ]
+})
+
+// Search for all TypeScript test files
+mcp_filesystem_search_files({
+  path: "src/",
+  pattern: "*.test.ts",
+  excludePatterns: ["node_modules", "dist"]
+})
+
+// Get directory tree structure
+mcp_filesystem_directory_tree({
+  path: "src/components"
+})
+```
+
+**Best Practices**:
+- Use batch operations when analyzing multiple files
+- Respect security boundaries (allowed directories only)
+- Prefer built-in tools for single operations
+- Use search_files for pattern-based file discovery
+
+**Security Notes**:
+- Only works within allowed directories
+- Ignores .gitignore and .cursorignore files
+- Cannot access sensitive system files
+
+---
+
+### 5. GitHub MCP Server (`github-mcp-server`) 🆕 RECOMMENDED
+
+**Purpose**: Automated GitHub repository management and operations
+
+**When to Use**:
+- ✅ Creating pull requests with descriptions
+- ✅ Managing issues and labels
+- ✅ Analyzing repository structure
+- ✅ Reviewing commit history
+- ✅ Searching code across repositories
+- ✅ Managing branches
+- ✅ Automating release workflows
+
+**When NOT to Use**:
+- ❌ Local git operations (use terminal commands)
+- ❌ Simple commits (use git directly)
+- ❌ When not connected to GitHub
+
+**Key Features**:
+- Repository browsing and analysis
+- Issue and PR management
+- Code search across repos
+- Commit analysis
+- Branch operations
+
+**Installation**:
+```bash
+npm install -g @github/github-mcp-server
+```
+
+**Configuration** (add to MCP settings):
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "github-mcp-server",
+      "args": ["--token", "<YOUR_GITHUB_TOKEN>"]
+    }
+  }
+}
+```
+
+**Example Use Cases**:
+```typescript
+// Auto-create PR with analysis
+// User: "Create PR for the design system refactor"
+// AI: 
+// 1. Analyzes changed files
+// 2. Generates comprehensive PR description
+// 3. Suggests reviewers based on file ownership
+// 4. Creates PR with proper labels
+
+// Issue management
+// User: "Find all high-priority bugs"
+// AI: Searches issues, filters by label, summarizes findings
+
+// Code review assistance
+// User: "What changed in the authentication flow?"
+// AI: Analyzes commits, shows diff, explains changes
+```
+
+**Benefits for This Project**:
+- Automated PR creation with proper descriptions
+- Issue tracking integration
+- Code history analysis
+- Simplified release management
+
+---
+
+### 6. Prisma MCP Server (`@prisma/mcp-server`) 🆕 RECOMMENDED
+
+**Purpose**: Database management and schema operations for Prisma Postgres
+
+**When to Use**:
+- ✅ Running database migrations
+- ✅ Creating new database instances
+- ✅ Executing SQL queries
+- ✅ Inspecting schema structure
+- ✅ Managing database backups
+- ✅ Connection string management
+
+**When NOT to Use**:
+- ❌ Complex schema design (use Prisma CLI)
+- ❌ Data seeding (use seed scripts)
+- ❌ Performance tuning (use direct Postgres tools)
+
+**Key Features**:
+- Schema migration automation
+- Database creation/deletion
+- SQL query execution
+- Connection management
+- Backup handling
+
+**Installation**:
+```bash
+npm install -g @prisma/mcp-server
+```
+
+**Configuration** (add to MCP settings):
+```json
+{
+  "mcpServers": {
+    "prisma": {
+      "command": "prisma-mcp-server",
+      "env": {
+        "DATABASE_URL": "your-connection-string"
+      }
+    }
+  }
+}
+```
+
+**Example Use Cases**:
+```typescript
+// Auto-migration
+// User: "Add createdBy field to ProductionOrder"
+// AI:
+// 1. Updates schema.prisma
+// 2. Generates migration
+// 3. Applies migration
+// 4. Updates TypeScript types
+
+// Database inspection
+// User: "Show me all indexes on ProductionOrder table"
+// AI: Queries schema, shows indexes, suggests optimizations
+
+// Query optimization
+// User: "Why is this query slow?"
+// AI: Analyzes query, suggests indexes, shows execution plan
+```
+
+**Benefits for This Project**:
+- Automated schema migrations
+- Safe database operations
+- Query debugging and optimization
+- Integration with existing Prisma setup
+
+---
+
+### 7. Playwright MCP Server (`playwright-mcp`) 🆕 RECOMMENDED
+
+**Purpose**: Automated browser testing and interaction
+
+**When to Use**:
+- ✅ E2E testing automation
+- ✅ Visual regression testing
+- ✅ Browser interaction automation
+- ✅ Web scraping (when BrightData not suitable)
+- ✅ Screenshot generation
+- ✅ Accessibility testing
+
+**When NOT to Use**:
+- ❌ Simple unit tests (use Jest)
+- ❌ API testing (use HTTP clients)
+- ❌ Static analysis (use linters)
+
+**Key Features**:
+- Multi-browser support (Chrome, Firefox, Safari)
+- Network interception
+- Screenshot and video recording
+- Mobile emulation
+- Accessibility audits
+
+**Installation**:
+```bash
+npm install -g playwright-mcp
+npx playwright install
+```
+
+**Configuration** (add to MCP settings):
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "playwright-mcp"
+    }
+  }
+}
+```
+
+**Example Use Cases**:
+```typescript
+// Automated login testing
+// User: "Test the authentication flow"
+// AI:
+// 1. Opens browser to login page
+// 2. Enters credentials
+// 3. Verifies redirect to dashboard
+// 4. Checks auth token storage
+// 5. Validates protected routes
+
+// Visual regression
+// User: "Check if design system changes broke anything"
+// AI: Takes screenshots of all pages, compares with baseline
+
+// Accessibility audit
+// User: "Run accessibility check on order page"
+// AI: Uses Playwright + axe-core, reports violations
+```
+
+**Benefits for This Project**:
+- Automated testing of capsule management flows
+- Authentication flow validation
+- Recipe generation testing
+- AI interface interaction testing
+
+---
+
+### 8. Memory MCP Server (`memory-mcp`) 🆕 RECOMMENDED
+
+**Purpose**: Persistent memory and context across sessions
+
+**When to Use**:
+- ✅ Storing project-specific context
+- ✅ Remembering user preferences
+- ✅ Tracking technical debt
+- ✅ Learning from past decisions
+- ✅ Maintaining conversation context
+- ✅ Storing frequently accessed information
+
+**When NOT to Use**:
+- ❌ Sensitive data (use secure storage)
+- ❌ Temporary session data (use variables)
+- ❌ Large datasets (use database)
+
+**Key Features**:
+- Persistent key-value storage
+- Session continuity
+- Context retrieval
+- Semantic search of memories
+- Automatic relevance ranking
+
+**Installation**:
+```bash
+npm install -g memory-mcp-server
+```
+
+**Configuration** (add to MCP settings):
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "memory-mcp-server",
+      "args": ["--storage-path", "~/.cursor/memory"]
+    }
+  }
+}
+```
+
+**Example Use Cases**:
+```typescript
+// Project context
+// AI stores: "Easy Health uses Prisma with PostgreSQL in production"
+// Later retrieves when discussing database changes
+
+// Technical debt tracking
+// AI remembers: "Need to refactor ingredient validation logic"
+// Suggests relevant fixes when working on related code
+
+// User preferences
+// AI learns: "User prefers TypeScript strict mode, no 'any' types"
+// Applies consistently across sessions
+
+// Decision history
+// AI recalls: "Decided to use liquid glass design over flat design"
+// References when making related UI decisions
+```
+
+**Benefits for This Project**:
+- Continuous context across development sessions
+- Automatic tracking of project patterns
+- Learning from past solutions
+- Reduced repetition of context
+
+---
+
+## MCP Server Selection Guide
+
+### Decision Matrix (Enhanced)
+
+| Scenario | Primary Tool | Secondary Tool | Why |
+|----------|--------------|----------------|-----|
+| "Why does X happen when Y?" | Sequential Thinking | - | Complex cause analysis |
+| "What's the latest version of X?" | BrightData | - | Real-time information |
+| "How do I use library X?" | Context7 | BrightData | Official documentation |
+| "Create PR for these changes" | GitHub MCP | - | Automated PR workflow |
+| "Run database migration" | Prisma MCP | - | Schema management |
+| "Test the login flow" | Playwright MCP | - | E2E testing |
+| "Read all component files" | Filesystem MCP | - | Batch operations |
+| "What did we decide last time?" | Memory MCP | - | Context retrieval |
+| "Find all TODO comments" | Filesystem MCP | grep | Pattern search |
+| "Optimize this query" | Sequential Thinking | Prisma MCP | Analysis + execution |
+
+### Recommended MCP Server Priorities
+
+**TIER 1 - Install Immediately:**
+1. **Sequential Thinking** ✅ Already installed
+2. **Context7** ✅ Already installed
+3. **BrightData** ✅ Already installed
+4. **Filesystem MCP** ✅ Already available
+5. **GitHub MCP** 🆕 High value for workflow automation
+6. **Prisma MCP** 🆕 Perfect for your database operations
+
+**TIER 2 - Install Soon:**
+7. **Memory MCP** 🆕 Improves context continuity
+8. **Playwright MCP** 🆕 Automates testing
+
+**TIER 3 - Consider Later:**
+9. Linear/Jira MCP - If project management needed
+10. Docker MCP - If containerizing application
+11. Slack MCP - If team communication needed
+
+### Cross-MCP Workflows
+
+**Workflow 1: Feature Implementation**
+```
+1. Memory MCP: Retrieve project context
+2. Context7: Get library documentation
+3. Sequential Thinking: Plan architecture
+4. Filesystem MCP: Read related files
+5. [Implement feature]
+6. Prisma MCP: Run migrations (if needed)
+7. Playwright MCP: Create tests
+8. GitHub MCP: Create PR
+9. Memory MCP: Store decisions made
+```
+
+**Workflow 2: Bug Investigation**
+```
+1. Memory MCP: Check if seen before
+2. Sequential Thinking: Analyze symptoms
+3. Filesystem MCP: Search for related code
+4. BrightData: Check for known issues
+5. [Fix bug]
+6. GitHub MCP: Close related issues
+7. Memory MCP: Store solution
+```
+
+**Workflow 3: Database Changes**
+```
+1. Sequential Thinking: Plan schema changes
+2. Prisma MCP: Inspect current schema
+3. [Update schema.prisma]
+4. Prisma MCP: Generate & run migration
+5. Filesystem MCP: Update related types
+6. GitHub MCP: Create PR
+```
 
 ---
 
@@ -756,6 +1182,455 @@ For trivial operations that don't require creativity or deep analysis:
 
 ---
 
+## Version Control Workflow 🆕
+
+### Branch Naming Conventions
+
+**Format**: `type/description`
+
+```bash
+# Features
+feature/add-recipe-search
+feature/implement-ai-suggestions
+
+# Bug fixes
+fix/authentication-timeout
+fix/ingredient-validation-error
+
+# Refactoring
+refactor/unify-card-components
+refactor/optimize-ai-parameters
+
+# Documentation
+docs/update-api-guide
+docs/add-mcp-examples
+
+# Performance
+perf/optimize-database-queries
+perf/reduce-bundle-size
+
+# Testing
+test/add-e2e-authentication
+test/recipe-generation-coverage
+```
+
+### Pull Request Process
+
+1. **Create PR with Descriptive Title**
+   - Format: `[Type] Brief description`
+   - Example: `[Feature] Add AI-powered recipe search`
+
+2. **Fill PR Template**
+   ```markdown
+   ## Description
+   Brief summary of changes
+   
+   ## Changes Made
+   - Bullet list of specific changes
+   - Include file changes
+   - Mention any breaking changes
+   
+   ## Testing
+   - [ ] Build passes (`npm run build`)
+   - [ ] Tests pass (if applicable)
+   - [ ] Manual testing completed
+   - [ ] Tested on multiple screen sizes
+   
+   ## Screenshots (if UI changes)
+   [Add screenshots here]
+   
+   ## Related Issues
+   Closes #123
+   ```
+
+3. **Request Review** (if team collaboration)
+   - Tag reviewers based on file ownership
+   - Wait for approval before merging
+
+4. **Address Review Comments**
+   - Respond to all feedback
+   - Make requested changes
+   - Re-request review after updates
+
+5. **Merge Strategy**
+   - **Squash and merge** for feature branches (default)
+   - Keep main branch history clean
+   - Include PR number in commit message
+
+### Code Review Checklist
+
+**For Reviewers:**
+- [ ] Code follows design system patterns
+- [ ] TypeScript types are properly defined
+- [ ] No hardcoded values (use design tokens)
+- [ ] Error handling is implemented
+- [ ] Tests are included (if applicable)
+- [ ] Performance impact assessed
+- [ ] Accessibility considered
+- [ ] AI parameters optimized (if AI changes)
+- [ ] Build passes
+- [ ] Documentation updated
+
+### Git Commit Best Practices
+
+**Commit Often:**
+- Small, logical commits
+- Each commit should build successfully
+- Clear commit messages
+
+**Commit Message Format:**
+```bash
+# With emoji (recommended)
+✨ feat: add recipe search functionality
+🐛 fix: resolve authentication timeout issue
+♻️ refactor: unify card component variants
+📝 docs: update MCP integration guide
+✅ test: add E2E tests for login flow
+⚡ perf: optimize database query performance
+
+# Without emoji (acceptable)
+feat: add recipe search functionality
+fix: resolve authentication timeout issue
+```
+
+**Multi-line Commits** (for complex changes):
+```bash
+git commit -m "✨ feat: implement AI-powered recipe search
+
+Changes:
+- Add search API endpoint
+- Create search UI component
+- Integrate with OpenRouter AI
+- Add search result ranking
+
+Testing:
+- Tested with 100+ recipes
+- Performance: < 2s response time
+- Build: Passed
+
+Related: #123"
+```
+
+### When to Create a PR
+
+**Always create PR for:**
+- New features
+- Refactoring > 3 files
+- Design system changes
+- API modifications
+- Database schema changes
+- Security updates
+
+**Can commit directly to main:**
+- Documentation typo fixes
+- README updates
+- Hotfixes (with [HOTFIX] tag)
+
+### GitHub MCP Integration
+
+If using GitHub MCP server:
+```typescript
+// Auto-generate PR
+// User: "Create PR for recipe search feature"
+// AI:
+// 1. Analyzes changed files
+// 2. Generates PR title and description
+// 3. Suggests reviewers
+// 4. Creates PR with labels
+// 5. Links related issues
+```
+
+---
+
+## Performance Benchmarks 🆕
+
+### Target Metrics
+
+#### Load Time
+- **Initial Load**: < 3 seconds (3G connection)
+- **Subsequent Pages**: < 1 second
+- **Time to Interactive (TTI)**: < 5 seconds
+- **First Contentful Paint (FCP)**: < 1.5 seconds
+- **Largest Contentful Paint (LCP)**: < 2.5 seconds
+
+#### Bundle Size
+- **First Load JS**: < 200KB (target: 150KB)
+- **Individual Pages**: < 100KB each
+- **Total Application Size**: < 2MB
+- **Code Splitting**: Enabled for all routes
+
+#### API Response Time
+- **Simple Queries** (get order by ID): < 200ms
+- **Complex Queries** (list with filters): < 500ms
+- **AI Endpoints** (non-streaming): < 5s
+- **AI Streaming**: First token < 1s
+- **Database Operations**: < 100ms average
+
+#### Lighthouse Scores (Minimum)
+- **Performance**: > 90
+- **Accessibility**: > 95
+- **Best Practices**: > 95
+- **SEO**: > 90
+
+### Monitoring Setup
+
+**Vercel Analytics** (Primary):
+```bash
+# Already integrated in project
+# View at: https://vercel.com/[project]/analytics
+
+Metrics tracked:
+- Real User Monitoring (RUM)
+- Core Web Vitals
+- API response times
+- Build times
+- Deployment success rate
+```
+
+**Core Web Vitals Tracking**:
+```typescript
+// Automatically tracked by Next.js
+export function reportWebVitals(metric: NextWebVitalsMetric) {
+  // Send to analytics
+  console.log(metric)
+  
+  // Alert if threshold breached
+  if (metric.name === 'LCP' && metric.value > 2500) {
+    console.warn('LCP threshold exceeded:', metric.value)
+  }
+}
+```
+
+### Performance Budget
+
+**Enforce Limits**:
+```json
+// .lighthouserc.json (create if using)
+{
+  "ci": {
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "first-contentful-paint": ["error", {"maxNumericValue": 1500}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 2500}],
+        "total-byte-weight": ["error", {"maxNumericValue": 2000000}]
+      }
+    }
+  }
+}
+```
+
+### Alert Thresholds
+
+**Automatic Alerts When**:
+- Build time > 5 minutes
+- Bundle size increases > 20% in single PR
+- LCP > 3 seconds for 3 consecutive deploys
+- API error rate > 5%
+- Database query time > 1 second
+
+### Performance Optimization Checklist
+
+**Before Deployment:**
+- [ ] Run `npm run build` locally
+- [ ] Check bundle size: `du -sh .next/`
+- [ ] Test on slow 3G connection
+- [ ] Check Lighthouse scores
+- [ ] Verify no console errors
+- [ ] Test on mobile device
+
+**For AI Features:**
+- [ ] Use streaming responses
+- [ ] Implement request cancellation
+- [ ] Set appropriate max_tokens limits
+- [ ] Add loading states
+- [ ] Handle timeouts gracefully
+- [ ] Cache repeated queries (if applicable)
+
+### Performance Debugging
+
+**If load time > 3s:**
+1. Check bundle size analysis
+2. Identify large dependencies
+3. Implement code splitting
+4. Use dynamic imports
+5. Optimize images
+
+**If API slow:**
+1. Check database query performance
+2. Add indexes where needed
+3. Implement caching
+4. Use connection pooling
+5. Profile with Prisma
+
+**If AI slow:**
+1. Reduce max_tokens if possible
+2. Use faster model (GPT-5 Mini)
+3. Implement caching for similar queries
+4. Show streaming responses
+5. Set reasonable timeouts
+
+---
+
+## Error Logging & Monitoring 🆕
+
+### What to Log
+
+**Production Errors (MUST log)**:
+- API request failures (with request context)
+- Database query errors
+- Authentication failures
+- AI model errors and fallbacks
+- Unhandled exceptions
+- Network timeouts
+- Payment processing errors (if applicable)
+
+**Development Warnings (SHOULD log)**:
+- Validation errors (aggregated)
+- Deprecated API usage
+- Performance degradation (> 2x normal)
+- Rate limiting hits
+- Cache misses
+
+**DO NOT Log**:
+- Passwords or secrets
+- API keys
+- Personal identifiable information (PII)
+- Full request/response bodies (sanitize first)
+- Excessive debug info in production
+
+### Where to Log
+
+**By Environment**:
+```typescript
+if (process.env.NODE_ENV === 'production') {
+  // Production: Vercel logs + external service
+  console.error('[ERROR]', context, error)
+  // Optional: Send to error tracking service
+} else {
+  // Development: Console (verbose)
+  console.error('[ERROR]', context, error)
+  console.trace() // Full stack trace
+}
+```
+
+**Log Levels**:
+- **CRITICAL**: System down, data loss
+- **ERROR**: Feature broken, needs immediate fix
+- **WARN**: Degraded performance, fallback active
+- **INFO**: Important events, state changes
+- **DEBUG**: Development only, detailed trace
+
+### Error Handling Pattern
+
+**Standard Pattern**:
+```typescript
+try {
+  // Operation
+  const result = await riskyOperation()
+  return { success: true, data: result }
+  
+} catch (error) {
+  // Log with context
+  console.error('[ModuleName] Operation failed', {
+    operation: 'riskyOperation',
+    context: { userId, orderId },
+    error: error.message,
+    stack: error.stack,
+    timestamp: new Date().toISOString()
+  })
+  
+  // Show user-friendly message
+  toast.error('操作失敗，請稍後重試')
+  
+  // Return structured error
+  return {
+    success: false,
+    error: 'Operation failed',
+    code: 'OPERATION_ERROR'
+  }
+}
+```
+
+**AI Error Handling**:
+```typescript
+try {
+  const response = await fetchAI(prompt)
+  return response
+  
+} catch (error) {
+  // Log AI-specific context
+  console.error('[AI] Request failed', {
+    model: 'gpt-5-mini',
+    promptLength: prompt.length,
+    error: error.message,
+    fallback: 'Attempting with Claude'
+  })
+  
+  // Try fallback model
+  try {
+    return await fetchAI(prompt, { model: 'claude-sonnet-4.5' })
+  } catch (fallbackError) {
+    // Both failed, log and show error
+    console.error('[AI] All models failed', fallbackError)
+    toast.error('AI 服務暫時無法使用，請稍後重試')
+    return null
+  }
+}
+```
+
+### Alert Configuration
+
+**Critical Alerts** (immediate notification):
+- Authentication system down
+- Database connection lost
+- Payment processing failures
+- Data corruption detected
+
+**High Priority** (15-minute delay):
+- Error rate > 5% for 5 minutes
+- API response time > 5s average
+- AI model all failures
+- Deployment failures
+
+**Medium Priority** (1-hour aggregation):
+- Performance degradation > 2x
+- Increased error rates < 5%
+- Cache failures
+- Rate limiting hits
+
+### Vercel Logs Access
+
+```bash
+# View logs
+vercel logs [deployment-url]
+
+# Stream logs in real-time
+vercel logs --follow
+
+# Filter by severity
+vercel logs --level error
+
+# Search logs
+vercel logs --search "Authentication failed"
+```
+
+### Error Rate Monitoring
+
+**Acceptable Rates**:
+- Overall error rate: < 2%
+- API error rate: < 1%
+- AI error rate: < 5% (with fallbacks)
+- Build failures: < 1%
+
+**When to Investigate**:
+- Sudden spike (> 2x normal rate)
+- Sustained high rate (> threshold for > 30 min)
+- New error types appearing
+- Error rate increasing trend
+
+---
+
 ## CRITICAL REQUIREMENTS - ALWAYS FOLLOW
 
 ### Mandatory Rules for All Work:
@@ -882,6 +1757,15 @@ For more detailed guidance, see these documentation files:
 
 ---
 
-**Last Updated**: 2025-01-17
-**Version**: 2.0 (Enhanced with flexibility and conflict resolution)
+**Last Updated**: 2025-10-21
+**Version**: 3.0 (Major Enhancement: Added 5 new MCP servers, version control workflow, performance benchmarks, error logging)
+
+### What's New in v3.0
+- 🆕 Added 5 new MCP servers (Filesystem, GitHub, Prisma, Playwright, Memory)
+- 🆕 Version control workflow (branch naming, PR process, code review)
+- 🆕 Performance benchmarks (specific metrics and targets)
+- 🆕 Error logging & monitoring guide
+- ✨ Enhanced quick decision guide
+- ✨ Cross-MCP workflow patterns
+- ✨ MCP server selection matrix
 
