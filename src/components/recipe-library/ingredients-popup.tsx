@@ -51,10 +51,10 @@ export function IngredientsPopup({ ingredients, children }: IngredientsPopupProp
                         {index + 1}
                       </td>
                       <td className="py-2 px-2 text-neutral-800">
-                        {ingredient.materialName}
+                        {ingredient.materialName || '-'}
                       </td>
                       <td className="py-2 px-2 text-right text-neutral-600 font-mono">
-                        {ingredient.unitContentMg.toLocaleString()} mg
+                        {(ingredient.unitContentMg ?? 0).toLocaleString()} mg
                       </td>
                     </tr>
                   ))}
@@ -66,7 +66,7 @@ export function IngredientsPopup({ ingredients, children }: IngredientsPopupProp
             <div className="mt-3 pt-3 border-t border-neutral-200/50 flex justify-between items-center text-xs">
               <span className="text-neutral-600">總含量</span>
               <span className="font-semibold text-neutral-800 font-mono">
-                {ingredients.reduce((sum, ing) => sum + ing.unitContentMg, 0).toLocaleString()} mg
+                {ingredients.reduce((sum, ing) => sum + (ing.unitContentMg ?? 0), 0).toLocaleString()} mg
               </span>
             </div>
           </div>
