@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Force 1:1 aspect ratio and 2K resolution for better text quality
     const aspectRatio = '1:1'
-    const quality = '2K' // Force 2K for better text clarity on labels
+    const quality = '2048x2048' // Force 2048x2048 for better text clarity on labels
 
     // Enhance prompt with text quality instructions
     const enhancedPrompt = `${prompt.trim()}
@@ -90,11 +90,10 @@ CRITICAL TEXT RENDERING REQUIREMENTS:
       stream: false // Non-streaming for stable quality
     }
 
-    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像 (2K 高清)', {
+    logger.info('正在使用 Doubao SeeDream 4.0 生成圖像 (2048x2048)', {
       model: MODEL_ID,
       aspectRatio,
-      quality,
-      resolution: '2048x2048',
+      size: quality,
       promptLength: enhancedPrompt.length,
       inferenceSteps: 50
     })
