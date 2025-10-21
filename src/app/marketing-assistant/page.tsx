@@ -56,6 +56,26 @@ export default function MarketingAssistantPage() {
     return () => clearInterval(id)
   }, [analysisStatus])
 
+  // 頁面載入時恢復分析內容
+  useEffect(() => {
+    const saved = localStorage.getItem('marketing_analysis_cache')
+    if (saved) {
+      try {
+        const { content, timestamp } = JSON.parse(saved)
+        // 只恢復 24 小時內的內容
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+          setAnalysisContent(content)
+          setAnalysisStatus('success')
+        } else {
+          localStorage.removeItem('marketing_analysis_cache')
+        }
+      } catch (error) {
+        console.error('恢復分析內容失敗:', error)
+        localStorage.removeItem('marketing_analysis_cache')
+      }
+    }
+  }, [])
+
   // 自動導入從配方庫傳來的原料
   useEffect(() => {
     const importedData = localStorage.getItem('marketing_imported_ingredients')
@@ -119,6 +139,7 @@ export default function MarketingAssistantPage() {
     setAnalysisStatus('loading')
     setAnalysisContent('')
     setAnalysisError(null)
+    localStorage.removeItem('marketing_analysis_cache') // 清除舊內容
     setStartTime(Date.now())
     setEndTime(null)
     setNowTick(Date.now())
@@ -181,6 +202,17 @@ export default function MarketingAssistantPage() {
               }
               setEndTime(Date.now())
               if (payload.success) {
+                // 保存到 localStorage（在 setAnalysisContent 完成後）
+                setTimeout(() => {
+                  const currentContent = analysisContent
+                  if (currentContent) {
+                    localStorage.setItem('marketing_analysis_cache', JSON.stringify({
+                      content: currentContent,
+                      timestamp: Date.now()
+                    }))
+                  }
+                }, 100)
+                
                 showToast({
                   title: '分析完成',
                   description: '行銷策略分析已完成。'

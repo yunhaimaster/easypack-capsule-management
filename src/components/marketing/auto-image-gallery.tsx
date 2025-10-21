@@ -22,6 +22,8 @@ interface GeneratedImage {
   status: 'pending' | 'generating' | 'success' | 'error'
   error?: string
   generationTime?: number
+  seed?: number // 保存使用的 seed
+  isEditing?: boolean // 是否處於編輯狀態
 }
 
 export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoImageGalleryProps) {
@@ -30,6 +32,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   const [isGenerating, setIsGenerating] = useState(false)
   const [productName, setProductName] = useState<string>('Premium Wellness Formula')
   const [chineseProductName, setChineseProductName] = useState<string | undefined>(undefined)
+  const [editingPrompts, setEditingPrompts] = useState<Record<number, string>>({})
   const hasGeneratedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -190,7 +193,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   imageUrl: data.data.imageUrl, 
                   status: 'success',
                   error: undefined,
-                  generationTime
+                  generationTime,
+                  seed: data.data.seed // 保存使用的 seed
                 } : img
               ))
             } else {
@@ -233,25 +237,27 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysisContent, isAnalysisComplete, isGenerating, showToast])
 
-  const regenerateImage = async (index: number, image: GeneratedImage) => {
-    setImages(prev => prev.map((img, idx) => idx === index ? { ...img, status: 'generating', error: undefined } : img))
+  const regenerateImage = async (index: number, image: GeneratedImage, customPrompt?: string) => {
+    setImages(prev => prev.map((img, idx) => 
+      idx === index ? { ...img, status: 'generating', error: undefined, isEditing: false } : img
+    ))
 
     try {
+      const finalPrompt = customPrompt || image.prompt
+      
       const response = await fetch('/api/ai/packaging-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // Use both product names from state (add Chinese name to state)
           prompt: buildChineseImagePrompt(
-            image.prompt, 
+            finalPrompt, 
             image.type, 
             productName,
             chineseProductName
           ),
           type: image.type,
-          width: 2048,  // 2K resolution for better text quality
+          width: 2048,
           height: 2048,
-          // 🆕 Use new random seed for regeneration (allows trying different variations)
           seed: Math.floor(Math.random() * 1000000)
         })
       })
@@ -261,9 +267,22 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
       if (data.success && data.data?.imageUrl) {
         setImages(prev => prev.map((img, idx) =>
           idx === index
-            ? { ...img, imageUrl: data.data.imageUrl, status: 'success', error: undefined }
+            ? { 
+                ...img, 
+                imageUrl: data.data.imageUrl, 
+                status: 'success', 
+                error: undefined,
+                prompt: finalPrompt, // 更新為新的 prompt
+                seed: data.data.seed
+              }
             : img
         ))
+        // 清除編輯狀態
+        setEditingPrompts(prev => {
+          const next = { ...prev }
+          delete next[index]
+          return next
+        })
         showToast({
           title: '已重新生成圖像',
           description: `${getImageTypeLabel(image.type)} 圖像已更新。`
@@ -282,6 +301,38 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         variant: 'destructive'
       })
     }
+  }
+
+  const toggleEditMode = (index: number, image: GeneratedImage) => {
+    setImages(prev => prev.map((img, idx) => 
+      idx === index ? { ...img, isEditing: !img.isEditing } : img
+    ))
+    
+    if (!images[index].isEditing) {
+      setEditingPrompts(prev => ({ ...prev, [index]: image.prompt }))
+    }
+  }
+
+  const handlePromptChange = (index: number, value: string) => {
+    setEditingPrompts(prev => ({ ...prev, [index]: value }))
+  }
+
+  const handlePromptSubmit = (index: number, image: GeneratedImage) => {
+    const customPrompt = editingPrompts[index]
+    if (customPrompt && customPrompt.trim()) {
+      regenerateImage(index, image, customPrompt.trim())
+    }
+  }
+
+  const cancelEdit = (index: number) => {
+    setImages(prev => prev.map((img, idx) => 
+      idx === index ? { ...img, isEditing: false } : img
+    ))
+    setEditingPrompts(prev => {
+      const next = { ...prev }
+      delete next[index]
+      return next
+    })
   }
 
   const downloadImage = useCallback((imageUrl: string, label: string) => {
@@ -524,6 +575,68 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   >
                     重新生成
                   </Button>
+                </div>
+              )}
+
+              {/* Prompt 編輯區域 */}
+              {image.status === 'success' && (
+                <div className="mt-3 space-y-2">
+                  {image.seed && (
+                    <div className="text-xs text-neutral-400 flex items-center gap-1">
+                      <span>Seed: {image.seed}</span>
+                    </div>
+                  )}
+                  {!image.isEditing ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-neutral-600">Prompt</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleEditMode(index, image)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          編輯
+                        </Button>
+                      </div>
+                      <div className="text-xs text-neutral-500 bg-neutral-50 rounded-md p-2 max-h-20 overflow-y-auto">
+                        {image.prompt}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-neutral-600">編輯 Prompt</span>
+                      </div>
+                      <textarea
+                        value={editingPrompts[index] || image.prompt}
+                        onChange={(e) => handlePromptChange(index, e.target.value)}
+                        className="w-full text-xs border border-neutral-300 rounded-md p-2 min-h-[100px] resize-y focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="修改圖像生成 prompt..."
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => handlePromptSubmit(index, image)}
+                          disabled={!editingPrompts[index] || editingPrompts[index].trim() === ''}
+                          className="flex-1 bg-primary-500 hover:bg-primary-600 text-white text-xs h-8"
+                        >
+                          使用新 Prompt 生成
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => cancelEdit(index)}
+                          className="flex-1 text-xs h-8"
+                        >
+                          取消
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
