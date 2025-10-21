@@ -76,6 +76,16 @@ export default function MarketingAssistantPage() {
     }
   }, [])
 
+  // 分析完成時保存到 localStorage
+  useEffect(() => {
+    if (analysisStatus === 'success' && analysisContent) {
+      localStorage.setItem('marketing_analysis_cache', JSON.stringify({
+        content: analysisContent,
+        timestamp: Date.now()
+      }))
+    }
+  }, [analysisStatus, analysisContent])
+
   // 自動導入從配方庫傳來的原料
   useEffect(() => {
     const importedData = localStorage.getItem('marketing_imported_ingredients')
@@ -202,17 +212,6 @@ export default function MarketingAssistantPage() {
               }
               setEndTime(Date.now())
               if (payload.success) {
-                // 保存到 localStorage（在 setAnalysisContent 完成後）
-                setTimeout(() => {
-                  const currentContent = analysisContent
-                  if (currentContent) {
-                    localStorage.setItem('marketing_analysis_cache', JSON.stringify({
-                      content: currentContent,
-                      timestamp: Date.now()
-                    }))
-                  }
-                }, 100)
-                
                 showToast({
                   title: '分析完成',
                   description: '行銷策略分析已完成。'
