@@ -38,6 +38,7 @@ import { RecipeListItem } from '@/components/recipe-library/recipe-list-item'
 import { BatchAnalysisModal } from '@/components/recipe-library/batch-analysis-modal'
 import { AdvancedFilters } from '@/components/recipe-library/advanced-filters'
 import { RecipeActionsMenu } from '@/components/recipe-library/recipe-actions-menu'
+import { IngredientsPopup } from '@/components/recipe-library/ingredients-popup'
 import { EFFECT_CATEGORIES, getRecipeCategories } from '@/lib/parse-effects'
 import type { RecipeLibraryItem, BatchImportResult } from '@/types'
 import { useRecipeReview } from '@/hooks/use-recipe-review'
@@ -1195,11 +1196,11 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {recipes.map((recipe) => (
-        <Card
-          key={recipe.id}
-          className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive cursor-pointer"
-          onClick={() => router.push(`/recipe-library/${recipe.id}`)}
-        >
+        <IngredientsPopup key={recipe.id} ingredients={recipe.ingredients}>
+          <Card
+            className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive cursor-pointer"
+            onClick={() => router.push(`/recipe-library/${recipe.id}`)}
+          >
           <div className="liquid-glass-content p-6">
             <div className="flex items-start gap-3 mb-3">
               <IconContainer 
@@ -1294,7 +1295,8 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
               </div>
             </div>
           </div>
-        </Card>
+          </Card>
+        </IngredientsPopup>
       ))}
     </div>
   )

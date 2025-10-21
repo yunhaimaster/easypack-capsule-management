@@ -11,6 +11,7 @@ import { getEffectsSummary } from '@/lib/parse-effects'
 import { AnalysisStatusBadge } from './analysis-status-badge'
 import { EffectBadges } from './effect-badges'
 import { RecipeActionsMenu } from './recipe-actions-menu'
+import { IngredientsPopup } from './ingredients-popup'
 
 interface RecipeListItemProps {
   recipe: RecipeLibraryItem
@@ -30,17 +31,18 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
   const isTemplate = recipe.recipeType === 'template'
   
   return (
-    <div
-      className={cn(
-        "group relative overflow-hidden rounded-apple-md bg-white/80 backdrop-blur-sm",
-        "border border-neutral-200/50 hover:border-neutral-300/70",
-        "hover:shadow-apple-md transition-apple",
-        "cursor-pointer",
-        // 左側彩色邊框
-        isTemplate ? "border-l-4 border-l-primary-500" : "border-l-4 border-l-success-500"
-      )}
-      onClick={() => onView(recipe.id)}
-    >
+    <IngredientsPopup ingredients={recipe.ingredients}>
+      <div
+        className={cn(
+          "group relative overflow-hidden rounded-apple-md bg-white/80 backdrop-blur-sm",
+          "border border-neutral-200/50 hover:border-neutral-300/70",
+          "hover:shadow-apple-md transition-apple",
+          "cursor-pointer",
+          // 左側彩色邊框
+          isTemplate ? "border-l-4 border-l-primary-500" : "border-l-4 border-l-success-500"
+        )}
+        onClick={() => onView(recipe.id)}
+      >
       <div className="p-4">
         {/* 第一行：圖標 + 配方名稱 + 操作按鈕 */}
         <div className="flex items-center gap-3 mb-2">
@@ -205,7 +207,8 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </IngredientsPopup>
   )
 }
 
