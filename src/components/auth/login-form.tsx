@@ -59,13 +59,19 @@ export function LoginForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, code, trustDevice: trust }),
+        redirect: 'manual', // Don't auto-follow redirect
       })
-      const data = await res.json()
-      if (res.ok && data.success) {
+      
+      // Success = 302 redirect
+      if (res.status === 302 || res.type === 'opaqueredirect') {
+        // Redirect will be handled by browser
         window.location.href = '/'
-      } else {
-        setError(data.error || '驗證失敗')
+        return
       }
+      
+      // Error response (still JSON)
+      const data = await res.json()
+      setError(data.error || '驗證失敗')
     } catch {
       setError('驗證時發生錯誤')
     } finally {
@@ -81,14 +87,14 @@ export function LoginForm() {
             <Logo size="lg" variant="icon" />
           </div>
           <h2 className="text-xl sm:text-2xl font-semibold text-primary-600">Easy Health 系統登入</h2>
-          <p className="text-sm text-neutral-600">輸入香港電話號碼以接收一次性驗證碼</p>
+          <p className="text-sm text-neutral-600">請輸入您在 EPL 通訊 WhatsApp 群組使用的電話號碼</p>
         </div>
 
         {step === 'phone' ? (
           <form onSubmit={startOtp} className="space-y-4">
             <div className="space-y-2 text-left">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                電話號碼（香港 8 位）
+                電話號碼（EPL 通訊群組）
               </label>
               <div className="relative">
                 <Input
@@ -96,7 +102,7 @@ export function LoginForm() {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="例如：66244432 或 +85266244432"
+                  placeholder="輸入 WhatsApp 群組的號碼（8位數字）"
                   className="pl-9"
                   required
                 />
