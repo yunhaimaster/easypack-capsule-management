@@ -262,8 +262,8 @@ export function HomePageClient() {
               <div className="flex items-center gap-3">
                 <IconContainer icon={CalendarDays} variant="primary" size="md" />
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-800">2025年10月20日 · 功能優化</h3>
-                  <p className="text-xs text-neutral-500">最新版本：v2.6.0</p>
+                  <h3 className="text-base font-semibold text-neutral-800">2025年10月23日 · 重大更新</h3>
+                  <p className="text-xs text-neutral-500">最新版本：v2.7.0</p>
                 </div>
               </div>
               <Link 
@@ -275,24 +275,24 @@ export function HomePageClient() {
             </div>
             <ul className="space-y-2 text-xs sm:text-sm text-neutral-600">
               <li className="flex items-start gap-2">
-                <span className="text-primary-500 mt-0.5">🔍</span>
-                <span>智能導入優化，新增「審查後應用」功能，導入配方前可先檢視和編輯原料資料，支援圖片或文字解析</span>
+                <span className="text-success-500 mt-0.5">🔐</span>
+                <span>全新 OTP 電話驗證系統上線，支援手機驗證碼登入、設備信任功能，30天免密登入更便利</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-success-500 mt-0.5">⚡</span>
-                <span>配方搜索升級，新增原料搜索功能，支援依原料名稱快速篩選配方（如搜尋「鈣」找出所有含鈣配方）</span>
+                <span className="text-warning-500 mt-0.5">👥</span>
+                <span>角色權限管理系統，新增員工/經理/管理員三級權限，管理員可管理用戶、查看審計日誌</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-info-500 mt-0.5">🎯</span>
-                <span>進階篩選增強，配方庫新增功效類別多選、原料篩選、快速標籤等多維度搜索，找配方更快更準</span>
+                <span className="text-info-500 mt-0.5">🎨</span>
+                <span>豆包 AI 圖片生成引擎整合，全新產品包裝設計、標籤設計、2K高清海報，支援香港製造風格</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-secondary-500 mt-0.5">✨</span>
-                <span>測試框架完善，建立 Jest 單元測試和 Playwright E2E 測試，確保代碼質量和功能穩定性</span>
+                <span className="text-primary-500 mt-0.5">⚡</span>
+                <span>升級至 Next.js 15 與 React 19，效能大幅提升，支援流式渲染與樂觀更新，頁面載入更快</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">📊</span>
-                <span>監控系統上線，整合 Vercel Analytics 性能追蹤和事件監控，持續優化用戶體驗</span>
+                <span className="text-secondary-500 mt-0.5">📊</span>
+                <span>完整審計日誌系統，記錄所有用戶操作（訂單、配方、工時、AI互動），管理員可追蹤查詢</span>
               </li>
             </ul>
           </div>
