@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { Prisma } from '@prisma/client'
+import { Prisma, AuditAction } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { productionOrderSchema, searchFiltersSchema, worklogSchema } from '@/lib/validations'
 import { SearchFilters } from '@/types'
@@ -7,6 +7,8 @@ import { calculateWorkUnits } from '@/lib/worklog'
 import { DateTime } from 'luxon'
 import { logger } from '@/lib/logger'
 import { jsonSuccess, jsonError } from '@/lib/api-response'
+import { getSessionFromCookie } from '@/lib/auth/session'
+import { logAudit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 300 // 5 minutes
@@ -191,6 +193,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Get current user for audit logging
+    const session = await getSessionFromCookie()
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
+    const userAgent = request.headers.get('user-agent') || null
+    
     const body = await request.json()
     const validatedData = productionOrderSchema.parse(body)
     logger.info('POST /api/orders - Payload validated', {
@@ -256,6 +263,22 @@ export async function POST(request: NextRequest) {
       orderId: order.id,
       customerName: order.customerName,
       worklogCount: order.worklogs?.length ?? 0,
+    })
+
+    // Audit log
+    await logAudit({
+      action: AuditAction.ORDER_CREATED,
+      userId: session?.userId || null,
+      phone: session?.user?.phoneE164 || null,
+      ip,
+      userAgent,
+      metadata: {
+        orderId: order.id,
+        customerName: order.customerName,
+        productName: order.productName,
+        quantity: order.productionQuantity,
+        ingredientCount: order.ingredients.length,
+      }
     })
 
     return jsonSuccess({

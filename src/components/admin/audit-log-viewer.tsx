@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, Clock, User, AlertCircle, CheckCircle, XCircle, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react'
+import { FileText, Clock, User, AlertCircle, CheckCircle, XCircle, ChevronLeft, ChevronRight, Filter, X, Edit, Trash, Eye, Plus, Download, Sparkles } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 
 interface AuditLog {
@@ -23,6 +23,7 @@ interface AuditLog {
 }
 
 const actionNames: Record<string, string> = {
+  // Authentication
   OTP_SENT: 'OTP 已發送',
   OTP_VERIFY_SUCCESS: 'OTP 驗證成功',
   OTP_VERIFY_FAIL: 'OTP 驗證失敗',
@@ -31,10 +32,44 @@ const actionNames: Record<string, string> = {
   SESSION_REFRESH: '會話刷新',
   DEVICE_TRUST_CREATED: '設備信任建立',
   DEVICE_TRUST_REVOKED: '設備信任撤銷',
+  
+  // User Management
+  USER_CREATED: '創建用戶',
+  USER_DELETED: '刪除用戶',
   ROLE_UPDATED: '角色更新',
+  
+  // Production Orders
+  ORDER_CREATED: '創建訂單',
+  ORDER_VIEWED: '查看訂單',
+  ORDER_UPDATED: '更新訂單',
+  ORDER_DELETED: '刪除訂單',
+  ORDER_EXPORTED: '導出訂單',
+  
+  // Recipes
+  RECIPE_CREATED: '創建配方',
+  RECIPE_VIEWED: '查看配方',
+  RECIPE_UPDATED: '更新配方',
+  RECIPE_DELETED: '刪除配方',
+  RECIPE_EXPORTED: '導出配方',
+  
+  // Work Logs
+  WORKLOG_CREATED: '創建工作日誌',
+  WORKLOG_UPDATED: '更新工作日誌',
+  WORKLOG_DELETED: '刪除工作日誌',
+  
+  // Marketing
+  MARKETING_GENERATED: '生成營銷內容',
+  MARKETING_EXPORTED: '導出營銷內容',
+  
+  // AI Features
+  AI_GRANULATION_ANALYZED: 'AI 製粒分析',
+  AI_RECIPE_GENERATED: 'AI 生成配方',
+  AI_CHAT_INTERACTION: 'AI 對話互動',
+  AI_IMAGE_GENERATED: 'AI 生成圖片',
 }
 
 const actionIcons: Record<string, { icon: any; variant: 'success' | 'danger' | 'warning' | 'info' | 'neutral' }> = {
+  // Authentication
   OTP_SENT: { icon: FileText, variant: 'info' },
   OTP_VERIFY_SUCCESS: { icon: CheckCircle, variant: 'success' },
   OTP_VERIFY_FAIL: { icon: XCircle, variant: 'danger' },
@@ -43,7 +78,40 @@ const actionIcons: Record<string, { icon: any; variant: 'success' | 'danger' | '
   SESSION_REFRESH: { icon: Clock, variant: 'info' },
   DEVICE_TRUST_CREATED: { icon: CheckCircle, variant: 'success' },
   DEVICE_TRUST_REVOKED: { icon: XCircle, variant: 'danger' },
+  
+  // User Management
+  USER_CREATED: { icon: Plus, variant: 'success' },
+  USER_DELETED: { icon: Trash, variant: 'danger' },
   ROLE_UPDATED: { icon: User, variant: 'warning' },
+  
+  // Production Orders
+  ORDER_CREATED: { icon: Plus, variant: 'success' },
+  ORDER_VIEWED: { icon: Eye, variant: 'info' },
+  ORDER_UPDATED: { icon: Edit, variant: 'warning' },
+  ORDER_DELETED: { icon: Trash, variant: 'danger' },
+  ORDER_EXPORTED: { icon: Download, variant: 'info' },
+  
+  // Recipes
+  RECIPE_CREATED: { icon: Plus, variant: 'success' },
+  RECIPE_VIEWED: { icon: Eye, variant: 'info' },
+  RECIPE_UPDATED: { icon: Edit, variant: 'warning' },
+  RECIPE_DELETED: { icon: Trash, variant: 'danger' },
+  RECIPE_EXPORTED: { icon: Download, variant: 'info' },
+  
+  // Work Logs
+  WORKLOG_CREATED: { icon: Plus, variant: 'success' },
+  WORKLOG_UPDATED: { icon: Edit, variant: 'warning' },
+  WORKLOG_DELETED: { icon: Trash, variant: 'danger' },
+  
+  // Marketing
+  MARKETING_GENERATED: { icon: Sparkles, variant: 'info' },
+  MARKETING_EXPORTED: { icon: Download, variant: 'info' },
+  
+  // AI Features
+  AI_GRANULATION_ANALYZED: { icon: Sparkles, variant: 'info' },
+  AI_RECIPE_GENERATED: { icon: Sparkles, variant: 'success' },
+  AI_CHAT_INTERACTION: { icon: Sparkles, variant: 'info' },
+  AI_IMAGE_GENERATED: { icon: Sparkles, variant: 'success' },
 }
 
 interface AuditLogViewerProps {
@@ -176,17 +244,26 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                     </span>
                   </div>
                   
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(log.createdAt).toLocaleString('zh-HK')}
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {new Date(log.createdAt).toLocaleString('zh-HK')}
+                      </div>
+                      {log.ip && (
+                        <div>IP: {log.ip}</div>
+                      )}
                     </div>
-                    {log.ip && (
-                      <div>IP: {log.ip}</div>
-                    )}
-                    {log.metadata && Object.keys(log.metadata).length > 0 && (
-                      <div className="text-neutral-400">
-                        {JSON.stringify(log.metadata)}
+                    {log.metadata && Object.keys(log.metadata as Record<string, any>).length > 0 && (
+                      <div className="mt-2 p-2 bg-neutral-50 rounded text-xs">
+                        <div className="space-y-0.5">
+                          {Object.entries(log.metadata as Record<string, any>).map(([key, value]) => (
+                            <div key={key} className="flex gap-2">
+                              <span className="text-neutral-500 font-medium min-w-[80px]">{key}:</span>
+                              <span className="text-neutral-700">{String(value)}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -4,6 +4,9 @@ import { productionOrderSchema, worklogSchema } from '@/lib/validations'
 import { calculateWorkUnits } from '@/lib/worklog'
 import { DateTime } from 'luxon'
 import { logger } from '@/lib/logger'
+import { getSessionFromCookie } from '@/lib/auth/session'
+import { logAudit } from '@/lib/audit'
+import { AuditAction } from '@prisma/client'
 
 // Timing-safe comparison to prevent timing attacks
 function timingSafeEqual(a: string, b: string): boolean {
@@ -20,6 +23,11 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Get current user for audit logging
+    const session = await getSessionFromCookie()
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
+    const userAgent = request.headers.get('user-agent') || null
+    
     const { id } = await params
     const order = await prisma.productionOrder.findUnique({
       where: { id },
@@ -37,6 +45,20 @@ export async function GET(
         { status: 404 }
       )
     }
+
+    // Audit log for viewing order
+    await logAudit({
+      action: AuditAction.ORDER_VIEWED,
+      userId: session?.userId || null,
+      phone: session?.user?.phoneE164 || null,
+      ip,
+      userAgent,
+      metadata: {
+        orderId: order.id,
+        customerName: order.customerName,
+        productName: order.productName,
+      }
+    })
 
     // 確保日期正確序列化
     const serializedOrder = {
@@ -70,6 +92,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Get current user for audit logging
+    const session = await getSessionFromCookie()
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
+    const userAgent = request.headers.get('user-agent') || null
+    
     const { id } = await params
     const body = await request.json()
     const { verificationPassword, ...orderData } = body
@@ -231,6 +258,23 @@ export async function PUT(
         worklogs: {
           orderBy: { workDate: 'asc' }
         }
+      }
+    })
+
+    // Audit log for updating order
+    await logAudit({
+      action: AuditAction.ORDER_UPDATED,
+      userId: session?.userId || null,
+      phone: session?.user?.phoneE164 || null,
+      ip,
+      userAgent,
+      metadata: {
+        orderId: order.id,
+        customerName: order.customerName,
+        productName: order.productName,
+        quantity: order.productionQuantity,
+        ingredientCount: order.ingredients.length,
+        worklogCount: order.worklogs.length,
       }
     })
 
