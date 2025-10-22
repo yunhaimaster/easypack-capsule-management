@@ -5,8 +5,8 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 // Emergency endpoint to fix failed migration state
-// Call this ONCE after deployment to clear the failed migration
-export async function POST() {
+// Visit this page ONCE after deployment to clear the failed migration
+async function fixMigration() {
   try {
     // Delete the failed migration record from _prisma_migrations table
     await prisma.$executeRawUnsafe(`
@@ -17,7 +17,12 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Failed migration cleared. Redeploy to run new migrations.'
+      message: 'Failed migration cleared. Redeploy to run new migrations.',
+      nextSteps: [
+        '1. This endpoint has cleared the failed migration state',
+        '2. Go to Vercel dashboard and click "Redeploy"',
+        '3. New auth migrations will run successfully'
+      ]
     })
   } catch (error) {
     console.error('[Fix Migration] Error:', error)
@@ -26,5 +31,13 @@ export async function POST() {
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }
+}
+
+export async function GET() {
+  return fixMigration()
+}
+
+export async function POST() {
+  return fixMigration()
 }
 
