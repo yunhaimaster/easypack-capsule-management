@@ -6,12 +6,12 @@ import { Role } from '@prisma/client'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Get all users (Admin only)
+// Get all users (Admin and Manager can view)
 export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromCookie()
-    if (!session || session.user.role !== Role.ADMIN) {
-      return NextResponse.json({ success: false, error: '需要管理員權限' }, { status: 403 })
+    if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+      return NextResponse.json({ success: false, error: '需要管理權限' }, { status: 403 })
     }
 
     const users = await prisma.user.findMany({
@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Add new user (Admin only)
+// Add new user (Admin and Manager)
 export async function POST(request: NextRequest) {
   try {
     const session = await getSessionFromCookie()
-    if (!session || session.user.role !== Role.ADMIN) {
-      return NextResponse.json({ success: false, error: '需要管理員權限' }, { status: 403 })
+    if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+      return NextResponse.json({ success: false, error: '需要管理權限' }, { status: 403 })
     }
 
     let { phoneE164, role } = await request.json()

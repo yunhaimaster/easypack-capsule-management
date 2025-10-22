@@ -16,7 +16,7 @@ type Tab = 'users' | 'devices' | 'logs'
 export function AdminPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('users')
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
-  const { isAdmin, loading } = useAuth()
+  const { isAdmin, isManager, loading } = useAuth()
   const router = useRouter()
 
   if (loading) {
@@ -33,14 +33,15 @@ export function AdminPageClient() {
     )
   }
 
-  if (!isAdmin) {
+  // Allow both ADMIN and MANAGER to access
+  if (!isAdmin && !isManager) {
     return (
       <div className="min-h-screen bg-gray-50">
         <LiquidGlassNav />
         <div className="flex items-center justify-center py-20">
           <Card className="max-w-md p-8 text-center">
             <IconContainer icon={Shield} variant="danger" size="lg" className="mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-neutral-800 mb-2">需要管理員權限</h2>
+            <h2 className="text-xl font-semibold text-neutral-800 mb-2">需要管理權限</h2>
             <p className="text-neutral-600 mb-6">您沒有權限訪問此頁面</p>
             <button
               onClick={() => router.push('/')}

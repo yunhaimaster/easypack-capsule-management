@@ -6,12 +6,12 @@ import { Role } from '@prisma/client'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Revoke session or device (Admin only)
+// Revoke session or device (Admin and Manager)
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSessionFromCookie()
-    if (!session || session.user.role !== Role.ADMIN) {
-      return NextResponse.json({ success: false, error: '需要管理員權限' }, { status: 403 })
+    if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+      return NextResponse.json({ success: false, error: '需要管理權限' }, { status: 403 })
     }
 
     const { id } = await params

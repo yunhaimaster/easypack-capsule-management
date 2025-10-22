@@ -37,10 +37,10 @@ export function LiquidGlassNav({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
-  const { logout, isAdmin } = useAuth()
+  const { logout, isAdmin, isManager } = useAuth()
   
   // Get navigation links based on user role
-  const navigationLinks = links || getMainNavigationLinks({ isAdmin })
+  const navigationLinks = links || getMainNavigationLinks({ isAdmin, isManager })
 
   // Auto-detect active link based on current pathname
   const processedLinks = navigationLinks.map(link => ({

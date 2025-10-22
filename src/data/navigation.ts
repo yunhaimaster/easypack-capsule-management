@@ -8,6 +8,7 @@ export interface NavigationLink {
 interface NavigationOptions {
   includeLogout?: boolean
   isAdmin?: boolean
+  isManager?: boolean
 }
 
 const BASE_NAVIGATION_LINKS: NavigationLink[] = [
@@ -39,11 +40,11 @@ const BASE_NAVIGATION_LINKS: NavigationLink[] = [
 const LOGOUT_LINK: NavigationLink = { href: '/login?logout=true', label: '登出' }
 
 export function getMainNavigationLinks(options: NavigationOptions = {}): NavigationLink[] {
-  const { includeLogout = true, isAdmin = false } = options
+  const { includeLogout = true, isAdmin = false, isManager = false } = options
   const links = [...BASE_NAVIGATION_LINKS]
 
-  // Add admin link for admins
-  if (isAdmin) {
+  // Add admin link for admins and managers
+  if (isAdmin || isManager) {
     links.push({ href: '/admin', label: '系統管理' })
   }
 
