@@ -70,7 +70,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify bootstrap code (timing-safe comparison)
-    if (!timingSafeEqual(String(bootstrapCode || ''), adminBootstrapCode)) {
+    const receivedCode = String(bootstrapCode || '').trim()
+    const expectedCode = adminBootstrapCode.trim()
+    
+    console.log('[Admin Bootstrap] Code comparison:', {
+      receivedLength: receivedCode.length,
+      expectedLength: expectedCode.length,
+      receivedFirst3: receivedCode.substring(0, 3),
+      expectedFirst3: expectedCode.substring(0, 3),
+      match: receivedCode === expectedCode
+    })
+    
+    if (!timingSafeEqual(receivedCode, expectedCode)) {
       await logAudit({
         action: AuditAction.OTP_VERIFY_FAIL,
         phone: phoneE164,
