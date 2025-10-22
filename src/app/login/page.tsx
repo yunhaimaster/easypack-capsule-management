@@ -1,47 +1,6 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/auth/auth-provider'
 import { LoginForm } from '@/components/auth/login-form'
 
 export default function LoginPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLogout, setIsLogout] = useState(false)
-  const router = useRouter()
-  const { login } = useAuth()
-
-  useEffect(() => {
-    // 檢查是否是登出操作
-    const urlParams = new URLSearchParams(window.location.search)
-    if (urlParams.get('logout') === 'true') {
-      // 清除所有認證狀態
-      localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('easypack_auth')
-      setIsLogout(true)
-      setIsAuthenticated(false)
-      return
-    }
-
-    // Check if user is already authenticated
-    const authStatus = localStorage.getItem('isAuthenticated')
-    const easypackAuth = localStorage.getItem('easypack_auth')
-    if (authStatus === 'true' || easypackAuth === 'true') {
-      setIsAuthenticated(true)
-      router.push('/')
-    }
-  }, [router])
-
-  const handleLogin = (role: 'admin' | 'user') => {
-    login(role)
-    setIsAuthenticated(true)
-    router.push('/')
-  }
-
-  if (isAuthenticated) {
-    return null // Will redirect
-  }
-
   return (
     <div className="min-h-screen brand-logo-bg-animation relative overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-[28rem] bg-gradient-to-b from-white/70 via-white/40 to-transparent pointer-events-none" aria-hidden="true" />
@@ -57,7 +16,7 @@ export default function LoginPage() {
                 登入膠囊配方管理系統
               </h1>
               <p className="text-sm sm:text-sm text-neutral-600 leading-relaxed max-w-md md:pr-10">
-                使用授權登入碼存取專屬控制台，集中管理配方、訂單與資料庫。請保持登入資訊安全並遵守操作指南。
+                使用一次性驗證碼存取控制台。
               </p>
             </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-3 text-xs text-neutral-500">
@@ -73,7 +32,7 @@ export default function LoginPage() {
           </section>
 
           <section>
-            <LoginForm onLogin={handleLogin} />
+            <LoginForm />
           </section>
         </div>
       </main>
