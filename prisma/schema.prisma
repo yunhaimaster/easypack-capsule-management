@@ -10,6 +10,102 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// =====================
+/// Authentication & Audit
+/// =====================
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  ADMIN
+}
+
+enum AuditAction {
+  OTP_SENT
+  OTP_VERIFY_SUCCESS
+  OTP_VERIFY_FAIL
+  LOGIN_SUCCESS
+  LOGOUT
+  SESSION_REFRESH
+  DEVICE_TRUST_CREATED
+  DEVICE_TRUST_REVOKED
+  ROLE_UPDATED
+}
+
+model User {
+  id         String   @id @default(cuid())
+  phoneE164  String   @unique
+  role       Role     @default(EMPLOYEE)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  sessions   Session[]
+  devices    TrustedDevice[]
+  auditLogs  AuditLog[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  revokedAt  DateTime?
+  userAgent  String?
+  ip         String?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model TrustedDevice {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceIdHash String
+  userAgent    String?
+  ipFirstUsed  String?
+  createdAt    DateTime @default(now())
+  lastSeenAt   DateTime @default(now())
+  expiresAt    DateTime
+  revokedAt    DateTime?
+
+  @@unique([userId, deviceIdHash])
+  @@index([expiresAt])
+  @@map("trusted_devices")
+}
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id])
+  phone     String?
+  action    AuditAction
+  ip        String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
+model OtpAttempt {
+  id         String   @id @default(cuid())
+  phoneE164  String
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([phoneE164, createdAt])
+  @@index([ip, createdAt])
+  @@map("otp_attempts")
+}
+
 model ProductionOrder {
   id                       String         @id @default(cuid())
   customerName             String // 客戶名稱

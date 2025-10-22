@@ -1,47 +1,73 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Eye, EyeOff } from 'lucide-react'
+import { Check, Phone, Shield } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 
-interface LoginFormProps {
-  onLogin: (role: 'admin' | 'user') => void
-}
-
-export function LoginForm({ onLogin }: LoginFormProps) {
+export function LoginForm() {
+  const [step, setStep] = useState<'phone' | 'otp'>('phone')
+  const [phone, setPhone] = useState('')
   const [code, setCode] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [trust, setTrust] = useState(true)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Attempt silent login on mount
+    ;(async () => {
+      try {
+        const res = await fetch('/api/auth/silent-login', { method: 'POST' })
+        if (res.ok) {
+          window.location.href = '/'
+        }
+      } catch {}
+    })()
+  }, [])
+
+  const startOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-
     try {
-      const response = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/otp/start', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password: code }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
       })
-
-      const data = await response.json()
-
-      if (response.ok && data.success) {
-        localStorage.setItem('isAuthenticated', 'true')
-        localStorage.setItem('userRole', data.role)
-        onLogin(data.role)
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setStep('otp')
       } else {
-        setError(data.error || '登入碼錯誤')
+        setError(data.error || '發送驗證碼失敗')
       }
-    } catch (err) {
-      setError('登入時發生錯誤')
+    } catch {
+      setError('發送時發生錯誤')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const verifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code, trustDevice: trust }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        window.location.href = '/'
+      } else {
+        setError(data.error || '驗證失敗')
+      }
+    } catch {
+      setError('驗證時發生錯誤')
     } finally {
       setIsLoading(false)
     }
@@ -55,38 +81,81 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             <Logo size="lg" variant="icon" />
           </div>
           <h2 className="text-xl sm:text-2xl font-semibold text-primary-600">Easy Health 系統登入</h2>
-          <p className="text-sm text-neutral-600">請輸入登入碼以訪問系統</p>
+          <p className="text-sm text-neutral-600">輸入香港電話號碼以接收一次性驗證碼</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2 text-left">
-            <label htmlFor="code" className="text-sm font-medium text-gray-700">
-              登入碼
-            </label>
-            <div className="relative">
+        {step === 'phone' ? (
+          <form onSubmit={startOtp} className="space-y-4">
+            <div className="space-y-2 text-left">
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                電話號碼（香港 8 位）
+              </label>
+              <div className="relative">
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="例如：66244432 或 +85266244432"
+                  className="pl-9"
+                  required
+                />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+              </div>
+            </div>
+
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+                {error}
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              className="ripple-effect btn-micro-hover micro-brand-glow w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300"
+              disabled={isLoading}
+            >
+              {isLoading ? '發送中...' : '發送驗證碼'}
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={verifyOtp} className="space-y-4">
+            <div className="space-y-2 text-left">
+              <label htmlFor="code" className="text-sm font-medium text-gray-700">
+                驗證碼
+              </label>
               <Input
                 id="code"
-                type={showPassword ? 'text' : 'password'}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="請輸入登入碼"
-                className="pr-10"
-                autoComplete="new-password"
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="6 位數字"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
             </div>
-          </div>
+
+            <label className="flex items-center gap-2 text-sm text-neutral-700">
+              <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />
+              <span className="inline-flex items-center gap-1">信任此裝置 30 天 <Shield className="h-3.5 w-3.5 text-neutral-500" /></span>
+            </label>
+
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+                {error}
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              className="ripple-effect btn-micro-hover micro-brand-glow w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300"
+              disabled={isLoading}
+            >
+              {isLoading ? '登入中...' : '登入'}
+            </Button>
+          </form>
+        )}
 
           {error && (
             <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
@@ -104,9 +173,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
         </form>
 
         <div className="text-center">
-          <p className="text-xs text-gray-500">
-            如有登入問題，請聯繫 Victor
-          </p>
+          <p className="text-xs text-gray-500">如有登入問題，請聯繫 Victor</p>
         </div>
       </CardContent>
     </Card>

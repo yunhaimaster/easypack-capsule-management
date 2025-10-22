@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // Auth gate (exclude login page)
+  const { pathname } = request.nextUrl
+  if (pathname !== '/login') {
+    const hasSession = request.cookies.get('session')?.value
+    if (!hasSession) {
+      const url = new URL('/login', request.url)
+      return NextResponse.redirect(url)
+    }
+  }
+
   const response = NextResponse.next()
 
   // Security headers

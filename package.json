@@ -56,7 +56,9 @@
     "svg2pdf.js": "^2.6.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "jose": "^5.9.6",
+    "twilio": "^5.4.5"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.5.6",
