@@ -69,11 +69,23 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       // Remove all spaces and trim
       let phone = newPhone.replace(/\s+/g, '').trim()
       
-      // Auto-prepend +852 for Hong Kong numbers
+      // Validate input
+      if (!phone) {
+        alert('請輸入電話號碼')
+        return
+      }
+      
+      // Auto-prepend +852 for Hong Kong 8-digit numbers
       if (phone.length === 8 && /^\d{8}$/.test(phone)) {
         phone = `+852${phone}`
       } else if (!phone.startsWith('+')) {
-        alert('請輸入有效的電話號碼（8位數字或完整國際格式）')
+        alert('請輸入有效的電話號碼（8位數字或完整國際格式，如 +85293815580）')
+        return
+      }
+      
+      // Validate E.164 format
+      if (!/^\+[1-9]\d{1,14}$/.test(phone)) {
+        alert('電話號碼格式不正確，請檢查後重試')
         return
       }
 

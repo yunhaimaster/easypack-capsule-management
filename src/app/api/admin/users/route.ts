@@ -53,7 +53,12 @@ export async function POST(request: NextRequest) {
     phoneE164 = phoneE164?.replace(/\s+/g, '').trim()
 
     if (!phoneE164 || !phoneE164.startsWith('+')) {
-      return NextResponse.json({ success: false, error: '電話號碼格式錯誤（需要 +852 開頭）' }, { status: 400 })
+      return NextResponse.json({ success: false, error: '請輸入有效的電話號碼（8位數字或完整國際格式）' }, { status: 400 })
+    }
+    
+    // Validate E.164 format: +[country code][number] (max 15 digits total)
+    if (!/^\+[1-9]\d{1,14}$/.test(phoneE164)) {
+      return NextResponse.json({ success: false, error: '請輸入有效的電話號碼（8位數字或完整國際格式）' }, { status: 400 })
     }
 
     if (!role || !['EMPLOYEE', 'MANAGER', 'ADMIN'].includes(role)) {
