@@ -5,11 +5,20 @@ export function middleware(request: NextRequest) {
   // Auth gate (exclude login page)
   const { pathname } = request.nextUrl
   if (pathname !== '/login') {
-    const hasSession = request.cookies.get('session')?.value
+    const sessionCookie = request.cookies.get('session')
+    const hasSession = sessionCookie?.value
+    
+    console.log('[Middleware] Path:', pathname)
+    console.log('[Middleware] Session cookie:', hasSession ? 'EXISTS' : 'MISSING')
+    console.log('[Middleware] All cookies:', request.cookies.getAll().map(c => c.name))
+    
     if (!hasSession) {
+      console.log('[Middleware] No session, redirecting to /login')
       const url = new URL('/login', request.url)
       return NextResponse.redirect(url)
     }
+    
+    console.log('[Middleware] Session found, allowing access')
   }
 
   const response = NextResponse.next()

@@ -45,24 +45,33 @@ export function LoginForm() {
     setError('')
     setIsLoading(true)
     try {
+      console.log('[Login] Verifying OTP with phone:', phone)
+      
       const res = await fetch('/api/auth/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, code, trustDevice: trust }),
       })
       
+      console.log('[Login] Response status:', res.status)
+      console.log('[Login] Response headers:', Object.fromEntries(res.headers.entries()))
+      
       const data = await res.json()
+      console.log('[Login] Response data:', data)
       
       if (res.ok && data.success) {
+        console.log('[Login] Verification successful, redirecting...')
         // Cookie is now set, wait a moment then do full page navigation
         await new Promise(resolve => setTimeout(resolve, 100))
         window.location.href = '/'
         return
       }
       
+      console.error('[Login] Verification failed:', data.error)
       setError(data.error || '驗證失敗')
       setIsLoading(false)
-    } catch {
+    } catch (err) {
+      console.error('[Login] Exception during verification:', err)
       setError('驗證時發生錯誤')
       setIsLoading(false)
     }
