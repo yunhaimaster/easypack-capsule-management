@@ -39,7 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Fetch current user on mount
-    fetch('/api/auth/me')
+    fetch('/api/auth/me', {
+      credentials: 'include' // Ensure cookies are sent
+    })
       .then(res => res.json())
       .then(data => {
         if (data.success && data.authenticated) {
