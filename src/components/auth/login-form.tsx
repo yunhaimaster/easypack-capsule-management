@@ -93,6 +93,7 @@ export function LoginForm() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="輸入 WhatsApp 群組的號碼（8位數字）"
                   className="pl-9"
+                  autoFocus
                   required
                 />
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
@@ -119,16 +120,17 @@ export function LoginForm() {
               <label htmlFor="code" className="text-sm font-medium text-gray-700">
                 驗證碼
               </label>
-              <Input
-                id="code"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                placeholder="6 位數字"
-                required
-              />
+                <Input
+                  id="code"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="6 位數字"
+                  autoFocus
+                  required
+                />
             </div>
 
             <label className="flex items-center gap-2 text-sm text-neutral-700">

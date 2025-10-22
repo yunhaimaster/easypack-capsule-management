@@ -1,7 +1,7 @@
 // Easy Health Service Worker
-// Version: 2.2.4
+// Version: 2.2.5
 
-const CACHE_NAME = 'easy-health-v2.2.4';
+const CACHE_NAME = 'easy-health-v2.2.5';
 const RUNTIME_CACHE = 'easy-health-runtime';
 
 // Assets to cache on install
@@ -58,13 +58,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip API requests - always fetch fresh
+  // Skip API requests - always fetch fresh, let browser handle
   if (url.pathname.startsWith('/api/')) {
+    event.respondWith(fetch(request));
     return;
   }
 
   // Skip non-GET requests - can't cache POST, PUT, DELETE, etc.
   if (request.method !== 'GET') {
+    event.respondWith(fetch(request));
     return;
   }
 
