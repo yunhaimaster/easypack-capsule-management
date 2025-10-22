@@ -2,24 +2,26 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Auth gate (exclude login page)
+  // Auth gate (exclude login page and API routes)
   const { pathname } = request.nextUrl
-  if (pathname !== '/login') {
-    const sessionCookie = request.cookies.get('session')
-    const hasSession = sessionCookie?.value
-    
-    console.log('[Middleware] Path:', pathname)
-    console.log('[Middleware] Session cookie:', hasSession ? 'EXISTS' : 'MISSING')
-    console.log('[Middleware] All cookies:', request.cookies.getAll().map(c => c.name))
-    
-    if (!hasSession) {
-      console.log('[Middleware] No session, redirecting to /login')
-      const url = new URL('/login', request.url)
-      return NextResponse.redirect(url)
-    }
-    
-    console.log('[Middleware] Session found, allowing access')
+  
+  // Allow API routes and login page
+  if (pathname === '/login' || pathname.startsWith('/api/')) {
+    return NextResponse.next()
   }
+  
+  // Check if session cookie exists (Edge Runtime compatible)
+  const sessionCookie = request.cookies.get('session')
+  
+  if (!sessionCookie?.value) {
+    console.log('[Middleware] No session cookie, redirecting to /login')
+    const url = new URL('/login', request.url)
+    return NextResponse.redirect(url)
+  }
+  
+  // Cookie exists - allow access
+  // Full validation happens in API routes (Node Runtime)
+  console.log('[Middleware] Session cookie present, allowing access')
 
   const response = NextResponse.next()
 
