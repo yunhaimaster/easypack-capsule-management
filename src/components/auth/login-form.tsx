@@ -46,6 +46,7 @@ export function LoginForm() {
     setError('')
     setIsLoading(true)
     try {
+      // Try bootstrap first
       const res = await fetch('/api/auth/admin-bootstrap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,6 +60,30 @@ export function LoginForm() {
         console.log('[Login] Admin bootstrap successful, redirecting...')
         await new Promise(resolve => setTimeout(resolve, 500))
         window.location.href = '/'
+        return
+      }
+
+      // If admin already exists, try direct login instead
+      if (data.error?.includes('已存在')) {
+        console.log('[Login] Admin exists, trying direct login...')
+        const directRes = await fetch('/api/auth/admin-direct-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, bootstrapCode }),
+          credentials: 'include',
+        })
+
+        const directData = await directRes.json()
+
+        if (directRes.ok && directData.success) {
+          console.log('[Login] Direct login successful, redirecting...')
+          await new Promise(resolve => setTimeout(resolve, 500))
+          window.location.href = '/'
+          return
+        }
+
+        setError(directData.error || '登入失敗')
+        setIsLoading(false)
         return
       }
 
