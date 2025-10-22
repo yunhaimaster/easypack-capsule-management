@@ -279,10 +279,6 @@ export function HomePageClient() {
                 <span>全新 OTP 電話驗證系統上線，支援手機驗證碼登入、設備信任功能，30天免密登入更便利</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">👥</span>
-                <span>角色權限管理系統，新增員工/經理/管理員三級權限，管理員可管理用戶、查看審計日誌</span>
-              </li>
-              <li className="flex items-start gap-2">
                 <span className="text-info-500 mt-0.5">🎨</span>
                 <span>豆包 AI 圖片生成引擎整合，全新產品包裝設計、標籤設計、2K高清海報，支援香港製造風格</span>
               </li>
@@ -291,8 +287,12 @@ export function HomePageClient() {
                 <span>升級至 Next.js 15 與 React 19，效能大幅提升，支援流式渲染與樂觀更新，頁面載入更快</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-secondary-500 mt-0.5">📊</span>
-                <span>完整審計日誌系統，記錄所有用戶操作（訂單、配方、工時、AI互動），管理員可追蹤查詢</span>
+                <span className="text-warning-500 mt-0.5">💾</span>
+                <span>AI 內容自動保存功能，圖片生成的分析與 Prompt 自動保存，重新整理不會遺失</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-secondary-500 mt-0.5">✏️</span>
+                <span>Prompt 即時編輯功能，生成圖片後可直接修改 Prompt 並重新生成，快速調整設計</span>
               </li>
             </ul>
           </div>
