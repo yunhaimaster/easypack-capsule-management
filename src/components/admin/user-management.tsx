@@ -66,8 +66,17 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
 
   const addUser = async () => {
     try {
-      // Remove all spaces and trim
-      let phone = newPhone.replace(/\s+/g, '').trim()
+      // Remove ALL whitespace and non-visible characters
+      let phone = newPhone
+        .replace(/\s+/g, '')  // Remove all spaces
+        .replace(/\u200B/g, '')  // Remove zero-width spaces
+        .replace(/\uFEFF/g, '')  // Remove BOM
+        .trim()
+      
+      console.log('[Debug] Original input:', newPhone)
+      console.log('[Debug] Cleaned phone:', phone)
+      console.log('[Debug] Phone length:', phone.length)
+      console.log('[Debug] Is 8 digits?', /^\d{8}$/.test(phone))
       
       // Validate input
       if (!phone) {
@@ -78,16 +87,21 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       // Auto-prepend +852 for Hong Kong 8-digit numbers
       if (phone.length === 8 && /^\d{8}$/.test(phone)) {
         phone = `+852${phone}`
+        console.log('[Debug] Added +852, now:', phone)
       } else if (!phone.startsWith('+')) {
-        alert('請輸入有效的電話號碼（8位數字或完整國際格式，如 +85293815580）')
+        console.log('[Debug] Failed - not 8 digits and no +')
+        alert(`請輸入有效的電話號碼（8位數字或完整國際格式）\n\n您輸入的是: "${phone}"\n長度: ${phone.length}\n是否8位數字: ${/^\d{8}$/.test(phone)}`)
         return
       }
       
       // Validate E.164 format
       if (!/^\+[1-9]\d{1,14}$/.test(phone)) {
-        alert('電話號碼格式不正確，請檢查後重試')
+        console.log('[Debug] Failed E.164 validation:', phone)
+        alert(`電話號碼格式不正確\n\n號碼: ${phone}\n請確保格式為 +[國碼][號碼]`)
         return
       }
+      
+      console.log('[Debug] Validation passed, sending:', phone)
 
       const res = await fetch('/api/admin/users', {
         method: 'POST',
