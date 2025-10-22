@@ -9,6 +9,8 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
+  let phoneE164: string | undefined // Declare at function scope for error logging
+  
   try {
     const { phone } = await request.json()
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
@@ -19,7 +21,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '請輸入有效電話號碼' }, { status: 400 })
     }
 
-    let phoneE164: string
     try {
       phoneE164 = normalizeHongKongDefault(parsed.data)
     } catch (e) {
