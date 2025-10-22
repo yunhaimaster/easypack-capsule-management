@@ -41,7 +41,11 @@ export async function POST(request: NextRequest) {
     const client = getTwilio()
     const serviceSid = getVerifyServiceSid()
 
-    await client.verify.v2.services(serviceSid).verifications.create({ to: phoneE164, channel: 'sms' })
+    await client.verify.v2.services(serviceSid).verifications.create({ 
+      to: phoneE164, 
+      channel: 'sms',
+      locale: 'zh-HK' // Traditional Chinese (Hong Kong)
+    })
 
     await recordOtpAttempt(phoneE164, ip)
     await logAudit({ action: AuditAction.OTP_SENT, phone: phoneE164, ip, userAgent })
