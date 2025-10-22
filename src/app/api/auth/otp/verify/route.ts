@@ -46,9 +46,8 @@ export async function POST(request: NextRequest) {
     await logAudit({ action: AuditAction.OTP_VERIFY_SUCCESS, userId: user.id, phone: phoneE164, ip, userAgent })
     await logAudit({ action: AuditAction.LOGIN_SUCCESS, userId: user.id, phone: phoneE164, ip, userAgent })
 
-    // Return 302 redirect with cookie - browser will handle both correctly
-    const redirectUrl = new URL('/', request.url)
-    const response = NextResponse.redirect(redirectUrl, { status: 302 })
+    // Return JSON response with cookie (frontend will handle redirect)
+    const response = NextResponse.json({ success: true, data: { role: user.role } })
     
     // Set session cookie
     response.cookies.set(session.cookieName, session.token, {

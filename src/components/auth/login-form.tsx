@@ -15,17 +15,7 @@ export function LoginForm() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    // Attempt silent login on mount
-    ;(async () => {
-      try {
-        const res = await fetch('/api/auth/silent-login', { method: 'POST' })
-        if (res.ok) {
-          window.location.href = '/'
-        }
-      } catch {}
-    })()
-  }, [])
+  // Silent login removed - middleware already handles redirects for authenticated users
 
   const startOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,22 +49,21 @@ export function LoginForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, code, trustDevice: trust }),
-        redirect: 'manual', // Don't auto-follow redirect
       })
       
-      // Success = 302 redirect
-      if (res.status === 302 || res.type === 'opaqueredirect') {
-        // Redirect will be handled by browser
+      const data = await res.json()
+      
+      if (res.ok && data.success) {
+        // Cookie is now set, wait a moment then do full page navigation
+        await new Promise(resolve => setTimeout(resolve, 100))
         window.location.href = '/'
         return
       }
       
-      // Error response (still JSON)
-      const data = await res.json()
       setError(data.error || '驗證失敗')
+      setIsLoading(false)
     } catch {
       setError('驗證時發生錯誤')
-    } finally {
       setIsLoading(false)
     }
   }
