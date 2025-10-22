@@ -4,8 +4,12 @@
 
 ## 📚 文檔指南
 
+### 🚀 新手必讀
+- **[快速開始](QUICK_START.md)** - 5 分鐘快速設置指南（⭐ 推薦新手優先閱讀）
+- **[開發環境設置](DEVELOPMENT_SETUP.md)** - 完整的本地開發和 Git 工作流程指南
+
 ### 🔧 開發文檔
-- **[開發指南](DEVELOPMENT_GUIDE.md)** - 完整的開發指南和架構說明
+- **[開發指南](DEVELOPMENT_GUIDE.md)** - 項目架構和開發規範
 - **[組件使用指南](COMPONENT_USAGE_GUIDE.md)** - 組件使用方法和最佳實踐
 - **[API 文檔](API_DOCUMENTATION.md)** - 完整的 API 接口文檔
 - **[部署維護指南](DEPLOYMENT_MAINTENANCE.md)** - 部署和維護指南
@@ -13,10 +17,14 @@
 - **[登入系統指南](LOGIN_GUIDE.md)** - 登入系統說明和密碼管理
 
 ### 🎯 快速開始
-1. 查看 [開發指南](DEVELOPMENT_GUIDE.md) 了解項目架構
-2. 閱讀 [組件使用指南](COMPONENT_USAGE_GUIDE.md) 學習如何使用組件
-3. 參考 [快速參考](QUICK_REFERENCE.md) 獲取常用命令
-4. 查看 [API 文檔](API_DOCUMENTATION.md) 了解接口規範
+1. **首次設置**：查看 [開發環境設置](DEVELOPMENT_SETUP.md) 完整安裝流程
+2. **日常開發**：參考 [快速開始](QUICK_START.md) 常用命令
+3. **組件開發**：閱讀 [組件使用指南](COMPONENT_USAGE_GUIDE.md) 學習組件使用
+4. **API 開發**：查看 [API 文檔](API_DOCUMENTATION.md) 了解接口規範
+
+### ⚠️ 重要：Build 規則
+**在每次 `git commit` 或 `git push` 前，必須運行 `npm run build` 進行測試！**
+詳見 [開發環境設置](DEVELOPMENT_SETUP.md#build-和測試) 章節。
 
 ## 🚀 最新功能 (v2.2.0 - 2024/10/16)
 
