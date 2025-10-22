@@ -41,19 +41,34 @@ export async function POST(request: NextRequest) {
     const client = getTwilio()
     const serviceSid = getVerifyServiceSid()
 
+    console.log('[OTP Start] Attempting to send SMS to:', phoneE164)
+    console.log('[OTP Start] Twilio Service SID:', serviceSid)
+
     await client.verify.v2.services(serviceSid).verifications.create({ 
       to: phoneE164, 
       channel: 'sms',
       locale: 'zh-HK' // Traditional Chinese (Hong Kong)
     })
 
+    console.log('[OTP Start] SMS sent successfully to:', phoneE164)
+
     await recordOtpAttempt(phoneE164, ip)
     await logAudit({ action: AuditAction.OTP_SENT, phone: phoneE164, ip, userAgent })
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('OTP start error', error)
-    return NextResponse.json({ success: false, error: '發送驗證碼失敗' }, { status: 500 })
+    console.error('[OTP Start] Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      phoneE164,
+      error: error
+    })
+    
+    // Return more specific error if available
+    const errorMessage = error instanceof Error ? error.message : '發送驗證碼失敗'
+    return NextResponse.json({ 
+      success: false, 
+      error: errorMessage.includes('Invalid parameter') ? '電話號碼格式不正確' : '發送驗證碼失敗，請稍後再試'
+    }, { status: 500 })
   }
 }
 
