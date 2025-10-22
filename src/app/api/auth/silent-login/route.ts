@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '使用者不存在' }, { status: 401 })
     }
 
-    const session = await createSession(user.id, { ip, userAgent })
+    // Trusted device gets 30-day session
+    const session = await createSession(user.id, { ip, userAgent, trustDevice: true })
     await logAudit({ action: AuditAction.SESSION_REFRESH, userId: user.id, ip, userAgent })
     
     const response = NextResponse.json({ success: true, data: { role: user.role } })

@@ -34,8 +34,12 @@ export async function POST(request: NextRequest) {
       update: {},
     })
 
-    // Create session
-    const session = await createSession(user.id, { ip, userAgent })
+    // Create session with appropriate duration
+    const session = await createSession(user.id, { 
+      ip, 
+      userAgent, 
+      trustDevice: Boolean(trustDevice)  // 傳遞信任裝置標記
+    })
 
     // Optional device trust
     if (trustDevice) {

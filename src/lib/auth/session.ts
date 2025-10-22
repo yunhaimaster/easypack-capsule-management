@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 const SESSION_COOKIE_NAME = 'session'
-const SESSION_TTL_DAYS = 30  // 30 天會話期限（配合受信任裝置）
+const SESSION_TTL_SHORT_HOURS = 12  // 不信任裝置：12 小時
+const SESSION_TTL_LONG_DAYS = 30    // 信任裝置：30 天
 
 function getSessionSecret(): Uint8Array {
   const secret = process.env.SESSION_SECRET
@@ -11,8 +12,16 @@ function getSessionSecret(): Uint8Array {
   return new TextEncoder().encode(secret)
 }
 
-export async function createSession(userId: string, opts?: { userAgent?: string | null; ip?: string | null }) {
-  const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000)
+export async function createSession(
+  userId: string, 
+  opts?: { userAgent?: string | null; ip?: string | null; trustDevice?: boolean }
+) {
+  // 如果信任裝置 → 30 天，否則 → 12 小時
+  const ttlMs = opts?.trustDevice 
+    ? SESSION_TTL_LONG_DAYS * 24 * 60 * 60 * 1000 
+    : SESSION_TTL_SHORT_HOURS * 60 * 60 * 1000
+  
+  const expiresAt = new Date(Date.now() + ttlMs)
 
   const session = await prisma.session.create({
     data: {
@@ -93,7 +102,8 @@ export async function getSessionFromCookie() {
 
 export const SessionCookie = {
   name: SESSION_COOKIE_NAME,
-  ttlDays: SESSION_TTL_DAYS,
+  ttlShortHours: SESSION_TTL_SHORT_HOURS,
+  ttlLongDays: SESSION_TTL_LONG_DAYS,
 }
 
 

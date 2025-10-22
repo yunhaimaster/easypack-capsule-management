@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create session
-    const session = await createSession(user.id, { ip, userAgent })
+    // Create session (admin direct login always gets 30-day session)
+    const session = await createSession(user.id, { ip, userAgent, trustDevice: true })
 
     await logAudit({
       action: AuditAction.LOGIN_SUCCESS,
