@@ -23,6 +23,32 @@ export function buildChineseImagePrompt(
   
   const trimmed = basePrompt.trim()
   
+  // 專用：將容易誘發化妝品聯想的詞彙，統一替換為膠囊/配方語義
+  const sanitizeEnglishNameForCapsules = (name: string): string => {
+    const replacements: Array<[RegExp, string]> = [
+      [/\bSerum\b/gi, 'Capsules'],
+      [/\bEssence\b/gi, 'Capsules'],
+      [/\bElixir\b/gi, 'Capsules'],
+      [/\bAmpoule\b/gi, 'Capsules'],
+      [/\bTonic\b/gi, 'Formula']
+    ]
+    let result = name
+    for (const [pattern, rep] of replacements) {
+      result = result.replace(pattern, rep)
+    }
+    // 去除重複空白
+    return result.replace(/\s{2,}/g, ' ').trim()
+  }
+
+  const sanitizeChineseNameForCapsules = (name: string): string => {
+    // 將「精華/精華液/精華露」等改為「膠囊」；若語義不合可退而求其次用「配方」
+    let result = name
+    result = result.replace(/精華液|精華露|精華/g, '膠囊')
+    // 若出現「膠囊膠囊」等重複，精簡為單一
+    result = result.replace(/(膠囊){2,}/g, '膠囊')
+    return result.trim()
+  }
+
   // Extract Chinese product name from basePrompt if not provided
   let actualChineseName = chineseProductName
   if (!actualChineseName) {
@@ -32,7 +58,12 @@ export function buildChineseImagePrompt(
     }
   }
   
-  const actualProductName = productName || 'Premium Wellness Formula'
+  // 淨化命名，避免引導為液體/精華類外觀
+  const rawEnglish = productName || 'Premium Wellness Formula'
+  const actualProductName = sanitizeEnglishNameForCapsules(rawEnglish)
+  if (actualChineseName) {
+    actualChineseName = sanitizeChineseNameForCapsules(actualChineseName)
+  }
 
   // 只添加產品命名補充，不覆蓋或干擾 DeepSeek 的視覺指令
   const brandingSupplement = []
@@ -49,6 +80,11 @@ export function buildChineseImagePrompt(
   } else {
     brandingSupplement.push(`標籤底部：「Made in Hong Kong」或「香港製造」小字標示。`)
   }
+  
+  // 膠囊瓶形態補強（與 DeepSeek 基礎指令一致，僅作強化，避免模型誤判為精華液/滴管）
+  brandingSupplement.push('\n--- 產品形態補強（絕對必須遵守） ---')
+  brandingSupplement.push('這是一款標準圓柱形保健品膠囊瓶（supplement bottle / vitamin bottle），瓶內裝有膠囊顆粒。標準旋蓋式瓶蓋，非滴管頭、非按壓頭、非噴嘴。')
+  brandingSupplement.push('❌ 嚴禁：液體瓶、精華液瓶（serum bottle）、滴管瓶（dropper bottle）、化妝品瓶（cosmetic bottle）、安瓿瓶（ampoule）。')
   
   // basePrompt 優先，品牌信息補充在後
   return trimmed + '\n' + brandingSupplement.join('\n')

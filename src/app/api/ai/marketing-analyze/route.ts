@@ -133,7 +133,7 @@ const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總�
 | **免疫/健康** | Immune, Defense, Shield, Guard, Protect | Strength, Power, Fortress, Armor, Boost | Elite, Pro, Advanced, Max |
 | **骨骼/關節** | Bone, Joint, Flex, Move, Strong, Solid | Support, Care, Comfort, Freedom, Active | Elite, Pro, Advanced, Complete |
 | **專注/認知** | Focus, Mind, Brain, Neuro, Cognitive, Think | Sharp, Clear, Bright, Peak, Elite | Pro, Advanced, Elite, Premium |
-| **養生/傳統** | Herbal, Nature, Essence, Vital, Balance, Harmony | Wellness, Longevity, Youth, Restore, Renewal | Traditional, Classic, Premium, Elite |
+| **養生/傳統** | Herbal, Nature, Vital, Balance, Harmony | Wellness, Longevity, Youth, Restore, Renewal | Traditional, Classic, Premium, Elite |
 
 **命名公式**：
 - 公式 1：**[核心詞] + [效果詞]** （例：Sleep Bliss, Glow Pearl）
@@ -144,6 +144,7 @@ const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總�
 - ❌ 醫療承諾：Cure, Heal, Treatment, Therapy, Medicine
 - ❌ 過度承諾：Miracle, Magic, Instant, Guaranteed
 - ❌ 負面聯想：Disease, Sick, Disorder, Problem
+- ❌ 外觀誤導：Serum, Essence, Elixir, Ampoule（易被誤解為化妝品）
 
 ### 中文命名原則
 
@@ -157,14 +158,14 @@ const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總�
 
 | 功效類型 | 核心詞 | 效果詞 | 系列後綴 |
 |---------|--------|--------|---------|
-| **睡眠/放鬆** | 安眠、睡眠、夢鄉、寧神、靜心 | 深層、舒適、安穩、香甜、悠然 | 配方、膠囊、精華 |
-| **美白/美容** | 美白、亮顏、煥采、晶瑩、透白 | 淨透、水潤、柔嫩、細膩、光感 | 精華、配方、膠囊 |
-| **能量/活力** | 活力、能量、動力、元氣、精力 | 充沛、強勁、飽滿、持久、暢快 | 配方、膠囊、精華 |
-| **腸道/消化** | 腸道、消化、益生、順暢、輕盈 | 舒適、和諧、平衡、健康、清爽 | 配方、膠囊、精華 |
-| **免疫/健康** | 免疫、防護、守護、強健、康健 | 全面、堅固、活力、強效、優選 | 配方、膠囊、精華 |
-| **骨骼/關節** | 骨骼、關節、靈活、強健、穩固 | 舒適、活動、行動、輕鬆、靈動 | 配方、膠囊、精華 |
-| **專注/認知** | 專注、思維、記憶、睿思、腦力 | 敏銳、清晰、靈活、卓越、精英 | 配方、膠囊、精華 |
-| **養生/傳統** | 養生、滋養、調理、平衡、和諧 | 精粹、本草、天然、傳承、經典 | 配方、膠囊、精華 |
+| **睡眠/放鬆** | 安眠、睡眠、夢鄉、寧神、靜心 | 深層、舒適、安穩、香甜、悠然 | 配方、膠囊 |
+| **美白/美容** | 美白、亮顏、煥采、晶瑩、透白 | 淨透、水潤、柔嫩、細膩、光感 | 配方、膠囊 |
+| **能量/活力** | 活力、能量、動力、元氣、精力 | 充沛、強勁、飽滿、持久、暢快 | 配方、膠囊 |
+| **腸道/消化** | 腸道、消化、益生、順暢、輕盈 | 舒適、和諧、平衡、健康、清爽 | 配方、膠囊 |
+| **免疫/健康** | 免疫、防護、守護、強健、康健 | 全面、堅固、活力、強效、優選 | 配方、膠囊 |
+| **骨骼/關節** | 骨骼、關節、靈活、強健、穩固 | 舒適、活動、行動、輕鬆、靈動 | 配方、膠囊 |
+| **專注/認知** | 專注、思維、記憶、睿思、腦力 | 敏銳、清晰、靈活、卓越、精英 | 配方、膠囊 |
+| **養生/傳統** | 養生、滋養、調理、平衡、和諧 | 精粹、本草、天然、傳承、經典 | 配方、膠囊 |
 
 **命名公式**：
 - 公式 1：**[核心詞] + [效果詞] + [系列後綴]** （例：睡眠安穩配方、美白淨透精華）
@@ -175,24 +176,25 @@ const buildSystemPrompt = () => `你是一位專業的香港保健品行銷總�
 - ❌ 醫療承諾：治療、醫治、根治、療效、藥物
 - ❌ 過度承諾：神效、特效、速效、立竿見影、包治
 - ❌ 負面聯想：疾病、病患、失調、障礙、問題
+- ❌ 外觀誤導：精華、精華液、精華露（易被誤解為化妝品）
 
 ### 命名範例
 
 **睡眠配方**：
 - 英文：Sleep Serenity Elite, Dream Bliss Plus, Deep Rest Pro
-- 中文：安眠寧神配方、深層睡眠精華、悠然夢鄉膠囊
+- 中文：安眠寧神配方、深層睡眠膠囊、悠然夢鄉膠囊
 
 **美白配方**：
 - 英文：Radiance Pearl Elite, Glow Luminous Premium, Bright Crystal Pro
-- 中文：煥采珍珠精華、亮白透潤配方、晶瑩美肌膠囊
+- 中文：煥采珍珠膠囊、亮白透潤配方、晶瑩美肌膠囊
 
 **能量配方**：
 - 英文：Energy Surge Max, Vital Force Ultra, Power Peak Extreme
-- 中文：活力充沛配方、元氣強勁精華、動力暢快膠囊
+- 中文：活力充沛配方、元氣強勁膠囊、動力暢快膠囊
 
 **專注配方**：
 - 英文：NeuroMind Elite, Focus Sharp Pro, Brain Peak Advanced
-- 中文：睿思安神配方、專注敏銳精華、腦力卓越膠囊
+- 中文：睿思安神配方、專注敏銳膠囊、腦力卓越膠囊
 
 **格式輸出（重要）**：
 請以以下格式明確標註，以便圖像生成系統提取（必須獨立一行，前後留空行）：
