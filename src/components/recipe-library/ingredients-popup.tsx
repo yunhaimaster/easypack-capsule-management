@@ -3,6 +3,7 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import type { RecipeIngredient } from '@/types'
 import { Package } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface IngredientsPopupProps {
   ingredients: RecipeIngredient[]
@@ -11,6 +12,26 @@ interface IngredientsPopupProps {
 }
 
 export function IngredientsPopup({ ingredients, children, side = 'right' }: IngredientsPopupProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    // Check if device supports touch (mobile/tablet)
+    const checkIsMobile = () => {
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth < 1024 // lg breakpoint
+      setIsMobile(hasTouch && isSmallScreen)
+    }
+
+    checkIsMobile()
+    window.addEventListener('resize', checkIsMobile)
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
+
+  // On mobile, render children without hover functionality
+  if (isMobile) {
+    return <>{children}</>
+  }
+
   return (
     <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger asChild>
