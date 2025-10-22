@@ -11,7 +11,7 @@ export const runtime = 'nodejs'
 export async function POST(request: NextRequest) {
   try {
     const { phone } = await request.json()
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.ip || null
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
 
     const parsed = phoneInputSchema.safeParse(phone)

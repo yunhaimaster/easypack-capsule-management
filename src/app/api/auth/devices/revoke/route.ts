@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       data: { revokedAt: new Date() },
     })
 
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.ip || null
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
     await logAudit({ action: AuditAction.DEVICE_TRUST_REVOKED, userId: session.userId, ip, userAgent })
 

@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     const updated = await prisma.user.update({ where: { id: target.id }, data: { role } })
 
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.ip || null
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
     await logAudit({ action: AuditAction.ROLE_UPDATED, userId: me.id, metadata: { targetId: updated.id, role: updated.role }, ip, userAgent })
 
