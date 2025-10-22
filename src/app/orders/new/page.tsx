@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ProductionOrderForm } from '@/components/forms/production-order-form'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Info, Loader2 } from 'lucide-react'
 import type { RecipeLibraryItem } from '@/types'
 
-export default function NewOrderPage() {
+function NewOrderContent() {
   const searchParams = useSearchParams()
   const recipeId = searchParams?.get('recipeId')
   const fromTemplate = searchParams?.get('fromTemplate') // 🆕 從模板創建
@@ -134,5 +134,22 @@ export default function NewOrderPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function NewOrderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <LiquidGlassNav />
+        <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto">
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+          </div>
+        </div>
+      </div>
+    }>
+      <NewOrderContent />
+    </Suspense>
   )
 }
