@@ -287,12 +287,12 @@ export function HomePageClient() {
                 <span>升級至 Next.js 15 與 React 19，效能大幅提升，支援流式渲染與樂觀更新，頁面載入更快</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">💾</span>
-                <span>AI 內容自動保存功能，圖片生成的分析與 Prompt 自動保存，重新整理不會遺失</span>
+                <span className="text-warning-500 mt-0.5">📋</span>
+                <span>智能導入審核系統，配方圖片批量上傳支援多圖解析，AI 自動識別配方並可審核編輯</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-secondary-500 mt-0.5">✏️</span>
-                <span>Prompt 即時編輯功能，生成圖片後可直接修改 Prompt 並重新生成，快速調整設計</span>
+                <span className="text-secondary-500 mt-0.5">🔍</span>
+                <span>配方庫原料搜尋功能，可按原料名稱快速篩選配方，支援進階多條件組合篩選</span>
               </li>
             </ul>
           </div>
