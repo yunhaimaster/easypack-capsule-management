@@ -50,22 +50,43 @@ export async function clearSessionCookie() {
 export async function getSessionFromCookie() {
   const cookieStore = await cookies()
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value
+  
+  console.log('[Session] Cookie token present:', !!token)
+  
   if (!token) return null
 
   try {
-    const { payload } = await jwtVerify(token, getSessionSecret())
+    const secret = getSessionSecret()
+    console.log('[Session] Secret loaded:', !!secret)
+    
+    const { payload } = await jwtVerify(token, secret)
     const sessionId = String(payload.sessionId || '')
+    
+    console.log('[Session] JWT verified, sessionId:', sessionId)
+    
     if (!sessionId) return null
 
     const session = await prisma.session.findUnique({
       where: { id: sessionId },
       include: { user: true },
     })
+    
+    console.log('[Session] DB session found:', !!session)
+    
     if (!session) return null
-    if (session.revokedAt) return null
-    if (session.expiresAt.getTime() < Date.now()) return null
+    if (session.revokedAt) {
+      console.log('[Session] Session revoked')
+      return null
+    }
+    if (session.expiresAt.getTime() < Date.now()) {
+      console.log('[Session] Session expired')
+      return null
+    }
+    
+    console.log('[Session] Valid session for user:', session.userId)
     return session
-  } catch {
+  } catch (error) {
+    console.error('[Session] Verification failed:', error)
     return null
   }
 }
