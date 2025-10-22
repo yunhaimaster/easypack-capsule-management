@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 const SESSION_COOKIE_NAME = 'session'
-const SESSION_TTL_HOURS = 12
+const SESSION_TTL_DAYS = 30  // 30 天會話期限（配合受信任裝置）
 
 function getSessionSecret(): Uint8Array {
   const secret = process.env.SESSION_SECRET
@@ -12,7 +12,7 @@ function getSessionSecret(): Uint8Array {
 }
 
 export async function createSession(userId: string, opts?: { userAgent?: string | null; ip?: string | null }) {
-  const expiresAt = new Date(Date.now() + SESSION_TTL_HOURS * 60 * 60 * 1000)
+  const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000)
 
   const session = await prisma.session.create({
     data: {
@@ -93,7 +93,7 @@ export async function getSessionFromCookie() {
 
 export const SessionCookie = {
   name: SESSION_COOKIE_NAME,
-  ttlHours: SESSION_TTL_HOURS,
+  ttlDays: SESSION_TTL_DAYS,
 }
 
 
