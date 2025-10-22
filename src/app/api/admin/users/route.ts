@@ -47,7 +47,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '需要管理員權限' }, { status: 403 })
     }
 
-    const { phoneE164, role } = await request.json()
+    let { phoneE164, role } = await request.json()
+    
+    // Remove all spaces from phone number
+    phoneE164 = phoneE164?.replace(/\s+/g, '').trim()
 
     if (!phoneE164 || !phoneE164.startsWith('+')) {
       return NextResponse.json({ success: false, error: '電話號碼格式錯誤（需要 +852 開頭）' }, { status: 400 })
@@ -70,6 +73,14 @@ export async function POST(request: NextRequest) {
         phoneE164: true,
         role: true,
         createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            sessions: true,
+            devices: true,
+            auditLogs: true,
+          }
+        }
       }
     })
 

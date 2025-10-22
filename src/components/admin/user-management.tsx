@@ -66,8 +66,10 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
 
   const addUser = async () => {
     try {
+      // Remove all spaces and trim
+      let phone = newPhone.replace(/\s+/g, '').trim()
+      
       // Auto-prepend +852 for Hong Kong numbers
-      let phone = newPhone.trim()
       if (phone.length === 8 && /^\d{8}$/.test(phone)) {
         phone = `+852${phone}`
       } else if (!phone.startsWith('+')) {

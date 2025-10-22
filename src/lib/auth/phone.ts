@@ -5,12 +5,14 @@ export const phoneInputSchema = z.string().trim().min(1, '請輸入電話號碼'
 const E164_REGEX = /^\+[1-9]\d{1,14}$/
 
 export function normalizeHongKongDefault(input: string): string {
-  const trimmed = input.trim()
-  if (trimmed.startsWith('+')) {
-    if (!E164_REGEX.test(trimmed)) throw new Error('電話號碼格式不正確')
-    return trimmed
+  // Remove all spaces first, then trim
+  const cleaned = input.replace(/\s+/g, '').trim()
+  
+  if (cleaned.startsWith('+')) {
+    if (!E164_REGEX.test(cleaned)) throw new Error('電話號碼格式不正確')
+    return cleaned
   }
-  const digits = trimmed.replace(/\D/g, '')
+  const digits = cleaned.replace(/\D/g, '')
   if (digits.length === 8) {
     return `+852${digits}`
   }
