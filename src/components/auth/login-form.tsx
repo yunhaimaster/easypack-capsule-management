@@ -157,21 +157,6 @@ export function LoginForm() {
           </form>
         )}
 
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
-              {error}
-            </div>
-          )}
-
-          <Button 
-            type="submit" 
-            className="ripple-effect btn-micro-hover micro-brand-glow w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300"
-            disabled={isLoading}
-          >
-            {isLoading ? '登入中...' : '登入系統'}
-          </Button>
-        </form>
-
         <div className="text-center">
           <p className="text-xs text-gray-500">如有登入問題，請聯繫 Victor</p>
         </div>
