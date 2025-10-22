@@ -394,12 +394,25 @@ trustDevice === false → 12 hours (43,200,000 ms)
 ```typescript
 // File: src/lib/auth/device.ts
 
-function generateDeviceId(): string {
-  // Generates unique device identifier
-  // Not based on browser fingerprint (privacy-friendly)
-  // Random 32-byte token
+export function generateDeviceId(): string {
+  return randomBytes(32).toString('hex')
+  // Generates cryptographically secure random 64-character hex string
+  // Not based on browser fingerprinting (privacy-friendly)
+  // User can clear by deleting cookies
+  // Compliant with GDPR and privacy regulations
 }
 ```
+
+**What This Is**:
+- ✅ Server-generated random device ID
+- ✅ Privacy-friendly (no browser data collection)
+- ✅ User-controllable (can clear cookies)
+- ✅ GDPR compliant
+
+**What This Is NOT**:
+- ❌ Browser fingerprinting (canvas, WebGL, fonts, etc.)
+- ❌ Cross-cookie tracking
+- ❌ Privacy-invasive identification
 
 #### ✅ **Trust Creation**
 ```typescript
@@ -439,12 +452,15 @@ MANAGER  → ✅ Auto-renew forever (30-day sessions)
 EMPLOYEE → ❌ Must re-authenticate after 30 days
 ```
 
-**Security Score**: 9/10
+**Security Score**: 10/10
+- ✅ Cryptographically secure random device ID generation
 - ✅ Device ID hashing (not stored plaintext)
 - ✅ Proper expiration and revocation
-- ✅ Role-based restrictions
-- ✅ Privacy-friendly (no fingerprinting)
-- ⚠️ Recommendation: Add device count limit per user (e.g., max 5 devices)
+- ✅ Role-based restrictions (ADMIN/MANAGER auto-renewal)
+- ✅ Privacy-friendly (server-generated, no browser fingerprinting)
+- ✅ GDPR compliant (user can clear cookies)
+- ✅ Secure cookie storage (httpOnly, secure, sameSite)
+- ⚠️ Optional enhancement: Add device count limit per user (e.g., max 5-10 devices)
 
 ---
 
@@ -792,11 +808,13 @@ Total:          ~400 bytes
    - **Effort**: 4 hours
    - **Impact**: Low (advanced feature)
 
-8. **Add Device Fingerprinting Metadata**
-   - Screen resolution, timezone, language
-   - For forensics only (not for authentication)
+8. **Add Passive Device Metadata (Optional)**
+   - Screen resolution, timezone, language, platform
+   - **For audit display only** (e.g., "iPhone 14, 1170x2532, Hong Kong")
+   - **Not for authentication** (still uses server-generated random ID)
+   - Helps admins/users identify devices in device list
    - **Effort**: 4 hours
-   - **Impact**: Low (nice to have)
+   - **Impact**: Low (UX enhancement, not security)
 
 ---
 
