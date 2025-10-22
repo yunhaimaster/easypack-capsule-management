@@ -51,6 +51,7 @@ export function LoginForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, code, trustDevice: trust }),
+        credentials: 'include', // Ensure cookies are stored and sent
       })
       
       console.log('[Login] Response status:', res.status)
@@ -61,8 +62,9 @@ export function LoginForm() {
       
       if (res.ok && data.success) {
         console.log('[Login] Verification successful, redirecting...')
-        // Cookie is now set, wait a moment then do full page navigation
-        await new Promise(resolve => setTimeout(resolve, 100))
+        // Cookie is now set, wait longer to ensure browser stores it
+        await new Promise(resolve => setTimeout(resolve, 500))
+        console.log('[Login] Navigating to home...')
         window.location.href = '/'
         return
       }
