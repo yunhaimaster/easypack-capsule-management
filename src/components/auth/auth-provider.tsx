@@ -17,6 +17,7 @@ interface AuthContextType {
   isAdmin: boolean
   isManager: boolean
   userRole: 'EMPLOYEE' | 'MANAGER' | 'ADMIN' | null
+  loading: boolean
   logout: () => Promise<void>
 }
 
@@ -26,12 +27,14 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isManager: false,
   userRole: null,
+  loading: true,
   logout: async () => {},
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
@@ -46,6 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         // Silent fail - user not authenticated
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }, [])
 
@@ -68,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAdmin: user?.isAdmin || false,
         isManager: user?.isManager || false,
         userRole: user?.role || null,
+        loading,
         logout,
       }}
     >

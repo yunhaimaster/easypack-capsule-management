@@ -1,0 +1,296 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Plus, Trash2, Edit2, Phone, Calendar, Shield, Check, X } from 'lucide-react'
+import { IconContainer } from '@/components/ui/icon-container'
+
+interface User {
+  id: string
+  phoneE164: string
+  role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN'
+  createdAt: string
+  updatedAt: string
+  _count: {
+    sessions: number
+    devices: number
+    auditLogs: number
+  }
+}
+
+const roleColors = {
+  ADMIN: 'text-danger-600 bg-danger-50 border-danger-200',
+  MANAGER: 'text-warning-600 bg-warning-50 border-warning-200',
+  EMPLOYEE: 'text-neutral-600 bg-neutral-50 border-neutral-200',
+}
+
+const roleNames = {
+  ADMIN: '管理員',
+  MANAGER: '經理',
+  EMPLOYEE: '員工',
+}
+
+export function UserManagement() {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newPhone, setNewPhone] = useState('')
+  const [newRole, setNewRole] = useState<'EMPLOYEE' | 'MANAGER' | 'ADMIN'>('EMPLOYEE')
+  const [editingUser, setEditingUser] = useState<string | null>(null)
+  const [editingRole, setEditingRole] = useState<'EMPLOYEE' | 'MANAGER' | 'ADMIN'>('EMPLOYEE')
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch('/api/admin/users')
+      const data = await res.json()
+      if (data.success) {
+        setUsers(data.users)
+      }
+    } catch (error) {
+      console.error('載入用戶失敗:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const addUser = async () => {
+    try {
+      // Auto-prepend +852 for Hong Kong numbers
+      let phone = newPhone.trim()
+      if (phone.length === 8 && /^\d{8}$/.test(phone)) {
+        phone = `+852${phone}`
+      } else if (!phone.startsWith('+')) {
+        alert('請輸入有效的電話號碼（8位數字或完整國際格式）')
+        return
+      }
+
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneE164: phone, role: newRole })
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        setUsers([data.user, ...users])
+        setShowAddForm(false)
+        setNewPhone('')
+        setNewRole('EMPLOYEE')
+      } else {
+        alert(data.error)
+      }
+    } catch (error) {
+      console.error('添加用戶失敗:', error)
+      alert('添加用戶失敗')
+    }
+  }
+
+  const updateRole = async (userId: string, role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN') => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        setUsers(users.map(u => u.id === userId ? { ...u, role } : u))
+        setEditingUser(null)
+      } else {
+        alert(data.error)
+      }
+    } catch (error) {
+      console.error('更新角色失敗:', error)
+      alert('更新角色失敗')
+    }
+  }
+
+  const deleteUser = async (userId: string, phone: string) => {
+    if (!confirm(`確定要刪除用戶 ${phone} 嗎？此操作無法撤銷。`)) return
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        setUsers(users.filter(u => u.id !== userId))
+      } else {
+        alert(data.error)
+      }
+    } catch (error) {
+      console.error('刪除用戶失敗:', error)
+      alert('刪除用戶失敗')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto" />
+        <p className="mt-4 text-neutral-600">載入中...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Add User Button */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-lg font-semibold text-neutral-800">用戶列表</h2>
+          <p className="text-sm text-neutral-600">共 {users.length} 位用戶</p>
+        </div>
+        <Button
+          onClick={() => setShowAddForm(true)}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          添加用戶
+        </Button>
+      </div>
+
+      {/* Add User Form */}
+      {showAddForm && (
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-neutral-800 mb-4">添加新用戶</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                電話號碼
+              </label>
+              <Input
+                type="tel"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="輸入 8 位數字（自動加 +852）或完整號碼"
+              />
+              <p className="mt-1 text-xs text-neutral-500">例如: 66244432 或 +85266244432</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                角色
+              </label>
+              <select
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value as any)}
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="EMPLOYEE">員工</option>
+                <option value="MANAGER">經理</option>
+                <option value="ADMIN">管理員</option>
+              </select>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={addUser} className="flex-1">
+                添加
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowAddForm(false)
+                  setNewPhone('')
+                  setNewRole('EMPLOYEE')
+                }}
+                variant="secondary"
+                className="flex-1"
+              >
+                取消
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* User List */}
+      <div className="grid gap-4">
+        {users.map((user) => (
+          <Card key={user.id} className="p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <Phone className="h-4 w-4 text-neutral-500" />
+                  <span className="font-medium text-neutral-800">{user.phoneE164}</span>
+                  {editingUser === user.id ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={editingRole}
+                        onChange={(e) => setEditingRole(e.target.value as any)}
+                        className="px-2 py-1 text-sm border border-neutral-300 rounded"
+                      >
+                        <option value="EMPLOYEE">員工</option>
+                        <option value="MANAGER">經理</option>
+                        <option value="ADMIN">管理員</option>
+                      </select>
+                      <button
+                        onClick={() => updateRole(user.id, editingRole)}
+                        className="p-1 text-success-600 hover:bg-success-50 rounded"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setEditingUser(null)}
+                        className="p-1 text-neutral-600 hover:bg-neutral-50 rounded"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className={`px-2 py-1 text-xs font-medium rounded border ${roleColors[user.role]}`}>
+                      {roleNames[user.role]}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5" />
+                    加入: {new Date(user.createdAt).toLocaleDateString('zh-HK')}
+                  </div>
+                  <div>會話: {user._count.sessions}</div>
+                  <div>設備: {user._count.devices}</div>
+                  <div>操作: {user._count.auditLogs}</div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setEditingUser(user.id)
+                    setEditingRole(user.role)
+                  }}
+                  className="p-2 text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                  title="修改角色"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => deleteUser(user.id, user.phoneE164)}
+                  className="p-2 text-danger-600 hover:bg-danger-50 rounded transition-colors"
+                  title="刪除用戶"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {users.length === 0 && (
+        <Card className="p-12 text-center">
+          <Shield className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+          <p className="text-neutral-600">暫無用戶</p>
+        </Card>
+      )}
+    </div>
+  )
+}
+

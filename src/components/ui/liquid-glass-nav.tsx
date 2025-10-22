@@ -30,17 +30,20 @@ interface LiquidGlassNavProps {
 
 export function LiquidGlassNav({
   logo = <Logo />,
-  links = getMainNavigationLinks(),
+  links,
   className = ''
 }: LiquidGlassNavProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
-  const { logout } = useAuth()
+  const { logout, isAdmin } = useAuth()
+  
+  // Get navigation links based on user role
+  const navigationLinks = links || getMainNavigationLinks({ isAdmin })
 
   // Auto-detect active link based on current pathname
-  const processedLinks = links.map(link => ({
+  const processedLinks = navigationLinks.map(link => ({
     ...link,
     active: pathname === link.href || 
             (link.href !== '/' && pathname.startsWith(link.href)) ||
