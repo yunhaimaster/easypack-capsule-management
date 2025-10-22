@@ -68,15 +68,21 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
     try {
       // Remove ALL whitespace and non-visible characters
       let phone = newPhone
-        .replace(/\s+/g, '')  // Remove all spaces
+        .replace(/\s+/g, '')  // Remove all spaces (including &nbsp;, tabs, newlines)
         .replace(/\u200B/g, '')  // Remove zero-width spaces
+        .replace(/\u200C/g, '')  // Remove zero-width non-joiner
+        .replace(/\u200D/g, '')  // Remove zero-width joiner
         .replace(/\uFEFF/g, '')  // Remove BOM
+        .replace(/\u202A/g, '')  // Remove left-to-right embedding
+        .replace(/\u202C/g, '')  // Remove pop directional formatting
+        .replace(/[\u0000-\u001F]/g, '')  // Remove control characters
         .trim()
       
-      console.log('[Debug] Original input:', newPhone)
+      console.log('[Debug] Original input:', JSON.stringify(newPhone))
+      console.log('[Debug] Original length:', newPhone.length)
+      console.log('[Debug] Original bytes:', Array.from(newPhone).map(c => c.charCodeAt(0).toString(16)).join(' '))
       console.log('[Debug] Cleaned phone:', phone)
-      console.log('[Debug] Phone length:', phone.length)
-      console.log('[Debug] Is 8 digits?', /^\d{8}$/.test(phone))
+      console.log('[Debug] Cleaned length:', phone.length)
       
       // Validate input
       if (!phone) {
@@ -88,7 +94,11 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       if (phone.length === 8 && /^\d{8}$/.test(phone)) {
         phone = `+852${phone}`
         console.log('[Debug] Added +852, now:', phone)
-      } else if (!phone.startsWith('+')) {
+      } else if (phone.startsWith('+')) {
+        // Already has +, just validate
+        console.log('[Debug] Already has +, validating...')
+      } else {
+        // Not 8 digits and no +
         console.log('[Debug] Failed - not 8 digits and no +')
         alert(`請輸入有效的電話號碼（8位數字或完整國際格式）\n\n您輸入的是: "${phone}"\n長度: ${phone.length}\n是否8位數字: ${/^\d{8}$/.test(phone)}`)
         return
