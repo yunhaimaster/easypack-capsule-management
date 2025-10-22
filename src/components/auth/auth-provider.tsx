@@ -1,10 +1,81 @@
 'use client'
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+import { createContext, useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface User {
+  id: string
+  phone: string
+  role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN'
+  isAdmin: boolean
+  isManager: boolean
 }
 
-// Deprecated: kept for backwards compatibility only
+interface AuthContextType {
+  isAuthenticated: boolean
+  user: User | null
+  isAdmin: boolean
+  isManager: boolean
+  userRole: 'EMPLOYEE' | 'MANAGER' | 'ADMIN' | null
+  logout: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  user: null,
+  isAdmin: false,
+  isManager: false,
+  userRole: null,
+  logout: async () => {},
+})
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    // Fetch current user on mount
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.authenticated) {
+          setUser(data.user)
+          setIsAuthenticated(true)
+        }
+      })
+      .catch(() => {
+        // Silent fail - user not authenticated
+      })
+  }, [])
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      setUser(null)
+      setIsAuthenticated(false)
+      router.push('/login')
+    } catch (error) {
+      console.error('[Auth] Logout error:', error)
+    }
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        isAdmin: user?.isAdmin || false,
+        isManager: user?.isManager || false,
+        userRole: user?.role || null,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
 export function useAuth() {
-  return undefined
+  return useContext(AuthContext)
 }
