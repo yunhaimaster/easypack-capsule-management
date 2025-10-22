@@ -25,7 +25,7 @@ export function IngredientsPopup({ ingredients, children, side = 'right' }: Ingr
     checkIsMobile()
     window.addEventListener('resize', checkIsMobile)
     return () => window.removeEventListener('resize', checkIsMobile)
-  }, [])
+  }, []) // Test webhook deployment
 
   // On mobile, render children without hover functionality
   if (isMobile) {
