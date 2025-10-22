@@ -39,6 +39,46 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
   const hasGeneratedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  // 解析視覺風格指令中的主色/輔色，供香港製造圖片沿用標籤配色
+  const parseLabelPalette = (content: string): { main: string; accent?: string } | null => {
+    try {
+      // 尋找包含「主色」「輔色」的方括號段落
+      const bracketBlocks = content.match(/\[[^\]]*主色[^\]]*\]/g)
+      const source = bracketBlocks?.[0] || content
+      const mainMatch = source.match(/主色[：:]\s*([^,\]\n]+)/)
+      const accentMatch = source.match(/輔色[：:]\s*([^,\]\n]+)/)
+
+      const clean = (s: string) => s
+        .replace(/佔\d+%/g, '')
+        .replace(/為主|為輔/g, '')
+        .replace(/\d+%/g, '')
+        .replace(/\([^\)]*\)/g, '')
+        .replace(/\+/g, '、')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+
+      const main = mainMatch ? clean(mainMatch[1]) : ''
+      const accent = accentMatch ? clean(accentMatch[1]) : undefined
+      if (!main) return null
+      return { main, accent }
+    } catch {
+      return null
+    }
+  }
+
+  const computeLabelPalette = (list: Array<{ type: string; prompt: string }>): { main: string; accent?: string } | undefined => {
+    // 優先使用 bottle → lifestyle → flatlay 的配色作為「產品標籤」基準
+    const order = ['bottle', 'lifestyle', 'flatlay']
+    for (const t of order) {
+      const candidate = list.find(x => x.type === t)
+      if (candidate) {
+        const palette = parseLabelPalette(candidate.prompt)
+        if (palette) return palette
+      }
+    }
+    return undefined
+  }
+
   // 頁面載入時恢復圖片
   useEffect(() => {
     const saved = localStorage.getItem('marketing_images_cache')
@@ -198,6 +238,9 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         const sessionSeed = Math.floor(Math.random() * 1000000)
         console.log('🎨 Using consistent seed for all images:', sessionSeed)
 
+        // 🆕 解析非香港圖片的配色，作為香港製造標籤配色基準
+        const labelPalette = computeLabelPalette(prompts.filter(p => p.type !== 'hongkong'))
+
         for (let i = 0; i < prompts.length; i++) {
           // Check if aborted
           if (abortControllerRef.current?.signal.aborted) {
@@ -223,7 +266,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   prompt.prompt, 
                   prompt.type, 
                   extractedProductName,
-                  extractedChineseName
+                  extractedChineseName,
+                  prompt.type === 'hongkong' ? labelPalette : undefined
                 ),
                 type: prompt.type,
                 width: prompt.width || 2048,  // Use specified width or default 2048
@@ -295,6 +339,9 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
     try {
       const finalPrompt = customPrompt || image.prompt
       
+      // 🆕 重新生成時同樣維持香港製造標籤配色與其他圖一致
+      const labelPalette = computeLabelPalette(images.filter(x => x.type !== 'hongkong'))
+
       const response = await fetch('/api/ai/packaging-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -303,7 +350,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
             finalPrompt, 
             image.type, 
             productName,
-            chineseProductName
+            chineseProductName,
+            image.type === 'hongkong' ? labelPalette : undefined
           ),
           type: image.type,
           width: image.width || 2048,
