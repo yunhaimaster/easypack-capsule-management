@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus, Trash2, Edit2, Phone, Calendar, Shield, Check, X } from 'lucide-react'
+import { Plus, Trash2, Edit2, Phone, Calendar, Shield, Check, X, Eye } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 
 interface User {
@@ -32,7 +32,11 @@ const roleNames = {
   EMPLOYEE: '員工',
 }
 
-export function UserManagement() {
+interface UserManagementProps {
+  onSelectUser?: (userId: string) => void
+}
+
+export function UserManagement({ onSelectUser }: UserManagementProps) {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -261,6 +265,15 @@ export function UserManagement() {
               </div>
 
               <div className="flex gap-2">
+                {onSelectUser && (
+                  <button
+                    onClick={() => onSelectUser(user.id)}
+                    className="p-2 text-info-600 hover:bg-info-50 rounded transition-colors"
+                    title="查看此用戶的設備和日誌"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     setEditingUser(user.id)

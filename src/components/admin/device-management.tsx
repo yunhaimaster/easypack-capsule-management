@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
-import { Monitor, Smartphone, Trash2, Clock, MapPin } from 'lucide-react'
+import { Monitor, Smartphone, Trash2, Clock, MapPin, X, Filter } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 
 interface Session {
@@ -50,23 +50,40 @@ function parseUserAgent(ua: string | null): { device: string; browser: string } 
   return { device, browser }
 }
 
-export function DeviceManagement() {
+interface DeviceManagementProps {
+  selectedUserId?: string | null
+  onClearFilter?: () => void
+}
+
+export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManagementProps) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [devices, setDevices] = useState<Device[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedUserPhone, setSelectedUserPhone] = useState<string>('')
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [selectedUserId])
 
   const loadData = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/admin/devices')
+      const url = selectedUserId 
+        ? `/api/admin/devices?userId=${selectedUserId}`
+        : '/api/admin/devices'
+      const res = await fetch(url)
       const data = await res.json()
       if (data.success) {
         setSessions(data.sessions)
         setDevices(data.devices)
+        
+        // 獲取用戶電話號碼（用於顯示篩選標題）
+        if (selectedUserId && (data.sessions.length > 0 || data.devices.length > 0)) {
+          const phone = data.sessions[0]?.user?.phoneE164 || data.devices[0]?.user?.phoneE164
+          setSelectedUserPhone(phone || '')
+        } else {
+          setSelectedUserPhone('')
+        }
       }
     } catch (error) {
       console.error('載入設備失敗:', error)
@@ -120,6 +137,29 @@ export function DeviceManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Filter Header */}
+      {selectedUserId && selectedUserPhone && (
+        <Card className="p-4 bg-info-50 border-info-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Filter className="h-5 w-5 text-info-600" />
+              <span className="font-medium text-info-800">
+                正在查看用戶：{selectedUserPhone}
+              </span>
+            </div>
+            {onClearFilter && (
+              <button
+                onClick={onClearFilter}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-info-700 hover:bg-info-100 rounded transition-colors"
+              >
+                <X className="h-4 w-4" />
+                顯示全部
+              </button>
+            )}
+          </div>
+        </Card>
+      )}
+      
       {/* Active Sessions */}
       <div>
         <h2 className="text-lg font-semibold text-neutral-800 mb-4">

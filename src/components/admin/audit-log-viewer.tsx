@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, Clock, User, AlertCircle, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { FileText, Clock, User, AlertCircle, CheckCircle, XCircle, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 
 interface AuditLog {
@@ -46,16 +46,22 @@ const actionIcons: Record<string, { icon: any; variant: 'success' | 'danger' | '
   ROLE_UPDATED: { icon: User, variant: 'warning' },
 }
 
-export function AuditLogViewer() {
+interface AuditLogViewerProps {
+  selectedUserId?: string | null
+  onClearFilter?: () => void
+}
+
+export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewerProps) {
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [filterAction, setFilterAction] = useState('')
+  const [selectedUserPhone, setSelectedUserPhone] = useState<string>('')
 
   useEffect(() => {
     loadLogs()
-  }, [page, filterAction])
+  }, [page, filterAction, selectedUserId])
 
   const loadLogs = async () => {
     try {
@@ -63,7 +69,8 @@ export function AuditLogViewer() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20',
-        ...(filterAction ? { action: filterAction } : {})
+        ...(filterAction ? { action: filterAction } : {}),
+        ...(selectedUserId ? { userId: selectedUserId } : {})
       })
       
       const res = await fetch(`/api/admin/audit-logs?${params}`)
@@ -71,6 +78,14 @@ export function AuditLogViewer() {
       if (data.success) {
         setLogs(data.logs)
         setTotalPages(data.pagination.pages)
+        
+        // 獲取用戶電話號碼（用於顯示篩選標題）
+        if (selectedUserId && data.logs.length > 0) {
+          const phone = data.logs[0]?.user?.phoneE164 || data.logs[0]?.phone
+          setSelectedUserPhone(phone || '')
+        } else {
+          setSelectedUserPhone('')
+        }
       }
     } catch (error) {
       console.error('載入審計日誌失敗:', error)
@@ -90,6 +105,29 @@ export function AuditLogViewer() {
 
   return (
     <div className="space-y-4">
+      {/* Filter Header */}
+      {selectedUserId && selectedUserPhone && (
+        <Card className="p-4 bg-info-50 border-info-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Filter className="h-5 w-5 text-info-600" />
+              <span className="font-medium text-info-800">
+                正在查看用戶：{selectedUserPhone}
+              </span>
+            </div>
+            {onClearFilter && (
+              <button
+                onClick={onClearFilter}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-info-700 hover:bg-info-100 rounded transition-colors"
+              >
+                <X className="h-4 w-4" />
+                顯示全部
+              </button>
+            )}
+          </div>
+        </Card>
+      )}
+      
       {/* Filter */}
       <div className="flex justify-between items-center">
         <div className="flex-1 max-w-xs">

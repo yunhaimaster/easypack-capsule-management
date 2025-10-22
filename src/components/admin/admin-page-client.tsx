@@ -15,6 +15,7 @@ type Tab = 'users' | 'devices' | 'logs'
 
 export function AdminPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('users')
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const { isAdmin, loading } = useAuth()
   const router = useRouter()
 
@@ -57,7 +58,7 @@ export function AdminPageClient() {
     <div className="min-h-screen bg-gray-50">
       <LiquidGlassNav />
       
-      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 pt-24 pb-8 max-w-7xl">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -108,9 +109,26 @@ export function AdminPageClient() {
 
         {/* Content */}
         <div className="mt-6">
-          {activeTab === 'users' && <UserManagement />}
-          {activeTab === 'devices' && <DeviceManagement />}
-          {activeTab === 'logs' && <AuditLogViewer />}
+          {activeTab === 'users' && (
+            <UserManagement 
+              onSelectUser={(userId) => {
+                setSelectedUserId(userId)
+                setActiveTab('devices') // 切換到設備監控頁
+              }}
+            />
+          )}
+          {activeTab === 'devices' && (
+            <DeviceManagement 
+              selectedUserId={selectedUserId}
+              onClearFilter={() => setSelectedUserId(null)}
+            />
+          )}
+          {activeTab === 'logs' && (
+            <AuditLogViewer 
+              selectedUserId={selectedUserId}
+              onClearFilter={() => setSelectedUserId(null)}
+            />
+          )}
         </div>
       </div>
     </div>
