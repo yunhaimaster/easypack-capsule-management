@@ -74,17 +74,8 @@ export function HomePageClient() {
   const [recentOrders, setRecentOrders] = useState<ProductionOrder[]>([])
   const [recentWorklogs, setRecentWorklogs] = useState<WorklogWithOrder[]>([])
   const [loading, setLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated')
-    const easypackAuth = localStorage.getItem('easypack_auth')
-    if (authStatus !== 'true' && easypackAuth !== 'true') {
-      router.push('/login')
-      return
-    }
-    setIsAuthenticated(true)
-  }, [router])
+  // Auth is now handled by middleware + AuthProvider - no client-side checks needed
 
   useEffect(() => {
     const loadData = async () => {
