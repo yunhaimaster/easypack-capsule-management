@@ -3,7 +3,7 @@ import { verifyTrustedDevice } from '@/lib/auth/device'
 import { createSession } from '@/lib/auth/session'
 import { prisma } from '@/lib/prisma'
 import { logAudit } from '@/lib/audit'
-import { AuditAction } from '@prisma/client'
+import { AuditAction, Role } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -23,7 +23,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '使用者不存在' }, { status: 401 })
     }
 
-    // Trusted device gets 30-day session
+    // Only admins can auto-renew with trusted device
+    // Regular employees must re-authenticate with OTP after 30 days
+    if (user.role !== Role.ADMIN) {
+      return NextResponse.json({ 
+        success: false, 
+        error: '請重新登入以驗證身份' 
+      }, { status: 401 })
+    }
+
+    // Admin: Trusted device gets 30-day session renewal
     const session = await createSession(user.id, { ip, userAgent, trustDevice: true })
     await logAudit({ action: AuditAction.SESSION_REFRESH, userId: user.id, ip, userAgent })
     
