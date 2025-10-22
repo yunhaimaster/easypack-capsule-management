@@ -1,8 +1,9 @@
 import { LoginForm } from '@/components/auth/login-form'
+import { Suspense } from 'react'
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen brand-logo-bg-animation relative overflow-hidden">
+    <div className="min-h-screen brand-logo-bg-animation relative overflow-hidden" suppressHydrationWarning>
       <div className="absolute inset-x-0 top-0 h-[28rem] bg-gradient-to-b from-white/70 via-white/40 to-transparent pointer-events-none" aria-hidden="true" />
       <main className="relative min-h-screen flex items-center justify-center px-6 md:px-10 py-16">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-8 md:gap-12 items-center">

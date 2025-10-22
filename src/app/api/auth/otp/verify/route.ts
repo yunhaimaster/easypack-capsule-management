@@ -50,13 +50,21 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true, data: { role: user.role } })
     
     // Set session cookie
-    response.cookies.set(session.cookieName, session.token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       path: '/',
       expires: session.expiresAt,
+    }
+    
+    console.log('[OTP Verify] Setting cookie:', {
+      name: session.cookieName,
+      options: cookieOptions,
+      expires: session.expiresAt.toISOString(),
     })
+    
+    response.cookies.set(session.cookieName, session.token, cookieOptions)
 
     return response
   } catch (error) {
