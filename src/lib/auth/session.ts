@@ -30,16 +30,12 @@ export async function createSession(userId: string, opts?: { userAgent?: string 
     .setIssuedAt()
     .sign(getSessionSecret())
 
-  const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    path: '/',
-    expires: expiresAt,
-  })
-
-  return { sessionId: session.id, expiresAt }
+  return { 
+    sessionId: session.id, 
+    expiresAt,
+    token,
+    cookieName: SESSION_COOKIE_NAME
+  }
 }
 
 export async function revokeSession(sessionId: string) {

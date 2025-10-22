@@ -23,9 +23,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '使用者不存在' }, { status: 401 })
     }
 
-    await createSession(user.id, { ip, userAgent })
+    const session = await createSession(user.id, { ip, userAgent })
     await logAudit({ action: AuditAction.SESSION_REFRESH, userId: user.id, ip, userAgent })
-    return NextResponse.json({ success: true, data: { role: user.role } })
+    
+    const response = NextResponse.json({ success: true, data: { role: user.role } })
+    response.cookies.set(session.cookieName, session.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      expires: session.expiresAt,
+    })
+    
+    return response
   } catch (error) {
     console.error('silent-login error', error)
     return NextResponse.json({ success: false, error: '自動登入失敗' }, { status: 500 })

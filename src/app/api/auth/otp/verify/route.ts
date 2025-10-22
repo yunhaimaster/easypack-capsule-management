@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Create session
-    await createSession(user.id, { ip, userAgent })
+    const session = await createSession(user.id, { ip, userAgent })
 
     // Optional device trust
     if (trustDevice) {
@@ -46,7 +46,18 @@ export async function POST(request: NextRequest) {
     await logAudit({ action: AuditAction.OTP_VERIFY_SUCCESS, userId: user.id, phone: phoneE164, ip, userAgent })
     await logAudit({ action: AuditAction.LOGIN_SUCCESS, userId: user.id, phone: phoneE164, ip, userAgent })
 
-    return NextResponse.json({ success: true, data: { role: user.role } })
+    const response = NextResponse.json({ success: true, data: { role: user.role } })
+    
+    // Set session cookie
+    response.cookies.set(session.cookieName, session.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      expires: session.expiresAt,
+    })
+
+    return response
   } catch (error) {
     console.error('OTP verify error', error)
     return NextResponse.json({ success: false, error: '驗證失敗' }, { status: 500 })
