@@ -423,11 +423,23 @@
 .dark [class*="badge"],
 .dark [class*="Badge"],
 .dark [class*="pill"],
-.dark [class*="Pill"],
-.dark span[class*="bg-"],
-.dark div[class*="rounded-full"] {
+.dark [class*="Pill"] {
   background-color: rgb(55 65 81) !important;
   color: rgb(229 231 235) !important;
+}
+
+/* Badge icons/dots - EXCLUDE from bg override */
+.dark span[class*="bg-"]:not([class*="rounded-full"]),
+.dark div[class*="bg-"]:not([class*="rounded-full"]):not([class*="badge"]) {
+  /* Only override non-circular elements */
+}
+
+/* Small circular status indicators - PRESERVE their colors */
+.dark span.h-2.w-2.rounded-full,
+.dark span[class*="h-2"][class*="w-2"][class*="rounded-full"],
+.dark div.h-2.w-2.rounded-full {
+  /* Don't override - let original bg-info-500, bg-success-500 show */
+  background-color: inherit !important;
 }
 
 /* Backdrop blur cards - CRITICAL for 其他訊息卡 */
