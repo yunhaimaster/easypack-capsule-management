@@ -1071,7 +1071,7 @@ export default function RecipeLibraryPage() {
                     <p>• 更新：{importResult.updated} 個配方</p>
                     <p>• 跳過：{importResult.skipped} 個訂單</p>
                     {importResult.errors > 0 && (
-                      <p className="text-red-600">• 錯誤：{importResult.errors} 個</p>
+                      <p className="text-danger-600">• 錯誤：{importResult.errors} 個</p>
                     )}
                   </div>
                 </AlertDescription>

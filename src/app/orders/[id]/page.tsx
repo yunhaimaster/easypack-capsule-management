@@ -222,7 +222,7 @@ export default function OrderDetailPage() {
         <main className="flex-1 flex items-center justify-center px-4">
           <Card className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction max-w-md w-full">
             <CardHeader className="text-center">
-              <CardTitle className="text-xl text-red-600">載入失敗</CardTitle>
+              <CardTitle className="text-xl text-danger-600">載入失敗</CardTitle>
               <CardDescription>{error || '訂單不存在'}</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -408,8 +408,8 @@ export default function OrderDetailPage() {
                   <div className="space-y-3 text-xs md:text-sm text-neutral-700">
                     {order.processIssues && (
                       <div className="rounded-xl border border-red-100 bg-danger-50/70 p-3">
-                        <span className="font-medium text-red-700 block mb-1">製程問題</span>
-                        <p className="leading-relaxed text-red-600 text-sm">{order.processIssues}</p>
+                        <span className="font-medium text-danger-700 block mb-1">製程問題</span>
+                        <p className="leading-relaxed text-danger-600 text-sm">{order.processIssues}</p>
                       </div>
                     )}
                     {order.qualityNotes && (
@@ -579,7 +579,7 @@ export default function OrderDetailPage() {
                           </h4>
                           <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 flex-shrink-0">
                             <span className="bg-primary-50 text-primary-700 px-2 py-1 rounded-full">工時：{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
-                            <span className="bg-slate-50 text-neutral-700 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
+                            <span className="bg-neutral-50 text-neutral-700 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
                           </div>
                         </div>
                         <div className="text-sm text-neutral-700 space-y-2 leading-relaxed">

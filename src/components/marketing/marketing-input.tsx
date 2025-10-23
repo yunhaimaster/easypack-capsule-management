@@ -64,7 +64,7 @@ export function MarketingInput({ ingredients, setIngredients }: MarketingInputPr
             <div className="flex md:flex-shrink-0 md:pt-6">
               <button
                 onClick={() => removeIngredient(index)}
-                className="p-2 text-red-600 hover:text-red-800 hover:bg-danger-50 rounded-lg transition-colors self-start"
+                className="p-2 text-danger-600 hover:text-danger-800 hover:bg-danger-50 rounded-lg transition-colors self-start"
                 disabled={ingredients.length === 1}
                 aria-label="刪除原料"
               >

@@ -76,9 +76,9 @@ export default function SetupPage() {
                   </p>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-green-800 mb-2">設置後的效果</h3>
-                  <ul className="text-green-700 text-sm space-y-1">
+                <div className="bg-success-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-success-800 mb-2">設置後的效果</h3>
+                  <ul className="text-success-700 text-sm space-y-1">
                     <li>• AI生成的配方將被永久保存</li>
                     <li>• 工作單可以保存到數據庫</li>
                     <li>• 原料價格數據可以存儲</li>
@@ -138,19 +138,19 @@ export default function SetupPage() {
               <div className="liquid-glass-content">
                 <div className="flex items-center space-x-3 mb-4">
                   {createResult.success ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
+                    <CheckCircle className="h-6 w-6 text-success-600" />
                   ) : (
-                    <XCircle className="h-6 w-6 text-red-600" />
+                    <XCircle className="h-6 w-6 text-danger-600" />
                   )}
                   <h3 className={`text-lg font-semibold ${
-                    createResult.success ? 'text-green-800' : 'text-red-800'
+                    createResult.success ? 'text-success-800' : 'text-danger-800'
                   }`}>
                     {createResult.success ? '設置成功' : '設置失敗'}
                   </h3>
                 </div>
 
                 <div className="space-y-3">
-                  <p className={createResult.success ? 'text-green-700' : 'text-red-700'}>
+                  <p className={createResult.success ? 'text-success-700' : 'text-danger-700'}>
                     {createResult.message}
                   </p>
 
@@ -160,7 +160,7 @@ export default function SetupPage() {
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {createResult.tables.map((table, index) => (
                           <li key={index} className="flex items-center space-x-2 text-sm">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <CheckCircle className="h-4 w-4 text-success-500" />
                             <span className="text-neutral-700">{table}</span>
                           </li>
                         ))}
@@ -170,8 +170,8 @@ export default function SetupPage() {
 
                   {createResult.error && (
                     <div className="bg-danger-50 p-3 rounded-lg">
-                      <h4 className="font-medium text-red-800 mb-1">錯誤詳情：</h4>
-                      <p className="text-red-700 text-sm">{createResult.error}</p>
+                      <h4 className="font-medium text-danger-800 mb-1">錯誤詳情：</h4>
+                      <p className="text-danger-700 text-sm">{createResult.error}</p>
                     </div>
                   )}
                 </div>

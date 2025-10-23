@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import type { RecipeLibraryItem, UpdateRecipeData } from '@/types'
 import { z } from 'zod'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 // Zod Schema for editing recipe fields - 包含原料清單
 const editRecipeSchema = z.object({
@@ -39,6 +42,21 @@ export async function GET(
         error: '配方不存在'
       }, { status: 404 })
     }
+
+    // Get user context and log recipe view
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.RECIPE_VIEWED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        recipeId: id,
+        recipeName: recipe.recipeName,
+        recipeType: recipe.recipeType
+      }
+    })
 
     // 轉換資料格式
     const formattedRecipe: RecipeLibraryItem = {
@@ -187,6 +205,22 @@ export async function PUT(
       data: updateData
     })
 
+    // Get user context and log recipe update
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.RECIPE_UPDATED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        recipeId: id,
+        recipeName: updated.recipeName,
+        changedFields: Object.keys(updateData).filter(k => k !== 'updatedAt' && k !== 'notes'),
+        changeCount: changes.length
+      }
+    })
+
     // 轉換資料格式
     const formattedRecipe: RecipeLibraryItem = {
       ...updated,
@@ -241,6 +275,21 @@ export async function DELETE(
       data: {
         isActive: false,
         updatedAt: new Date()
+      }
+    })
+
+    // Get user context and log recipe deletion
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.RECIPE_DELETED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        recipeId: id,
+        recipeName: existingRecipe.recipeName,
+        recipeType: existingRecipe.recipeType
       }
     })
 

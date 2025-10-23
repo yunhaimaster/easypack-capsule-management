@@ -13,7 +13,7 @@ export default function HistoryPage() {
       version: 'v2.7.0',
       date: '2025年10月23日',
       type: '重大更新',
-      typeColor: 'bg-warning-100 text-orange-800 border-orange-200',
+      typeColor: 'bg-warning-100 text-warning-800 border-orange-200',
       features: [
         '🔐 全新 OTP 電話驗證系統上線，使用 Twilio 提供的 SMS 驗證碼登入，取代原有的共享密碼登入方式',
         '📱 設備信任功能，勾選「信任此設備30天」後，同一設備可在30天內免輸入驗證碼自動登入',
@@ -48,7 +48,7 @@ export default function HistoryPage() {
       version: 'v2.5.0',
       date: '2025年10月17日',
       type: '重大更新',
-      typeColor: 'bg-warning-100 text-orange-800 border-orange-200',
+      typeColor: 'bg-warning-100 text-warning-800 border-orange-200',
       features: [
         '🏷️ 模板配方系統上線，配方庫現在區分「生產配方」和「模板配方」，可以批量導入參考配方而不影響實際生產記錄',
         '🤖 AI 智能解析功能，支援文字輸入或圖片上傳，AI 自動識別配方原料與劑量，大幅加快配方建檔速度',
@@ -61,7 +61,7 @@ export default function HistoryPage() {
       version: 'v2.4.0',
       date: '2025年10月15日',
       type: '重大更新',
-      typeColor: 'bg-warning-100 text-orange-800 border-orange-200',
+      typeColor: 'bg-warning-100 text-warning-800 border-orange-200',
       features: [
         '📚 配方庫正式上線，保存歷史訂單配方（含生產備註），AI 分析功效，一鍵匯出到行銷助手',
         '🔒 訂單配方密碼鎖上線，保護客戶指定原料配方，修改時需要 4 位數密碼驗證',
@@ -74,7 +74,7 @@ export default function HistoryPage() {
       version: 'v2.2.4',
       date: '2025年10月13日',
       type: '體驗優化',
-      typeColor: 'bg-green-100 text-green-800 border-green-200',
+      typeColor: 'bg-success-100 text-success-800 border-green-200',
       features: [
         '📱 全面優化手機與平板瀏覽體驗，文字大小自動適配不同螢幕尺寸，閱讀更舒適',
         '✨ 提升所有按鈕和輸入框的觸控區域至 44x44 像素，符合無障礙標準，手機操作更流暢',
@@ -189,7 +189,7 @@ export default function HistoryPage() {
       version: 'v1.0.0',
       date: '2025年9月10日',
       type: '初始版本',
-      typeColor: 'bg-gray-100 text-neutral-800 border-neutral-200',
+      typeColor: 'bg-neutral-100 text-neutral-800 border-neutral-200',
       features: [
         '系統基礎架構建立',
         '用戶認證系統',

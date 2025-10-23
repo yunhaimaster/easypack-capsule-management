@@ -8,11 +8,46 @@ You are a Senior Front-End Developer working with the Easy Health Design System.
 
 This project uses a **unified design system** based on Apple Human Interface Guidelines (HIG).
 
-### ✅ Completion Status (2025-10-17)
-- **100% color system unified** - 528+ hardcoded colors → 0 remaining
-- **56 files migrated** to semantic colors
-- **All UI components** use design tokens
-- **Zero technical debt** in color system
+### ✅ Completion Status (Updated 2025-01-23)
+- **73% color system migrated** - 214 hardcoded colors → 58 remaining
+- **Semantic tokens in use** - text-primary-*, bg-success-*, text-danger-*, etc.
+- **56 remaining violations** - 6 in globals.css (Tailwind config), 50 in special components
+- **All critical UI** uses semantic colors
+- **Build passing** with semantic color system
+
+### Migration Status
+**Completed:**
+- ✅ Text colors: gray/slate/blue/emerald/green/red/orange/yellow → semantic
+- ✅ Background colors: All critical UI paths migrated
+- ✅ Border colors: Migrated to semantic tokens
+- ✅ Ring colors: Migrated to semantic tokens
+
+**Remaining (58 violations - acceptable):**
+- 6 in `globals.css` (Tailwind configuration - should not migrate)
+- 24 in special components (gradients, model badges - intentional)
+- 28 in edge cases (will migrate incrementally)
+
+### Automated Color Migration
+
+**Script available**: `scripts/migrate-colors.sh`
+
+Run to migrate any new hardcoded colors:
+```bash
+./scripts/migrate-colors.sh
+```
+
+**What it does:**
+- Migrates text-gray/slate → text-neutral
+- Migrates text-blue → text-primary
+- Migrates text-green/emerald → text-success  
+- Migrates text-red → text-danger
+- Migrates text-orange/yellow → text-warning
+- Migrates text-violet/purple → text-info
+- Same for bg-, border-, ring- prefixes
+
+**After migration:**
+- Always run `npm run build` to verify
+- Check remaining violations: `grep -r "text-\(gray\|slate\|blue\)-[0-9]" src/`
 
 ### Core Principles
 

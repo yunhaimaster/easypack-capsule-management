@@ -29,7 +29,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
       onClick={onSelect}
     >
       {/* Preview */}
-      <div className="relative aspect-[140/60] bg-gray-50 rounded-lg overflow-hidden border border-neutral-200">
+      <div className="relative aspect-[140/60] bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200">
         {!imageError ? (
           <div 
             className="w-full h-full"
@@ -56,7 +56,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
         {/* Compliance */}
         <div className="flex items-center gap-2 text-xs">
           {compliance.passed ? (
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <CheckCircle2 className="h-4 w-4 text-success-600" />
           ) : (
             <AlertCircle className="h-4 w-4 text-amber-600" />
           )}

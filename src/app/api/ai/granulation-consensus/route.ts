@@ -17,7 +17,6 @@ interface ConsensusRequest {
     modelName: string
     content: string
   }>
-  enableReasoning?: boolean
 }
 
 const MIN_ANALYSES_REQUIRED = 2
@@ -72,7 +71,7 @@ const formatAnalyses = (analyses: ConsensusRequest['analyses']) => {
 
 export async function POST(request: NextRequest) {
   try {
-    const { ingredients = [], analyses = [], enableReasoning = false } = (await request.json()) as ConsensusRequest
+    const { ingredients = [], analyses = [] } = (await request.json()) as ConsensusRequest
 
     if (!Array.isArray(analyses) || analyses.filter((item) => item?.content?.trim()).length < MIN_ANALYSES_REQUIRED) {
       return NextResponse.json(

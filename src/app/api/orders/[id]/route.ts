@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 import { logger } from '@/lib/logger'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
 
 // Timing-safe comparison to prevent timing attacks
@@ -313,8 +314,43 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+
+    // Get order details before deletion for audit log
+    const order = await prisma.productionOrder.findUnique({
+      where: { id },
+      select: {
+        customerName: true,
+        productName: true
+      }
+    })
+
+    if (!order) {
+      return NextResponse.json(
+        { error: '訂單不存在' },
+        { status: 404 }
+      )
+    }
+
+    // Get user context for audit logging
+    const context = await getUserContextFromRequest(request)
+
+    // Delete the order
     await prisma.productionOrder.delete({
       where: { id }
+    })
+
+    // Log order deletion
+    await logAudit({
+      action: AuditAction.ORDER_DELETED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        orderId: id,
+        customerName: order.customerName,
+        productName: order.productName
+      }
     })
 
     return NextResponse.json({ message: '訂單刪除成功' })

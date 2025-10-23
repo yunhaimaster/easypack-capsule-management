@@ -159,7 +159,7 @@ export function BlueprintGenerator({ productName = '產品名稱', ingredients =
                 設計圖紙已生成 (140×60mm + 2mm出血)
               </Badge>
               
-              <div className="relative rounded-lg overflow-hidden border border-neutral-200 bg-gray-100 p-4">
+              <div className="relative rounded-lg overflow-hidden border border-neutral-200 bg-neutral-100 p-4">
                 <div dangerouslySetInnerHTML={{ __html: svgPreview }} className="w-full" />
               </div>
 
@@ -182,7 +182,7 @@ export function BlueprintGenerator({ productName = '產品名稱', ingredients =
                 </Button>
               </div>
 
-              <div className="text-xs text-neutral-500 bg-gray-50 p-3 rounded border border-neutral-100">
+              <div className="text-xs text-neutral-500 bg-neutral-50 p-3 rounded border border-neutral-100">
                 <p className="font-medium mb-1">設計規格說明：</p>
                 <ul className="list-disc list-inside space-y-0.5">
                   <li>標籤尺寸：140mm × 60mm</li>

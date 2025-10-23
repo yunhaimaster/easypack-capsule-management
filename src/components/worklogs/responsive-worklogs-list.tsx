@@ -240,7 +240,7 @@ export function ResponsiveWorklogsList() {
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-red-500">{error}</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-danger-500">{error}</td>
                 </tr>
               ) : worklogs.length === 0 ? (
                 <tr>
@@ -248,7 +248,7 @@ export function ResponsiveWorklogsList() {
                 </tr>
               ) : (
                 worklogs.map((worklog) => (
-                  <tr key={worklog.id} className="border-b border-slate-100 hover:bg-white/80 transition-colors">
+                  <tr key={worklog.id} className="border-b border-neutral-100 hover:bg-white/80 transition-colors">
                     <td className="py-4 px-4 align-top text-sm text-neutral-800 font-semibold text-neutral-900">
                       {formatWorkDate(worklog.workDate)}
                     </td>
@@ -330,7 +330,7 @@ export function ResponsiveWorklogsList() {
             <LiquidGlassLoading title="載入工時" message="正在整理最新工時紀錄" />
           </div>
         ) : error ? (
-          <div className="rounded-2xl bg-danger-50 border border-red-100 p-6 text-sm text-red-600">
+          <div className="rounded-2xl bg-danger-50 border border-red-100 p-6 text-sm text-danger-600">
             {error}
           </div>
         ) : worklogs.length === 0 ? (

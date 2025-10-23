@@ -3,11 +3,17 @@ import { prisma } from '@/lib/prisma'
 import { generateCSV } from '@/lib/utils'
 import jsPDF from 'jspdf'
 import { logger } from '@/lib/logger'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { format, includeIngredients = false, dateRange, filters } = body
+
+    // Get user context for audit logging
+    const context = await getUserContextFromRequest(request)
 
     const where: Record<string, any> = {}
     const searchConditions: any[] = []
@@ -91,6 +97,22 @@ export async function POST(request: NextRequest) {
       },
       orderBy: {
         [filters?.sortBy ?? 'createdAt']: filters?.sortOrder ?? 'desc'
+      }
+    })
+
+    // Log order export
+    await logAudit({
+      action: AuditAction.ORDER_EXPORTED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        format,
+        orderCount: orders.length,
+        includeIngredients,
+        hasFilters: !!filters,
+        hasDateRange: !!dateRange
       }
     })
 

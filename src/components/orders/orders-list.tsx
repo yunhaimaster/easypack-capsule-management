@@ -343,7 +343,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
             <span className="sr-only" role="status">{statusMessage}</span>
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
+                <tr className="border-b border-neutral-200 bg-neutral-50">
                   <th
                     scope="col"
                     className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
@@ -462,7 +462,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   orders.map((order) => (
                     <tr 
                       key={order.id} 
-                      className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                      className="border-b border-neutral-100 hover:bg-neutral-50 cursor-pointer transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
                       <td className="py-3 px-4 text-neutral-900 text-sm">
@@ -475,7 +475,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                         <div className="flex items-center gap-2">
                           {order.capsuleColor && (
                             <div 
-                              className="w-4 h-4 rounded-full border border-gray-300" 
+                              className="w-4 h-4 rounded-full border border-neutral-300" 
                               style={{ backgroundColor: order.capsuleColor === '紅色' ? '#ef4444' : 
                                          order.capsuleColor === '藍色' ? '#3b82f6' :
                                          order.capsuleColor === '綠色' ? '#10b981' :
@@ -535,7 +535,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                             variant="outline"
                             size="sm"
                             onClick={() => requestDelete(order.id)}
-                            className="h-6 w-6 p-0 text-red-600 hover:text-red-700 text-xs"
+                            className="h-6 w-6 p-0 text-danger-600 hover:text-danger-700 text-xs"
                             aria-label="刪除訂單"
                             title="刪除訂單"
                           >

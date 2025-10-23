@@ -6,7 +6,6 @@ export interface AIRecipeRequest {
   targetAudience?: string
   dosageForm?: 'capsule' | 'tablet' | 'powder'
   budget?: string
-  enableReasoning?: boolean
 }
 
 export interface AIRecipeResponse {
@@ -51,7 +50,6 @@ export interface CostAnalysis {
 export interface PriceAnalysisRequest {
   materialName: string
   analysisType?: 'comprehensive' | 'trend' | 'supplier' | 'cost'
-  enableReasoning?: boolean
 }
 
 export interface PriceAnalysisResponse {
@@ -86,7 +84,6 @@ export interface EfficacyAssessmentRequest {
   ingredientName: string
   effect: string
   dosage: number
-  enableReasoning?: boolean
 }
 
 export interface EfficacyAssessmentResponse {
@@ -108,7 +105,6 @@ export interface AdCopyRequest {
   targetMarket: string
   copyType: 'headline' | 'description' | 'benefit' | 'warning'
   productInfo: ProductInfo
-  enableReasoning?: boolean
 }
 
 export interface ProductInfo {
@@ -134,7 +130,6 @@ export interface AdCopyResponse {
 export interface WorkOrderRequest {
   orderId: string
   isoStandard?: string
-  enableReasoning?: boolean
 }
 
 export interface WorkOrderResponse {
@@ -187,7 +182,6 @@ export interface RiskItem {
 export interface QCFileRequest {
   workOrderId: string
   testMethods?: string[]
-  enableReasoning?: boolean
 }
 
 export interface QCFileResponse {
@@ -233,10 +227,10 @@ export interface ProductDatabaseItem {
   id: string
   productName: string
   category?: string
-  formula: any // JSON 對象
-  efficacy?: any // JSON 對象
-  safety?: any // JSON 對象
-  regulatoryStatus?: any // JSON 對象
+  formula: Record<string, unknown> // JSON object
+  efficacy?: Record<string, unknown> // JSON object
+  safety?: Record<string, unknown> // JSON object
+  regulatoryStatus?: Record<string, unknown> // JSON object
   version: string
   isActive: boolean
   tags?: string[]
@@ -249,9 +243,9 @@ export interface ProductDatabaseItem {
 export interface ProductDatabaseRequest {
   productName: string
   category?: string
-  formula: any
-  efficacy?: any
-  safety?: any
+  formula: Record<string, unknown>
+  efficacy?: Record<string, unknown>
+  safety?: Record<string, unknown>
   tags?: string[]
   notes?: string
 }
@@ -300,6 +294,6 @@ export interface SearchParams {
 export interface APIError {
   code: string
   message: string
-  details?: any
+  details?: Record<string, unknown>
   timestamp: string
 }

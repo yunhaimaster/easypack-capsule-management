@@ -149,7 +149,7 @@ export function OrderLockDialog({
         type="button"
         variant="outline"
         onClick={() => onOpenChange(false)}
-        className="flex-1 bg-white hover:bg-gray-100 text-neutral-700 border-gray-300"
+        className="flex-1 bg-white hover:bg-neutral-100 text-neutral-700 border-neutral-300"
         disabled={isLoading}
       >
         取消
@@ -198,7 +198,7 @@ export function OrderLockDialog({
                 placeholder="請輸入 4 位數字"
                 maxLength={4}
                 pattern="[0-9]{4}"
-                className="pr-10 text-center text-lg tracking-widest bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="pr-10 text-center text-lg tracking-widest bg-white border-neutral-300 focus:border-blue-500 focus:ring-blue-500"
                 required
               />
               <button
@@ -228,7 +228,7 @@ export function OrderLockDialog({
                   placeholder="請再次輸入密碼"
                   maxLength={4}
                   pattern="[0-9]{4}"
-                  className="pr-10 text-center text-lg tracking-widest bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="pr-10 text-center text-lg tracking-widest bg-white border-neutral-300 focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
                 <button

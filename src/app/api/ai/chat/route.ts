@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { CleanOrderData, OrderWithIngredients } from '@/types/api'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -265,7 +268,25 @@ async function streamOpenRouterResponse(
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, orders, context, enableReasoning = false } = await request.json()
+    const { message, orders, context } = await request.json()
+
+    // Get user context for audit logging
+    const auditContext = await getUserContextFromRequest(request)
+
+    // Log AI chat interaction (sanitize message to not expose full content)
+    await logAudit({
+      action: AuditAction.AI_CHAT_INTERACTION,
+      userId: auditContext.userId,
+      phone: auditContext.phone,
+      ip: auditContext.ip,
+      userAgent: auditContext.userAgent,
+      metadata: {
+        hasOrders: !!orders && orders.length > 0,
+        orderCount: orders ? orders.length : 0,
+        contextPage: context?.currentPage || 'unknown',
+        messageLength: message?.length || 0
+      }
+    })
 
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
     const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
@@ -486,12 +507,7 @@ ${JSON.stringify(cleanedOrders, null, 2)}
         top_p: 0.95,            // 稍微提高 top_p
         frequency_penalty: 0.0,  // 移除頻率懲罰，讓 AI 更自然
         presence_penalty: 0.0,   // 移除存在懲罰
-        stream: true,
-        ...(enableReasoning && {
-          reasoning: {
-            effort: "high"  // 用戶可選的深度推理模式
-          }
-        })
+        stream: true
       })
     })
 

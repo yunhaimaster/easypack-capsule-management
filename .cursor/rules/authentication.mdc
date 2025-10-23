@@ -6,27 +6,39 @@ You are a Security Specialist for authentication.
 
 ## Authentication System
 
-### Current Implementation
-- Simple localStorage-based authentication
-- Single shared login code stored in `LOGIN` environment variable
-- No individual user accounts
-- Designed for internal team use only
+### Current Implementation (Updated 2025-01-23)
+- **OTP-based authentication** via Twilio SMS
+- **JWT sessions** with HTTP-only cookies
+- **PostgreSQL database** for user management (User, Session, TrustedDevice, AuditLog tables)
+- **Role-based access control** (ADMIN, EMPLOYEE roles)
+- **Rate limiting** on OTP requests
+- **Audit logging** for all auth events
+- **Admin bootstrap** for initial setup
 
 ### Security Rules
 
-#### Environment Variables
-- **NEVER** hardcode passwords or secrets in code
-- **ALWAYS** use environment variables for sensitive data
-- **NEVER** expose `LOGIN` value to client-side logs
-- Store in `.env.local` (development) and Vercel env vars (production)
+#### Console Logging - CRITICAL
+**NEVER log sensitive data:**
+- ❌ Phone numbers
+- ❌ Session tokens or cookies
+- ❌ Bootstrap codes or passwords
+- ❌ JWT tokens
+- ❌ User PII
 
-```bash
-# .env.local
-LOGIN="2356"
+```typescript
+// ❌ BAD - Don't log sensitive data
+console.log('[Auth] Phone number:', phoneE164)
+console.log('[Auth] Session token:', token)
+console.log('[Auth] Cookie:', cookieHeader)
+
+// ✅ GOOD - Log safely
+console.log('[Auth] OTP sent successfully')  // No PII
+console.log('[Auth] Session created')        // No token details
 ```
 
-#### Password Validation
-Always use timing-safe comparison to prevent timing attacks:
+#### Security Best Practices for Auth Routes
+
+**1. Always use timing-safe comparison:**
 ```typescript
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
@@ -36,96 +48,101 @@ function timingSafeEqual(a: string, b: string): boolean {
   }
   return result === 0
 }
+```
 
-const isValid = timingSafeEqual(
-  password.trim(), 
-  (process.env.LOGIN || '2356').trim()
-)
+**2. Never expose sensitive details in errors:**
+```typescript
+// ❌ BAD
+console.error('[OTP] Failed for phone:', phoneE164, error)
+
+// ✅ GOOD
+console.error('[OTP] Send failed:', error.message)
+// Phone number already in audit log, don't duplicate in console
+```
+
+**3. Use existing audit system instead of console.log:**
+```typescript
+// ✅ Use audit logging for auth events
+await logAudit({
+  action: AuditAction.OTP_SENT,
+  phone: phoneE164,
+  ip,
+  userAgent
+})
 ```
 
 ### Authentication Flow
 
-#### 1. Login Process
+#### 1. OTP Login Process
 ```
-User enters code → /api/auth/login → Validate → Set localStorage → Redirect
+User enters phone → /api/auth/otp/start → Send SMS → 
+User enters code → /api/auth/otp/verify → Create session → Set HTTP-only cookie
 ```
 
 #### 2. Session Check
 ```
-Page load → Check localStorage → useAuth hook → Protect/Allow access
+Request → Middleware reads cookie → Verify JWT → Get session from DB → Allow/Deny
 ```
 
 #### 3. Logout
 ```
-Logout button → Clear localStorage → Redirect to /login
+Logout → /api/auth/logout → Revoke session in DB → Clear cookie → Redirect to /login
 ```
 
 ### Implementation Details
 
-#### API Route (`/api/auth/login`)
+#### OTP Start Route (`/api/auth/otp/start`)
 ```typescript
 export async function POST(request: NextRequest) {
-  const { password } = await request.json()
+  const { phone } = await request.json()
   
-  if (!password) {
+  // Validate phone number with Zod
+  const parsed = phoneInputSchema.safeParse(phone)
+  if (!parsed.success) {
     return NextResponse.json(
-      { success: false, error: '請輸入登入碼' },
+      { success: false, error: '請輸入有效電話號碼' },
       { status: 400 }
     )
   }
 
-  const correctPassword = (process.env.LOGIN || '2356').trim()
-  const isValid = timingSafeEqual(password.trim(), correctPassword)
+  const phoneE164 = normalizeHongKongDefault(parsed.data)
 
-  if (isValid) {
-    return NextResponse.json({ success: true })
-  } else {
+  // Rate limiting
+  const phoneCount = await countRecentAttemptsByPhone(phoneE164, 60_000)
+  if (phoneCount >= 3) {
     return NextResponse.json(
-      { success: false, error: '登入碼錯誤' },
-      { status: 401 }
+      { success: false, error: '請稍後再試（頻率限制）' },
+      { status: 429 }
     )
   }
+
+  // Send OTP via Twilio (no console.log of phone number!)
+  await client.verify.v2.services(serviceSid).verifications.create({
+    to: phoneE164,
+    channel: 'sms',
+    locale: 'zh-HK'
+  })
+
+  // Audit log instead of console.log
+  await logAudit({ action: AuditAction.OTP_SENT, phone: phoneE164, ip, userAgent })
+
+  return NextResponse.json({ success: true })
 }
 ```
 
-#### Client Auth Provider
+#### Session Verification
 ```typescript
-export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+// Use audit logging for auth checks, not console.log
+const session = await prisma.session.findUnique({
+  where: { id: sessionId },
+  include: { user: true }
+})
 
-  useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated')
-    setIsAuthenticated(authStatus === 'true')
-  }, [])
-
-  const login = () => {
-    setIsAuthenticated(true)
-    localStorage.setItem('isAuthenticated', 'true')
-  }
-
-  const logout = () => {
-    setIsAuthenticated(false)
-    localStorage.removeItem('isAuthenticated')
-  }
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
-```
-
-### Protected Routes
-Wrap protected pages with `ProtectedLayout`:
-```typescript
-import { ProtectedLayout } from '@/components/auth/protected-layout'
-
-export default function OrdersPage() {
-  return (
-    <ProtectedLayout>
-      <OrdersContent />
-    </ProtectedLayout>
+if (!session || session.revokedAt || session.expiresAt.getTime() < Date.now()) {
+  // Don't log session details
+  return NextResponse.json(
+    { success: false, authenticated: false },
+    { status: 401 }
   )
 }
 ```
@@ -133,34 +150,47 @@ export default function OrdersPage() {
 ### Security Best Practices
 
 #### Do's ✅
-- Use environment variables for secrets
-- Use timing-safe password comparison
-- Clear auth state completely on logout
-- Show generic error messages (don't reveal why login failed)
-- Trim input before comparison
+- Use environment variables for secrets (Twilio credentials)
+- Use timing-safe comparison for sensitive string comparisons
+- Use audit logging (`logAudit`) instead of console.log for auth events
+- Implement rate limiting on all auth endpoints
+- Validate all phone number inputs with Zod schemas
+- Use HTTP-only cookies for sessions
+- Clear/revoke sessions on logout (both cookie and database)
+- Show generic error messages (don't reveal system details)
 
 #### Don'ts ❌
-- Don't log passwords or auth tokens
+- **NEVER log phone numbers, session tokens, or cookies**
 - Don't expose internal error details to users
-- Don't store passwords in localStorage (only store auth state flag)
-- Don't reveal whether a login code exists
-- Don't implement "remember me" for shared access codes
+- Don't store sensitive data in localStorage
+- Don't reveal whether a phone number is registered
+- Don't skip rate limiting checks
+- Don't use client-side only authentication
 
-### Important Limitations
-⚠️ **Current System Limitations:**
-- NOT suitable for production with sensitive data
-- NO individual user accounts or permissions
-- NO session management or expiration
-- NO password reset or recovery
-- Designed for internal tool with single shared access
+### Current System Features
+✅ **Production-ready authentication with:**
+- OTP-based SMS verification via Twilio
+- JWT sessions with HTTP-only cookies
+- PostgreSQL database for user/session management
+- Role-based access control (ADMIN, EMPLOYEE)
+- Rate limiting and audit logging
+- Admin bootstrap for initial setup
+- Trusted device management
+- Session revocation capabilities
 
-### If Individual Accounts Needed
-If you need proper multi-user authentication:
-1. Implement JWT with HTTP-only cookies
-2. Add user database table
-3. Hash passwords with bcrypt
-4. Implement proper session management
-5. Add role-based access control (RBAC)
-6. Consider using NextAuth.js or similar
+### Environment Variables Required
+```bash
+# Twilio Configuration
+TWILIO_ACCOUNT_SID="your_account_sid"
+TWILIO_AUTH_TOKEN="your_auth_token"
+TWILIO_VERIFY_SERVICE_SID="your_verify_service_sid"
 
-**For now**: Current simple system is adequate for internal team tool.
+# JWT Session Secret
+SESSION_SECRET="your_random_secret_key"
+
+# Admin Bootstrap (for initial setup)
+ADMIN_BOOTSTRAP_PHONE="+85266244432"
+ADMIN_BOOTSTRAP_CODE="your_secure_code"
+```
+
+**For production**: All authentication is properly implemented with industry-standard security practices.

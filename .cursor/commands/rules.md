@@ -1,0 +1,1 @@
+Full context mode: Memory MCP recall → Sequential Thinking + Context7 research → full rule compliance → codebase review → Memory MCP storage

@@ -21,7 +21,7 @@ export function AdminPageClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neutral-50">
         <LiquidGlassNav />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -36,7 +36,7 @@ export function AdminPageClient() {
   // Allow both ADMIN and MANAGER to access
   if (!isAdmin && !isManager) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neutral-50">
         <LiquidGlassNav />
         <div className="flex items-center justify-center py-20">
           <Card className="max-w-md p-8 text-center">
@@ -56,7 +56,7 @@ export function AdminPageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       <LiquidGlassNav />
       
       <div className="container mx-auto px-4 sm:px-6 pt-24 pb-8 max-w-7xl">
@@ -76,7 +76,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'users'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white text-neutral-700 hover:bg-gray-50'
+                : 'bg-white text-neutral-700 hover:bg-neutral-50'
             }`}
           >
             <Users className="h-4 w-4" />
@@ -88,7 +88,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'devices'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white text-neutral-700 hover:bg-gray-50'
+                : 'bg-white text-neutral-700 hover:bg-neutral-50'
             }`}
           >
             <Monitor className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'logs'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white text-neutral-700 hover:bg-gray-50'
+                : 'bg-white text-neutral-700 hover:bg-neutral-50'
             }`}
           >
             <FileText className="h-4 w-4" />

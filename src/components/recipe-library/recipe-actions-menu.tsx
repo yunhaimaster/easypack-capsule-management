@@ -127,7 +127,7 @@ export function RecipeActionsMenu({
               e.stopPropagation()
               onMarketingAnalysis(recipe.id)
             }}
-            className="cursor-pointer text-orange-600 focus:text-orange-700"
+            className="cursor-pointer text-warning-600 focus:text-warning-700"
           >
             <TrendingUp className="h-4 w-4 mr-2" />
             行銷分析

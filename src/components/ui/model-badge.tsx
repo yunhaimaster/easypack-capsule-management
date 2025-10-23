@@ -29,7 +29,7 @@ const modelConfig: Record<ModelType, {
   'grok': {
     label: 'Grok',
     icon: Zap,
-    className: 'bg-orange-500/10 text-orange-700 border-orange-500/20 hover:bg-orange-500/20',
+    className: 'bg-warning-500/10 text-warning-700 border-orange-500/20 hover:bg-warning-500/20',
   },
   'gpt-mini': {
     label: 'GPT-5 Mini',

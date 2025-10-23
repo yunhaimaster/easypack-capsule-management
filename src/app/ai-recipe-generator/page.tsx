@@ -50,10 +50,10 @@ const formatDuration = (startedAt?: number, finishedAt?: number) => {
 }
 
 const STATUS_BADGE_CLASS: Record<AnalysisStatus, string> = {
-  idle: 'bg-slate-500/15 border border-slate-300/40 text-neutral-600',
+  idle: 'bg-neutral-500/15 border border-neutral-300/40 text-neutral-600',
   loading: 'bg-primary-500/15 border border-primary-300/40 text-primary-700',
   success: 'bg-success-500/15 border border-emerald-300/40 text-success-700',
-  error: 'bg-danger-500/15 border border-red-300/40 text-red-700'
+  error: 'bg-danger-500/15 border border-red-300/40 text-danger-700'
 }
 
 const STATUS_LABEL: Record<AnalysisStatus, string> = {
@@ -68,8 +68,7 @@ export default function AIRecipeGeneratorPage() {
     targetEffect: '',
     targetAudience: '一般成人',
     dosageForm: 'capsule',
-    budget: '',
-    enableReasoning: false
+    budget: ''
   })
   const [isGenerating, setIsGenerating] = useState(false)
   const [modelResponses, setModelResponses] = useState<Record<string, {
@@ -492,7 +491,7 @@ export default function AIRecipeGeneratorPage() {
                     <label className="block text-sm font-medium text-neutral-700 mb-2">
                       劑型
                     </label>
-                    <div className="px-3 py-2 bg-gray-100 border border-neutral-300 rounded-lg text-neutral-600">
+                    <div className="px-3 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-neutral-600">
                       <span className="flex items-center">
                         <span className="mr-2">💊</span>
                         膠囊（固定）
@@ -545,7 +544,7 @@ export default function AIRecipeGeneratorPage() {
                   <div className="icon-container icon-container-red">
                     <span className="text-white font-bold">!</span>
                   </div>
-                  <p className="text-red-700">{error}</p>
+                  <p className="text-danger-700">{error}</p>
                 </div>
               </div>
             </Card>
@@ -643,11 +642,11 @@ export default function AIRecipeGeneratorPage() {
                     </div>
 
                     {model.response.status === 'error' ? (
-                      <div className="flex items-center gap-3 p-4 rounded-lg border border-red-200 bg-danger-50 text-red-700">
+                      <div className="flex items-center gap-3 p-4 rounded-lg border border-red-200 bg-danger-50 text-danger-700">
                         <AlertCircle className="h-5 w-5" />
                         <div className="text-sm">
                           <p className="font-medium">生成失敗</p>
-                          <p className="text-xs text-red-600">{model.response.error || '請稍後再試。'}</p>
+                          <p className="text-xs text-danger-600">{model.response.error || '請稍後再試。'}</p>
                         </div>
                       </div>
                     ) : (
@@ -698,7 +697,7 @@ export default function AIRecipeGeneratorPage() {
                         className={`max-w-3xl p-4 rounded-lg ${
                           message.role === 'user'
                             ? 'bg-primary-500 text-white'
-                            : 'bg-gray-100 text-neutral-800'
+                            : 'bg-neutral-100 text-neutral-800'
                         }`}
                       >
                         <div className="prose prose-sm max-w-none">
@@ -709,7 +708,7 @@ export default function AIRecipeGeneratorPage() {
                   ))}
                   {isChatLoading && (
                     <div className="flex justify-start">
-                      <div className="bg-gray-100 text-neutral-800 p-4 rounded-lg">
+                      <div className="bg-neutral-100 text-neutral-800 p-4 rounded-lg">
                         <div className="flex items-center space-x-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span>AI 正在思考...</span>

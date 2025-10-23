@@ -98,3 +98,121 @@ Use helpers from `src/lib/validations.ts`:
 - `worklogSchema` - Work log entries
 - `sanitizeString()` - Clean user input
 - `createStringValidator()` - Reusable string validation
+
+---
+
+## TypeScript Type Safety (Added 2025-01-23)
+
+### Avoid 'any' Type
+
+**Use proper types instead of `any`:**
+
+```typescript
+// ❌ BAD - Loses type safety
+const data: any = await request.json()
+const config: any = JSON.parse(str)
+
+// ✅ GOOD - Proper typing
+import { z } from 'zod'
+
+const requestSchema = z.object({
+  customerName: z.string(),
+  productName: z.string()
+})
+
+const data = requestSchema.parse(await request.json())
+```
+
+### JSON Object Types
+
+**For unknown JSON structures, use `Record<string, unknown>`:**
+
+```typescript
+// ❌ BAD
+interface APIResponse {
+  data: any
+  metadata?: any
+}
+
+// ✅ GOOD
+interface APIResponse {
+  data: Record<string, unknown>
+  metadata?: Record<string, unknown>
+}
+```
+
+### API Request Bodies
+
+**Always validate with Zod:**
+
+```typescript
+// ❌ BAD - No validation
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const { name, email } = body  // Unsafe!
+}
+
+// ✅ GOOD - Validated
+import { z } from 'zod'
+
+const bodySchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email()
+})
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const validated = bodySchema.parse(body)
+  // Now 'validated' is fully typed and safe
+}
+```
+
+### Event Handlers
+
+**Use specific React types:**
+
+```typescript
+// ❌ BAD
+const handleClick = (e: any) => {}
+const handleChange = (e: any) => {}
+
+// ✅ GOOD
+const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {}
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {}
+```
+
+### Prisma Where Clauses
+
+**Use generated Prisma types:**
+
+```typescript
+import { Prisma } from '@prisma/client'
+
+// ❌ BAD
+const where: any = {}
+
+// ✅ GOOD
+const where: Prisma.ProductionOrderWhereInput = {}
+```
+
+### When 'unknown' is Acceptable
+
+Use `unknown` (not `any`) when type is truly unknown:
+
+```typescript
+// ✅ Use unknown for truly unknown data, then narrow the type
+function parseJSON(str: string): unknown {
+  return JSON.parse(str)
+}
+
+const data = parseJSON(jsonString)
+
+// Type guard before use
+if (typeof data === 'object' && data !== null && 'name' in data) {
+  console.log((data as { name: string }).name)
+}
+
+// Better: Use Zod to validate and type
+const schema = z.object({ name: z.string() })
+const validated = schema.parse(data)  // Now fully typed
+```

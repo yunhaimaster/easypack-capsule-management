@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 const MODEL_ID = 'doubao-seedream-4-0-250828'
 const API_URL = 'https://ark.cn-beijing.volces.com/api/v3/images/generations'
@@ -56,12 +59,30 @@ export async function POST(request: NextRequest) {
   try {
     const { prompt, width = 2048, height = 2048, seed } = await request.json()
 
+    // Get user context for audit logging
+    const context = await getUserContextFromRequest(request)
+
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
         { success: false, error: '請提供圖像生成 Prompt' },
         { status: 400 }
       )
     }
+
+    // Log AI image generation request
+    await logAudit({
+      action: AuditAction.AI_IMAGE_GENERATED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        dimensions: `${width}x${height}`,
+        aspectRatio: getAspectRatio(width, height),
+        promptLength: prompt.length,
+        hasSeed: !!seed
+      }
+    })
 
     // Validate API key
     const apiKey = getDoubaoApiKey()

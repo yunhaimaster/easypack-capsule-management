@@ -3,6 +3,9 @@ import { logger } from '@/lib/logger'
 import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse } from '@/lib/ai/streaming-utils'
 import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
 import { validateApiKey, validateIngredients } from '@/lib/api/validation'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -604,6 +607,9 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients } = await request.json()
 
+    // Get user context for audit logging
+    const context = await getUserContextFromRequest(request)
+
     // Validate ingredients
     const ingredientValidation = validateIngredients(ingredients)
     if (!ingredientValidation.valid) {
@@ -611,6 +617,19 @@ export async function POST(request: NextRequest) {
     }
 
     const filteredIngredients = ingredientValidation.data!
+
+    // Log marketing analysis request
+    await logAudit({
+      action: AuditAction.MARKETING_GENERATED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        ingredientCount: filteredIngredients.length,
+        ingredients: filteredIngredients.map(ing => ing.materialName)
+      }
+    })
 
     // Validate API key
     const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)

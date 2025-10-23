@@ -148,7 +148,7 @@ export function ImageGenerator({ analysisContent }: ImageGeneratorProps) {
               <Badge variant="outline" className="text-xs">
                 生成完成
               </Badge>
-              <div className="relative rounded-lg overflow-hidden border border-neutral-200 bg-gray-50 w-full aspect-square">
+              <div className="relative rounded-lg overflow-hidden border border-neutral-200 bg-neutral-50 w-full aspect-square">
                 <Image
                   src={generatedImage.imageUrl}
                   alt="生成的包裝圖像"

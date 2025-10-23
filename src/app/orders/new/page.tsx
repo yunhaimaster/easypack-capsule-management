@@ -140,7 +140,7 @@ function NewOrderContent() {
 export default function NewOrderPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neutral-50">
         <LiquidGlassNav />
         <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto">
           <div className="flex items-center justify-center py-12">

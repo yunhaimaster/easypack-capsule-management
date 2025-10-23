@@ -90,8 +90,8 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
           <div className="flex items-center gap-3">
             <IconContainer icon={AlertTriangle} variant="danger" size="sm" />
             <div>
-              <div className="text-sm font-medium text-red-700">{row.name || '無名稱原料'}</div>
-              <div className="text-xs text-red-600">無效數值，將被略過</div>
+              <div className="text-sm font-medium text-danger-700">{row.name || '無名稱原料'}</div>
+              <div className="text-xs text-danger-600">無效數值，將被略過</div>
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
               <Badge>新增 {counts.add}</Badge>
               <Badge variant="outline">更新 {counts.update}</Badge>
               <Badge variant="outline">不變 {counts.unchanged}</Badge>
-              <Badge variant="outline" className="text-red-600">無效 {counts.invalid}</Badge>
+              <Badge variant="outline" className="text-danger-600">無效 {counts.invalid}</Badge>
               <div className="ml-auto text-xs text-neutral-600">已選 {counts.selected}</div>
             </div>
           </Card>

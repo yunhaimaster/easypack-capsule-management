@@ -451,7 +451,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                       className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
                         isRecipeDragging
                           ? 'border-emerald-500 bg-emerald-50/50 scale-[1.02]'
-                          : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50/50'
+                          : 'border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50/50'
                       }`}
                       onDragEnter={handleDragEnter}
                       onDragLeave={handleDragLeave}
@@ -459,7 +459,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                       onDrop={handleDrop}
                     >
                       <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors ${
-                        isRecipeDragging ? 'bg-emerald-500/10' : 'bg-slate-900/5'
+                        isRecipeDragging ? 'bg-emerald-500/10' : 'bg-neutral-900/5'
                       }`}>
                         <Upload className={`w-8 h-8 transition-colors ${
                           isRecipeDragging ? 'text-success-600' : 'text-neutral-500'
@@ -511,7 +511,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                       </div>
                     </div>
                     {/* 圖片預覽 */}
-                    <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 relative w-full" style={{ minHeight: '200px' }}>
+                    <div className="rounded-xl overflow-hidden border border-neutral-200 bg-neutral-50 relative w-full" style={{ minHeight: '200px' }}>
                       <Image
                         src={importImage}
                         alt="上傳的配方圖片"
@@ -609,9 +609,9 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                       </div>
                       <div className="flex items-center gap-1">
                         {ingredient.needsConfirmation ? (
-                          <AlertCircle className="w-4 h-4 text-yellow-600" />
+                          <AlertCircle className="w-4 h-4 text-warning-600" />
                         ) : (
-                          <CheckCircle2 className="w-4 h-4 text-green-600" aria-hidden="true" />
+                          <CheckCircle2 className="w-4 h-4 text-success-600" aria-hidden="true" />
                         )}
                       </div>
                     </div>

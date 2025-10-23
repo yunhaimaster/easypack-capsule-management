@@ -1,0 +1,35 @@
+
+> easypack-capsule-management-v1@1.0.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.17.1) to ./node_modules/@prisma/client in 76ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local, .env.production
+   - Experiments (use with caution):
+     · optimizePackageImports
+     ✓ webpackMemoryOptimizations
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 4.9s
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./src/app/api/orders/[id]/route.ts:334:27
+Type error: Cannot find name 'getUserContextFromRequest'.
+
+[0m [90m 332 |[39m
+ [90m 333 |[39m     [90m// Get user context for audit logging[39m
+[31m[1m>[22m[39m[90m 334 |[39m     [36mconst[39m context [33m=[39m [36mawait[39m getUserContextFromRequest(request)
+ [90m     |[39m                           [31m[1m^[22m[39m
+ [90m 335 |[39m
+ [90m 336 |[39m     [90m// Delete the order[39m
+ [90m 337 |[39m     [36mawait[39m prisma[33m.[39mproductionOrder[33m.[39m[36mdelete[39m({[0m
+Next.js build worker exited with code: 1 and signal: null

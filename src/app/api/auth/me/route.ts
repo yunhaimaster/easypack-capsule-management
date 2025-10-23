@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   try {
     // Read cookie from request headers directly (more reliable)
     const cookieHeader = request.headers.get('cookie')
-    console.log('[Auth /me] Cookie header:', cookieHeader ? 'present' : 'missing')
+    // Security: Removed cookie logging
     
     if (!cookieHeader) {
       return NextResponse.json({ success: false, authenticated: false }, { status: 401 })
@@ -28,18 +28,18 @@ export async function GET(request: NextRequest) {
     const sessionCookie = cookies.find(c => c.startsWith('session='))
     
     if (!sessionCookie) {
-      console.log('[Auth /me] No session cookie found')
+      // Security: Removed session logging
       return NextResponse.json({ success: false, authenticated: false }, { status: 401 })
     }
 
     const token = sessionCookie.split('=')[1]
-    console.log('[Auth /me] Session token found:', !!token)
+    // Security: Removed token logging
 
     // Verify JWT
     const { payload } = await jwtVerify(token, getSessionSecret())
     const sessionId = String(payload.sessionId || '')
     
-    console.log('[Auth /me] JWT verified, sessionId:', sessionId)
+    // Security: Removed sessionId logging
 
     if (!sessionId) {
       return NextResponse.json({ success: false, authenticated: false }, { status: 401 })
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       include: { user: true }
     })
 
-    console.log('[Auth /me] DB session found:', !!session)
+    // Security: Removed session logging
 
     if (!session || session.revokedAt || session.expiresAt.getTime() < Date.now()) {
       return NextResponse.json({ success: false, authenticated: false }, { status: 401 })

@@ -149,7 +149,7 @@ export function LoginForm() {
         {step === 'phone' ? (
           <form onSubmit={startOtp} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+              <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
                 電話號碼（EPL 通訊群組）
               </label>
               <div className="relative">
@@ -168,7 +168,7 @@ export function LoginForm() {
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+              <div className="text-sm text-danger-600 bg-danger-50 p-2 rounded border border-red-200">
                 {error}
               </div>
             )}
@@ -202,7 +202,7 @@ export function LoginForm() {
         ) : step === 'bootstrap' ? (
           <form onSubmit={handleAdminBootstrap} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="bootstrap-phone" className="text-sm font-medium text-gray-700">
+              <label htmlFor="bootstrap-phone" className="text-sm font-medium text-neutral-700">
                 管理員電話號碼
               </label>
               <div className="relative">
@@ -221,7 +221,7 @@ export function LoginForm() {
             </div>
 
             <div className="space-y-2 text-left">
-              <label htmlFor="bootstrap-code" className="text-sm font-medium text-gray-700">
+              <label htmlFor="bootstrap-code" className="text-sm font-medium text-neutral-700">
                 啟動碼
               </label>
               <Input
@@ -235,7 +235,7 @@ export function LoginForm() {
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+              <div className="text-sm text-danger-600 bg-danger-50 p-2 rounded border border-red-200">
                 {error}
               </div>
             )}
@@ -266,7 +266,7 @@ export function LoginForm() {
         ) : (
           <form onSubmit={verifyOtp} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="code" className="text-sm font-medium text-gray-700">
+              <label htmlFor="code" className="text-sm font-medium text-neutral-700">
                 驗證碼
               </label>
                 <Input
@@ -288,7 +288,7 @@ export function LoginForm() {
             </label>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+              <div className="text-sm text-danger-600 bg-danger-50 p-2 rounded border border-red-200">
                 {error}
               </div>
             )}
@@ -304,7 +304,7 @@ export function LoginForm() {
         )}
 
         <div className="text-center">
-          <p className="text-xs text-gray-500">如有登入問題，請聯繫 Victor</p>
+          <p className="text-xs text-neutral-500">如有登入問題，請聯繫 Victor</p>
         </div>
       </CardContent>
     </Card>

@@ -62,11 +62,7 @@ export async function POST(request: NextRequest) {
       expires: session.expiresAt,
     }
     
-    console.log('[OTP Verify] Setting cookie:', {
-      name: session.cookieName,
-      options: cookieOptions,
-      expires: session.expiresAt.toISOString(),
-    })
+    // Security: Don't log cookie details - removed console.log
     
     response.cookies.set(session.cookieName, session.token, cookieOptions)
 

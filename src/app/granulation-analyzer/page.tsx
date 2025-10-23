@@ -78,10 +78,10 @@ const formatDuration = (startedAt?: number, finishedAt?: number) => {
 }
 
 const STATUS_BADGE_CLASS: Record<AnalysisStatus, string> = {
-  idle: 'bg-slate-500/10 border border-slate-300/40 text-neutral-600',
+  idle: 'bg-neutral-500/10 border border-neutral-300/40 text-neutral-600',
   loading: 'bg-primary-500/15 border border-primary-300/40 text-primary-700',
   success: 'bg-success-500/15 border border-emerald-300/40 text-success-700',
-  error: 'bg-danger-500/15 border border-red-300/40 text-red-700'
+  error: 'bg-danger-500/15 border border-red-300/40 text-danger-700'
 }
 
 const STATUS_LABEL: Record<AnalysisStatus, string> = {
@@ -708,7 +708,7 @@ export default function GranulationAnalyzerPage() {
                               setIngredients(newIngredients)
                             }
                           }}
-                          className="p-2 text-red-600 hover:text-red-800 hover:bg-danger-50 rounded-lg transition-colors"
+                          className="p-2 text-danger-600 hover:text-danger-800 hover:bg-danger-50 rounded-lg transition-colors"
                           disabled={ingredients.length === 1}
                           aria-label="刪除原料"
                         >
@@ -862,11 +862,11 @@ export default function GranulationAnalyzerPage() {
                             </div>
                           </div>
                           {analysis.status === 'error' ? (
-                            <div className="flex items-start gap-3 p-4 rounded-lg border border-red-200 bg-danger-50 text-red-700">
+                            <div className="flex items-start gap-3 p-4 rounded-lg border border-red-200 bg-danger-50 text-danger-700">
                               <AlertCircle className="h-5 w-5" />
                               <div className="text-sm">
                                 <p className="font-medium">分析失敗</p>
-                                <p className="text-xs text-red-600">{analysis.error || '請稍後再試。'}</p>
+                                <p className="text-xs text-danger-600">{analysis.error || '請稍後再試。'}</p>
                               </div>
                             </div>
                           ) : (

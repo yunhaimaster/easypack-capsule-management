@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateRecipeFingerprint } from '@/lib/recipe-fingerprint'
 import type { RecipeIngredient } from '@/types'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 function buildOrderNotes(order: { processIssues: string | null; qualityNotes: string | null }) {
   const noteParts: string[] = []
@@ -165,6 +168,23 @@ export async function POST(
         category: category || null,
         tags: tags ? JSON.stringify(tags) : null,
         notes: combinedNotes || null
+      }
+    })
+
+    // Get user context and log recipe creation
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.RECIPE_CREATED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        recipeId: recipe.id,
+        recipeName: recipe.recipeName,
+        sourceType: 'order',
+        sourceOrderId: orderId,
+        ingredientCount: recipeIngredients.length
       }
     })
 

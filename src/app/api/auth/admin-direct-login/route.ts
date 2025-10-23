@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       metadata: { method: 'admin_direct_login' }
     })
 
-    console.log('[Admin Direct Login] Admin logged in:', phoneE164)
+    // Security: Don't log phone numbers - removed console.log
 
     const response = NextResponse.json({
       success: true,

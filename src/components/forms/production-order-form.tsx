@@ -890,7 +890,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       {/* 其他信息 */}
       <div className="rounded-2xl border border-white/40 bg-white/85 backdrop-blur-sm shadow-sm">
         <div className="px-6 pt-6 pb-2 flex items-center gap-2 text-lg sm:text-xl font-semibold text-[--brand-neutral]">
-          <span className="text-green-600">📋</span>
+          <span className="text-success-600">📋</span>
           其他信息
         </div>
         <div className="px-6 pb-6 space-y-6">

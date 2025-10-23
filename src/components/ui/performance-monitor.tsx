@@ -121,7 +121,7 @@ export function PerformanceMonitor() {
         {metrics.memoryUsage && (
           <div>內存: {metrics.memoryUsage}MB</div>
         )}
-        <div className={`${metrics.isOnline ? 'text-green-400' : 'text-red-400'}`}>
+        <div className={`${metrics.isOnline ? 'text-success-400' : 'text-danger-400'}`}>
           狀態: {metrics.isOnline ? '在線' : '離線'}
         </div>
       </div>

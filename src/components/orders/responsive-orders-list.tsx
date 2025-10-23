@@ -341,7 +341,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                     STATUS_ORDER[status] === 0
                       ? 'bg-blue-600 text-white'
                       : STATUS_ORDER[status] === 1
-                        ? 'bg-slate-600 text-white'
+                        ? 'bg-neutral-600 text-white'
                         : 'bg-emerald-600 text-white'
 
                   const latestWorklog = order.worklogs && order.worklogs.length > 0
@@ -351,7 +351,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   return (
                     <tr
                       key={order.id}
-                      className="border-b border-gray-100 hover:bg-white/80 transition-colors"
+                      className="border-b border-neutral-100 hover:bg-white/80 transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
@@ -360,14 +360,14 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                           <div className="flex items-center gap-2 text-sm text-neutral-600">
                             <span>{order.customerName}</span>
                             {order.customerService && (
-                              <span className="text-xs bg-slate-100 text-neutral-500 px-2 py-0.5 rounded-full">客服：{order.customerService}</span>
+                              <span className="text-xs bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">客服：{order.customerService}</span>
                             )}
                           </div>
                           {hasProcessOrQualityIssues(order) && (
                             <div className="flex items-center gap-1 text-xs text-neutral-400">
                               {order.processIssues && order.processIssues.trim() !== '' && (
                                 <div title={`製程問題: ${order.processIssues}`}>
-                                  <AlertTriangle className="h-3.5 w-3.5 text-red-500" aria-hidden="true" />
+                                  <AlertTriangle className="h-3.5 w-3.5 text-danger-500" aria-hidden="true" />
                                 </div>
                               )}
                               {order.qualityNotes && order.qualityNotes.trim() !== '' && (
@@ -425,7 +425,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                                   .sort((a, b) => (b.unitContentMg || 0) - (a.unitContentMg || 0))
                                   .slice(0, 3)
                                   .map((ingredient, index) => (
-                                    <span key={index} className="bg-white/80 border border-slate-200 px-2 py-0.5 rounded-full">
+                                    <span key={index} className="bg-white/80 border border-neutral-200 px-2 py-0.5 rounded-full">
                                       {ingredient.materialName}
                                     </span>
                                   ))}
@@ -479,7 +479,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                               e.stopPropagation()
                               handleDeleteClick(order.id)
                             }}
-                            className="text-red-600 hover:text-red-800 transition-colors"
+                            className="text-danger-600 hover:text-danger-800 transition-colors"
                             title="刪除訂單"
                             aria-label="刪除訂單"
                           >
@@ -526,7 +526,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                       <h3 className="text-base font-semibold text-neutral-900">{order.productName}</h3>
                       <p className="text-xs text-neutral-500">{order.customerName}</p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-emerald-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-white'}`}>
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-emerald-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-blue-600 text-white' : 'bg-neutral-600 text-white'}`}>
                       {statusLabel}
                     </span>
                   </div>
@@ -559,7 +559,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   {order.ingredients && order.ingredients.length > 0 ? (
                     <div className="flex flex-wrap gap-2 text-xs">
                       {order.ingredients.slice(0, 3).map((ingredient, index) => (
-                        <span key={index} className="bg-white/80 border border-slate-200 px-2 py-0.5 rounded-full">
+                        <span key={index} className="bg-white/80 border border-neutral-200 px-2 py-0.5 rounded-full">
                           {ingredient.materialName}
                         </span>
                       ))}

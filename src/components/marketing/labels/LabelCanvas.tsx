@@ -88,7 +88,7 @@ export function LabelCanvas({ template, onChange, readonly = false }: LabelCanva
       {/* Canvas */}
       <div
         ref={containerRef}
-        className="relative w-full bg-gray-50 rounded-lg border-2 border-neutral-300 overflow-auto"
+        className="relative w-full bg-neutral-50 rounded-lg border-2 border-neutral-300 overflow-auto"
         style={{
           minHeight: '400px',
           maxHeight: '600px',

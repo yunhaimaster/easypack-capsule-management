@@ -581,7 +581,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                       <div className="col-span-3 text-center">標記</div>
                     </div>
                     {recipe.ingredients.map((ingredient, index) => (
-                      <div key={index} className="border-b border-neutral-100 hover:bg-gray-50/50 rounded transition-colors">
+                      <div key={index} className="border-b border-neutral-100 hover:bg-neutral-50/50 rounded transition-colors">
                         {/* Desktop Layout */}
                         <div className="hidden sm:grid grid-cols-12 gap-2 items-center py-2">
                           <div className="col-span-6 text-sm text-neutral-800 font-medium">

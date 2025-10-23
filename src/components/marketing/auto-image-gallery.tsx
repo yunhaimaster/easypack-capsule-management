@@ -542,7 +542,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                 type="button"
                 variant="outline"
                 onClick={cancelGeneration}
-                className="flex items-center gap-2 border-red-300 text-red-600 hover:bg-danger-50"
+                className="flex items-center gap-2 border-red-300 text-danger-600 hover:bg-danger-50"
               >
                 <X className="h-4 w-4" />
                 取消生成
@@ -606,12 +606,12 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   </span>
                 )}
                 {image.status === 'error' && (
-                  <span className="text-xs text-red-600">✗ 失敗</span>
+                  <span className="text-xs text-danger-600">✗ 失敗</span>
                 )}
               </div>
 
               <div className={cn(
-                "relative rounded-lg overflow-hidden border border-neutral-200 bg-gray-50 w-full",
+                "relative rounded-lg overflow-hidden border border-neutral-200 bg-neutral-50 w-full",
                 image.type === 'poster' ? 'aspect-[3/4]' : 'aspect-square'
               )}>
                 {image.status === 'pending' && (
@@ -620,7 +620,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   </div>
                 )}
                 {image.status === 'generating' && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                  <div className="absolute inset-0 flex items-center justify-center bg-neutral-100">
                     <Loader2 className="h-8 w-8 animate-spin text-success-600" />
                   </div>
                 )}
@@ -638,7 +638,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                 <div className="absolute inset-0 flex items-center justify-center text-center p-4">
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-red-600 mb-1">生成失敗</p>
+                      <p className="text-sm text-danger-600 mb-1">生成失敗</p>
                       <p className="text-xs text-neutral-500">{image.error}</p>
                     </div>
                     <Button

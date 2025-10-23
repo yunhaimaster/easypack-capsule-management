@@ -5,6 +5,9 @@ import { z } from 'zod'
 import { jsonSuccess, jsonError } from '@/lib/api-response'
 import { DateTime } from 'luxon'
 import { calculateWorkUnits } from '@/lib/worklog'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 const updateWorklogSchema = z.object({
   workDate: z.string().min(1, '工作日期必須填寫'),
@@ -86,6 +89,23 @@ export async function PATCH(
       }
     })
 
+    // Get user context and log worklog update
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.WORKLOG_UPDATED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        worklogId: worklogId,
+        orderId: updatedWorklog.orderId,
+        productName: updatedWorklog.order.productName,
+        workUnits: units,
+        headcount: data.headcount
+      }
+    })
+
     return jsonSuccess({
       worklog: {
         ...updatedWorklog,
@@ -150,6 +170,22 @@ export async function DELETE(
     // 删除工时记录
     await prisma.orderWorklog.delete({
       where: { id: worklogId }
+    })
+
+    // Get user context and log worklog deletion
+    const context = await getUserContextFromRequest(request)
+    await logAudit({
+      action: AuditAction.WORKLOG_DELETED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        worklogId: worklogId,
+        orderId: existingWorklog.orderId,
+        productName: existingWorklog.order.productName,
+        workUnits: existingWorklog.calculatedWorkUnits
+      }
     })
 
     return jsonSuccess({

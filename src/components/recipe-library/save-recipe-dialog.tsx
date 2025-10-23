@@ -117,7 +117,7 @@ export function SaveRecipeDialog({
               <AlertDescription>
                 <div className="space-y-2">
                   <p className="font-semibold">{existingRecipe.recipeName}</p>
-                  <div className="flex gap-4 text-xs text-gray-600">
+                  <div className="flex gap-4 text-xs text-neutral-600">
                     <span className="flex items-center gap-1">
                       <Package className="h-3 w-3" />
                       已生產 {existingRecipe.productionCount} 次
@@ -151,7 +151,7 @@ export function SaveRecipeDialog({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
               配方名稱 *
             </label>
             <Input
@@ -162,7 +162,7 @@ export function SaveRecipeDialog({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
               描述（可選）
             </label>
             <Textarea
@@ -175,7 +175,7 @@ export function SaveRecipeDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
                 分類（可選）
               </label>
               <Input
@@ -186,7 +186,7 @@ export function SaveRecipeDialog({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
                 標籤（可選）
               </label>
               <Input
@@ -194,7 +194,7 @@ export function SaveRecipeDialog({
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="用逗號分隔"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-neutral-500 mt-1">
                 例如：素食,有機
               </p>
             </div>
@@ -225,7 +225,7 @@ export function SaveRecipeDialog({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
               備註（可選）
             </label>
             <Textarea

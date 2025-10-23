@@ -73,13 +73,7 @@ export async function POST(request: NextRequest) {
     const receivedCode = String(bootstrapCode || '').trim()
     const expectedCode = adminBootstrapCode.trim()
     
-    console.log('[Admin Bootstrap] Code comparison:', {
-      receivedLength: receivedCode.length,
-      expectedLength: expectedCode.length,
-      receivedFirst3: receivedCode.substring(0, 3),
-      expectedFirst3: expectedCode.substring(0, 3),
-      match: receivedCode === expectedCode
-    })
+    // Security: Don't log bootstrap code details - removed console.log
     
     if (!timingSafeEqual(receivedCode, expectedCode)) {
       await logAudit({
@@ -134,7 +128,7 @@ export async function POST(request: NextRequest) {
       metadata: { method: 'admin_bootstrap' }
     })
 
-    console.log('[Admin Bootstrap] Admin user created/upgraded:', phoneE164)
+    // Security: Don't log phone numbers - removed console.log
 
     // Return session cookie
     const response = NextResponse.json({

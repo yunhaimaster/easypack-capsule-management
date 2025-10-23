@@ -272,7 +272,7 @@ export const AccessibleCheckbox = React.forwardRef<
         ref={ref}
         aria-describedby={helperId}
         className={cn(
-          'h-4 w-4 rounded border-gray-300',
+          'h-4 w-4 rounded border-neutral-300',
           'text-brand-primary focus:ring-2 focus:ring-brand-primary focus:ring-offset-2',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'cursor-pointer',
@@ -314,7 +314,7 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
     return (
       <fieldset
         ref={ref}
-        className={cn('border border-gray-200 rounded-lg p-4 space-y-4', className)}
+        className={cn('border border-neutral-200 rounded-lg p-4 space-y-4', className)}
         {...props}
       >
         <legend

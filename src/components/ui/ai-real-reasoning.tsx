@@ -53,7 +53,7 @@ export function AIRealReasoning({ reasoning, enableReasoning = false }: AIRealRe
       {isExpanded && (
         <div className="mt-3 pt-3 border-t border-purple-200">
           <div className="bg-white/50 rounded-lg p-3 max-h-64 overflow-y-auto">
-            <div className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">
+            <div className="text-sm text-neutral-800 whitespace-pre-wrap font-mono leading-relaxed">
               {displayText}
             </div>
           </div>

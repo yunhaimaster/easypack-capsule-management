@@ -119,10 +119,10 @@ export function HomePageClient() {
       <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
         {/* Page Title */}
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-neutral-900">
             膠囊生產營運中樞
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-600">
             訂單管理、配方庫與 AI 助手一次整合
           </p>
         </div>
@@ -131,7 +131,7 @@ export function HomePageClient() {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">核心功能</h2>
+            <h2 className="text-sm font-semibold text-neutral-600 uppercase tracking-wider">核心功能</h2>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -201,7 +201,7 @@ export function HomePageClient() {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">輔助工具</h2>
+            <h2 className="text-sm font-semibold text-neutral-600 uppercase tracking-wider">輔助工具</h2>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

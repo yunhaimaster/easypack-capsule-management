@@ -213,7 +213,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
               </SelectContent>
             </Select>
             {errors.orderId && (
-              <p className="text-sm text-red-600">{errors.orderId.message}</p>
+              <p className="text-sm text-danger-600">{errors.orderId.message}</p>
             )}
           </div>
 
@@ -230,7 +230,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
               className="liquid-glass-input"
             />
             {errors.workDate && (
-              <p className="text-sm text-red-600">{errors.workDate.message}</p>
+              <p className="text-sm text-danger-600">{errors.workDate.message}</p>
             )}
           </div>
 
@@ -248,7 +248,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
               className="liquid-glass-input"
             />
             {errors.headcount && (
-              <p className="text-sm text-red-600">{errors.headcount.message}</p>
+              <p className="text-sm text-danger-600">{errors.headcount.message}</p>
             )}
           </div>
 
@@ -265,7 +265,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
                 className="liquid-glass-input"
               />
               {errors.startTime && (
-                <p className="text-sm text-red-600">{errors.startTime.message}</p>
+                <p className="text-sm text-danger-600">{errors.startTime.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -279,7 +279,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
                 className="liquid-glass-input"
               />
               {errors.endTime && (
-                <p className="text-sm text-red-600">{errors.endTime.message}</p>
+                <p className="text-sm text-danger-600">{errors.endTime.message}</p>
               )}
             </div>
           </div>
@@ -309,7 +309,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
               maxLength={500}
             />
             {errors.notes && (
-              <p className="text-sm text-red-600">{errors.notes.message}</p>
+              <p className="text-sm text-danger-600">{errors.notes.message}</p>
             )}
           </div>
         </CardContent>

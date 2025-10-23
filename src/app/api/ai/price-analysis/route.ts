@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    const { materialName, analysisType, enableReasoning } = await request.json()
+    const { materialName, analysisType } = await request.json()
 
     // Validate API key
     const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
@@ -67,12 +67,7 @@ ${JSON.stringify(priceData, null, 2)}
         top_p: 0.9,            // 優化分析準確性
         frequency_penalty: 0.0,  // 允許重複關鍵分析點
         presence_penalty: 0.0,   // 不避免重要分析概念
-        stream: false,
-        ...(enableReasoning && {
-          reasoning: {
-            effort: "high"
-          }
-        })
+        stream: false
       }
     )
 

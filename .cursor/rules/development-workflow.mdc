@@ -194,6 +194,77 @@ Before committing, verify:
 - [ ] Environment variables used correctly
 - [ ] User input sanitized
 - [ ] Error messages don't expose sensitive data
+- [ ] **No console.log of PII, phone numbers, tokens, or session data**
+
+---
+
+## Security Logging Rules (Added 2025-01-23)
+
+### ⚠️ NEVER Log Sensitive Data
+
+**Prohibited in console.log/error/warn:**
+- ❌ Phone numbers
+- ❌ Email addresses
+- ❌ Session tokens or JWT
+- ❌ Cookies or cookie headers
+- ❌ Passwords or OTP codes
+- ❌ API keys or secrets
+- ❌ User PII (addresses, payment info)
+
+### Safe Logging Patterns
+
+```typescript
+// ❌ BAD - Exposes sensitive data
+console.log('[Auth] User phone:', phoneE164)
+console.log('[Auth] Session token:', token)
+console.log('[Auth] Cookie header:', cookieHeader)
+console.log('[OTP] Sending to:', phoneNumber)
+
+// ✅ GOOD - No sensitive data
+console.log('[Auth] OTP sent successfully')
+console.log('[Auth] Session created')
+console.log('[Auth] User authenticated')
+console.error('[Auth] OTP send failed:', error.message)
+```
+
+### Use Audit Logging for Auth Events
+
+```typescript
+// ✅ Use structured audit logging instead of console.log
+import { logAudit } from '@/lib/audit'
+import { AuditAction } from '@prisma/client'
+
+await logAudit({
+  action: AuditAction.OTP_SENT,
+  phone: phoneE164,  // Stored in DB, not console
+  ip,
+  userAgent,
+  metadata: { method: 'sms' }
+})
+```
+
+### Error Logging Best Practices
+
+```typescript
+// ✅ Sanitize errors before logging
+try {
+  await sendOTP(phoneE164)
+} catch (error) {
+  // Don't log phone number in console
+  console.error('[OTP] Send failed:', {
+    message: error instanceof Error ? error.message : 'Unknown error'
+    // NO: phone, token, or PII here
+  })
+  
+  // Use audit log for details
+  await logAudit({
+    action: AuditAction.OTP_SEND_FAIL,
+    phone: phoneE164,
+    ip,
+    metadata: { error: error.message }
+  })
+}
+```
 
 ---
 
@@ -344,6 +415,139 @@ git add -A
 git commit -m "🐛 fix: resolve build error"
 git push origin main
 ```
+
+---
+
+## Audit Logging Requirements (Added 2025-01-23)
+
+### ⚠️ ALWAYS Add Audit Logging to New Features
+
+**When implementing new features, ALWAYS add audit logging:**
+- Authentication endpoints → Use appropriate AuditAction
+- AI features → Log usage with sanitized metadata
+- CRUD operations → Log create/update/delete actions
+- Data exports → Log export actions
+- Critical user actions → Log for security/compliance
+
+### Audit Helper Function
+
+**Use the helper for all endpoints:**
+```typescript
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { logAudit } from '@/lib/audit'
+import { AuditAction } from '@prisma/client'
+
+export async function POST(request: NextRequest) {
+  // Get user context (userId, phone, ip, userAgent)
+  const context = await getUserContextFromRequest(request)
+  
+  // Log the action AFTER validation, BEFORE execution
+  await logAudit({
+    action: AuditAction.YOUR_ACTION,
+    userId: context.userId,
+    phone: context.phone,
+    ip: context.ip,
+    userAgent: context.userAgent,
+    metadata: {
+      // Add relevant context (NO sensitive data!)
+      itemCount: items.length,
+      actionType: 'create'
+    }
+  })
+  
+  // Continue with endpoint logic...
+}
+```
+
+### Available Audit Actions
+
+**Authentication:**
+- `OTP_SENT`, `OTP_VERIFY_SUCCESS`, `OTP_VERIFY_FAIL`
+- `LOGIN_SUCCESS`, `LOGOUT`, `SESSION_REFRESH`
+- `DEVICE_TRUST_CREATED`, `DEVICE_TRUST_REVOKED`
+
+**User Management:**
+- `USER_CREATED`, `USER_DELETED`, `ROLE_UPDATED`
+
+**Production Orders:**
+- `ORDER_CREATED`, `ORDER_VIEWED`, `ORDER_UPDATED`, `ORDER_DELETED`, `ORDER_EXPORTED`
+
+**Recipes:**
+- `RECIPE_CREATED`, `RECIPE_VIEWED`, `RECIPE_UPDATED`, `RECIPE_DELETED`, `RECIPE_EXPORTED`
+
+**Work Logs:**
+- `WORKLOG_CREATED`, `WORKLOG_UPDATED`, `WORKLOG_DELETED`
+
+**Marketing:**
+- `MARKETING_GENERATED`, `MARKETING_EXPORTED`
+
+**AI Features:**
+- `AI_GRANULATION_ANALYZED` - Granulation analysis
+- `AI_RECIPE_GENERATED` - Recipe generation
+- `AI_CHAT_INTERACTION` - Chat/assistant interactions
+- `AI_IMAGE_GENERATED` - Image generation
+
+### Metadata Guidelines
+
+**✅ SAFE to log in metadata:**
+- Item counts, IDs
+- Feature names, action types
+- Non-sensitive request parameters
+- Performance metrics
+
+**❌ NEVER log in metadata:**
+- Passwords, OTP codes, tokens
+- Full phone numbers (use userId instead)
+- Personal identifiable information (PII)
+- Full message content (use length or topic only)
+- API keys or secrets
+
+**Example - AI Chat:**
+```typescript
+// ✅ GOOD - Sanitized metadata
+metadata: {
+  orderCount: orders.length,
+  contextPage: 'order-detail',
+  messageLength: message.length  // Not full message
+}
+
+// ❌ BAD - Exposes content
+metadata: {
+  fullMessage: message,  // Too much info
+  userQuery: sanitizedQuery  // Still contains PII
+}
+```
+
+### When to Log
+
+**Log AFTER validation, BEFORE main action:**
+```typescript
+// 1. Parse request
+const { data } = await request.json()
+
+// 2. Validate data
+if (!isValid(data)) {
+  return NextResponse.json({ error: '...' }, { status: 400 })
+}
+
+// 3. Get audit context
+const context = await getUserContextFromRequest(request)
+
+// 4. LOG HERE (after validation, before execution)
+await logAudit({ ... })
+
+// 5. Execute main action
+const result = await performAction(data)
+```
+
+### Adding New Audit Actions
+
+If you need a new audit action type:
+
+1. Add to Prisma schema (`prisma/schema.prisma`)
+2. Run migration: `npx prisma migrate dev --name add_new_audit_actions`
+3. Use in code with `AuditAction.NEW_FEATURE_USED`
+4. Update audit log viewer with Chinese translation
 
 ---
 

@@ -4,6 +4,9 @@ import { createSSEEncoder, sendSSEEvent, parseStreamBuffer, createStreamResponse
 import { getOpenRouterHeaders, buildBaseRequest, fetchOpenRouter, getStandardModelCatalog } from '@/lib/ai/openrouter-utils'
 import { validateApiKey, validateIngredients } from '@/lib/api/validation'
 import { IngredientInput } from '@/types/api'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,6 +80,9 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients, singleModel, reasoningMap } = await request.json()
 
+    // Get user context for audit logging
+    const context = await getUserContextFromRequest(request)
+
     // Validate ingredients
     const ingredientValidation = validateIngredients(ingredients)
     if (!ingredientValidation.valid) {
@@ -84,6 +90,20 @@ export async function POST(request: NextRequest) {
     }
 
     const filteredIngredients = ingredientValidation.data!
+
+    // Log granulation analysis request
+    await logAudit({
+      action: AuditAction.AI_GRANULATION_ANALYZED,
+      userId: context.userId,
+      phone: context.phone,
+      ip: context.ip,
+      userAgent: context.userAgent,
+      metadata: {
+        ingredientCount: filteredIngredients.length,
+        modelCount: singleModel ? 1 : 3,
+        modelUsed: singleModel || 'parallel_3_models'
+      }
+    })
 
     // Validate API key
     const apiKeyValidation = validateApiKey(process.env.OPENROUTER_API_KEY)
