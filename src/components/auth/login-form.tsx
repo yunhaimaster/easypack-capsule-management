@@ -202,6 +202,8 @@ export function LoginForm() {
           </div>
           <h2 className="text-xl sm:text-2xl font-semibold text-primary-600">Easy Health 系統登入</h2>
           <p className="text-sm text-neutral-600">請輸入您在 EPL 通訊 WhatsApp 群組使用的電話號碼</p>
+          {/* Version indicator for debugging */}
+          <p className="text-xs text-neutral-400">v2.1 (Trusted Device)</p>
         </div>
 
         {step === 'phone' ? (
@@ -321,7 +323,7 @@ export function LoginForm() {
               </Button>
             </div>
           </form>
-        ) : (
+        ) : step === 'otp' ? (
           <form onSubmit={verifyOtp} className="space-y-4">
             <div className="space-y-2 text-left">
               <label htmlFor="code" className="text-sm font-medium text-neutral-700">
@@ -340,6 +342,7 @@ export function LoginForm() {
                 />
             </div>
 
+            {/* Trust Device Checkbox - Highly Visible */}
             <div className="flex items-start gap-3 p-3 rounded-lg border border-primary-200 bg-primary-50/50 hover:bg-primary-50 transition-colors">
               <input 
                 type="checkbox" 
