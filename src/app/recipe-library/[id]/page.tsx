@@ -566,7 +566,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
           {/* Recipe Info */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Ingredients */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2">
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
                   <h2 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center gap-2">
@@ -639,9 +639,6 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                 </div>
               </Card>
-
-              {/* Ingredient Warnings */}
-              <IngredientWarnings recipe={recipe} />
             </div>
 
             {/* Right Column - Details */}
@@ -675,9 +672,6 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                 </div>
               </Card>
-
-              {/* AI Insights Panel */}
-              <AIInsightsPanel recipe={recipe} />
 
               {/* Category & Tags */}
               {(recipe.category || (recipe.tags && recipe.tags.length > 0)) && (
@@ -729,8 +723,16 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                 </div>
               </Card>
-
             </div>
+          </div>
+
+          {/* AI Analysis Tools - Full Width Section */}
+          <div className="space-y-6 mt-6">
+            {/* AI Ingredient Interactions */}
+            <IngredientWarnings recipe={recipe} />
+
+            {/* AI Optimization Suggestions */}
+            <AIInsightsPanel recipe={recipe} />
           </div>
         </div>
       </main>
