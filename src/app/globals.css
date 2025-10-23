@@ -93,6 +93,7 @@
 
 @layer base {
   :root {
+    /* Tailwind Semantic Colors (Light Mode) */
     --background: 204 100% 99%;
     --foreground: 215 48% 18%;
     --card: 0 0% 100%;
@@ -113,37 +114,33 @@
     --input: 204 48% 90%;
     --ring: 204 88% 45%;
     --radius: 0.75rem;
-  --font-brand-display: "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  --font-brand-text: "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  --brand-blur-strong: 28px;
-  --brand-blur-medium: 18px;
-  --brand-blur-soft: 12px;
-  --brand-shadow-soft: 0 18px 46px rgba(34, 86, 122, 0.18);
-  --brand-shadow-medium: 0 12px 32px rgba(31, 78, 112, 0.16);
-  --brand-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  --brand-gradient-primary: linear-gradient(135deg, rgba(42, 150, 209, 0.9), rgba(32, 105, 157, 0.85));
-  }
-
-  /* ============================================
-     DARK MODE CSS VARIABLES
-     ============================================ */
-
-  :root {
-    /* Liquid Glass */
+    
+    /* Brand Fonts & Effects */
+    --font-brand-display: "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    --font-brand-text: "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    --brand-blur-strong: 28px;
+    --brand-blur-medium: 18px;
+    --brand-blur-soft: 12px;
+    --brand-shadow-soft: 0 18px 46px rgba(34, 86, 122, 0.18);
+    --brand-shadow-medium: 0 12px 32px rgba(31, 78, 112, 0.16);
+    --brand-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    --brand-gradient-primary: linear-gradient(135deg, rgba(42, 150, 209, 0.9), rgba(32, 105, 157, 0.85));
+    
+    /* Liquid Glass System (Light Mode) */
     --liquid-glass-bg: rgba(255, 255, 255, 0.78);
     --liquid-glass-surface: rgba(244, 249, 255, 0.82);
     --liquid-glass-border: rgba(255, 255, 255, 0.24);
     
-    /* Text */
+    /* Text Colors (Light Mode) */
     --text-primary: rgba(18, 42, 64, 0.95);
     --text-secondary: rgba(34, 54, 74, 0.85);
     --text-tertiary: rgba(64, 84, 104, 0.70);
     
-    /* Shadows */
+    /* Shadows (Light Mode) */
     --shadow-sm: 0 8px 32px rgba(31, 78, 112, 0.12);
     --shadow-md: 0 12px 40px rgba(24, 66, 96, 0.16);
     
-    /* Navigation */
+    /* Navigation (Light Mode) */
     --nav-bg: rgba(255, 255, 255, 0.15);
     --nav-border: rgba(255, 255, 255, 0.2);
   }
