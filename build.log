@@ -1,0 +1,118 @@
+   ▲ Next.js 15.5.6
+   - Environments: .env.local, .env.production
+   - Experiments (use with caution):
+     · optimizePackageImports
+     ✓ webpackMemoryOptimizations
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 7.9s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/29) ...
+   Generating static pages (7/29) 
+   Generating static pages (14/29) 
+   Generating static pages (21/29) 
+ ✓ Generating static pages (29/29)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    5.63 kB         282 kB
+├ ○ /_not-found                            305 B         102 kB
+├ ○ /admin                               8.96 kB         259 kB
+├ ○ /ai-recipe-generator                 10.3 kB         337 kB
+├ ƒ /api/admin/audit-logs                  305 B         102 kB
+├ ƒ /api/admin/devices                     305 B         102 kB
+├ ƒ /api/admin/devices/[id]                305 B         102 kB
+├ ƒ /api/admin/users                       305 B         102 kB
+├ ƒ /api/admin/users/[id]                  305 B         102 kB
+├ ƒ /api/ai/assess-risk                    305 B         102 kB
+├ ƒ /api/ai/chat                           305 B         102 kB
+├ ƒ /api/ai/extract-product-info           305 B         102 kB
+├ ƒ /api/ai/granulation-analyze            305 B         102 kB
+├ ƒ /api/ai/granulation-consensus          305 B         102 kB
+├ ƒ /api/ai/ingredient-analysis            305 B         102 kB
+├ ƒ /api/ai/label/generate                 305 B         102 kB
+├ ƒ /api/ai/marketing-analyze              305 B         102 kB
+├ ƒ /api/ai/packaging-image                305 B         102 kB
+├ ƒ /api/ai/parse-recipe                   305 B         102 kB
+├ ƒ /api/ai/parse-templates                305 B         102 kB
+├ ƒ /api/ai/price-analysis                 305 B         102 kB
+├ ƒ /api/ai/recipe-chat                    305 B         102 kB
+├ ƒ /api/ai/recipe-generate                305 B         102 kB
+├ ƒ /api/ai/recipes                        305 B         102 kB
+├ ƒ /api/ai/recipes/[id]                   305 B         102 kB
+├ ƒ /api/ai/translate                      305 B         102 kB
+├ ƒ /api/ai/web-search-price               305 B         102 kB
+├ ƒ /api/auth/admin-bootstrap              305 B         102 kB
+├ ƒ /api/auth/admin-direct-login           305 B         102 kB
+├ ƒ /api/auth/devices/revoke               305 B         102 kB
+├ ƒ /api/auth/login                        305 B         102 kB
+├ ƒ /api/auth/logout                       305 B         102 kB
+├ ƒ /api/auth/me                           305 B         102 kB
+├ ƒ /api/auth/otp/start                    305 B         102 kB
+├ ƒ /api/auth/otp/verify                   305 B         102 kB
+├ ƒ /api/auth/roles/update                 305 B         102 kB
+├ ƒ /api/auth/silent-login                 305 B         102 kB
+├ ƒ /api/check-env                         305 B         102 kB
+├ ƒ /api/create-v2-tables                  305 B         102 kB
+├ ƒ /api/database/recipes                  305 B         102 kB
+├ ƒ /api/database/recipes/[id]             305 B         102 kB
+├ ƒ /api/fix-migration                     305 B         102 kB
+├ ƒ /api/ingredients/from-orders           305 B         102 kB
+├ ƒ /api/ingredients/stats                 305 B         102 kB
+├ ƒ /api/migrate                           305 B         102 kB
+├ ƒ /api/migrate-prisma                    305 B         102 kB
+├ ƒ /api/migrate-simple                    305 B         102 kB
+├ ƒ /api/migrate-v2                        305 B         102 kB
+├ ƒ /api/orders                            305 B         102 kB
+├ ƒ /api/orders/[id]                       305 B         102 kB
+├ ƒ /api/orders/[id]/lock                  305 B         102 kB
+├ ƒ /api/orders/[id]/verify-password       305 B         102 kB
+├ ƒ /api/orders/export                     305 B         102 kB
+├ ƒ /api/orders/incomplete                 305 B         102 kB
+├ ƒ /api/orders/options                    305 B         102 kB
+├ ƒ /api/recipes                           305 B         102 kB
+├ ƒ /api/recipes/[id]                      305 B         102 kB
+├ ƒ /api/recipes/[id]/analyze-effects      305 B         102 kB
+├ ƒ /api/recipes/[id]/sync-notes           305 B         102 kB
+├ ƒ /api/recipes/[id]/use                  305 B         102 kB
+├ ƒ /api/recipes/analyze-interactions      305 B         102 kB
+├ ƒ /api/recipes/batch-analyze-effects     305 B         102 kB
+├ ƒ /api/recipes/batch-import              305 B         102 kB
+├ ƒ /api/recipes/batch-import-templates    305 B         102 kB
+├ ƒ /api/recipes/check-duplicates          305 B         102 kB
+├ ƒ /api/recipes/debug                     305 B         102 kB
+├ ƒ /api/recipes/export-pdf                305 B         102 kB
+├ ƒ /api/recipes/from-order/[orderId]      305 B         102 kB
+├ ƒ /api/recipes/suggest-alternatives      305 B         102 kB
+├ ƒ /api/revalidate                        305 B         102 kB
+├ ƒ /api/test-db                           305 B         102 kB
+├ ƒ /api/worklogs                          305 B         102 kB
+├ ƒ /api/worklogs/[id]                     305 B         102 kB
+├ ○ /granulation-analyzer                10.3 kB         334 kB
+├ ○ /history                             5.88 kB         261 kB
+├ ○ /login                               2.17 kB         246 kB
+├ ○ /marketing-assistant                 12.5 kB         336 kB
+├ ○ /orders                              12.6 kB         358 kB
+├ ƒ /orders/[id]                         13.5 kB         363 kB
+├ ƒ /orders/[id]/edit                    4.74 kB         365 kB
+├ ○ /orders/new                           2.2 kB         363 kB
+├ ○ /privacy                             1.13 kB         256 kB
+├ ○ /recipe-library                        25 kB         337 kB
+├ ƒ /recipe-library/[id]                 13.9 kB         340 kB
+├ ○ /setup                               3.11 kB         253 kB
+├ ○ /terms                               1.13 kB         256 kB
+└ ○ /worklogs                            9.48 kB         342 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1255-26f05d8bf86e016d.js      45.6 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+ƒ Middleware                             34.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

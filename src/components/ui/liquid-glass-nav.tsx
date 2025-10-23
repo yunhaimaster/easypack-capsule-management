@@ -9,6 +9,7 @@ import { getMainNavigationLinks, type NavigationLink } from '@/data/navigation'
 import { useAuth } from '@/components/auth/auth-provider'
 import { Menu, X, ChevronDown, Library, Sparkles, FlaskConical, Palette } from 'lucide-react'
 import { Route } from 'next'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 
 type NavLink = NavigationLink & {
   active?: boolean
@@ -127,6 +128,7 @@ export function LiquidGlassNav({
                 </Link>
               )
             ))}
+            <ThemeToggle />
           </div>
 
 
@@ -194,6 +196,9 @@ export function LiquidGlassNav({
                 )}
               </div>
             ))}
+            <div className="px-4 py-3 border-t border-neutral-200/50">
+              <ThemeToggle />
+            </div>
           </div>
         )}
 

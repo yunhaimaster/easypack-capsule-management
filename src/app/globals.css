@@ -124,6 +124,60 @@
   --brand-gradient-primary: linear-gradient(135deg, rgba(42, 150, 209, 0.9), rgba(32, 105, 157, 0.85));
   }
 
+  /* ============================================
+     DARK MODE CSS VARIABLES
+     ============================================ */
+
+  :root {
+    /* Liquid Glass */
+    --liquid-glass-bg: rgba(255, 255, 255, 0.78);
+    --liquid-glass-surface: rgba(244, 249, 255, 0.82);
+    --liquid-glass-border: rgba(255, 255, 255, 0.24);
+    
+    /* Text */
+    --text-primary: rgba(18, 42, 64, 0.95);
+    --text-secondary: rgba(34, 54, 74, 0.85);
+    --text-tertiary: rgba(64, 84, 104, 0.70);
+    
+    /* Shadows */
+    --shadow-sm: 0 8px 32px rgba(31, 78, 112, 0.12);
+    --shadow-md: 0 12px 40px rgba(24, 66, 96, 0.16);
+    
+    /* Navigation */
+    --nav-bg: rgba(255, 255, 255, 0.15);
+    --nav-border: rgba(255, 255, 255, 0.2);
+  }
+
+  .dark {
+    /* Liquid Glass - Dark translucent */
+    --liquid-glass-bg: rgba(20, 30, 45, 0.85);
+    --liquid-glass-surface: rgba(15, 25, 40, 0.90);
+    --liquid-glass-border: rgba(255, 255, 255, 0.12);
+    
+    /* Text - Light for dark backgrounds */
+    --text-primary: rgba(240, 245, 255, 0.95);
+    --text-secondary: rgba(220, 230, 245, 0.85);
+    --text-tertiary: rgba(200, 215, 235, 0.70);
+    
+    /* Shadows - Darker */
+    --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.40);
+    --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.50);
+    
+    /* Navigation - Dark glass */
+    --nav-bg: rgba(20, 30, 45, 0.75);
+    --nav-border: rgba(255, 255, 255, 0.10);
+    
+    /* Tailwind Semantic Tokens */
+    --background: 215 48% 8%;
+    --foreground: 215 20% 95%;
+    --card: 215 48% 12%;
+    --card-foreground: 215 20% 95%;
+    --muted: 204 20% 25%;
+    --muted-foreground: 214 22% 75%;
+    --border: 204 20% 25%;
+    --input: 204 20% 25%;
+  }
+
 }
 
 @layer base {
@@ -593,6 +647,32 @@
   z-index: 1;
 }
 
+/* ===== DARK MODE FOR BACKGROUND ANIMATIONS ===== */
+
+.dark .brand-logo-bg-animation,
+.dark .logo-bg-animation {
+  background: linear-gradient(180deg, 
+    rgba(15, 25, 40, 1) 0%, 
+    rgba(20, 30, 45, 0.98) 40%, 
+    rgba(25, 35, 50, 1) 100%);
+}
+
+.dark .brand-logo-bg-animation::before,
+.dark .logo-bg-animation::before {
+  opacity: 0.03;
+  filter: brightness(0.6);
+}
+
+.dark .brand-logo-bg-animation::after,
+.dark .logo-bg-animation::after {
+  background: radial-gradient(
+    circle at center,
+    rgba(42, 150, 209, 0.08) 0%,
+    rgba(42, 150, 209, 0.04) 40%,
+    transparent 70%
+  );
+}
+
 .animated-gradient-bg-subtle {
   background: linear-gradient(
     135deg,
@@ -805,15 +885,11 @@
   position: relative;
   --lg-pointer-x: 50%;
   --lg-pointer-y: 50%;
-  background: linear-gradient(160deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.62) 100%);
+  background: var(--liquid-glass-bg);
   backdrop-filter: blur(28px) saturate(185%);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid var(--liquid-glass-border);
   border-radius: 22px;
-  box-shadow:
-    0 20px 60px rgba(45, 105, 135, 0.08),
-    0 10px 30px rgba(45, 105, 135, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(29, 69, 98, 0.08);
+  box-shadow: var(--shadow-sm);
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1134,7 +1210,7 @@
   font-family: var(--font-brand-text);
   font-size: clamp(1rem, 1.05vw, 1.05rem);
   line-height: 1.6;
-  color: rgba(20, 39, 58, 0.92);
+  color: var(--text-primary);
 }
 
 
