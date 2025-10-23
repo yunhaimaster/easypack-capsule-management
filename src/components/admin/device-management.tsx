@@ -15,6 +15,7 @@ interface Session {
   user: {
     id: string
     phoneE164: string
+    nickname: string | null
     role: string
   }
 }
@@ -30,6 +31,7 @@ interface Device {
   user: {
     id: string
     phoneE164: string
+    nickname: string | null
     role: string
   }
 }
@@ -181,7 +183,14 @@ export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManage
                     />
                     <div className="flex-1">
                       <div className="font-medium text-neutral-800 mb-1">
-                        {session.user.phoneE164}
+                        {session.user.nickname ? (
+                          <>
+                            <span>{session.user.nickname}</span>
+                            <span className="text-sm text-neutral-500 ml-2">{session.user.phoneE164}</span>
+                          </>
+                        ) : (
+                          session.user.phoneE164
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600">
                         <div>{browser} · {device}</div>
@@ -242,7 +251,14 @@ export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManage
                     />
                     <div className="flex-1">
                       <div className="font-medium text-neutral-800 mb-1">
-                        {device.user.phoneE164}
+                        {device.user.nickname ? (
+                          <>
+                            <span>{device.user.nickname}</span>
+                            <span className="text-sm text-neutral-500 ml-2">{device.user.phoneE164}</span>
+                          </>
+                        ) : (
+                          device.user.phoneE164
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600">
                         <div>{browser} · {deviceType}</div>

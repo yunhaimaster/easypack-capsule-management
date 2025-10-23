@@ -18,6 +18,7 @@ interface AuditLog {
   user: {
     id: string
     phoneE164: string
+    nickname: string | null
     role: string
   } | null
 }
@@ -240,7 +241,14 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                     </span>
                     <span className="text-neutral-400">·</span>
                     <span className="text-sm text-neutral-600">
-                      {log.user?.phoneE164 || log.phone || '未知用戶'}
+                      {log.user?.nickname ? (
+                        <>
+                          {log.user.nickname}
+                          <span className="text-neutral-400 ml-1">({log.user.phoneE164})</span>
+                        </>
+                      ) : (
+                        log.user?.phoneE164 || log.phone || '未知用戶'
+                      )}
                     </span>
                   </div>
                   
