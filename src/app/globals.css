@@ -204,6 +204,8 @@
 .dark .bg-gray-100 { background-color: rgb(31 41 55) !important; }
 .dark .bg-neutral-50 { background-color: rgb(31 41 55) !important; }
 .dark .bg-neutral-100 { background-color: rgb(31 41 55) !important; }
+.dark .bg-slate-50 { background-color: rgb(31 41 55) !important; }
+.dark .bg-slate-100 { background-color: rgb(31 41 55) !important; }
 
 /* Text Colors - Invert gray scale */
 .dark .text-gray-900 { color: rgb(243 244 246) !important; }
@@ -211,28 +213,85 @@
 .dark .text-gray-700 { color: rgb(209 213 219) !important; }
 .dark .text-gray-600 { color: rgb(156 163 175) !important; }
 .dark .text-gray-500 { color: rgb(156 163 175) !important; }
+.dark .text-gray-400 { color: rgb(209 213 219) !important; }
 .dark .text-neutral-900 { color: rgb(243 244 246) !important; }
 .dark .text-neutral-800 { color: rgb(229 231 235) !important; }
 .dark .text-neutral-700 { color: rgb(209 213 219) !important; }
 .dark .text-neutral-600 { color: rgb(156 163 175) !important; }
+.dark .text-neutral-500 { color: rgb(156 163 175) !important; }
+.dark .text-slate-900 { color: rgb(243 244 246) !important; }
+.dark .text-slate-800 { color: rgb(229 231 235) !important; }
+.dark .text-slate-700 { color: rgb(209 213 219) !important; }
+.dark .text-slate-600 { color: rgb(156 163 175) !important; }
 
 /* Border Colors */
 .dark .border-gray-200 { border-color: rgb(55 65 81) !important; }
 .dark .border-gray-300 { border-color: rgb(75 85 99) !important; }
 .dark .border-neutral-200 { border-color: rgb(55 65 81) !important; }
 .dark .border-neutral-300 { border-color: rgb(75 85 99) !important; }
+.dark .border-slate-200 { border-color: rgb(55 65 81) !important; }
+.dark .border-slate-300 { border-color: rgb(75 85 99) !important; }
 
 /* Hover States - Critical for tables/lists */
 .dark .hover\:bg-white:hover { background-color: rgb(31 41 55) !important; }
 .dark .hover\:bg-gray-50:hover { background-color: rgb(55 65 81) !important; }
 .dark .hover\:bg-gray-100:hover { background-color: rgb(55 65 81) !important; }
 .dark .hover\:bg-neutral-50:hover { background-color: rgb(55 65 81) !important; }
+.dark .hover\:bg-slate-50:hover { background-color: rgb(55 65 81) !important; }
+
+/* Textarea & Input specific */
+.dark textarea { 
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+  color: rgb(243 244 246) !important;
+}
+.dark textarea::placeholder {
+  color: rgb(156 163 175) !important;
+}
+
+/* Select dropdowns */
+.dark select {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+  color: rgb(243 244 246) !important;
+}
+
+/* Pagination & Navigation specific */
+.dark button[class*="bg-white"],
+.dark a[class*="bg-white"] {
+  background-color: rgb(31 41 55) !important;
+}
 
 /* Ring Colors (focus states) */
 .dark .ring-gray-200 { --tw-ring-color: rgb(55 65 81) !important; }
 
 /* Divide Colors (between elements) */
 .dark .divide-gray-200 > * + * { border-color: rgb(55 65 81) !important; }
+
+/* Shadow overrides for cards and panels */
+.dark [class*="shadow-"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure all form controls are dark */
+.dark input[type="text"],
+.dark input[type="email"], 
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark input[type="date"] {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+  color: rgb(243 244 246) !important;
+}
+
+.dark input[type="text"]::placeholder,
+.dark input[type="email"]::placeholder,
+.dark input[type="password"]::placeholder,
+.dark input[type="number"]::placeholder,
+.dark input[type="tel"]::placeholder {
+  color: rgb(156 163 175) !important;
+}
 
 /* 自定義樣式 */
 .gradient-bg {
