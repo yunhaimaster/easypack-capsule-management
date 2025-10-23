@@ -293,6 +293,85 @@
   color: rgb(156 163 175) !important;
 }
 
+/* Footer - Force dark */
+.dark .liquid-glass-footer,
+.dark .liquid-glass-footer-content,
+.dark .liquid-glass-footer-bottom,
+.dark footer {
+  background-color: rgb(17 24 39) !important;
+  border-color: rgb(75 85 99) !important;
+}
+
+.dark .liquid-glass-footer-title,
+.dark .liquid-glass-footer h3,
+.dark .liquid-glass-footer h4 {
+  color: rgb(243 244 246) !important;
+}
+
+.dark .liquid-glass-footer p,
+.dark .liquid-glass-footer a,
+.dark .liquid-glass-footer-link {
+  color: rgb(156 163 175) !important;
+}
+
+/* Tables - Force all table elements dark */
+.dark table,
+.dark thead,
+.dark tbody,
+.dark tfoot,
+.dark tr,
+.dark th,
+.dark td {
+  background-color: rgb(17 24 39) !important;
+  border-color: rgb(75 85 99) !important;
+  color: rgb(243 244 246) !important;
+}
+
+/* Table hover states */
+.dark tr:hover,
+.dark tr:hover td {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* List containers (orders, recipes, worklogs) */
+.dark [class*="list"],
+.dark [class*="List"],
+.dark [class*="table"],
+.dark [class*="Table"] {
+  background-color: rgb(17 24 39) !important;
+}
+
+/* Grid and flex containers */
+.dark [class*="grid"],
+.dark [class*="Grid"],
+.dark [class*="flex"] {
+  background-color: transparent !important;
+}
+
+/* Specific list item backgrounds */
+.dark [role="row"],
+.dark [role="gridcell"],
+.dark [role="cell"] {
+  background-color: rgb(17 24 39) !important;
+  border-color: rgb(75 85 99) !important;
+}
+
+/* Pagination components */
+.dark nav[aria-label*="pagination"],
+.dark nav[aria-label*="Pagination"],
+.dark [class*="pagination"],
+.dark [class*="Pagination"] {
+  background-color: rgb(17 24 39) !important;
+}
+
+/* Dropdown menus and selects */
+.dark [role="listbox"],
+.dark [role="menu"],
+.dark [role="option"] {
+  background-color: rgb(31 41 55) !important;
+  color: rgb(243 244 246) !important;
+}
+
 /* 自定義樣式 */
 .gradient-bg {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
