@@ -401,6 +401,14 @@ model RecipeLibrary {
   aiEffectsAnalysis String?   @db.Text // AI 分析的配方功效
   aiAnalyzedAt      DateTime? // AI 分析時間
 
+  // 🆕 AI 優化建議
+  aiSuggestions     String?   @db.Text // JSON: suggestion[]
+  aiSuggestionsAt   DateTime? // 分析時間
+
+  // 🆕 原料相互作用分析
+  aiInteractions    String?   @db.Text // JSON: warning[]
+  aiInteractionsAt  DateTime? // 分析時間
+
   // 🆕 配方類型與來源
   recipeType String @default("production") // "production" | "template"
   sourceType String @default("order") // "order" | "manual" | "batch_import"

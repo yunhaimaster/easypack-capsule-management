@@ -641,7 +641,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
               </Card>
 
               {/* Ingredient Warnings */}
-              <IngredientWarnings ingredients={recipe.ingredients} recipeId={recipe.id} />
+              <IngredientWarnings recipe={recipe} />
             </div>
 
             {/* Right Column - Details */}

@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, Lightbulb, Copy, Check, Clock } from 'lucide-react'
+import { Loader2, Lightbulb, Copy, Check, Clock, RefreshCw } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useToast } from '@/components/ui/toast-provider'
 import type { RecipeLibraryItem } from '@/types'
+import { formatDate } from '@/lib/date-utils'
 
 interface AIInsightsPanelProps {
   recipe: RecipeLibraryItem
@@ -52,6 +53,22 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
       if (interval) clearInterval(interval)
     }
   }, [loading])
+
+  // 🆕 自動加載已保存的 AI 建議
+  useEffect(() => {
+    if (recipe.aiSuggestions && !analyzed) {
+      try {
+        const savedSuggestions = JSON.parse(recipe.aiSuggestions)
+        if (Array.isArray(savedSuggestions) && savedSuggestions.length > 0) {
+          setSuggestions(savedSuggestions)
+          setAnalyzed(true)
+        }
+      } catch (error) {
+        console.error('[AIInsightsPanel] Parse saved suggestions error:', error)
+        // 解析失敗時清除無效數據（可選）
+      }
+    }
+  }, [recipe.aiSuggestions, analyzed])
 
   const analyzeSuggestions = async () => {
     setLoading(true)
@@ -141,26 +158,49 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
           <div className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-primary-600" />
             <h2 className="text-lg font-semibold text-neutral-800">AI 優化建議</h2>
+            {/* 🆕 顯示分析時間 */}
+            {analyzed && recipe.aiSuggestionsAt && (
+              <span className="text-xs text-neutral-500">
+                ({formatDate(recipe.aiSuggestionsAt)})
+              </span>
+            )}
           </div>
           {analyzed && suggestions.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopyAll}
-              className="flex items-center gap-2"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  已複製
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  複製全部
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* 🆕 重新分析按鈕 */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={analyzeSuggestions}
+                disabled={loading}
+                className="flex items-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                重新分析
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyAll}
+                className="flex items-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    已複製
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    複製全部
+                  </>
+                )}
+              </Button>
+            </div>
           )}
         </div>
 

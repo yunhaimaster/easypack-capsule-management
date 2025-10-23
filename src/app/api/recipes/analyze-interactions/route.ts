@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    const { ingredients } = await request.json()
+    const { ingredients, recipeId } = await request.json()
     
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
     if (!OPENROUTER_API_KEY) {
@@ -93,6 +97,37 @@ ${ingredientList}
     
     // Parse JSON response
     const result = JSON.parse(content)
+
+    // 🆕 保存相互作用分析到數據庫（失敗不影響響應）
+    if (recipeId && result.warnings) {
+      try {
+        await prisma.recipeLibrary.update({
+          where: { id: recipeId },
+          data: {
+            aiInteractions: JSON.stringify(result.warnings),
+            aiInteractionsAt: new Date()
+          }
+        })
+        
+        // 審計日誌
+        const context = await getUserContextFromRequest(request)
+        await logAudit({
+          action: AuditAction.RECIPE_UPDATED,
+          userId: context.userId,
+          phone: context.phone,
+          ip: context.ip,
+          userAgent: context.userAgent,
+          metadata: {
+            recipeId,
+            analysisType: 'interactions',
+            warningCount: result.warnings.length,
+            highSeverityCount: result.warnings.filter((w: any) => w.severity === 'high').length
+          }
+        })
+      } catch (saveError) {
+        console.error('[analyze-interactions] Failed to save results:', saveError)
+      }
+    }
 
     return NextResponse.json({
       success: true,

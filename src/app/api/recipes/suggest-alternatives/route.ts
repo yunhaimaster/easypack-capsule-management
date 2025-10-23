@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
+import { AuditAction } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    const { ingredients } = await request.json()
+    const { ingredients, recipeId } = await request.json()
     
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
     if (!OPENROUTER_API_KEY) {
@@ -92,6 +96,37 @@ ${ingredientList}
     }
 
     const result = JSON.parse(content)
+
+    // 🆕 保存 AI 建議到數據庫（失敗不影響響應）
+    if (recipeId && result.suggestions) {
+      try {
+        await prisma.recipeLibrary.update({
+          where: { id: recipeId },
+          data: {
+            aiSuggestions: JSON.stringify(result.suggestions),
+            aiSuggestionsAt: new Date()
+          }
+        })
+        
+        // 審計日誌
+        const context = await getUserContextFromRequest(request)
+        await logAudit({
+          action: AuditAction.RECIPE_UPDATED,
+          userId: context.userId,
+          phone: context.phone,
+          ip: context.ip,
+          userAgent: context.userAgent,
+          metadata: {
+            recipeId,
+            analysisType: 'suggestions',
+            resultCount: result.suggestions.length
+          }
+        })
+      } catch (saveError) {
+        // 記錄錯誤但不中斷響應
+        console.error('[suggest-alternatives] Failed to save results:', saveError)
+      }
+    }
 
     return NextResponse.json({
       success: true,

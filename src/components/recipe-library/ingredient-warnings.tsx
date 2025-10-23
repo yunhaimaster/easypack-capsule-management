@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, CheckCircle, Loader2, Copy, Check, Clock } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Loader2, Copy, Check, Clock, RefreshCw } from 'lucide-react'
 import { useToast } from '@/components/ui/toast-provider'
-import type { RecipeIngredient } from '@/types'
+import type { RecipeLibraryItem } from '@/types'
+import { formatDate } from '@/lib/date-utils'
 
 interface IngredientWarningsProps {
-  ingredients: RecipeIngredient[]
-  recipeId: string
+  recipe: RecipeLibraryItem  // 🆕 改為接收完整配方對象
 }
 
 interface IngredientWarning {
@@ -21,7 +21,9 @@ interface IngredientWarning {
   recommendation: string
 }
 
-export function IngredientWarnings({ ingredients, recipeId }: IngredientWarningsProps) {
+export function IngredientWarnings({ recipe }: IngredientWarningsProps) {
+  // 從 recipe 中提取需要的數據
+  const { ingredients, id: recipeId } = recipe
   const { showToast } = useToast()
   const [warnings, setWarnings] = useState<IngredientWarning[]>([])
   const [loading, setLoading] = useState(false)
@@ -61,6 +63,21 @@ export function IngredientWarnings({ ingredients, recipeId }: IngredientWarnings
       if (interval) clearInterval(interval)
     }
   }, [loading])
+
+  // 🆕 自動加載已保存的相互作用分析
+  useEffect(() => {
+    if (recipe.aiInteractions && !analyzed) {
+      try {
+        const savedWarnings = JSON.parse(recipe.aiInteractions)
+        if (Array.isArray(savedWarnings)) {
+          setWarnings(savedWarnings)
+          setAnalyzed(true)
+        }
+      } catch (error) {
+        console.error('[IngredientWarnings] Parse saved interactions error:', error)
+      }
+    }
+  }, [recipe.aiInteractions, analyzed])
 
   const analyzeInteractions = async () => {
     setLoading(true)
@@ -150,8 +167,14 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
         <div className="liquid-glass-content">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-neutral-800 mb-1">
+              <h3 className="text-sm font-semibold text-neutral-800 mb-1 flex items-center gap-2">
                 原料相互作用分析
+                {/* 🆕 顯示分析時間 */}
+                {recipe.aiInteractionsAt && (
+                  <span className="text-xs text-neutral-500 font-normal">
+                    (上次: {formatDate(recipe.aiInteractionsAt)})
+                  </span>
+                )}
               </h3>
               <p className="text-xs text-neutral-600">
                 AI 分析原料之間的潛在相互作用和風險
@@ -226,16 +249,38 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
             <h3 className="text-sm font-semibold text-warning-800">
               發現 {warnings.length} 個潛在相互作用
             </h3>
+            {/* 🆕 顯示分析時間 */}
+            {recipe.aiInteractionsAt && (
+              <span className="text-xs text-neutral-500">
+                ({formatDate(recipe.aiInteractionsAt)})
+              </span>
+            )}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleCopyAllWarnings}
-            className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
-          >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-            複製全部
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* 🆕 重新分析按鈕 */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={analyzeInteractions}
+              disabled={loading}
+              className="flex items-center gap-1"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyAllWarnings}
+              className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              複製全部
+            </Button>
+          </div>
         </div>
         <div className="space-y-3">
           {warnings.map((warning, index) => (

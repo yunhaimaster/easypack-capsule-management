@@ -167,6 +167,15 @@ export interface RecipeLibraryItem {
   notes?: string | null
   aiEffectsAnalysis?: string | null // AI 分析的配方功效
   aiAnalyzedAt?: Date | null // AI 分析時間
+  
+  // 🆕 AI 優化建議
+  aiSuggestions?: string | null      // JSON string
+  aiSuggestionsAt?: Date | null
+  
+  // 🆕 原料相互作用分析
+  aiInteractions?: string | null     // JSON string
+  aiInteractionsAt?: Date | null
+  
   recipeType: 'production' | 'template' // 🆕 配方類型
   sourceType: 'order' | 'manual' | 'batch_import' // 🆕 配方來源
   isActive: boolean
