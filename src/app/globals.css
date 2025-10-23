@@ -372,6 +372,64 @@
   color: rgb(243 244 246) !important;
 }
 
+/* Gradient backgrounds - Force dark variants */
+.dark [class*="from-primary-"],
+.dark [class*="from-success-"],
+.dark [class*="from-purple-"],
+.dark [class*="from-amber-"] {
+  background-image: linear-gradient(to bottom right, rgb(31 41 55), rgb(17 24 39)) !important;
+}
+
+/* Specific calculation result cards */
+.dark [class*="from-primary-50"],
+.dark [class*="from-success-50"],
+.dark [class*="from-purple-50"],
+.dark [class*="from-amber-50"] {
+  background: rgb(31 41 55) !important;
+}
+
+/* Text colors in calculation cards */
+.dark [class*="text-primary-600"],
+.dark [class*="text-success-600"],
+.dark [class*="text-purple-600"],
+.dark [class*="text-amber-600"] {
+  color: rgb(156 163 175) !important;
+}
+
+.dark [class*="text-primary-800"],
+.dark [class*="text-success-800"],
+.dark [class*="text-purple-800"],
+.dark [class*="text-amber-800"] {
+  color: rgb(243 244 246) !important;
+}
+
+/* Border colors in calculation cards */
+.dark [class*="border-primary-200"],
+.dark [class*="border-success-200"],
+.dark [class*="border-purple-200"],
+.dark [class*="border-amber-200"] {
+  border-color: rgb(75 85 99) !important;
+}
+
+/* Info/alert boxes */
+.dark [class*="bg-amber-50"],
+.dark [class*="bg-primary-50"],
+.dark [class*="bg-success-50"],
+.dark [class*="bg-info-50"] {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* Badge/pill components (capsule labels) */
+.dark [class*="badge"],
+.dark [class*="Badge"],
+.dark [class*="pill"],
+.dark [class*="Pill"],
+.dark span[class*="bg-"],
+.dark div[class*="rounded-full"] {
+  background-color: rgb(55 65 81) !important;
+  color: rgb(229 231 235) !important;
+}
+
 /* 自定義樣式 */
 .gradient-bg {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
