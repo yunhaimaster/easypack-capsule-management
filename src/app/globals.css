@@ -430,6 +430,30 @@
   color: rgb(229 231 235) !important;
 }
 
+/* Backdrop blur cards - CRITICAL for 其他訊息卡 */
+.dark [class*="backdrop-blur"],
+.dark [class*="bg-white/"],
+.dark [class*="bg-gray-50/"],
+.dark [class*="bg-neutral-50/"] {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* Recipe cards and list items - CRITICAL */
+.dark [class*="recipe"],
+.dark [class*="Recipe"],
+.dark article,
+.dark [role="article"] {
+  background-color: rgb(31 41 55) !important;
+}
+
+/* All cards with any opacity/transparency */
+.dark div[class*="/75"],
+.dark div[class*="/80"],
+.dark div[class*="/85"],
+.dark div[class*="/90"] {
+  background-color: rgb(31 41 55) !important;
+}
+
 /* 自定義樣式 */
 .gradient-bg {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
