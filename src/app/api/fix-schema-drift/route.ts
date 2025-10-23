@@ -10,7 +10,7 @@ import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST(request: NextRequest) {
+async function runFix() {
   try {
     console.log('[Schema Drift Fix] Starting manual schema fix...')
 
@@ -62,5 +62,14 @@ export async function POST(request: NextRequest) {
       details: error
     }, { status: 500 })
   }
+}
+
+// Support both GET and POST for easy browser access
+export async function GET(request: NextRequest) {
+  return runFix()
+}
+
+export async function POST(request: NextRequest) {
+  return runFix()
 }
 
