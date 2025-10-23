@@ -198,43 +198,41 @@
    Force all Tailwind utility classes to adapt automatically
    ============================================ */
 
-.dark {
-  /* Background Colors - Force all whites to dark */
-  .bg-white { @apply !bg-gray-900; }
-  .bg-gray-50 { @apply !bg-gray-800; }
-  .bg-gray-100 { @apply !bg-gray-800; }
-  .bg-neutral-50 { @apply !bg-gray-800; }
-  .bg-neutral-100 { @apply !bg-gray-800; }
-  
-  /* Text Colors - Invert gray scale */
-  .text-gray-900 { @apply !text-gray-100; }
-  .text-gray-800 { @apply !text-gray-200; }
-  .text-gray-700 { @apply !text-gray-300; }
-  .text-gray-600 { @apply !text-gray-400; }
-  .text-gray-500 { @apply !text-gray-400; }
-  .text-neutral-900 { @apply !text-gray-100; }
-  .text-neutral-800 { @apply !text-gray-200; }
-  .text-neutral-700 { @apply !text-gray-300; }
-  .text-neutral-600 { @apply !text-gray-400; }
-  
-  /* Border Colors */
-  .border-gray-200 { @apply !border-gray-700; }
-  .border-gray-300 { @apply !border-gray-600; }
-  .border-neutral-200 { @apply !border-gray-700; }
-  .border-neutral-300 { @apply !border-gray-600; }
-  
-  /* Hover States - Critical for tables/lists */
-  .hover\:bg-white:hover { @apply !bg-gray-800; }
-  .hover\:bg-gray-50:hover { @apply !bg-gray-700; }
-  .hover\:bg-gray-100:hover { @apply !bg-gray-700; }
-  .hover\:bg-neutral-50:hover { @apply !bg-gray-700; }
-  
-  /* Ring Colors (focus states) */
-  .ring-gray-200 { @apply !ring-gray-700; }
-  
-  /* Divide Colors (between elements) */
-  .divide-gray-200 > * + * { @apply !border-gray-700; }
-}
+/* Background Colors - Force all whites to dark */
+.dark .bg-white { background-color: rgb(17 24 39) !important; }
+.dark .bg-gray-50 { background-color: rgb(31 41 55) !important; }
+.dark .bg-gray-100 { background-color: rgb(31 41 55) !important; }
+.dark .bg-neutral-50 { background-color: rgb(31 41 55) !important; }
+.dark .bg-neutral-100 { background-color: rgb(31 41 55) !important; }
+
+/* Text Colors - Invert gray scale */
+.dark .text-gray-900 { color: rgb(243 244 246) !important; }
+.dark .text-gray-800 { color: rgb(229 231 235) !important; }
+.dark .text-gray-700 { color: rgb(209 213 219) !important; }
+.dark .text-gray-600 { color: rgb(156 163 175) !important; }
+.dark .text-gray-500 { color: rgb(156 163 175) !important; }
+.dark .text-neutral-900 { color: rgb(243 244 246) !important; }
+.dark .text-neutral-800 { color: rgb(229 231 235) !important; }
+.dark .text-neutral-700 { color: rgb(209 213 219) !important; }
+.dark .text-neutral-600 { color: rgb(156 163 175) !important; }
+
+/* Border Colors */
+.dark .border-gray-200 { border-color: rgb(55 65 81) !important; }
+.dark .border-gray-300 { border-color: rgb(75 85 99) !important; }
+.dark .border-neutral-200 { border-color: rgb(55 65 81) !important; }
+.dark .border-neutral-300 { border-color: rgb(75 85 99) !important; }
+
+/* Hover States - Critical for tables/lists */
+.dark .hover\:bg-white:hover { background-color: rgb(31 41 55) !important; }
+.dark .hover\:bg-gray-50:hover { background-color: rgb(55 65 81) !important; }
+.dark .hover\:bg-gray-100:hover { background-color: rgb(55 65 81) !important; }
+.dark .hover\:bg-neutral-50:hover { background-color: rgb(55 65 81) !important; }
+
+/* Ring Colors (focus states) */
+.dark .ring-gray-200 { --tw-ring-color: rgb(55 65 81) !important; }
+
+/* Divide Colors (between elements) */
+.dark .divide-gray-200 > * + * { border-color: rgb(55 65 81) !important; }
 
 /* 自定義樣式 */
 .gradient-bg {
