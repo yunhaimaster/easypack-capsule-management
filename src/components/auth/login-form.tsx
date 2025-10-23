@@ -8,7 +8,7 @@ import { Check, Phone, Shield } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 
 export function LoginForm() {
-  const [step, setStep] = useState<'phone' | 'otp' | 'bootstrap'>('phone')
+  const [step, setStep] = useState<'checking' | 'phone' | 'otp' | 'bootstrap'>('checking')
   const [phone, setPhone] = useState('')
   const [code, setCode] = useState('')
   const [bootstrapCode, setBootstrapCode] = useState('')
@@ -16,7 +16,45 @@ export function LoginForm() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // Silent login removed - middleware already handles redirects for authenticated users
+  // Auto-login attempt for trusted devices
+  useEffect(() => {
+    const attemptAutoLogin = async () => {
+      // Check if device cookie exists (fast check)
+      const hasDeviceCookie = document.cookie.split(';').some(c => c.trim().startsWith('device='))
+      
+      if (!hasDeviceCookie) {
+        // No trusted device, show login form
+        setStep('phone')
+        return
+      }
+
+      // Device cookie exists, attempt silent login
+      try {
+        console.log('[Auto-Login] Trusted device found, attempting auto-login...')
+        const res = await fetch('/api/auth/silent-login', {
+          method: 'POST',
+          credentials: 'include',
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success) {
+            console.log('[Auto-Login] Success! Redirecting to dashboard...')
+            window.location.href = '/'
+            return
+          }
+        }
+
+        console.log('[Auto-Login] Failed, showing login form')
+        setStep('phone')
+      } catch (error) {
+        console.error('[Auto-Login] Error:', error)
+        setStep('phone')
+      }
+    }
+
+    attemptAutoLogin()
+  }, [])
 
   const startOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -133,6 +171,26 @@ export function LoginForm() {
       setError('驗證時發生錯誤')
       setIsLoading(false)
     }
+  }
+
+  // Show loading state while checking for trusted device
+  if (step === 'checking') {
+    return (
+      <Card className="liquid-glass-card liquid-glass-card-elevated login-liquid-card w-full max-w-md mx-auto shadow-xl">
+        <CardContent className="pt-10 pb-8 px-8">
+          <div className="text-center space-y-6">
+            <div className="mx-auto mb-2 login-liquid-emblem">
+              <Logo size="lg" variant="icon" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold text-primary-600">Easy Health 系統登入</h2>
+            <div className="flex flex-col items-center gap-4 py-8">
+              <div className="h-10 w-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-neutral-600">正在檢查登入狀態...</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -282,10 +340,22 @@ export function LoginForm() {
                 />
             </div>
 
-            <label className="flex items-center gap-2 text-sm text-neutral-700">
-              <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />
-              <span className="inline-flex items-center gap-1">信任此裝置 30 天 <Shield className="h-3.5 w-3.5 text-neutral-500" /></span>
-            </label>
+            <div className="flex items-start gap-3 p-3 rounded-lg border border-primary-200 bg-primary-50/50 hover:bg-primary-50 transition-colors">
+              <input 
+                type="checkbox" 
+                id="trust-device"
+                checked={trust} 
+                onChange={(e) => setTrust(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-primary-300 text-primary-600 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+              />
+              <label htmlFor="trust-device" className="flex-1 text-sm text-neutral-700 cursor-pointer select-none">
+                <span className="inline-flex items-center gap-1.5 font-medium">
+                  <Shield className="h-4 w-4 text-primary-500" />
+                  信任此裝置 30 天
+                </span>
+                <p className="mt-1 text-xs text-neutral-600">下次在此裝置登入時將自動登入，無需輸入驗證碼</p>
+              </label>
+            </div>
 
             {error && (
               <div className="text-sm text-danger-600 bg-danger-50 p-2 rounded border border-red-200">
