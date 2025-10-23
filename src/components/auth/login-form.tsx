@@ -374,7 +374,7 @@ export function LoginForm() {
               {isLoading ? '登入中...' : '登入'}
             </Button>
           </form>
-        )}
+        ) : null}
 
         <div className="text-center">
           <p className="text-xs text-neutral-500">如有登入問題，請聯繫 Victor</p>
