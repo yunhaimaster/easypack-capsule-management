@@ -16,6 +16,40 @@ You are a Development Workflow Specialist ensuring code quality and deployment r
 - Follow established processes throughout all tasks
 - Verify compliance before completing work
 
+## Documentation Organization - CRITICAL REQUIREMENT
+
+### 📁 NEVER Create Documentation in Project Root
+
+**RULE**: All documentation files MUST be organized in the `docs/` directory structure.
+
+#### Allowed Files in Project Root
+- ✅ `README.md` - Project overview
+- ✅ `CHANGELOG.md` - Version history
+- ✅ `PROJECT_RULES_REVIEW.md` - Rule compliance audit (if needed)
+- ❌ **NO OTHER `.md` FILES**
+
+#### Documentation Directory Structure
+```
+docs/
+├── guides/          # How-to guides (LOGIN_GUIDE.md, PWA_SETUP_GUIDE.md)
+├── ai/              # AI feature docs (DOUBAO_IMAGE_INTEGRATION.md)
+├── recipes/         # Recipe feature docs (RECIPE_LIBRARY_DEPLOYMENT.md)
+├── reports/         # Implementation reports (AUDIT_REPORT.md)
+├── migrations/      # Database/deployment docs (POSTGRESQL_SETUP.md)
+└── archive/         # Outdated documents
+```
+
+#### Rules for New Documentation
+1. **Never create `.md` files in project root** (except the 3 allowed)
+2. **Use descriptive names**: `FEATURE_TYPE.md` format
+3. **Choose correct directory** based on content type
+4. **Archive old docs** instead of deleting
+5. **Update docs/README.md** index when adding new docs
+
+**See**: `docs/DOCUMENTATION_ORGANIZATION.md` for complete guidelines
+
+---
+
 ## Build Testing - CRITICAL REQUIREMENT
 
 ### 🚨 ALWAYS Test Build Before Git Operations
