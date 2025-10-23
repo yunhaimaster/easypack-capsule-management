@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         phoneE164: true,
+        nickname: true,
         role: true,
         createdAt: true,
         updatedAt: true,

@@ -26,6 +26,7 @@ enum AuditAction {
   OTP_VERIFY_SUCCESS
   OTP_VERIFY_FAIL
   LOGIN_SUCCESS
+  LOGIN_FAILED
   LOGOUT
   SESSION_REFRESH
   DEVICE_TRUST_CREATED
@@ -69,6 +70,7 @@ enum AuditAction {
 model User {
   id         String   @id @default(cuid())
   phoneE164  String   @unique
+  nickname   String?  @db.VarChar(50)
   role       Role     @default(EMPLOYEE)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

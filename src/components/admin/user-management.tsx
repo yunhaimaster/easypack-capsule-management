@@ -10,6 +10,7 @@ import { IconContainer } from '@/components/ui/icon-container'
 interface User {
   id: string
   phoneE164: string
+  nickname?: string | null
   role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN'
   createdAt: string
   updatedAt: string
@@ -44,6 +45,8 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
   const [newRole, setNewRole] = useState<'EMPLOYEE' | 'MANAGER' | 'ADMIN'>('EMPLOYEE')
   const [editingUser, setEditingUser] = useState<string | null>(null)
   const [editingRole, setEditingRole] = useState<'EMPLOYEE' | 'MANAGER' | 'ADMIN'>('EMPLOYEE')
+  const [editingNickname, setEditingNickname] = useState<string | null>(null)
+  const [nicknameValue, setNicknameValue] = useState('')
 
   useEffect(() => {
     loadUsers()
@@ -155,6 +158,28 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
     }
   }
 
+  const updateNickname = async (userId: string, nickname: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: nickname.trim() || null })
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        setUsers(users.map(u => u.id === userId ? { ...u, nickname: nickname.trim() || null } : u))
+        setEditingNickname(null)
+        setNicknameValue('')
+      } else {
+        alert(data.error)
+      }
+    } catch (error) {
+      console.error('更新暱稱失敗:', error)
+      alert('更新暱稱失敗')
+    }
+  }
+
   const deleteUser = async (userId: string, phone: string) => {
     if (!confirm(`確定要刪除用戶 ${phone} 嗎？此操作無法撤銷。`)) return
 
@@ -257,9 +282,61 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
           <Card key={user.id} className="p-4 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between">
               <div className="flex-1">
+                {/* Nickname or Phone Display */}
                 <div className="flex items-center gap-3 mb-2">
                   <Phone className="h-4 w-4 text-neutral-500" />
-                  <span className="font-medium text-neutral-800">{user.phoneE164}</span>
+                  {editingNickname === user.id ? (
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input
+                        value={nicknameValue}
+                        onChange={(e) => setNicknameValue(e.target.value)}
+                        placeholder="輸入暱稱（選填）"
+                        className="max-w-xs"
+                        maxLength={50}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => updateNickname(user.id, nicknameValue)}
+                        className="p-1 text-success-600 hover:bg-success-50 rounded"
+                        title="保存"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingNickname(null)
+                          setNicknameValue('')
+                        }}
+                        className="p-1 text-neutral-600 hover:bg-neutral-50 rounded"
+                        title="取消"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-col">
+                        {user.nickname ? (
+                          <>
+                            <span className="font-medium text-neutral-800">{user.nickname}</span>
+                            <span className="text-sm text-neutral-500">{user.phoneE164}</span>
+                          </>
+                        ) : (
+                          <span className="font-medium text-neutral-800">{user.phoneE164}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setEditingNickname(user.id)
+                          setNicknameValue(user.nickname || '')
+                        }}
+                        className="p-1 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                        title="編輯暱稱"
+                      >
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  )}
                   {editingUser === user.id ? (
                     <div className="flex items-center gap-2">
                       <select

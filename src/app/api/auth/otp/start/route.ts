@@ -4,6 +4,7 @@ import { normalizeHongKongDefault, phoneInputSchema } from '@/lib/auth/phone'
 import { countRecentAttemptsByIp, countRecentAttemptsByPhone, recordOtpAttempt } from '@/lib/rate-limit'
 import { logAudit } from '@/lib/audit'
 import { AuditAction } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -37,6 +38,30 @@ export async function POST(request: NextRequest) {
       if (ipCount >= 10) {
         return NextResponse.json({ success: false, error: '請稍後再試（頻率限制）' }, { status: 429 })
       }
+    }
+
+    // Check if user exists before sending OTP
+    const existingUser = await prisma.user.findUnique({
+      where: { phoneE164 }
+    })
+
+    if (!existingUser) {
+      // Log failed login attempt
+      await logAudit({ 
+        action: AuditAction.LOGIN_FAILED, 
+        phone: phoneE164, 
+        ip, 
+        userAgent,
+        metadata: {
+          reason: 'USER_NOT_FOUND',
+          phoneE164
+        }
+      })
+      
+      return NextResponse.json({ 
+        success: false, 
+        error: '此電話號碼尚未註冊，請聯繫管理員' 
+      }, { status: 404 })
     }
 
     const client = getTwilio()
