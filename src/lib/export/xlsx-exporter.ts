@@ -106,7 +106,7 @@ function workOrderToRow(
   const row: Record<string, string | number | boolean> = {}
   
   const columnMap: Record<string, () => string | number | boolean> = {
-    jobNumber: () => workOrder.jobNumber,
+    jobNumber: () => workOrder.jobNumber || '',
     markedDate: () => formatDate(workOrder.markedDate),
     customerName: () => workOrder.customerName,
     personInCharge: () => workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '',

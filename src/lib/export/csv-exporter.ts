@@ -58,7 +58,7 @@ function workOrderToRow(
   const row: Record<string, string> = {}
   
   const columnMap: Record<string, () => string> = {
-    jobNumber: () => workOrder.jobNumber,
+    jobNumber: () => workOrder.jobNumber || '',
     markedDate: () => formatDate(workOrder.markedDate),
     customerName: () => workOrder.customerName,
     personInCharge: () => workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '',
