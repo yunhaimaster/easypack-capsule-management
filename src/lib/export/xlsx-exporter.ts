@@ -5,7 +5,7 @@
  * Uses SheetJS (xlsx) library with cpexcel for Chinese support.
  */
 
-import { UnifiedWorkOrder } from '@/types/work-order'
+import { WorkOrder } from '@/types/work-order'
 import * as XLSX from 'xlsx'
 import { prepareChineseForExcel } from './encoding-utils'
 
@@ -100,7 +100,7 @@ function formatDate(date: Date | string | null | undefined): string {
  * Convert work order data to Excel row
  */
 function workOrderToRow(
-  workOrder: UnifiedWorkOrder,
+  workOrder: WorkOrder,
   selectedColumns: string[]
 ): Record<string, string | number | boolean> {
   const row: Record<string, string | number | boolean> = {}
@@ -152,7 +152,7 @@ function workOrderToRow(
  * @returns Buffer containing XLSX file
  */
 export function exportWorkOrdersToXLSX(
-  workOrders: UnifiedWorkOrder[],
+  workOrders: WorkOrder[],
   selectedColumns?: string[]
 ): Buffer {
   // Default to all columns if not specified

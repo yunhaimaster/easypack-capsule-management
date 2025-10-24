@@ -6,7 +6,7 @@
  */
 
 import Papa from 'papaparse'
-import { UnifiedWorkOrder } from '@/types/work-order'
+import { WorkOrder } from '@/types/work-order'
 import { addUTF8BOM, prepareChineseForExcel } from './encoding-utils'
 import { WORK_ORDER_COLUMNS } from './xlsx-exporter'
 
@@ -52,7 +52,7 @@ function formatDate(date: Date | string | null | undefined): string {
  * Convert work order to CSV row object
  */
 function workOrderToRow(
-  workOrder: UnifiedWorkOrder,
+  workOrder: WorkOrder,
   selectedColumns: string[]
 ): Record<string, string> {
   const row: Record<string, string> = {}
@@ -105,7 +105,7 @@ function workOrderToRow(
  * @returns String containing CSV data with UTF-8 BOM
  */
 export function exportWorkOrdersToCSV(
-  workOrders: UnifiedWorkOrder[],
+  workOrders: WorkOrder[],
   selectedColumns?: string[]
 ): string {
   // Default to all columns if not specified
