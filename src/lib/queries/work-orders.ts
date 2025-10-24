@@ -129,7 +129,7 @@ export function useWorkOrders(
     queryKey: workOrderKeys.list(filters),
     queryFn: () => fetchWorkOrders(filters),
     staleTime: 30_000, // 30 seconds
-    refetchInterval: 60_000, // Auto-refresh every 60s for real-time updates
+    refetchInterval: 300_000, // Auto-refresh every 5 minutes
     ...options
   })
 }
