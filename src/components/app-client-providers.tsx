@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from 'react'
 import { ToastProvider } from '@/components/ui/toast-provider'
 import { OfflineIndicator } from '@/hooks/use-offline'
 import { setupPWAInstallPrompt } from '@/lib/pwa-utils'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 export function AppClientProviders({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -23,9 +24,11 @@ export function AppClientProviders({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <ToastProvider>
-      {children}
-      <OfflineIndicator />
-    </ToastProvider>
+    <QueryProvider>
+      <ToastProvider>
+        {children}
+        <OfflineIndicator />
+      </ToastProvider>
+    </QueryProvider>
   )
 }
