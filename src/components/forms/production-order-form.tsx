@@ -713,9 +713,9 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                   const summary = calculateWorklogSummary(index)
                   const errorPrefix = errors.worklogs?.[index] as any
                   return (
-                    <div key={field.id} className="p-5 rounded-2xl bg-white/75 backdrop-blur-sm border border-white/50 shadow-sm space-y-4">
+                    <Card key={field.id} variant="glass" interactive={false} className="p-5 space-y-4">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-neutral-700">工時 #{index + 1}</div>
+                        <div className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">工時 #{index + 1}</div>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeWorklog(index)}>
                           <Trash2 className="h-4 w-4 text-danger-500" aria-hidden="true" />
                         </Button>
@@ -802,11 +802,11 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                             )}
                           />
                         </div>
-                        <div className="text-right text-sm font-semibold text-neutral-700">
+                        <div className="text-right text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                           當日工時：{summary != null && typeof summary === 'number' ? summary.toFixed(1) : '—'} 工時
                         </div>
                       </div>
-                    </div>
+                    </Card>
                   )
                 })}
               </div>
@@ -888,10 +888,19 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         </div>
 
       {/* 其他信息 */}
-      <div className="rounded-2xl border border-white/40 bg-white/85 backdrop-blur-sm shadow-sm">
-        <div className="px-6 pt-6 pb-2 flex items-center gap-2 text-lg sm:text-xl font-semibold text-[--brand-neutral]">
-          <span className="text-success-600">📋</span>
-          其他信息
+      <div className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-refraction">
+        <div className="liquid-glass-content">
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-success-500 to-emerald-500 rounded-xl">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                </svg>
+              </div>
+              <span style={{ color: '#2a588c' }}>其他信息</span>
+            </h2>
+          </div>
         </div>
         <div className="px-6 pb-6 space-y-6">
           <div className="space-y-2">

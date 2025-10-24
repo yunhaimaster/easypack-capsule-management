@@ -1430,6 +1430,89 @@
     inset 0 -2px 0 rgba(24, 66, 96, 0.12);
 }
 
+/* Modal Liquid Glass Card */
+.liquid-glass-modal {
+  background: linear-gradient(165deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88));
+  backdrop-filter: blur(40px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 32px 96px rgba(0, 0, 0, 0.24),
+    0 12px 48px rgba(0, 0, 0, 0.18),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(24, 66, 96, 0.12);
+  border-radius: 1rem;
+}
+
+.dark .liquid-glass-modal {
+  background: linear-gradient(165deg, rgba(25, 35, 50, 0.95), rgba(20, 30, 45, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 32px 96px rgba(0, 0, 0, 0.4),
+    0 12px 48px rgba(0, 0, 0, 0.3);
+}
+
+/* Dropdown Liquid Glass Card */
+.liquid-glass-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 32px rgba(24, 66, 96, 0.16);
+  border-radius: 0.75rem;
+}
+
+.dark .liquid-glass-dropdown {
+  background: rgba(25, 35, 50, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Toast Liquid Glass Card */
+.liquid-glass-toast {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 24px rgba(24, 66, 96, 0.12);
+  border-radius: 0.75rem;
+  transition: all 200ms ease;
+}
+
+.dark .liquid-glass-toast {
+  background: rgba(25, 35, 50, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip Liquid Glass Card */
+.liquid-glass-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
+}
+
+.dark .liquid-glass-tooltip {
+  background: rgba(30, 40, 55, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Table Wrapper Liquid Glass Card */
+.liquid-glass-table {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 15px 45px rgba(15, 32, 77, 0.12);
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.dark .liquid-glass-table {
+  background: rgba(20, 30, 45, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+}
+
 
 /* Content Wrapper for Readability */
 .liquid-glass-content {

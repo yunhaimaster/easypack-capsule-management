@@ -304,16 +304,16 @@ export function LinkedFilter({
             <h3 className="text-sm font-semibold text-neutral-700 tracking-wide uppercase">訂單篩選</h3>
             <p className="text-xs text-neutral-500">支援客戶、產品、原料與膠囊規格的即時篩查</p>
           </div>
-          <div className="flex items-center gap-2 sm:self-auto self-start rounded-full bg-white/70 backdrop-blur px-3 py-1.5 border border-white/60 shadow-sm">
-            <span className="text-xs font-semibold text-neutral-600">每頁顯示</span>
+          <div className="flex items-center gap-2 sm:self-auto self-start">
+            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">每頁顯示</span>
             <Select
               value={String(limit)}
               onValueChange={(value) => onLimitChange?.(Number(value))}
             >
-              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 focus:ring-0 focus:outline-none">
+              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:ring-0 focus:outline-none">
                 <SelectValue placeholder="筆數" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 backdrop-blur-xl border border-white/60 shadow-xl">
+              <SelectContent>
                 {limitOptions.map((option) => (
                   <SelectItem key={option} value={option.toString()} className="text-sm">
                     {option} 筆
