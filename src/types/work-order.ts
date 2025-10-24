@@ -177,8 +177,8 @@ export interface WorkOrderSearchFilters {
   personInCharge?: string[]  // Array of user IDs
   workType?: WorkType[]
   status?: WorkOrderStatus[]
-  dateFrom?: Date
-  dateTo?: Date
+  dateFrom?: string  // ISO date string
+  dateTo?: string    // ISO date string
   hasLinkedCapsulation?: boolean
   isVip?: boolean
   page?: number
