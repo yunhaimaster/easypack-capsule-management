@@ -2,17 +2,10 @@
 > easypack-capsule-management-v1@1.0.0 build
 > prisma migrate deploy && prisma generate && next build
 
+Environment variables loaded from .env
 Prisma schema loaded from prisma/schema.prisma
-Error: Prisma schema validation - (get-config wasm)
-Error code: P1012
-error: Environment variable not found: DATABASE_URL.
-  -->  prisma/schema.prisma:10
-   | 
- 9 |   provider = "postgresql"
-10 |   url      = env("DATABASE_URL")
-   | 
+Datasource "db": PostgreSQL database "mydb", schema "public" at "localhost:5432"
 
-Validation Error Count: 1
-[Context: getConfig]
+Error: P1001: Can't reach database server at `localhost:5432`
 
-Prisma CLI Version : 6.17.1
+Please make sure your database server is running at `localhost:5432`.
