@@ -713,9 +713,9 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                   const summary = calculateWorklogSummary(index)
                   const errorPrefix = errors.worklogs?.[index] as any
                   return (
-                    <div key={field.id} className="p-5 rounded-2xl bg-white/75 backdrop-blur-sm border border-white/50 shadow-sm space-y-4">
+                    <Card key={field.id} variant="glass" interactive={false} className="p-5 space-y-4">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-neutral-700">工時 #{index + 1}</div>
+                        <div className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">工時 #{index + 1}</div>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeWorklog(index)}>
                           <Trash2 className="h-4 w-4 text-danger-500" aria-hidden="true" />
                         </Button>
@@ -802,11 +802,11 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                             )}
                           />
                         </div>
-                        <div className="text-right text-sm font-semibold text-neutral-700">
+                        <div className="text-right text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                           當日工時：{summary != null && typeof summary === 'number' ? summary.toFixed(1) : '—'} 工時
                         </div>
                       </div>
-                    </div>
+                    </Card>
                   )
                 })}
               </div>

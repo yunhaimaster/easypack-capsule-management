@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Beaker, Sparkles, Eye, Edit, Package, Brain } from 'lucide-react'
@@ -32,12 +33,12 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
   
   return (
     <IngredientsPopup ingredients={recipe.ingredients} side="top">
-      <div
+      <Card
+        variant="glass"
+        interactive={true}
+        appleStyle={true}
         className={cn(
-          "group relative overflow-hidden rounded-apple-md bg-white/80 backdrop-blur-sm",
-          "border border-neutral-200/50 hover:border-neutral-300/70",
-          "hover:shadow-apple-md transition-apple",
-          "cursor-pointer",
+          "group relative cursor-pointer",
           // 左側彩色邊框
           isTemplate ? "border-l-4 border-l-primary-500" : "border-l-4 border-l-success-500"
         )}
@@ -56,7 +57,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           
           {/* 配方名稱 + 狀態 */}
           <div className="flex-1 flex items-center gap-2 min-w-0">
-            <h3 className="font-semibold text-neutral-800 truncate text-sm lg:text-base">
+            <h3 className="font-semibold text-neutral-800 dark:text-neutral-100 truncate text-sm lg:text-base">
               {recipe.recipeName}
             </h3>
             {analysisStatus && (
@@ -171,7 +172,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
         </div>
         
         {/* 第二行：產品名稱 + 元數據 */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 ml-11">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400 ml-11">
           {/* 產品名稱 */}
           <span className="font-medium truncate max-w-[200px]">
             {recipe.productName}
@@ -207,7 +208,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           )}
         </div>
         </div>
-      </div>
+      </Card>
     </IngredientsPopup>
   )
 }

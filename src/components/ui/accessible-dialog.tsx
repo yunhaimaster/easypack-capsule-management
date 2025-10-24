@@ -63,9 +63,8 @@ const DialogContent = React.forwardRef<
       aria-describedby={ariaDescribedBy}
       className={cn(
         'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-        'border border-white/20 bg-white/90 backdrop-blur-xl p-6 shadow-2xl',
+        'liquid-glass-modal p-6',
         'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
-        'sm:rounded-2xl',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
         className
       )}

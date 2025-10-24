@@ -11,9 +11,14 @@ type CardVariant =
   | 'default'    // 標準卡片
   | 'elevated'   // 提升卡片（更強陰影）
   | 'flat'       // 扁平卡片（無陰影）
-  | 'glass'      // 玻璃擬態卡片
+  | 'glass'      // 玻璃擬態卡片（預設）
+  | 'modal'      // 模態對話框（強背景）
+  | 'dropdown'   // 下拉選單（輕量）
+  | 'toast'      // 通知提示（優化）
+  | 'tooltip'    // 工具提示（最小化）
+  | 'table'      // 表格容器（特殊圓角）
 
-type CardTone = "default" | "positive" | "caution" | "negative" | "neutral"
+type CardTone = "default" | "positive" | "caution" | "negative" | "neutral" | "info"
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -43,6 +48,11 @@ const variantStyles: Record<CardVariant, string> = {
   elevated: 'bg-white dark:bg-gray-900 border border-neutral-200 dark:border-gray-700 shadow-apple-lg',
   flat: 'bg-white dark:bg-gray-900 border border-neutral-200 dark:border-gray-700 shadow-none',
   glass: 'liquid-glass-card liquid-glass-card-elevated',
+  modal: 'liquid-glass-modal',
+  dropdown: 'liquid-glass-dropdown',
+  toast: 'liquid-glass-toast',
+  tooltip: 'liquid-glass-tooltip',
+  table: 'liquid-glass-table',
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>((
@@ -189,5 +199,22 @@ export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
  * // Apple 標準風格
  * <Card variant="elevated" appleStyle interactive>
  *   內容
+ * </Card>
+ * 
+ * // 模態對話框
+ * <Card variant="modal">對話框內容</Card>
+ * 
+ * // 下拉選單
+ * <Card variant="dropdown">選單項目</Card>
+ * 
+ * // 通知提示
+ * <Card variant="toast">提示訊息</Card>
+ * 
+ * // 工具提示
+ * <Card variant="tooltip">提示文字</Card>
+ * 
+ * // 表格容器
+ * <Card variant="table">
+ *   <table>...</table>
  * </Card>
  */

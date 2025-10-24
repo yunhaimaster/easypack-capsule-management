@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { ChevronDown, Library, Sparkles, FlaskConical, Palette } from 'lucide-react'
 import { Route } from 'next'
+import { Card } from '@/components/ui/card'
 
 import { type NavigationLink } from '@/data/navigation'
 
@@ -57,25 +58,29 @@ export function NavDropdown({ label, items, active = false }: NavDropdownProps) 
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-white/20 z-50 overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-200">
+        <Card 
+          variant="dropdown" 
+          interactive={false}
+          className="absolute top-full left-0 mt-2 w-48 z-50 overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-200"
+        >
           {items.map((child) => {
             const IconComponent = child.icon ? iconMap[child.icon as keyof typeof iconMap] : null
             return (
               <Link
                 key={child.href}
                 href={child.href as Route}
-                className="liquid-glass-nav-link-with-icon flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-white/50 transition-all duration-200"
+                className="liquid-glass-nav-link-with-icon flex items-center px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
                 onClick={() => setIsOpen(false)}
                 aria-label={`前往 ${child.label}`}
               >
                 {IconComponent && (
-                  <IconComponent className="h-4 w-4 mr-3 text-neutral-500" />
+                  <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-neutral-400" />
                 )}
                 <span>{child.label}</span>
               </Link>
             )
           })}
-        </div>
+        </Card>
       )}
     </div>
   )

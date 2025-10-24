@@ -32,15 +32,15 @@ export function AISettings({ enableReasoning, onToggleReasoning }: AISettingsPro
           />
           
           {/* Settings Panel */}
-          <div className="absolute right-0 top-8 z-50 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-xl min-w-[340px] max-w-[400px]">
+          <div className="absolute right-0 top-8 z-50 liquid-glass-dropdown p-4 min-w-[340px] max-w-[400px]">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-neutral-800">AI 設置</h3>
+                <h3 className="text-sm font-medium text-neutral-800 dark:text-neutral-100">AI 設置</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="h-6 w-6 p-0 text-neutral-400 hover:text-neutral-600"
+                  className="h-6 w-6 p-0 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
                 >
                   ×
                 </Button>
