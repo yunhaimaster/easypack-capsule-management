@@ -78,7 +78,11 @@ export async function POST(request: NextRequest) {
     const existingWorkOrders = await prisma.unifiedWorkOrder.findMany({
       select: { jobNumber: true }
     })
-    const existingJobNumbers = new Set(existingWorkOrders.map(wo => wo.jobNumber))
+    const existingJobNumbers = new Set(
+      existingWorkOrders
+        .map(wo => wo.jobNumber)
+        .filter((jn): jn is string => jn !== null)  // Filter out nulls and narrow type
+    )
 
     // Validate import data
     const validationResult = await validateImportData(data, existingJobNumbers)

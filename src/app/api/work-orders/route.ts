@@ -244,17 +244,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = createWorkOrderSchema.parse(body)
 
-    // Check jobNumber uniqueness
-    const existing = await prisma.unifiedWorkOrder.findUnique({
-      where: { jobNumber: validatedData.jobNumber },
-      select: { id: true }
-    })
+    // Check jobNumber uniqueness (only if provided)
+    if (validatedData.jobNumber) {
+      const existing = await prisma.unifiedWorkOrder.findUnique({
+        where: { jobNumber: validatedData.jobNumber },
+        select: { id: true }
+      })
 
-    if (existing) {
-      return NextResponse.json(
-        { success: false, error: 'JOB標號已存在' },
-        { status: 400 }
-      )
+      if (existing) {
+        return NextResponse.json(
+          { success: false, error: 'JOB標號已存在' },
+          { status: 400 }
+        )
+      }
     }
 
     // Verify personInChargeId exists
@@ -290,22 +292,35 @@ export async function POST(request: NextRequest) {
       // Create unified work order
       const newWorkOrder = await tx.unifiedWorkOrder.create({
         data: {
-          jobNumber: validatedData.jobNumber,
-          markedDate: validatedData.markedDate ? new Date(validatedData.markedDate) : null,
+          jobNumber: validatedData.jobNumber || null,
           customerName: validatedData.customerName,
           personInChargeId: validatedData.personInChargeId,
           workType: validatedData.workType,
-          isNewProductVip: validatedData.isNewProductVip,
-          isComplexityVip: validatedData.isComplexityVip,
-          yearCategory: validatedData.yearCategory,
-          expectedCompletionDate: validatedData.expectedCompletionDate ? new Date(validatedData.expectedCompletionDate) : null,
-          dataCompleteDate: validatedData.dataCompleteDate ? new Date(validatedData.dataCompleteDate) : null,
-          productionQuantity: validatedData.productionQuantity,
-          packagingQuantity: validatedData.packagingQuantity,
-          internalDeliveryTime: validatedData.internalDeliveryTime,
-          customerRequestedTime: validatedData.customerRequestedTime,
           workDescription: validatedData.workDescription,
-          notes: validatedData.notes,
+          
+          // VIP標記
+          isCustomerServiceVip: validatedData.isCustomerServiceVip ?? false,
+          isBossVip: validatedData.isBossVip ?? false,
+          
+          // 物料到齊狀態
+          expectedProductionMaterialsDate: validatedData.expectedProductionMaterialsDate ? new Date(validatedData.expectedProductionMaterialsDate) : null,
+          expectedPackagingMaterialsDate: validatedData.expectedPackagingMaterialsDate ? new Date(validatedData.expectedPackagingMaterialsDate) : null,
+          productionMaterialsReady: validatedData.productionMaterialsReady ?? false,
+          packagingMaterialsReady: validatedData.packagingMaterialsReady ?? false,
+          
+          // 數量
+          productionQuantity: validatedData.productionQuantity ?? null,
+          packagingQuantity: validatedData.packagingQuantity ?? null,
+          
+          // 交貨期
+          requestedDeliveryDate: validatedData.requestedDeliveryDate ? new Date(validatedData.requestedDeliveryDate) : null,
+          internalExpectedDate: validatedData.internalExpectedDate ? new Date(validatedData.internalExpectedDate) : null,
+          
+          // 狀態標記
+          isUrgent: validatedData.isUrgent ?? false,
+          productionStarted: validatedData.productionStarted ?? false,
+          isCompleted: validatedData.isCompleted ?? false,
+          
           createdBy: session.userId
         },
         include: {

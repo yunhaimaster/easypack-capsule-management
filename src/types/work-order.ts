@@ -27,32 +27,58 @@ export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
 
 export interface WorkOrder {
   id: string
-  jobNumber: string
+  jobNumber?: string | null  // 訂單編號（如有）- 改為可選
   status: WorkOrderStatus
   statusUpdatedAt?: Date | null
   statusUpdatedBy?: string | null
-  markedDate?: Date | null
+  markedDate: Date  // 記號日期（系統自動記錄創建時間）
   customerName: string
   personInChargeId: string
   personInCharge?: UserBadgeData
   workType: WorkType
-  isNewProductVip: boolean
-  isComplexityVip: boolean
-  yearCategory?: string | null
-  expectedCompletionDate?: Date | null
-  dataCompleteDate?: Date | null
+  
+  // VIP標記
+  isCustomerServiceVip: boolean  // 客服VIP
+  isBossVip: boolean  // 老闆VIP
+  
+  // 物料到齊狀態
+  expectedProductionMaterialsDate?: Date | null  // 預計生產物料到齊的日期
+  expectedPackagingMaterialsDate?: Date | null  // 預計包裝物料到齊的日期
+  productionMaterialsReady: boolean  // 生產物料齊
+  packagingMaterialsReady: boolean  // 包裝物料齊
+  
+  // 數量
+  productionQuantity?: number | null
+  packagingQuantity?: number | null
+  
+  // 交貨期
+  requestedDeliveryDate?: Date | null  // 要求交貨的日期
+  internalExpectedDate?: Date | null  // 內部預計交貨期
+  
+  // 狀態標記
+  isUrgent: boolean  // 客人要求加急
+  productionStarted: boolean  // 已開生產線
+  isCompleted: boolean  // 已經完成
+  
+  // 工作描述
+  workDescription: string
+  
+  // 保留舊欄位（標記為廢棄）
+  isNewProductVip?: boolean  // @deprecated
+  isComplexityVip?: boolean  // @deprecated
+  yearCategory?: string | null  // @deprecated
+  expectedCompletionDate?: Date | null  // @deprecated
+  dataCompleteDate?: Date | null  // @deprecated
   notifiedDate?: Date | null
   paymentReceivedDate?: Date | null
   shippedDate?: Date | null
   productionQuantityStat?: string | null
   packagingQuantityStat?: string | null
-  productionQuantity?: number | null
-  packagingQuantity?: number | null
-  internalDeliveryTime?: string | null
-  customerRequestedTime?: string | null
+  internalDeliveryTime?: string | null  // @deprecated
+  customerRequestedTime?: string | null  // @deprecated
   tokyoData?: string | null
-  workDescription: string
   notes?: string | null
+  
   capsulationOrder?: CapsulationOrder | null
   createdAt: Date
   updatedAt: Date
@@ -115,22 +141,37 @@ export interface UserBadgeData {
 // ===== Create/Update Data Types =====
 
 export interface CreateWorkOrderData {
-  jobNumber: string
-  markedDate?: Date | null
+  jobNumber?: string | null  // 訂單編號（如有）- 可選
   customerName: string
   personInChargeId: string
   workType: WorkType
-  isNewProductVip?: boolean
-  isComplexityVip?: boolean
-  yearCategory?: string
-  expectedCompletionDate?: Date | null
-  dataCompleteDate?: Date | null
+  
+  // VIP標記
+  isCustomerServiceVip?: boolean  // 客服VIP
+  isBossVip?: boolean  // 老闆VIP
+  
+  // 物料到齊狀態
+  expectedProductionMaterialsDate?: Date | null
+  expectedPackagingMaterialsDate?: Date | null
+  productionMaterialsReady?: boolean
+  packagingMaterialsReady?: boolean
+  
+  // 數量
   productionQuantity?: number
   packagingQuantity?: number
-  internalDeliveryTime?: string
-  customerRequestedTime?: string
+  
+  // 交貨期
+  requestedDeliveryDate?: Date | null
+  internalExpectedDate?: Date | null
+  
+  // 狀態標記
+  isUrgent?: boolean
+  productionStarted?: boolean
+  isCompleted?: boolean
+  
+  // 工作描述
   workDescription: string
-  notes?: string
+  
   capsulationOrder?: CreateCapsulationOrderData
 }
 

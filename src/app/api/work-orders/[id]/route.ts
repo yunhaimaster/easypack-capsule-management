@@ -265,36 +265,41 @@ export async function PATCH(
 
       // Copy validated fields
       if (validatedData.jobNumber !== undefined) workOrderUpdateData.jobNumber = validatedData.jobNumber
-      if (validatedData.markedDate !== undefined) {
-        workOrderUpdateData.markedDate = validatedData.markedDate ? new Date(validatedData.markedDate) : null
-      }
       if (validatedData.customerName !== undefined) workOrderUpdateData.customerName = validatedData.customerName
       if (validatedData.personInChargeId !== undefined) workOrderUpdateData.personInChargeId = validatedData.personInChargeId
       if (validatedData.workType !== undefined) workOrderUpdateData.workType = validatedData.workType
-      if (validatedData.isNewProductVip !== undefined) workOrderUpdateData.isNewProductVip = validatedData.isNewProductVip
-      if (validatedData.isComplexityVip !== undefined) workOrderUpdateData.isComplexityVip = validatedData.isComplexityVip
-      if (validatedData.yearCategory !== undefined) workOrderUpdateData.yearCategory = validatedData.yearCategory
-      if (validatedData.expectedCompletionDate !== undefined) {
-        workOrderUpdateData.expectedCompletionDate = validatedData.expectedCompletionDate ? new Date(validatedData.expectedCompletionDate) : null
+      if (validatedData.workDescription !== undefined) workOrderUpdateData.workDescription = validatedData.workDescription
+      
+      // VIP標記
+      if (validatedData.isCustomerServiceVip !== undefined) workOrderUpdateData.isCustomerServiceVip = validatedData.isCustomerServiceVip
+      if (validatedData.isBossVip !== undefined) workOrderUpdateData.isBossVip = validatedData.isBossVip
+      
+      // 物料到齊狀態
+      if (validatedData.expectedProductionMaterialsDate !== undefined) {
+        workOrderUpdateData.expectedProductionMaterialsDate = validatedData.expectedProductionMaterialsDate ? new Date(validatedData.expectedProductionMaterialsDate) : null
       }
-      if (validatedData.dataCompleteDate !== undefined) {
-        workOrderUpdateData.dataCompleteDate = validatedData.dataCompleteDate ? new Date(validatedData.dataCompleteDate) : null
+      if (validatedData.expectedPackagingMaterialsDate !== undefined) {
+        workOrderUpdateData.expectedPackagingMaterialsDate = validatedData.expectedPackagingMaterialsDate ? new Date(validatedData.expectedPackagingMaterialsDate) : null
       }
-      if (validatedData.notifiedDate !== undefined) {
-        workOrderUpdateData.notifiedDate = validatedData.notifiedDate ? new Date(validatedData.notifiedDate) : null
-      }
-      if (validatedData.paymentReceivedDate !== undefined) {
-        workOrderUpdateData.paymentReceivedDate = validatedData.paymentReceivedDate ? new Date(validatedData.paymentReceivedDate) : null
-      }
-      if (validatedData.shippedDate !== undefined) {
-        workOrderUpdateData.shippedDate = validatedData.shippedDate ? new Date(validatedData.shippedDate) : null
-      }
+      if (validatedData.productionMaterialsReady !== undefined) workOrderUpdateData.productionMaterialsReady = validatedData.productionMaterialsReady
+      if (validatedData.packagingMaterialsReady !== undefined) workOrderUpdateData.packagingMaterialsReady = validatedData.packagingMaterialsReady
+      
+      // 數量
       if (validatedData.productionQuantity !== undefined) workOrderUpdateData.productionQuantity = validatedData.productionQuantity
       if (validatedData.packagingQuantity !== undefined) workOrderUpdateData.packagingQuantity = validatedData.packagingQuantity
-      if (validatedData.internalDeliveryTime !== undefined) workOrderUpdateData.internalDeliveryTime = validatedData.internalDeliveryTime
-      if (validatedData.customerRequestedTime !== undefined) workOrderUpdateData.customerRequestedTime = validatedData.customerRequestedTime
-      if (validatedData.workDescription !== undefined) workOrderUpdateData.workDescription = validatedData.workDescription
-      if (validatedData.notes !== undefined) workOrderUpdateData.notes = validatedData.notes
+      
+      // 交貨期
+      if (validatedData.requestedDeliveryDate !== undefined) {
+        workOrderUpdateData.requestedDeliveryDate = validatedData.requestedDeliveryDate ? new Date(validatedData.requestedDeliveryDate) : null
+      }
+      if (validatedData.internalExpectedDate !== undefined) {
+        workOrderUpdateData.internalExpectedDate = validatedData.internalExpectedDate ? new Date(validatedData.internalExpectedDate) : null
+      }
+      
+      // 狀態標記
+      if (validatedData.isUrgent !== undefined) workOrderUpdateData.isUrgent = validatedData.isUrgent
+      if (validatedData.productionStarted !== undefined) workOrderUpdateData.productionStarted = validatedData.productionStarted
+      if (validatedData.isCompleted !== undefined) workOrderUpdateData.isCompleted = validatedData.isCompleted
 
       // If status is being updated, set metadata
       if (validatedData.status) {

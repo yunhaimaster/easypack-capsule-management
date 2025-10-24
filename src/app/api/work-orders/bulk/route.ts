@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // If status update, validate ALL transitions before starting transaction
     if (updates.status) {
-      const invalidTransitions: Array<{ id: string; jobNumber: string; currentStatus: string }> = []
+      const invalidTransitions: Array<{ id: string; jobNumber: string | null; currentStatus: string }> = []
 
       for (const workOrder of existingWorkOrders) {
         const currentStatus = workOrder.status
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         if (!validTransitions.includes(newStatus)) {
           invalidTransitions.push({
             id: workOrder.id,
-            jobNumber: workOrder.jobNumber,
+            jobNumber: workOrder.jobNumber || 'N/A',
             currentStatus
           })
         }

@@ -244,43 +244,62 @@ enum WorkType {
 
 model UnifiedWorkOrder {
   id                    String   @id @default(cuid())
-  jobNumber             String   @unique  // JOB 標號 (e.g., "JOB 20240424病情間痛·數粒入四角包")
+  jobNumber             String?  @unique  // 訂單編號（如有） - 改為可選
   
   // Status Management with Audit
   status                WorkOrderStatus @default(PENDING)
   statusUpdatedAt       DateTime?
   statusUpdatedBy       String?
   
-  markedDate            DateTime?
-  customerName          String   @db.VarChar(200)
+  markedDate            DateTime  @default(now())  // 記號日期（系統自動記錄創建時間）
+  customerName          String    @db.VarChar(200)
   
   // User references with safe deletion
   personInChargeId      String
-  personInCharge        User     @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)  // Can't delete user if they have orders
+  personInCharge        User     @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)
   
   workType              WorkType
-  isNewProductVip       Boolean  @default(false)
-  isComplexityVip       Boolean  @default(false)
   
-  yearCategory          String?  @db.VarChar(50)
+  // VIP標記（簡化名稱）
+  isCustomerServiceVip  Boolean  @default(false)  // 客服VIP
+  isBossVip             Boolean  @default(false)  // 老闆VIP
   
-  // Date fields
-  expectedCompletionDate DateTime?
-  dataCompleteDate      DateTime?
-  notifiedDate          DateTime?
-  paymentReceivedDate   DateTime?
-  shippedDate           DateTime?
+  // 物料到齊狀態
+  expectedProductionMaterialsDate  DateTime?  // 預計生產物料到齊的日期
+  expectedPackagingMaterialsDate   DateTime?  // 預計包裝物料到齊的日期
+  productionMaterialsReady         Boolean @default(false)  // 生產物料齊
+  packagingMaterialsReady          Boolean @default(false)  // 包裝物料齊
   
-  // Quantities
-  productionQuantityStat String?
-  packagingQuantityStat  String?
+  // 數量
   productionQuantity     Int?
   packagingQuantity      Int?
   
-  internalDeliveryTime   String?  @db.VarChar(100)
-  customerRequestedTime  String?  @db.VarChar(100)
-  tokyoData             String?  @db.Text
+  // 交貨期
+  requestedDeliveryDate  DateTime?  // 要求交貨的日期
+  internalExpectedDate   DateTime?  // 內部預計交貨期
+  
+  // 狀態標記
+  isUrgent               Boolean @default(false)  // 客人要求加急
+  productionStarted      Boolean @default(false)  // 已開生產線
+  isCompleted            Boolean @default(false)  // 已經完成
+  
+  // 工作描述
   workDescription       String   @db.Text
+  
+  // 保留舊欄位以兼容（標記為廢棄）
+  isNewProductVip       Boolean  @default(false)  // @deprecated
+  isComplexityVip       Boolean  @default(false)  // @deprecated
+  yearCategory          String?  @db.VarChar(50)  // @deprecated
+  expectedCompletionDate DateTime?  // @deprecated
+  dataCompleteDate      DateTime?  // @deprecated
+  notifiedDate          DateTime?
+  paymentReceivedDate   DateTime?
+  shippedDate           DateTime?
+  productionQuantityStat String?
+  packagingQuantityStat  String?
+  internalDeliveryTime   String?  @db.VarChar(100)  // @deprecated
+  customerRequestedTime  String?  @db.VarChar(100)  // @deprecated
+  tokyoData             String?  @db.Text
   notes                 String?  @db.Text
   
   capsulationOrder      CapsulationOrder?
@@ -295,10 +314,10 @@ model UnifiedWorkOrder {
   @@index([personInChargeId])
   @@index([workType])
   @@index([status])
-  @@index([expectedCompletionDate])
+  @@index([markedDate])
   @@index([createdAt(sort: Desc)])
   @@index([customerName, workType])  // Composite for common queries
-  @@index([status, expectedCompletionDate])  // Composite for dashboard
+  @@index([status, requestedDeliveryDate])  // Composite for dashboard
   @@map("unified_work_orders")
 }
 

@@ -38,46 +38,76 @@ export const createCapsulationOrderSchema = z.object({
 // ===== Work Order Schemas =====
 
 export const createWorkOrderSchema = z.object({
-  jobNumber: z.string().min(1, '工作單號為必填項').max(100).trim(),
-  markedDate: z.string().datetime().optional().nullable(),
+  // 基本信息
+  jobNumber: z.string().max(100).trim().optional().nullable(),  // 訂單編號（如有）- 可選
   customerName: z.string().min(1, '客戶名稱為必填項').max(200).trim(),
   personInChargeId: z.string().cuid('無效的負責人ID'),
   workType: workTypeSchema,
-  isNewProductVip: z.boolean().default(false),
-  isComplexityVip: z.boolean().default(false),
-  yearCategory: z.string().max(50).optional().nullable(),
-  expectedCompletionDate: z.string().datetime().optional().nullable(),
-  dataCompleteDate: z.string().datetime().optional().nullable(),
+  
+  // VIP標記
+  isCustomerServiceVip: z.boolean().default(false),  // 客服VIP
+  isBossVip: z.boolean().default(false),  // 老闆VIP
+  
+  // 物料到齊狀態
+  expectedProductionMaterialsDate: z.string().datetime().optional().nullable(),  // 預計生產物料到齊的日期
+  expectedPackagingMaterialsDate: z.string().datetime().optional().nullable(),  // 預計包裝物料到齊的日期
+  productionMaterialsReady: z.boolean().default(false),  // 生產物料齊
+  packagingMaterialsReady: z.boolean().default(false),  // 包裝物料齊
+  
+  // 數量
   productionQuantity: z.number().int().positive().optional().nullable(),
   packagingQuantity: z.number().int().positive().optional().nullable(),
-  internalDeliveryTime: z.string().max(100).optional().nullable(),
-  customerRequestedTime: z.string().max(100).optional().nullable(),
+  
+  // 交貨期
+  requestedDeliveryDate: z.string().datetime().optional().nullable(),  // 要求交貨的日期
+  internalExpectedDate: z.string().datetime().optional().nullable(),  // 內部預計交貨期
+  
+  // 狀態標記
+  isUrgent: z.boolean().default(false),  // 客人要求加急
+  productionStarted: z.boolean().default(false),  // 已開生產線
+  isCompleted: z.boolean().default(false),  // 已經完成
+  
+  // 工作描述
   workDescription: z.string().min(1, '工作描述為必填項').trim(),
-  notes: z.string().optional().nullable(),
+  
+  // 關聯數據
   capsulationOrder: createCapsulationOrderSchema.optional()
 })
 
 export const updateWorkOrderSchema = z.object({
-  jobNumber: z.string().min(1).max(100).trim().optional(),
+  jobNumber: z.string().max(100).trim().optional().nullable(),
   status: workOrderStatusSchema.optional(),
-  markedDate: z.string().datetime().optional().nullable(),
   customerName: z.string().min(1).max(200).trim().optional(),
   personInChargeId: z.string().cuid('無效的負責人ID').optional(),
   workType: workTypeSchema.optional(),
-  isNewProductVip: z.boolean().optional(),
-  isComplexityVip: z.boolean().optional(),
-  yearCategory: z.string().max(50).optional().nullable(),
-  expectedCompletionDate: z.string().datetime().optional().nullable(),
-  dataCompleteDate: z.string().datetime().optional().nullable(),
-  notifiedDate: z.string().datetime().optional().nullable(),
-  paymentReceivedDate: z.string().datetime().optional().nullable(),
-  shippedDate: z.string().datetime().optional().nullable(),
+  
+  // VIP標記
+  isCustomerServiceVip: z.boolean().optional(),
+  isBossVip: z.boolean().optional(),
+  
+  // 物料到齊狀態
+  expectedProductionMaterialsDate: z.string().datetime().optional().nullable(),
+  expectedPackagingMaterialsDate: z.string().datetime().optional().nullable(),
+  productionMaterialsReady: z.boolean().optional(),
+  packagingMaterialsReady: z.boolean().optional(),
+  
+  // 數量
   productionQuantity: z.number().int().positive().optional().nullable(),
   packagingQuantity: z.number().int().positive().optional().nullable(),
-  internalDeliveryTime: z.string().max(100).optional().nullable(),
-  customerRequestedTime: z.string().max(100).optional().nullable(),
+  
+  // 交貨期
+  requestedDeliveryDate: z.string().datetime().optional().nullable(),
+  internalExpectedDate: z.string().datetime().optional().nullable(),
+  
+  // 狀態標記
+  isUrgent: z.boolean().optional(),
+  productionStarted: z.boolean().optional(),
+  isCompleted: z.boolean().optional(),
+  
+  // 工作描述
   workDescription: z.string().min(1).trim().optional(),
-  notes: z.string().optional().nullable(),
+  
+  // 關聯數據
   capsulationOrder: z.object({
     productName: z.string().min(1).max(200).trim().optional(),
     productionQuantity: z.number().int().positive().optional(),
