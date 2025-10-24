@@ -12,6 +12,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useWorkOrders, useUsers } from '@/lib/queries/work-orders'
 import { WorkOrderTable } from '@/components/work-orders/work-order-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,6 +23,8 @@ import Link from 'next/link'
 import type { WorkOrderSearchFilters } from '@/types/work-order'
 
 export default function WorkOrdersPage() {
+  const router = useRouter()
+  
   // Search filters state
   const [filters, setFilters] = useState<WorkOrderSearchFilters>({
     page: 1,
@@ -77,11 +80,12 @@ export default function WorkOrdersPage() {
               統一工作單系統 - 包裝、生產、倉務
             </p>
           </div>
-          <Button asChild className="bg-primary-600 hover:bg-primary-700">
-            <Link href="/orders/new">
-              <Plus className="h-4 w-4 mr-2" />
-              新增工作單
-            </Link>
+          <Button 
+            className="bg-primary-600 hover:bg-primary-700"
+            onClick={() => router.push('/work-orders/new' as never)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            新增工作單
           </Button>
         </div>
 
