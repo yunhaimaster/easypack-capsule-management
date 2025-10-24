@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 注意：請提供具體的價格數據、供應商名稱和聯繫方式，以便用戶可以直接使用。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請搜索${materialName}的最新價格信息，包括供應商、價格、質量等級等詳細信息` }
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
 請使用香港書面語繁體中文回答，信息要準確且最新。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請快速搜索${materialName}的最新價格` }

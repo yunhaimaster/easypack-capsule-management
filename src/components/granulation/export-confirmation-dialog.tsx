@@ -28,7 +28,6 @@ export function ExportConfirmationDialog({
       isOpen={isOpen}
       onClose={onClose}
       title="匯出配方至製粒分析"
-      className="white-theme"
       size="lg"
       zIndex={11000}
     >
@@ -115,7 +114,7 @@ export function ExportConfirmationDialog({
                 </p>
                 <p className="text-xs text-purple-800 leading-relaxed">
                   點擊確認後，系統會將此訂單的配方原料自動填入製粒分析頁面，
-                  您可以使用 3 個專業 AI 模型（GPT-5、Claude Sonnet 4.5、Grok 4）
+                  您可以使用 3 個專業 AI 模型（DeepSeek V3.1 Terminus、GPT-4.1 Mini、Grok 4 Fast）
                   進行深入的製粒必要性分析。
                 </p>
               </div>

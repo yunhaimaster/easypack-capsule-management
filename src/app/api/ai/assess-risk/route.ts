@@ -80,7 +80,7 @@ ${materials.map((material: string) => `- ${material}`).join('\n')}
 語言要求：請使用香港書面語繁體中文，使用繁體中文字符和香港常用的專業術語，避免粵語口語。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }

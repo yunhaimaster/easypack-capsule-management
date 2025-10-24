@@ -27,7 +27,7 @@ export function getOpenRouterHeaders(
 
 /**
  * Builds a base OpenRouter request payload
- * @param model - Model ID (e.g., 'deepseek/deepseek-chat-v3.1')
+ * @param model - Model ID (e.g., 'deepseek/deepseek-v3.1-terminus')
  * @param messages - Array of conversation messages
  * @param options - Optional request parameters
  * @returns Complete request payload object
@@ -97,11 +97,11 @@ export async function fetchOpenRouter(
  * @returns Array of ModelConfig objects
  * @example
  * const models = getStandardModelCatalog()
- * // Returns: [{ id: 'deepseek/deepseek-chat-v3.1', name: 'DeepSeek Chat v3.1' }, ...]
+ * // Returns: [{ id: 'deepseek/deepseek-v3.1-terminus', name: 'DeepSeek V3.1 Terminus' }, ...]
  */
 export function getStandardModelCatalog(): ModelConfig[] {
   return [
-    { id: 'deepseek/deepseek-chat-v3.1', name: 'DeepSeek Chat v3.1' },
+    { id: 'deepseek/deepseek-v3.1-terminus', name: 'DeepSeek V3.1 Terminus' },
     { id: 'openai/gpt-4.1-mini', name: 'OpenAI GPT-4.1 Mini' },
     { id: 'x-ai/grok-4-fast', name: 'xAI Grok 4 Fast' }
   ]

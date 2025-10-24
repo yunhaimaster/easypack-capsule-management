@@ -20,8 +20,8 @@ type AnalysisStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const MODEL_CONFIG = [
   {
-    id: 'deepseek/deepseek-chat-v3.1',
-    name: 'DeepSeek Chat v3.1',
+    id: 'deepseek/deepseek-v3.1-terminus',
+    name: 'DeepSeek V3.1 Terminus',
     badgeType: 'info' as const,
     iconVariant: 'info' as const,
     description: '高性價比深度推理，全面分析配方可行性'

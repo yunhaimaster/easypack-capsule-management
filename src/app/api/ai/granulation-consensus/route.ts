@@ -100,7 +100,7 @@ ${formatAnalyses(analyses)}
 請綜合以上內容，產出單一最終結論與建議。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }

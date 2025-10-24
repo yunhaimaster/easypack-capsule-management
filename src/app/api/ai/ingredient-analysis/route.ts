@@ -126,7 +126,7 @@ ${JSON.stringify(analysisData.popularIngredients, null, 2)}
 請使用香港書面語繁體中文回答，確保分析專業、準確且實用。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請分析我們的訂單數據，提供原料使用洞察和業務建議` }
@@ -211,7 +211,7 @@ export async function GET(request: NextRequest) {
         'X-Title': 'Easy Health AI Quick Ingredient Analysis'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
+        model: 'deepseek/deepseek-v3.1-terminus',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `請快速分析原料使用情況` }

@@ -288,7 +288,7 @@ export default function MarketingAssistantPage() {
               行銷設計助手
             </h1>
             <p className="text-sm md:text-sm text-neutral-600 max-w-2xl mx-auto">
-              使用 DeepSeek Chat v3.1 分析配方，Doubao SeeDream 4.0 生成包裝圖像
+              使用 DeepSeek V3.1 Terminus 分析配方，Doubao SeeDream 4.0 生成包裝圖像
             </p>
           </div>
           

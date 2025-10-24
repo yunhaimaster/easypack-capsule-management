@@ -72,7 +72,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
             </div>
             <div>
               <h2 className="text-lg font-semibold text-neutral-800">行銷策略分析</h2>
-              <p className="text-sm text-neutral-500">DeepSeek Chat v3.1 專業行銷建議與包裝設計方案</p>
+              <p className="text-sm text-neutral-500">DeepSeek V3.1 Terminus 專業行銷建議與包裝設計方案</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
@@ -88,7 +88,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
             {showDelayNotice && (
               <span className="inline-flex items-center gap-1 text-xs text-info-600 bg-info-100/80 px-2 py-1 rounded-full border border-violet-200">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                DeepSeek Chat v3.1 深度思考中…
+                DeepSeek V3.1 Terminus 深度思考中…
               </span>
             )}
             <Button
@@ -172,7 +172,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
                     </div>
                     {showDelayNotice ? (
                       <p className="text-xs text-info-600">
-                        DeepSeek Chat v3.1 深度思考中，請稍候或稍後回來查看結果...
+                        DeepSeek V3.1 Terminus 深度思考中，請稍候或稍後回來查看結果...
                       </p>
                     ) : (
                       <p className="text-xs text-info-600">

@@ -110,7 +110,7 @@ ${ingredientList}
           'X-Title': 'Easy Health Recipe Analyzer'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-chat-v3.1',
+          model: 'deepseek/deepseek-v3.1-terminus',
           messages: [
             {
               role: 'system',

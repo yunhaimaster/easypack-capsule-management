@@ -80,7 +80,7 @@ async function generateSuggestions(
         'X-Title': 'Easy Health AI Assistant'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
+        model: 'deepseek/deepseek-v3.1-terminus',
         messages: [
           {
             role: 'user',
@@ -497,7 +497,7 @@ ${JSON.stringify(cleanedOrders, null, 2)}
         'X-Title': 'Easy Health AI Assistant'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
+        model: 'deepseek/deepseek-v3.1-terminus',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }

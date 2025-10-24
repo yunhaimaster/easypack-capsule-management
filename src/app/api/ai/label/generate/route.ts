@@ -12,7 +12,7 @@ const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter
 
 // Models for parallel generation - use same models as recipe-generate and granulation
 const MODELS = [
-  { id: 'deepseek/deepseek-chat-v3.1', name: 'DeepSeek Chat v3.1' },
+  { id: 'deepseek/deepseek-v3.1-terminus', name: 'DeepSeek V3.1 Terminus' },
   { id: 'openai/gpt-4.1-mini', name: 'OpenAI GPT-4.1 Mini' },
   { id: 'x-ai/grok-4-fast', name: 'xAI Grok 4 Fast' }
 ]

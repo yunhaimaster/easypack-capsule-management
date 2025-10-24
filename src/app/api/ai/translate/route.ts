@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 請翻譯以下文字：`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: text }

@@ -56,7 +56,7 @@ ${JSON.stringify(priceData, null, 2)}
 請使用香港書面語繁體中文回答，確保分析專業、準確且實用。`
 
     const payload = buildBaseRequest(
-      'deepseek/deepseek-chat-v3.1',
+      'deepseek/deepseek-v3.1-terminus',
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `請分析${materialName}的價格趨勢和採購建議` }

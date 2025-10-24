@@ -64,7 +64,7 @@ ${context?.currentRecipe ? `配方名稱：${context.currentRecipe.name || '未�
         'X-Title': 'Easy Health AI Recipe Chat'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3.1',
+        model: 'deepseek/deepseek-v3.1-terminus',
         messages: apiMessages,
         max_tokens: 8000,
         temperature: 0.1,
