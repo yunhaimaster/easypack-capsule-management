@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma migrate deploy && prisma generate && next build",
+    "build:local": "prisma generate && next build",
     "postbuild": "bash scripts/postbuild.sh || true",
     "start": "next start",
     "lint": "next lint",
