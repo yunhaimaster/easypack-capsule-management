@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { LinkedFilter } from '@/components/ui/linked-filter'
 import { LiquidGlassConfirmModal, useLiquidGlassModal } from '@/components/ui/liquid-glass-modal'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
+import { TableWrapper } from '@/components/ui/table-wrapper'
 import { Search, Filter, Download, Eye, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown, ChevronRight, AlertTriangle, ClipboardCheck, Bot, Timer, Square, Calendar, Package2, RefreshCw, Loader2 } from 'lucide-react'
 import { formatDateOnly, downloadFile } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast-provider'
@@ -309,15 +310,15 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
 
       {/* 桌面版表格 */}
       <div className="hidden lg:block">
-        <div className="overflow-hidden rounded-3xl bg-white/70 backdrop-blur border border-white/60 shadow-[0_15px_45px_rgba(15,32,77,0.12)]">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-white/80">
+        <TableWrapper>
+          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <thead className="bg-white/80 dark:bg-gray-900/80">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">客戶 / 產品</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">狀態</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">訂單資訊</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">配方摘要</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">操作</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">客戶 / 產品</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">狀態</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">訂單資訊</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">配方摘要</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -493,7 +494,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
               )}
             </tbody>
           </table>
-        </div>
+        </TableWrapper>
       </div>
       
       {/* Mobile cards */}

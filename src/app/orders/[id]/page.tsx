@@ -407,16 +407,16 @@ export default function OrderDetailPage() {
                   </h4>
                   <div className="space-y-3 text-xs md:text-sm text-neutral-700">
                     {order.processIssues && (
-                      <div className="rounded-xl border border-red-100 bg-danger-50/70 p-3">
-                        <span className="font-medium text-danger-700 block mb-1">製程問題</span>
-                        <p className="leading-relaxed text-danger-600 text-sm">{order.processIssues}</p>
-                      </div>
+                      <Card variant="glass" tone="negative" interactive={false} className="p-3">
+                        <span className="font-medium text-danger-700 dark:text-danger-400 block mb-1">製程問題</span>
+                        <p className="leading-relaxed text-danger-600 dark:text-danger-300 text-sm">{order.processIssues}</p>
+                      </Card>
                     )}
                     {order.qualityNotes && (
-                      <div className="rounded-xl border border-emerald-100 bg-success-50/70 p-3">
-                        <span className="font-medium text-success-700 block mb-1">品管備註</span>
-                        <p className="leading-relaxed text-success-600 text-sm">{order.qualityNotes}</p>
-                      </div>
+                      <Card variant="glass" tone="positive" interactive={false} className="p-3">
+                        <span className="font-medium text-success-700 dark:text-success-400 block mb-1">品管備註</span>
+                        <p className="leading-relaxed text-success-600 dark:text-success-300 text-sm">{order.qualityNotes}</p>
+                      </Card>
                     )}
                   </div>
                 </div>
@@ -489,20 +489,22 @@ export default function OrderDetailPage() {
               </div>
               <div className="grid grid-cols-1 gap-4 md:hidden">
                 {order.ingredients.map((ingredient, index) => (
-                  <div
+                  <Card
                     key={index}
-                    className="p-4 rounded-2xl bg-white/70 backdrop-blur-lg border border-white/40 shadow-sm space-y-3"
+                    variant="glass"
+                    interactive={false}
+                    className="p-4 space-y-3"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h4 className="text-base font-semibold text-neutral-800 leading-tight flex-1">
+                      <h4 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 leading-tight flex-1">
                         {ingredient.materialName}
                       </h4>
                       <div className="flex flex-col items-end gap-1.5 text-xs font-medium flex-shrink-0">
-                        <span className={`inline-flex items-center gap-1.5 ${ingredient.isCustomerProvided ? 'text-success-600' : 'text-primary-500'}`}>
+                        <span className={`inline-flex items-center gap-1.5 ${ingredient.isCustomerProvided ? 'text-success-600 dark:text-success-400' : 'text-primary-500 dark:text-primary-400'}`}>
                           <span className={`h-2 w-2 rounded-full ${ingredient.isCustomerProvided ? 'bg-success-500' : 'bg-primary-400'}`} />
                           {ingredient.isCustomerProvided ? '客戶指定' : '自行添加'}
                         </span>
-                        <span className={`inline-flex items-center gap-1.5 ${ingredient.isCustomerSupplied ? 'text-success-600' : 'text-primary-500'}`}>
+                        <span className={`inline-flex items-center gap-1.5 ${ingredient.isCustomerSupplied ? 'text-success-600 dark:text-success-400' : 'text-primary-500 dark:text-primary-400'}`}>
                           <span className={`h-2 w-2 rounded-full ${ingredient.isCustomerSupplied ? 'bg-success-500' : 'bg-primary-400'}`} />
                           {ingredient.isCustomerSupplied ? '客戶提供' : '公司提供'}
                         </span>
@@ -510,19 +512,19 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-wide text-neutral-500 mb-1">單粒含量</span>
-                        <span className="text-base font-semibold text-neutral-900">
+                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">單粒含量</span>
+                        <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                           {formatIngredientWeight(ingredient.unitContentMg)} mg
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-wide text-neutral-500 mb-1">批次用量</span>
-                        <span className="text-base font-semibold text-neutral-900">
+                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">批次用量</span>
+                        <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                           {calculateBatchWeight(ingredient.unitContentMg, order.productionQuantity).display}
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             </CardContent>
@@ -572,26 +574,26 @@ export default function OrderDetailPage() {
 
                   <div className="md:hidden space-y-4">
                     {order.worklogs.map((worklog, index) => (
-                      <div key={index} className="p-4 rounded-2xl bg-white/70 backdrop-blur border border-white/40 space-y-3">
+                      <Card key={index} variant="glass" interactive={false} className="p-4 space-y-3">
                         <div className="flex items-start justify-between gap-3">
-                          <h4 className="text-base font-semibold text-neutral-800 leading-tight flex-1">
+                          <h4 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 leading-tight flex-1">
                             {formatDateOnly(worklog.workDate)}
                           </h4>
-                          <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 flex-shrink-0">
-                            <span className="bg-primary-50 text-primary-700 px-2 py-1 rounded-full">工時：{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
-                            <span className="bg-neutral-50 text-neutral-700 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
+                          <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                            <span className="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full">工時：{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
+                            <span className="bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
                           </div>
                         </div>
-                        <div className="text-sm text-neutral-700 space-y-2 leading-relaxed">
-                          <p><span className="font-medium text-neutral-900">時間：</span>{worklog.startTime} - {worklog.endTime}</p>
+                        <div className="text-sm text-neutral-700 dark:text-neutral-300 space-y-2 leading-relaxed">
+                          <p><span className="font-medium text-neutral-900 dark:text-neutral-100">時間：</span>{worklog.startTime} - {worklog.endTime}</p>
                           {worklog.notes && (
-                            <p className="bg-amber-50 border border-amber-100 rounded-lg p-2">
-                              <span className="font-medium text-amber-900">備註：</span>
-                              <span className="text-amber-800">{worklog.notes}</span>
+                            <p className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-lg p-2">
+                              <span className="font-medium text-amber-900 dark:text-amber-300">備註：</span>
+                              <span className="text-amber-800 dark:text-amber-200">{worklog.notes}</span>
                             </p>
                           )}
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </>

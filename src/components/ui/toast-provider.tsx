@@ -60,8 +60,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={id}
               duration={Number.isFinite(duration) ? duration : undefined}
               className={cn(
-                'bg-white/90 backdrop-blur-lg border border-white/60 shadow-lg rounded-xl px-4 py-3 text-sm text-neutral-800 flex flex-col gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
-                variant === 'destructive' && 'border-danger-300 bg-danger-50 text-danger-700'
+                'liquid-glass-toast px-4 py-3 text-sm text-neutral-800 dark:text-neutral-100 flex flex-col gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
+                variant === 'destructive' && 'border-danger-300 bg-danger-50 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300'
               )}
               onOpenChange={(open) => handleOpenChange(id, open)}
               role={variant === 'destructive' ? 'alert' : 'status'}
@@ -69,15 +69,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  {title && <ToastPrimitive.Title className="font-medium text-base text-neutral-900">{title}</ToastPrimitive.Title>}
+                  {title && <ToastPrimitive.Title className="font-medium text-base text-neutral-900 dark:text-neutral-100">{title}</ToastPrimitive.Title>}
                   {description && (
-                    <ToastPrimitive.Description className="text-sm text-neutral-600">
+                    <ToastPrimitive.Description className="text-sm text-neutral-600 dark:text-neutral-300">
                       {description}
                     </ToastPrimitive.Description>
                   )}
                 </div>
                 <ToastPrimitive.Close
-                  className="text-neutral-400 hover:text-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
+                  className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
                   aria-label="關閉通知"
                 >
                   ×

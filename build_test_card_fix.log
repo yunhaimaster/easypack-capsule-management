@@ -1,0 +1,5 @@
+
+> easypack-capsule-management-v1@1.0.0 build
+> prisma migrate deploy && prisma generate && next build
+
+sh: 1: prisma: not found
