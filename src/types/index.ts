@@ -280,3 +280,8 @@ export interface RecipeStats {
   }>
   recentRecipes: RecipeLibraryItem[]
 }
+
+// ===== 統一工作單系統 (Unified Work Order System) =====
+
+export * from './work-order'
+

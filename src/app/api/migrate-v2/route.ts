@@ -38,13 +38,13 @@ export async function POST(request: NextRequest) {
       migrations.push('ProductEfficacy 表')
     }
 
-    // 4. 檢查 WorkOrder 表
+    // 4. 檢查 LegacyWorkOrder 表 (舊的 WorkOrder 模型已重命名)
     try {
-      await prisma.workOrder.findFirst()
-      logger.info('WorkOrder 表已存在')
+      await prisma.legacyWorkOrder.findFirst()
+      logger.info('LegacyWorkOrder 表已存在')
     } catch (error) {
-      logger.info('WorkOrder 表不存在，需要創建')
-      migrations.push('WorkOrder 表')
+      logger.info('LegacyWorkOrder 表不存在，需要創建')
+      migrations.push('LegacyWorkOrder 表')
     }
 
     // 5. 檢查 QCFile 表
