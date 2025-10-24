@@ -3288,12 +3288,26 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
+/* AI Chat Modal Dark Mode */
+.dark .liquid-glass-modal.ai-chat-modal {
+  background: linear-gradient(160deg, rgba(30, 41, 59, 0.95), rgba(23, 33, 47, 0.92)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    0 12px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
 .ai-modal-shell {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   height: 100%;
   color: rgba(18, 42, 64, 0.92);
+}
+
+.dark .ai-modal-shell {
+  color: rgba(226, 232, 240, 0.95);
 }
 
 .ai-modal-meta {
@@ -3309,6 +3323,14 @@
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.6),
     inset 0 -1px 0 rgba(42,150,209,0.12);
+}
+
+.dark .ai-modal-meta {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(129, 140, 248, 0.12));
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(59, 130, 246, 0.15);
 }
 
 .ai-modal-stream {
@@ -3360,6 +3382,15 @@
   border: 1px solid rgba(42, 150, 209, 0.14);
 }
 
+.dark .ai-message-assistant {
+  background: linear-gradient(160deg, rgba(51, 65, 85, 0.95), rgba(45, 55, 72, 0.92));
+  color: rgba(226, 232, 240, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 .ai-message-content {
   display: flex;
   flex-direction: column;
@@ -3385,10 +3416,22 @@
   transition: all 0.2s ease;
 }
 
+.dark .ai-message-action-btn {
+  background: rgba(51, 65, 85, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: rgba(226, 232, 240, 0.9);
+}
+
 .ai-message-action-btn:hover {
   background: white;
   border-color: rgba(42, 150, 209, 0.35);
   color: rgba(18, 42, 64, 0.95);
+}
+
+.dark .ai-message-action-btn:hover {
+  background: rgba(71, 85, 105, 0.9);
+  border-color: rgba(148, 163, 184, 0.5);
+  color: rgba(241, 245, 249, 1);
 }
 
 .ai-suggestion-button {
@@ -3404,10 +3447,22 @@
   transition: all 0.2s ease;
 }
 
+.dark .ai-suggestion-button {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: rgba(226, 232, 240, 0.9);
+}
+
 .ai-suggestion-button:hover {
   background: rgba(42, 150, 209, 0.12);
   border-color: rgba(42, 150, 209, 0.28);
   color: rgba(18, 42, 64, 0.95);
+}
+
+.dark .ai-suggestion-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: rgba(241, 245, 249, 1);
 }
 
 .ai-modal-input-row {
@@ -3422,6 +3477,12 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
+.dark .ai-modal-input-row {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8), rgba(23, 33, 47, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
 .ai-modal-input {
   background: rgba(255, 255, 255, 0.85) !important;
   border: 1px solid rgba(42, 150, 209, 0.22) !important;
@@ -3432,10 +3493,21 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.dark .ai-modal-input {
+  background: rgba(51, 65, 85, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
 .ai-modal-input:focus-visible {
   outline: none !important;
   border-color: rgba(42, 150, 209, 0.45) !important;
   box-shadow: 0 0 0 3px rgba(42, 150, 209, 0.2) !important;
+}
+
+.dark .ai-modal-input:focus-visible {
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
 }
 
 .ai-modal-send {
