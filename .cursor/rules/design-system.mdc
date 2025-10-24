@@ -69,6 +69,199 @@ Run to migrate any new hardcoded colors:
 
 ---
 
+## 🚨 MANDATORY: Standardized Component Usage
+
+**CRITICAL RULE**: All new code MUST use standardized components. This is NON-NEGOTIABLE.
+
+### Why This Rule Exists
+
+During dark mode implementation (2025-01-24), we discovered significant technical debt:
+- Many components used hardcoded `bg-white` + `dark:bg-gray-*` instead of semantic tokens
+- Custom surfaces instead of Card components
+- Inline badges instead of Badge component
+- This caused dark mode to break in multiple places
+
+**Result**: Hours of debugging and fixing violations that could have been prevented.
+
+### Enforcement Rules
+
+#### ❌ NEVER Do This:
+
+```tsx
+// ❌ WRONG - Hardcoded colors
+<div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+  <span className="bg-blue-500 text-white px-3 py-1 rounded-full">Badge</span>
+</div>
+
+// ❌ WRONG - Manual dark mode handling
+<div className="bg-white/60 dark:bg-gray-900/60">Content</div>
+
+// ❌ WRONG - Custom button
+<button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2">
+  Click me
+</button>
+
+// ❌ WRONG - Raw icon without container
+<div className="bg-emerald-100 p-2 rounded-full">
+  <Plus className="text-emerald-600" />
+</div>
+
+// ❌ WRONG - Custom modal
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div className="bg-white rounded-xl p-6">Modal content</div>
+</div>
+```
+
+#### ✅ ALWAYS Do This:
+
+```tsx
+// ✅ CORRECT - Use Card component
+<Card className="liquid-glass-card liquid-glass-card-elevated">
+  <div className="liquid-glass-content p-6">
+    <Badge variant="primary">Badge</Badge>
+  </div>
+</Card>
+
+// ✅ CORRECT - Use semantic colors with Card
+<Card>
+  <CardContent className="bg-surface-primary/60">
+    Content automatically adapts to dark mode
+  </CardContent>
+</Card>
+
+// ✅ CORRECT - Use Button component
+<Button variant="default" size="md">
+  Click me
+</Button>
+
+// ✅ CORRECT - Use IconContainer
+<IconContainer icon={Plus} variant="success" size="md" />
+
+// ✅ CORRECT - Use LiquidGlassModal
+<LiquidGlassModal isOpen={isOpen} onClose={onClose}>
+  <div className="p-6">Modal content</div>
+</LiquidGlassModal>
+```
+
+### Required Component Mapping
+
+**When you need...** | **Use this component** | **Import from**
+---|---|---
+Cards/surfaces | `Card`, `CardContent`, `CardHeader` | `@/components/ui/card`
+Buttons | `Button` | `@/components/ui/button`
+Badges/tags | `Badge` | `@/components/ui/badge`
+Icons with background | `IconContainer` | `@/components/ui/icon-container`
+Modals/dialogs | `LiquidGlassModal`, `Dialog`, `AccessibleDialog` | `@/components/ui/`
+AI model badges | `ModelBadge`, `ConsensusBadge` | `@/components/ui/model-badge`
+Forms | `Input`, `Textarea`, `Select`, `Checkbox` | `@/components/ui/`
+Tables | `Table`, `TableWrapper` | `@/components/ui/table`
+Loading states | `LoadingSpinner`, `AIThinkingIndicator` | `@/components/ui/`
+Tooltips | `Tooltip` | `@/components/ui/tooltip`
+
+### Semantic Color Usage
+
+**If you MUST use color classes directly** (rare cases), use semantic tokens:
+
+#### Text Colors
+```tsx
+// ✅ CORRECT
+text-neutral-800     // Primary text (adapts to dark mode)
+text-neutral-600     // Secondary text
+text-neutral-500     // Tertiary text
+text-primary-600     // Brand color
+text-success-600     // Success state
+text-danger-600      // Error state
+text-warning-600     // Warning state
+text-info-600        // Info state
+
+// ❌ WRONG
+text-gray-800        // Doesn't adapt to dark mode
+text-slate-600       // Doesn't adapt to dark mode
+text-blue-600        // Not semantic
+```
+
+#### Background Colors
+```tsx
+// ✅ CORRECT
+bg-surface-primary          // Adapts to dark mode
+bg-surface-secondary        // Adapts to dark mode
+bg-primary-500              // Brand background
+bg-success-50               // Success light background
+
+// ❌ WRONG
+bg-white                    // Hardcoded white
+bg-gray-100                 // Doesn't adapt properly
+bg-blue-500                 // Not semantic
+```
+
+### Dark Mode Considerations
+
+**Automatic Dark Mode:**
+- All standardized components automatically support dark mode
+- Semantic tokens (text-neutral-*, bg-surface-*) adapt automatically
+- NO manual `dark:` variants needed when using standardized components
+
+**When Dark Mode Breaks:**
+- Usually means hardcoded colors were used
+- Run color migration script: `./scripts/migrate-colors.sh`
+- Fix violations by replacing with standardized components
+
+### Pre-Commit Checklist
+
+Before pushing code, verify:
+
+- [ ] No `bg-white` or `bg-gray-*` hardcoded colors (use Card component instead)
+- [ ] No `text-gray-*`, `text-slate-*`, `text-blue-*` (use semantic colors)
+- [ ] No raw `<button>` elements (use Button component)
+- [ ] No custom modals with `fixed inset-0` (use LiquidGlassModal)
+- [ ] No raw icons without IconContainer
+- [ ] All badges use Badge component
+- [ ] All cards use Card component
+- [ ] Test in dark mode (toggle in UI)
+
+### Automated Checks
+
+**Check for violations:**
+```bash
+# Find hardcoded bg-white
+grep -r "bg-white" src/ --include="*.tsx" | grep -v "bg-white/\[" | grep -v "dark:bg-"
+
+# Find hardcoded text colors
+grep -r "text-\(gray\|slate\|blue\)-[0-9]" src/ --include="*.tsx" | grep -v "text-neutral"
+
+# Find raw button elements
+grep -r "<button" src/ --include="*.tsx" | grep "className" | grep -v "Button"
+```
+
+### Exception Process
+
+**Only create custom components when:**
+1. No standardized component exists for your use case
+2. You've checked all available components first
+3. The custom component will be reused in 3+ places
+4. You document why standardized components don't work
+
+**If creating custom component:**
+1. Use semantic color tokens (never hardcoded colors)
+2. Add dark mode support from the start
+3. Follow Apple HIG standards
+4. Consider contributing it to the design system
+
+### Violation Consequences
+
+**For reviewers**: Reject PRs that:
+- Use `bg-white` or `bg-gray-*` instead of Card
+- Have raw buttons instead of Button component
+- Use hardcoded colors instead of semantic tokens
+- Create custom modals instead of using LiquidGlassModal
+
+**For developers**: Fix immediately:
+- Run `./scripts/migrate-colors.sh` for color violations
+- Replace custom implementations with standardized components
+- Test in both light and dark modes
+
+---
+
 ## Core Components
 
 ### IconContainer

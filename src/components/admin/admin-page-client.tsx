@@ -3,15 +3,16 @@
 import { useState } from 'react'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { Card } from '@/components/ui/card'
-import { Users, Monitor, FileText, Shield } from 'lucide-react'
+import { Users, Monitor, FileText, Shield, Smartphone } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 import { UserManagement } from './user-management'
-import { DeviceManagement } from './device-management'
+import { SessionManagement } from './session-management'
+import { TrustedDeviceManagement } from './trusted-device-management'
 import { AuditLogViewer } from './audit-log-viewer'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'users' | 'devices' | 'logs'
+type Tab = 'users' | 'sessions' | 'devices' | 'logs'
 
 export function AdminPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('users')
@@ -84,6 +85,18 @@ export function AdminPageClient() {
           </button>
           
           <button
+            onClick={() => setActiveTab('sessions')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+              activeTab === 'sessions'
+                ? 'bg-primary-500 text-white shadow-md'
+                : 'bg-white text-neutral-700 hover:bg-neutral-50'
+            }`}
+          >
+            <Monitor className="h-4 w-4" />
+            活躍會話
+          </button>
+
+          <button
             onClick={() => setActiveTab('devices')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'devices'
@@ -91,8 +104,8 @@ export function AdminPageClient() {
                 : 'bg-white text-neutral-700 hover:bg-neutral-50'
             }`}
           >
-            <Monitor className="h-4 w-4" />
-            設備監控
+            <Smartphone className="h-4 w-4" />
+            受信任設備
           </button>
           
           <button
@@ -114,12 +127,18 @@ export function AdminPageClient() {
             <UserManagement 
               onSelectUser={(userId) => {
                 setSelectedUserId(userId)
-                setActiveTab('devices') // 切換到設備監控頁
+                setActiveTab('sessions') // 切換到活躍會話頁
               }}
             />
           )}
+          {activeTab === 'sessions' && (
+            <SessionManagement 
+              selectedUserId={selectedUserId}
+              onClearFilter={() => setSelectedUserId(null)}
+            />
+          )}
           {activeTab === 'devices' && (
-            <DeviceManagement 
+            <TrustedDeviceManagement 
               selectedUserId={selectedUserId}
               onClearFilter={() => setSelectedUserId(null)}
             />

@@ -1,4 +1,5 @@
 import { LoginForm } from '@/components/auth/login-form'
+import { Badge } from '@/components/ui/badge'
 import { Suspense } from 'react'
 
 export default function LoginPage() {
@@ -8,10 +9,10 @@ export default function LoginPage() {
       <main className="relative min-h-screen flex items-center justify-center px-6 md:px-10 py-16">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-8 md:gap-12 items-center">
           <section className="space-y-6 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-white/70 text-xs text-[--brand-neutral] shadow-sm">
+            <Badge variant="outline" className="inline-flex items-center gap-2 text-xs shadow-sm">
               <span className="font-medium tracking-wide">品牌登入</span>
               <span className="text-[11px] text-neutral-500">Easy Health Capsule Management</span>
-            </div>
+            </Badge>
             <div className="space-y-3">
               <h1 className="text-2xl sm:text-2xl font-semibold tracking-tight text-[--brand-neutral]">
                 登入膠囊配方管理系統
@@ -21,14 +22,14 @@ export default function LoginPage() {
               </p>
             </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-3 text-xs text-neutral-500">
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/40 border border-white/60">
+              <Badge variant="outline" className="inline-flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-success-400" />
                 SSL 加密登入
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/40 border border-white/60">
+              </Badge>
+              <Badge variant="outline" className="inline-flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary-400" />
                 內部授權使用
-              </span>
+              </Badge>
             </div>
           </section>
 
