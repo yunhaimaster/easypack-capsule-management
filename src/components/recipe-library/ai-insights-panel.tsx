@@ -253,25 +253,25 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
               {suggestions.map((suggestion: any, index: number) => (
                 <div 
                   key={index} 
-                  className="p-4 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-colors"
+                  className="p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/30 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-primary-900 flex-1">
+                    <h3 className="text-sm font-semibold text-primary-900 dark:text-primary-200 flex-1">
                       {index + 1}. {suggestion.title}
                     </h3>
                     {suggestion.priority && (
                       <span className={`text-xs px-2 py-0.5 rounded ml-2 shrink-0 ${
                         suggestion.priority === 'high' 
-                          ? 'bg-danger-100 text-danger-700'
+                          ? 'bg-danger-100 dark:bg-danger-900/20 text-danger-700 dark:text-danger-400'
                           : suggestion.priority === 'medium'
-                          ? 'bg-warning-100 text-warning-700'
-                          : 'bg-neutral-100 text-neutral-600 dark:text-white/75'
+                          ? 'bg-warning-100 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400'
+                          : 'bg-neutral-100 dark:bg-neutral-800/30 text-neutral-600 dark:text-white/75'
                       }`}>
                         {suggestion.priority === 'high' ? '高' : suggestion.priority === 'medium' ? '中' : '低'}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-primary-800 mb-2 whitespace-pre-wrap">
+                  <p className="text-sm text-primary-800 dark:text-primary-300 mb-2 whitespace-pre-wrap">
                     {suggestion.description}
                   </p>
                   {suggestion.impact && (
