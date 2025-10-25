@@ -131,11 +131,19 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       if (result.success) {
         // Handle validation response structure
         const validation = result.validation || result.data
+        
+        // Map validation details to error format expected by UI
+        const mappedErrors = (validation.details || []).map((detail: any) => ({
+          row: detail.row,
+          field: detail.field,
+          error: detail.message // Map 'message' to 'error' for display
+        }))
+        
         setValidationResult({
           valid: validation.valid || 0,
           invalid: validation.errors || 0,
           duplicates: 0, // Not tracked in current validation
-          errors: validation.details || []
+          errors: mappedErrors
         })
         setStep('preview')
       } else {

@@ -47,7 +47,7 @@ export default function CreateWorkOrderPage() {
     defaultValues: {
       jobNumber: '',
       customerName: '',
-      personInChargeId: '',
+      personInChargeId: 'UNASSIGNED',
       workType: 'PACKAGING',
       workDescription: '',
       isCustomerServiceVip: false,
@@ -76,7 +76,7 @@ export default function CreateWorkOrderPage() {
       const payload: CreateWorkOrderPayload = {
         jobNumber: data.jobNumber || null,
         customerName: data.customerName.trim(),
-        personInChargeId: data.personInChargeId,
+        personInChargeId: data.personInChargeId === 'UNASSIGNED' ? null : data.personInChargeId,
         workType: data.workType,
         workDescription: data.workDescription.trim(),
         
@@ -232,6 +232,9 @@ export default function CreateWorkOrderPage() {
                       <SelectValue placeholder="請選擇負責人" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
+                        未指定
+                      </SelectItem>
                       {users?.map((user: User) => (
                         <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
                           {user.nickname || user.phoneE164}

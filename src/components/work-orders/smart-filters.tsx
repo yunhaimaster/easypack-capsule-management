@@ -57,7 +57,8 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     icon: Factory,
     color: 'primary',
     filters: {
-      workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING']
+      workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING'],
+      statuses: ['PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Active statuses only
     }
   },
   {
@@ -69,7 +70,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       productionMaterialsReady: true,
       productionStarted: false,
-      statuses: ['PENDING', 'DATA_COMPLETE']
+      statuses: ['DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Data ready, can start
     }
   },
   {
@@ -81,7 +82,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       productionStarted: true,
       productionMaterialsReady: false,
-      statuses: ['DATA_COMPLETE', 'NOTIFIED']
+      isCompleted: false
     }
   },
   {
@@ -92,7 +93,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'danger',
     filters: {
       isUrgent: true,
-      statuses: ['PENDING', 'DATA_COMPLETE', 'NOTIFIED']
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Not completed yet
     }
   },
   {
@@ -102,7 +103,8 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     icon: Star,
     color: 'info',
     filters: {
-      isVip: true
+      isVip: true,
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Active VIP orders
     }
   },
   {
@@ -114,7 +116,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
       packagingMaterialsReady: true,
-      statuses: ['DATA_COMPLETE', 'NOTIFIED', 'PENDING']
+      statuses: ['DATA_COMPLETE', 'NOTIFIED', 'PAID']
     }
   },
   {
@@ -125,17 +127,17 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'neutral',
     filters: {
       productionMaterialsReady: false,
-      statuses: ['PENDING', 'DATA_COMPLETE']
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE'] // Early stages
     }
   },
   {
     id: 'delivery-soon',
     label: '即將交貨',
-    description: '已完成或接近交貨期',
+    description: '已收數或已出貨',
     icon: Truck,
     color: 'info',
     filters: {
-      statuses: ['COMPLETED', 'SHIPPED']
+      statuses: ['PAID', 'SHIPPED']
     }
   }
 ]

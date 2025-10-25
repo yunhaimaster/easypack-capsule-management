@@ -16,7 +16,9 @@ export const workOrderFormSchema = z.object({
   // Basic Information
   jobNumber: z.string().max(50, "訂單編號不能超過50字元").optional().nullable(),
   customerName: z.string().min(1, "客戶名稱為必填").max(100, "客戶名稱不能超過100字元"),
-  personInChargeId: z.string().uuid("請選擇負責人"),
+  personInChargeId: z.string().refine((val) => val === 'UNASSIGNED' || z.string().uuid().safeParse(val).success, {
+    message: "請選擇負責人"
+  }),
   workType: z.nativeEnum(WorkType, { errorMap: () => ({ message: "請選擇工作類型" }) }),
   workDescription: z.string().min(10, "工作描述至少需要10個字").max(1000, "工作描述不能超過1000字元"),
   

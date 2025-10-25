@@ -143,7 +143,7 @@ export interface UserBadgeData {
 export interface CreateWorkOrderData {
   jobNumber?: string | null  // 訂單編號（如有）- 可選
   customerName: string
-  personInChargeId: string
+  personInChargeId: string | null
   workType: WorkType
   
   // VIP標記
@@ -217,7 +217,7 @@ export type SortField = 'jobNumber' | 'customerName' | 'status' | 'markedDate' |
 export interface CreateWorkOrderPayload {
   jobNumber?: string | null
   customerName: string
-  personInChargeId: string
+  personInChargeId: string | null
   workType: WorkType
   workDescription: string
   isCustomerServiceVip: boolean

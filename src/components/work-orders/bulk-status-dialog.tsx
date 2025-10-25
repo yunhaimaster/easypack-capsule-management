@@ -33,7 +33,7 @@ export function BulkStatusDialog({
   selectedCount, 
   onConfirm 
 }: BulkStatusDialogProps) {
-  const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus | null>(null)
+  const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus | ''>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,7 +47,7 @@ export function BulkStatusDialog({
     setError(null)
 
     try {
-      await onConfirm(selectedStatus)
+      await onConfirm(selectedStatus as WorkOrderStatus)
       // Success - parent will handle closing and showing success message
       handleClose()
     } catch (err) {
@@ -59,7 +59,7 @@ export function BulkStatusDialog({
 
   const handleClose = () => {
     if (!isSubmitting) {
-      setSelectedStatus(null)
+      setSelectedStatus('')
       setError(null)
       onClose()
     }
@@ -101,7 +101,7 @@ export function BulkStatusDialog({
             選擇新狀態 <span className="text-danger-600">*</span>
           </label>
           <Select
-            value={selectedStatus || ''}
+            value={selectedStatus}
             onValueChange={(value) => setSelectedStatus(value as WorkOrderStatus)}
             disabled={isSubmitting}
           >

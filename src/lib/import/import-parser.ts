@@ -287,30 +287,30 @@ export async function validateImportData(
       })
     }
     
-    if (!row.personInCharge || String(row.personInCharge).trim() === '') {
-      errors.push({
-        row: rowNum,
-        field: 'personInCharge',
-        level: ValidationLevel.BLOCKING,
-        message: '負責人為必填項'
-      })
-    }
-    
+    // WARNING: Missing work type (will default to PRODUCTION)
     if (!row.workType || String(row.workType).trim() === '') {
       errors.push({
         row: rowNum,
         field: 'workType',
-        level: ValidationLevel.BLOCKING,
-        message: '工作類型為必填項'
+        level: ValidationLevel.WARNING,
+        message: '工作類型為空，將使用預設值（生產）'
       })
     }
     
+    // WARNING: Missing or short work description
     if (!row.workDescription || String(row.workDescription).trim() === '') {
       errors.push({
         row: rowNum,
         field: 'workDescription',
-        level: ValidationLevel.BLOCKING,
-        message: '工作描述為必填項'
+        level: ValidationLevel.WARNING,
+        message: '工作描述為空，建議補充詳細資訊'
+      })
+    } else if (String(row.workDescription).trim().length < 10) {
+      errors.push({
+        row: rowNum,
+        field: 'workDescription',
+        level: ValidationLevel.INFO,
+        message: '工作描述過短，建議補充詳細資訊'
       })
     }
     
@@ -397,7 +397,15 @@ export async function validateImportData(
   // Count by level
   const blockingCount = errors.filter(e => e.level === ValidationLevel.BLOCKING).length
   const warningCount = errors.filter(e => e.level === ValidationLevel.WARNING).length
-  const validCount = data.rows.length - Math.floor(blockingCount / 3) // Rough estimate (assuming ~3 errors per bad row)
+  
+  // Count rows with blocking errors
+  const rowsWithBlockingErrors = new Set(
+    errors
+      .filter(e => e.level === ValidationLevel.BLOCKING)
+      .map(e => e.row)
+  )
+  
+  const validCount = data.rows.length - rowsWithBlockingErrors.size
   
   return {
     valid: validCount,
@@ -455,7 +463,7 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     isCompleted: String(row.isCompleted || '').trim() === '是',
     
     // Description
-    workDescription: String(row.workDescription || '').trim(),
+    workDescription: String(row.workDescription || '').trim() || '（匯入時無描述）',
     
     // Legacy fields (deprecated but kept for compatibility)
     yearCategory: String(row.yearCategory || '').trim() || null,

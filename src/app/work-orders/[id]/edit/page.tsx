@@ -29,7 +29,7 @@ export default function EditWorkOrderPage() {
   const [formData, setFormData] = useState({
     jobNumber: '',
     customerName: '',
-    personInChargeId: '',
+    personInChargeId: 'UNASSIGNED',
     workType: 'PACKAGING' as const,
     workDescription: '',
     
@@ -63,7 +63,7 @@ export default function EditWorkOrderPage() {
       setFormData({
         jobNumber: workOrder.jobNumber || '',
         customerName: workOrder.customerName,
-        personInChargeId: workOrder.personInChargeId || '',
+        personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
         workType: workOrder.workType,
         workDescription: workOrder.workDescription,
         
@@ -107,7 +107,7 @@ export default function EditWorkOrderPage() {
       const payload: any = {
         jobNumber: formData.jobNumber.trim() || null,
         customerName: formData.customerName.trim(),
-        personInChargeId: formData.personInChargeId || null,
+        personInChargeId: formData.personInChargeId === 'UNASSIGNED' ? null : formData.personInChargeId,
         workType: formData.workType,
         workDescription: formData.workDescription.trim(),
         
@@ -283,6 +283,9 @@ export default function EditWorkOrderPage() {
                       <SelectValue placeholder="請選擇負責人" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
+                        未指定
+                      </SelectItem>
                       {users?.map((user: any) => (
                         <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
                           {user.nickname || user.phoneE164}

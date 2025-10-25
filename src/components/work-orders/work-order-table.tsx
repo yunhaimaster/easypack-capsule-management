@@ -470,6 +470,7 @@ export function WorkOrderTable({
                     <Button
                       variant="ghost"
                       size="sm"
+                      type="button"
                       className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
                       onClick={() => setQuickEditWorkOrder(workOrder)}
                       title="快速編輯"
@@ -502,6 +503,7 @@ export function WorkOrderTable({
                     <Button
                       variant="ghost"
                       size="sm"
+                      type="button"
                       className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20 hidden sm:flex"
                       onClick={() => onDelete(workOrder.id)}
                     >
