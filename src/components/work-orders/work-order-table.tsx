@@ -241,7 +241,7 @@ export function WorkOrderTable({
               </th>
               <SortableHeader
                 field="markedDate"
-                label="記號日期"
+                label="創建日期"
                 currentSort={sortBy}
                 sortOrder={sortOrder}
                 onSort={onSort}

@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Save } from 'lucide-react'
-import Link from 'next/link'
 import { Checkbox } from '@/components/ui/checkbox'
 
 export default function CreateWorkOrderPage() {
@@ -91,7 +90,7 @@ export default function CreateWorkOrderPage() {
       
       // Redirect after 1.5 seconds
       setTimeout(() => {
-        router.push('/work-orders')
+        router.push('/work-orders' as never)
       }, 1500)
     } catch (error: any) {
       console.error('創建失敗:', error)
@@ -104,12 +103,14 @@ export default function CreateWorkOrderPage() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/work-orders">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              返回列表
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/work-orders' as never)}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            返回列表
+          </Button>
           <h1 className="text-2xl font-bold text-neutral-800">創建新工作單</h1>
         </div>
       </div>
@@ -409,7 +410,7 @@ export default function CreateWorkOrderPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push('/work-orders')}
+                onClick={() => router.push('/work-orders' as never)}
                 disabled={createMutation.isPending}
               >
                 取消

@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react'
-import Link from 'next/link'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 
 export default function WorkOrderDetailPage() {
@@ -54,12 +53,14 @@ export default function WorkOrderDetailPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/work-orders">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              返回列表
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/work-orders' as never)}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            返回列表
+          </Button>
           <div>
             <h1 className="text-3xl font-bold text-neutral-900">工作單詳情</h1>
             {workOrder.jobNumber && (
@@ -127,7 +128,7 @@ export default function WorkOrderDetailPage() {
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">記號日期（創建時間）</label>
+              <label className="text-sm font-medium text-neutral-600">創建日期</label>
               <p className="text-neutral-900 mt-1">{formatDate(workOrder.markedDate)}</p>
             </div>
             <div>

@@ -16,7 +16,7 @@ import { prepareChineseForExcel } from './encoding-utils'
 export const WORK_ORDER_COLUMNS = {
   // Basic Info
   jobNumber: '訂單編號',
-  markedDate: '記號日期',
+  markedDate: '創建日期',
   customerName: '客戶名稱',
   personInCharge: '負責人',
   workType: '工作類型',

@@ -159,12 +159,34 @@ export async function GET(request: NextRequest) {
             }
           },
           workType: true,
-          isNewProductVip: true,
-          isComplexityVip: true,
-          yearCategory: true,
-          expectedCompletionDate: true,
+          
+          // New VIP flags
+          isCustomerServiceVip: true,
+          isBossVip: true,
+          
+          // New material ready status
+          expectedProductionMaterialsDate: true,
+          expectedPackagingMaterialsDate: true,
+          productionMaterialsReady: true,
+          packagingMaterialsReady: true,
+          
+          // Quantities
           productionQuantity: true,
           packagingQuantity: true,
+          
+          // New delivery dates
+          requestedDeliveryDate: true,
+          internalExpectedDate: true,
+          
+          // New status flags
+          isUrgent: true,
+          productionStarted: true,
+          isCompleted: true,
+          
+          // Description
+          workDescription: true,
+          
+          // Timestamps
           createdAt: true,
           updatedAt: true
         }

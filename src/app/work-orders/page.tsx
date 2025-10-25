@@ -15,6 +15,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWorkOrders, useUsers } from '@/lib/queries/work-orders'
 import { WorkOrderTable } from '@/components/work-orders/work-order-table'
+import { ExportDialog } from '@/components/work-orders/export-dialog'
+import { ImportDialog } from '@/components/work-orders/import-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,6 +37,10 @@ export default function WorkOrdersPage() {
   
   const [searchKeyword, setSearchKeyword] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  
+  // Dialog states
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
 
   // Fetch work orders
   const { data, isLoading, isFetching, error } = useWorkOrders(filters)
@@ -149,11 +155,17 @@ export default function WorkOrdersPage() {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" disabled>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsImportDialogOpen(true)}
+              >
                 <Upload className="h-4 w-4 mr-2" />
                 匯入
               </Button>
-              <Button variant="outline" disabled>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsExportDialogOpen(true)}
+              >
                 <FileDown className="h-4 w-4 mr-2" />
                 匯出
               </Button>
@@ -307,6 +319,25 @@ export default function WorkOrdersPage() {
           </CardContent>
         </Card>
       )}
+      
+      {/* Export Dialog */}
+      <ExportDialog
+        isOpen={isExportDialogOpen}
+        onClose={() => setIsExportDialogOpen(false)}
+        selectedIds={selectedIds}
+        totalCount={pagination.total}
+      />
+      
+      {/* Import Dialog */}
+      <ImportDialog
+        isOpen={isImportDialogOpen}
+        onClose={() => setIsImportDialogOpen(false)}
+        onImportSuccess={() => {
+          // Refetch data after successful import
+          setFilters(prev => ({ ...prev }))
+          setSelectedIds([])
+        }}
+      />
     </div>
   )
 }
