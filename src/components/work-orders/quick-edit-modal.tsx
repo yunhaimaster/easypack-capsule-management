@@ -38,6 +38,10 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
     workDescription: workOrder.workDescription || ''
   })
 
+  // Debug: Log users prop
+  console.log('[QuickEditModal] Users prop:', users)
+  console.log('[QuickEditModal] Users length:', users?.length)
+
   const queryClient = useQueryClient()
 
   // Update mutation
