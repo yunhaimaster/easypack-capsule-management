@@ -308,22 +308,7 @@ export async function validateImportData(
       })
     }
     
-    // WARNING: Missing or short work description
-    if (!row.workDescription || String(row.workDescription).trim() === '') {
-      errors.push({
-        row: rowNum,
-        field: 'workDescription',
-        level: ValidationLevel.WARNING,
-        message: '工作描述為空，建議補充詳細資訊'
-      })
-    } else if (String(row.workDescription).trim().length < 10) {
-      errors.push({
-        row: rowNum,
-        field: 'workDescription',
-        level: ValidationLevel.INFO,
-        message: '工作描述過短，建議補充詳細資訊'
-      })
-    }
+    // NOTE: 不驗證工作描述內容或長度（依用戶要求）
     
     // WARNING: Duplicate jobNumber
     if (row.jobNumber && existingJobNumbers.has(String(row.jobNumber).trim())) {
