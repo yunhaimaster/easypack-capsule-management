@@ -36,14 +36,14 @@ export function ExportConfirmationDialog({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-info-600 dark:text-info-400" />
-            <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">訂單資訊</h3>
+            <h3 className="text-sm font-semibold text-neutral-800 dark:text-white/95">訂單資訊</h3>
           </div>
           
           <div className="bg-primary-50/50 dark:bg-primary-900/20 border border-primary-200/60 dark:border-primary-700/40 rounded-lg p-4 space-y-2">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">客戶名稱</p>
-                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{order.customerName}</p>
+                <p className="text-xs text-neutral-600 dark:text-white/75 mb-1">客戶名稱</p>
+                <p className="text-sm font-medium text-neutral-900 dark:text-white/95">{order.customerName}</p>
               </div>
               <Badge className="bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-primary-300 dark:border-primary-700">
                 訂單 #{order.id.slice(0, 8)}
@@ -51,8 +51,8 @@ export function ExportConfirmationDialog({
             </div>
             
             <div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">產品名稱</p>
-              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{order.productName}</p>
+              <p className="text-xs text-neutral-600 dark:text-white/75 mb-1">產品名稱</p>
+              <p className="text-sm font-medium text-neutral-900 dark:text-white/95">{order.productName}</p>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function ExportConfirmationDialog({
         {/* 配方原料清單 */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">配方原料</h3>
+            <h3 className="text-sm font-semibold text-neutral-800 dark:text-white/95">配方原料</h3>
             <Badge 
               className={hasIngredients 
                 ? "bg-success-100 dark:bg-success-900 text-success-700 dark:text-success-200 border-success-300 dark:border-success-700" 
@@ -76,15 +76,15 @@ export function ExportConfirmationDialog({
               <table className="w-full text-sm">
                 <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 sticky top-0">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-600 dark:text-neutral-400">原料名稱</th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-neutral-600 dark:text-neutral-400">單粒含量</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-neutral-600 dark:text-white/75">原料名稱</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-neutral-600 dark:text-white/75">單粒含量</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-700">
                   {order.ingredients.map((ingredient, index) => (
                     <tr key={ingredient.id || index} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
-                      <td className="px-4 py-2.5 text-neutral-800 dark:text-neutral-200">{ingredient.materialName}</td>
-                      <td className="px-4 py-2.5 text-right text-neutral-700 dark:text-neutral-300 font-mono">
+                      <td className="px-4 py-2.5 text-neutral-800 dark:text-white/95">{ingredient.materialName}</td>
+                      <td className="px-4 py-2.5 text-right text-neutral-700 dark:text-white/75 font-mono">
                         {formatNumber(ingredient.unitContentMg)} mg
                       </td>
                     </tr>

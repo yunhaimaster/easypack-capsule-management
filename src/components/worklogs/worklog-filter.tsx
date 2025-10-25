@@ -60,13 +60,13 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
       <div className="flex flex-col gap-4 mb-5 sm:mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 tracking-wide uppercase">工時篩選</h3>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 dark:text-white/55">快速搜尋訂單與備註，掌握最近工時紀錄</p>
+            <h3 className="text-sm font-semibold text-neutral-700 dark:text-white/75 tracking-wide uppercase">工時篩選</h3>
+            <p className="text-xs text-neutral-500 dark:text-white/55">快速搜尋訂單與備註，掌握最近工時紀錄</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 dark:text-white/55">每頁顯示</span>
+            <span className="text-xs font-semibold text-neutral-600 dark:text-white/75">每頁顯示</span>
             <Select value={String(filters.limit)} onValueChange={(value) => onLimitChange(Number(value))}>
-              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:ring-0 focus:outline-none">
+              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none">
                 <SelectValue placeholder="筆數" />
               </SelectTrigger>
               <SelectContent>

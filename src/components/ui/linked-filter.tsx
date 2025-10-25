@@ -305,12 +305,12 @@ export function LinkedFilter({
             <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、產品、原料與膠囊規格的即時篩查</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 dark:text-white/55">每頁顯示</span>
+            <span className="text-xs font-semibold text-neutral-600 dark:text-white/75">每頁顯示</span>
             <Select
               value={String(limit)}
               onValueChange={(value) => onLimitChange?.(Number(value))}
             >
-              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:ring-0 focus:outline-none">
+              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none">
                 <SelectValue placeholder="筆數" />
               </SelectTrigger>
               <SelectContent>

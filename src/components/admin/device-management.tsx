@@ -224,7 +224,7 @@ export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManage
         </div>
         {sessions.length === 0 && (
           <Card className="p-8 text-center">
-            <Monitor className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+            <Monitor className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
             <p className="text-neutral-600 dark:text-white/75">暫無活躍會話</p>
           </Card>
         )}

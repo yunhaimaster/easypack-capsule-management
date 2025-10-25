@@ -414,7 +414,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
 
       {users.length === 0 && (
         <Card className="p-12 text-center">
-          <Shield className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+          <Shield className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
           <p className="text-neutral-600 dark:text-white/75">暫無用戶</p>
         </Card>
       )}

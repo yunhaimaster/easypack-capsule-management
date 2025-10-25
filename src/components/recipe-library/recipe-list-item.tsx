@@ -57,7 +57,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           
           {/* 配方名稱 + 狀態 */}
           <div className="flex-1 flex items-center gap-2 min-w-0">
-            <h3 className="font-semibold text-neutral-800 dark:text-neutral-100 truncate text-sm lg:text-base">
+            <h3 className="font-semibold text-neutral-800 dark:text-white/95 truncate text-sm lg:text-base">
               {recipe.recipeName}
             </h3>
             {analysisStatus && (

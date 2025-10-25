@@ -513,13 +513,13 @@ export default function OrderDetailPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex flex-col">
                         <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:text-white/55 mb-1">單粒含量</span>
-                        <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                        <span className="text-base font-semibold text-neutral-900 dark:text-white/95">
                           {formatIngredientWeight(ingredient.unitContentMg)} mg
                         </span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:text-white/55 mb-1">批次用量</span>
-                        <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                        <span className="text-base font-semibold text-neutral-900 dark:text-white/95">
                           {calculateBatchWeight(ingredient.unitContentMg, order.productionQuantity).display}
                         </span>
                       </div>
@@ -576,7 +576,7 @@ export default function OrderDetailPage() {
                     {order.worklogs.map((worklog, index) => (
                       <Card key={index} variant="glass" interactive={false} className="p-4 space-y-3">
                         <div className="flex items-start justify-between gap-3">
-                          <h4 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 leading-tight flex-1">
+                          <h4 className="text-base font-semibold text-neutral-800 dark:text-white/95 leading-tight flex-1">
                             {formatDateOnly(worklog.workDate)}
                           </h4>
                           <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55 flex-shrink-0">
@@ -584,8 +584,8 @@ export default function OrderDetailPage() {
                             <span className="bg-neutral-50 dark:bg-elevation-2 text-neutral-700 dark:text-white/75 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
                           </div>
                         </div>
-                        <div className="text-sm text-neutral-700 dark:text-neutral-300 space-y-2 leading-relaxed">
-                          <p><span className="font-medium text-neutral-900 dark:text-neutral-100">時間：</span>{worklog.startTime} - {worklog.endTime}</p>
+                        <div className="text-sm text-neutral-700 dark:text-white/75 space-y-2 leading-relaxed">
+                          <p><span className="font-medium text-neutral-900 dark:text-white/95">時間：</span>{worklog.startTime} - {worklog.endTime}</p>
                           {worklog.notes && (
                             <p className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-lg p-2">
                               <span className="font-medium text-amber-900 dark:text-amber-300">備註：</span>

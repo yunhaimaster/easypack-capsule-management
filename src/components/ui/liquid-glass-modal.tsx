@@ -292,7 +292,7 @@ export function LiquidGlassInfoModal({
       size="sm"
       className="white-theme"
     >
-      <p className="mb-6 text-neutral-900">{message}</p>
+      <p className="mb-6 text-neutral-900 dark:text-white/95">{message}</p>
       <div className="liquid-glass-modal-footer">
         <Button
           onClick={onClose}

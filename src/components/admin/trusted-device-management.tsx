@@ -191,7 +191,7 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
         </div>
         {devices.length === 0 && (
           <Card className="p-8 text-center">
-            <Smartphone className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+            <Smartphone className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
             <p className="text-neutral-600 dark:text-white/75">暫無受信任設備</p>
           </Card>
         )}

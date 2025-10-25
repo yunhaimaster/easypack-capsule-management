@@ -201,15 +201,15 @@ export function LoginForm() {
             <Logo size="lg" variant="icon" />
           </div>
           <h2 className="text-xl sm:text-2xl font-semibold text-primary-600 dark:text-primary-400">Easy Health 系統登入</h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">請輸入您在 EPL 通訊 WhatsApp 群組使用的電話號碼</p>
+          <p className="text-sm text-neutral-600 dark:text-white/75">請輸入您在 EPL 通訊 WhatsApp 群組使用的電話號碼</p>
           {/* Version indicator for debugging */}
-          <p className="text-xs text-neutral-400 dark:text-neutral-500">v2.1 (Trusted Device)</p>
+          <p className="text-xs text-neutral-400 dark:text-white/55">v2.1 (Trusted Device)</p>
         </div>
 
         {step === 'phone' ? (
           <form onSubmit={startOtp} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="phone" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label htmlFor="phone" className="text-sm font-medium text-neutral-700 dark:text-white/75">
                 電話號碼（EPL 通訊群組）
               </label>
               <div className="relative">
@@ -262,7 +262,7 @@ export function LoginForm() {
         ) : step === 'bootstrap' ? (
           <form onSubmit={handleAdminBootstrap} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="bootstrap-phone" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label htmlFor="bootstrap-phone" className="text-sm font-medium text-neutral-700 dark:text-white/75">
                 管理員電話號碼
               </label>
               <div className="relative">
@@ -281,7 +281,7 @@ export function LoginForm() {
             </div>
 
             <div className="space-y-2 text-left">
-              <label htmlFor="bootstrap-code" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label htmlFor="bootstrap-code" className="text-sm font-medium text-neutral-700 dark:text-white/75">
                 啟動碼
               </label>
               <Input
@@ -326,7 +326,7 @@ export function LoginForm() {
         ) : step === 'otp' ? (
           <form onSubmit={verifyOtp} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label htmlFor="code" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label htmlFor="code" className="text-sm font-medium text-neutral-700 dark:text-white/75">
                 驗證碼
               </label>
                 <Input
@@ -351,7 +351,7 @@ export function LoginForm() {
                 onChange={(e) => setTrust(e.target.checked)}
                 className="mt-0.5 h-4 w-4 rounded border-primary-300 text-primary-600 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
               />
-              <label htmlFor="trust-device" className="flex-1 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer select-none">
+              <label htmlFor="trust-device" className="flex-1 text-sm text-neutral-700 dark:text-white/75 cursor-pointer select-none">
                 <span className="inline-flex items-center gap-1.5 font-medium">
                   <Shield className="h-4 w-4 text-primary-500 dark:text-primary-400" />
                   信任此裝置 30 天
