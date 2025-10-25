@@ -77,7 +77,7 @@ export default function WorkOrdersPage() {
   
   // Fetch users for person filter
   const { data: usersData } = useUsers()
-  const users = usersData?.data || []
+  const users = usersData || []
 
   const workOrders = data?.data?.workOrders || []
   const pagination = data?.data?.pagination || { page: 1, limit: 25, total: 0, totalPages: 0 }
