@@ -49,7 +49,7 @@ export default function WorkOrderDetailPage() {
           <div className="max-w-6xl mx-auto">
             <Card className="liquid-glass-card border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-900/20 transition-apple">
               <CardContent className="pt-6">
-                <Text.Danger className="text-center font-medium">
+                <Text.Danger className="text-center">
                   載入失敗：{error instanceof Error ? error.message : '工作單不存在'}
                 </Text.Danger>
               </CardContent>
@@ -73,22 +73,22 @@ export default function WorkOrderDetailPage() {
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-6 sm:space-y-8 floating-combined">
         <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push('/work-orders' as never)}
-            className="transition-apple"
+            className="transition-apple self-start"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             返回列表
           </Button>
           <div>
-            <Text.Primary as="h1" className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+            <Text.Primary as="h1" className="text-2xl sm:text-3xl font-bold">
               工作單詳情
             </Text.Primary>
             {workOrder.jobNumber && (
@@ -111,15 +111,19 @@ export default function WorkOrderDetailPage() {
       </div>
 
       {/* Status and VIP Tags */}
-      <Card className="mb-6 liquid-glass-card transition-apple">
-        <CardContent className="pt-6">
+      <Card className="mb-6 card-interactive-apple transition-apple">
+        <CardContent className="pt-5 sm:pt-6">
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-            <div>
-              <Text.Tertiary as="span" className="text-xs sm:text-sm mr-2">狀態:</Text.Tertiary>
+            <div className="flex items-center gap-2">
+              <Text.Tertiary as="span" className="text-xs sm:text-sm">
+                狀態:
+              </Text.Tertiary>
               <Badge variant="info">{(WORK_ORDER_STATUS_LABELS as any)[workOrder.status]}</Badge>
             </div>
-            <div>
-              <Text.Tertiary as="span" className="text-xs sm:text-sm mr-2">工作類型:</Text.Tertiary>
+            <div className="flex items-center gap-2">
+              <Text.Tertiary as="span" className="text-xs sm:text-sm">
+                工作類型:
+              </Text.Tertiary>
               <Badge variant="default">{(WORK_TYPE_LABELS as any)[workOrder.workType]}</Badge>
             </div>
             {workOrder.isCustomerServiceVip && (
@@ -143,13 +147,13 @@ export default function WorkOrderDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
         {/* 基本信息 */}
-        <Card className="liquid-glass-card transition-apple">
+        <Card className="card-interactive-apple transition-apple">
           <CardHeader>
             <CardTitle>基本信息</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5">
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 客戶名稱
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -157,7 +161,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 負責人
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -165,7 +169,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 創建日期
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -173,7 +177,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 工作描述
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base whitespace-pre-wrap">
@@ -184,13 +188,13 @@ export default function WorkOrderDetailPage() {
         </Card>
 
         {/* 物料到齊狀態 */}
-        <Card className="liquid-glass-card transition-apple">
+        <Card className="card-interactive-apple transition-apple">
           <CardHeader>
             <CardTitle>物料到齊狀態</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5">
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 預計生產物料到齊日期
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -198,7 +202,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 預計包裝物料到齊日期
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -208,21 +212,31 @@ export default function WorkOrderDetailPage() {
             <div className="flex items-center gap-4 sm:gap-6">
               <div className="flex items-center gap-2">
                 {workOrder.productionMaterialsReady ? (
-                  <CheckCircle className="h-5 w-5 text-success-600" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-neutral-400 dark:text-neutral-600" />
+                  <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
                 )}
-                <Text.Primary className={`text-sm sm:text-base ${workOrder.productionMaterialsReady ? 'text-success-700 dark:text-success-500' : ''}`}>
+                <Text.Primary 
+                  as="span" 
+                  className={`text-xs sm:text-sm ${
+                    workOrder.productionMaterialsReady ? 'text-success-600' : ''
+                  }`}
+                >
                   生產物料齊
                 </Text.Primary>
               </div>
               <div className="flex items-center gap-2">
                 {workOrder.packagingMaterialsReady ? (
-                  <CheckCircle className="h-5 w-5 text-success-600" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-neutral-400 dark:text-neutral-600" />
+                  <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
                 )}
-                <Text.Primary className={`text-sm sm:text-base ${workOrder.packagingMaterialsReady ? 'text-success-700 dark:text-success-500' : ''}`}>
+                <Text.Primary 
+                  as="span" 
+                  className={`text-xs sm:text-sm ${
+                    workOrder.packagingMaterialsReady ? 'text-success-600' : ''
+                  }`}
+                >
                   包裝物料齊
                 </Text.Primary>
               </div>
@@ -231,13 +245,13 @@ export default function WorkOrderDetailPage() {
         </Card>
 
         {/* 數量信息 */}
-        <Card className="liquid-glass-card transition-apple">
+        <Card className="card-interactive-apple transition-apple">
           <CardHeader>
             <CardTitle>數量信息</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5">
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 生產數量
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -245,7 +259,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 包裝數量
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -256,13 +270,13 @@ export default function WorkOrderDetailPage() {
         </Card>
 
         {/* 交貨期信息 */}
-        <Card className="liquid-glass-card transition-apple">
+        <Card className="card-interactive-apple transition-apple">
           <CardHeader>
             <CardTitle>交貨期信息</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-5">
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 要求交貨的日期
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -270,7 +284,7 @@ export default function WorkOrderDetailPage() {
               </Text.Primary>
             </div>
             <div>
-              <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                 內部預計交貨期
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
@@ -283,14 +297,14 @@ export default function WorkOrderDetailPage() {
 
       {/* Capsulation Order (if exists) */}
       {workOrder.capsulationOrder && (
-        <Card className="mt-5 sm:mt-6 liquid-glass-card transition-apple">
+        <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple">
           <CardHeader>
             <CardTitle>膠囊訂單詳情</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+                <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                   產品名稱
                 </Text.Tertiary>
                 <Text.Primary className="text-sm sm:text-base">
@@ -298,7 +312,7 @@ export default function WorkOrderDetailPage() {
                 </Text.Primary>
               </div>
               <div>
-                <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+                <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                   生產數量
                 </Text.Tertiary>
                 <Text.Primary className="text-sm sm:text-base">
@@ -306,7 +320,7 @@ export default function WorkOrderDetailPage() {
                 </Text.Primary>
               </div>
               <div>
-                <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+                <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                   膠囊顏色
                 </Text.Tertiary>
                 <Text.Primary className="text-sm sm:text-base">
@@ -314,7 +328,7 @@ export default function WorkOrderDetailPage() {
                 </Text.Primary>
               </div>
               <div>
-                <Text.Tertiary as="label" className="block text-xs sm:text-sm font-medium mb-1.5">
+                <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
                   膠囊尺寸
                 </Text.Tertiary>
                 <Text.Primary className="text-sm sm:text-base">
@@ -325,34 +339,30 @@ export default function WorkOrderDetailPage() {
 
             {workOrder.capsulationOrder.ingredients && workOrder.capsulationOrder.ingredients.length > 0 && (
               <div className="mt-5 sm:mt-6">
-                <Text.Primary as="h4" className="text-sm sm:text-base font-semibold mb-3 sm:mb-4">
+                <Text.Primary as="h4" className="text-sm sm:text-base font-semibold mb-3">
                   配方成分
                 </Text.Primary>
                 <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden transition-apple">
                   <table className="w-full">
-                    <thead className="bg-neutral-50 dark:bg-neutral-800/50">
+                    <thead className="bg-surface-secondary/50">
                       <tr>
-                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-left">
-                          <Text.Tertiary className="text-xs sm:text-sm font-medium">
-                            原料名稱
-                          </Text.Tertiary>
+                        <th className="px-3 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">
+                          <Text.Primary>原料名稱</Text.Primary>
                         </th>
-                        <th className="px-3 sm:px-4 py-2 sm:py-3 text-right">
-                          <Text.Tertiary className="text-xs sm:text-sm font-medium">
-                            單位含量 (mg)
-                          </Text.Tertiary>
+                        <th className="px-3 sm:px-4 py-2 text-right text-xs sm:text-sm font-medium">
+                          <Text.Primary>單位含量 (mg)</Text.Primary>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {workOrder.capsulationOrder.ingredients.map((ing: any, index: number) => (
-                        <tr key={index} className="border-t border-neutral-200 dark:border-neutral-700 transition-apple hover:bg-neutral-50 dark:hover:bg-neutral-800/30">
-                          <td className="px-3 sm:px-4 py-2 sm:py-3">
+                        <tr key={index} className="border-t border-neutral-200 dark:border-neutral-700">
+                          <td className="px-3 sm:px-4 py-2">
                             <Text.Primary className="text-xs sm:text-sm">
                               {ing.materialName}
                             </Text.Primary>
                           </td>
-                          <td className="px-3 sm:px-4 py-2 sm:py-3 text-right">
+                          <td className="px-3 sm:px-4 py-2 text-right">
                             <Text.Primary className="text-xs sm:text-sm">
                               {ing.unitContentMg}
                             </Text.Primary>
@@ -369,9 +379,9 @@ export default function WorkOrderDetailPage() {
       )}
 
       {/* Timestamps */}
-      <Card className="mt-5 sm:mt-6 liquid-glass-card transition-apple">
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8">
+      <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple">
+        <CardContent className="pt-5 sm:pt-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-8">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
               <Text.Tertiary className="text-xs sm:text-sm">
