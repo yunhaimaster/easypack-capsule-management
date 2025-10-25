@@ -143,6 +143,14 @@ module.exports = {
           light: "#e8f1f5",
           dark: "#1a3a5c",
         },
+        // Elevation system (avoid conflict with existing surface-primary/secondary)
+        elevation: {
+          0: 'var(--elevation-0)',
+          1: 'var(--elevation-1)',
+          2: 'var(--elevation-2)',
+          3: 'var(--elevation-3)',
+          4: 'var(--elevation-4)',
+        },
       },
       spacing: {
         '1': '4px',

@@ -224,14 +224,14 @@ export function ResponsiveWorklogsList() {
       <div className="hidden lg:block">
         <TableWrapper>
           <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-            <thead className="bg-white/80 dark:bg-gray-900/80">
+            <thead className="bg-white/80 dark:bg-elevation-0/80">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">工時日期</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">訂單</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">工作時段</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">總工時</th>
-                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">備註</th>
-                <th className="text-center py-3 px-4 font-medium text-neutral-900 dark:text-neutral-100 text-sm">操作</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">工時日期</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">訂單</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">工作時段</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">總工時</th>
+                <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">備註</th>
+                <th className="text-center py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">操作</th>
               </tr>
             </thead>
             <tbody>

@@ -12,9 +12,23 @@
 
 .dark .liquid-glass-card[data-glass-tone="neutral"],
 .dark .liquid-glass-card:not([data-glass-tone]) {
-  background: linear-gradient(152deg, rgba(20, 30, 45, 0.92) 0%, rgba(15, 25, 40, 0.88) 100%);
+  /* Glowing surface with subtle warm gradient */
+  background: linear-gradient(
+    152deg, 
+    rgba(35, 32, 30, 0.80) 0%,      /* Brighter top (warm) */
+    rgba(25, 23, 21, 0.75) 100%     /* Darker bottom */
+  );
+  
+  /* Rim lighting effect (key feature of dark mode glass) */
   border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(240, 245, 255, 0.95);
+  
+  /* Soft glow with rim highlights */
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),   /* Top rim light */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),         /* Bottom depth */
+    0 8px 32px rgba(0, 0, 0, 0.60);             /* Ambient shadow */
+  
+  color: rgba(255, 255, 255, 0.95);
 }
 .liquid-glass-card.is-interactive .liquid-glass-caustic {
   opacity: 0.35;
@@ -44,6 +58,76 @@
 .liquid-glass-card:hover .liquid-glass-caustic,
 .liquid-glass-card:focus-within .liquid-glass-caustic {
   opacity: 0.45;
+}
+
+/* Dark mode caustic effects - WARM not blue */
+.dark .liquid-glass-card .liquid-glass-caustic {
+  /* Warm subtle glow (NOT blue moonlight) */
+  background: radial-gradient(
+    circle at var(--lg-pointer-x, 50%) var(--lg-pointer-y, 50%),
+    rgba(140, 130, 120, 0.10) 0%,      /* Warm desaturated */
+    rgba(100, 95, 90, 0.06) 22%,       /* Warm mid */
+    rgba(70, 68, 65, 0.03) 45%,        /* Warm fade */
+    transparent 65%
+  );
+  mix-blend-mode: screen;  /* Additive glow */
+  opacity: 0.35;
+}
+
+.dark .liquid-glass-card:hover .liquid-glass-caustic {
+  opacity: 0.5;
+}
+
+/* Dark mode hover/interactive states */
+.dark .liquid-glass-card:hover,
+.dark .liquid-glass-card.is-touching {
+  background: linear-gradient(
+    152deg, 
+    rgba(45, 42, 39, 0.85) 0%,      /* Brighter on hover */
+    rgba(35, 32, 30, 0.80) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.16);  /* Brighter rim */
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),  /* Stronger rim */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 16px 48px rgba(0, 0, 0, 0.70);
+}
+
+/* Dark mode toned variants */
+.dark .liquid-glass-tone-positive {
+  background: linear-gradient(
+    160deg, 
+    rgba(16, 185, 129, 0.12) 0%, 
+    rgba(6, 95, 70, 0.18) 100%
+  );
+  border-color: rgba(16, 185, 129, 0.25);
+  box-shadow: 
+    inset 0 1px 0 rgba(16, 185, 129, 0.15),
+    0 18px 48px rgba(0, 0, 0, 0.65);
+}
+
+.dark .liquid-glass-tone-caution {
+  background: linear-gradient(
+    160deg, 
+    rgba(251, 191, 36, 0.12) 0%, 
+    rgba(161, 98, 7, 0.18) 100%
+  );
+  border-color: rgba(251, 191, 36, 0.25);
+  box-shadow: 
+    inset 0 1px 0 rgba(251, 191, 36, 0.15),
+    0 18px 48px rgba(0, 0, 0, 0.65);
+}
+
+.dark .liquid-glass-tone-negative {
+  background: linear-gradient(
+    160deg, 
+    rgba(248, 113, 113, 0.12) 0%, 
+    rgba(153, 27, 27, 0.18) 100%
+  );
+  border-color: rgba(248, 113, 113, 0.25);
+  box-shadow: 
+    inset 0 1px 0 rgba(248, 113, 113, 0.15),
+    0 18px 48px rgba(0, 0, 0, 0.65);
 }
 
 .badge-grok {
@@ -153,33 +237,50 @@
   }
 
   .dark {
-    /* Liquid Glass - Dark translucent */
-    --liquid-glass-bg: rgba(20, 30, 45, 0.85);
-    --liquid-glass-surface: rgba(15, 25, 40, 0.90);
+    /* Warm Adapted Liquid Glass - Glowing from within */
+    /* Using warm tint (slight orange) for comfort */
+    --liquid-glass-bg: rgba(30, 28, 26, 0.75);      /* Warm, slightly more opaque */
+    --liquid-glass-surface: rgba(35, 32, 30, 0.80); /* Warm elevated surface */
     --liquid-glass-border: rgba(255, 255, 255, 0.12);
     
-    /* Text - Light for dark backgrounds */
-    --text-primary: rgba(240, 245, 255, 0.95);
-    --text-secondary: rgba(220, 230, 245, 0.85);
-    --text-tertiary: rgba(200, 215, 235, 0.70);
+    /* Text - Pure white with varying opacity (NO blue tint) */
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.75);
+    --text-tertiary: rgba(255, 255, 255, 0.55);
     
-    /* Shadows - Darker */
-    --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.40);
-    --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.50);
+    /* Elevation System - Correct Math (Material Design 3) */
+    /* Base: RGB(18, 17, 16) = #121110 */
+    /* Each level adds calculated white overlay */
+    --elevation-0: #121110;  /* Base: Warm black (hue 20°) */
+    --elevation-1: #1F1E1D;  /* +5% white: RGB(31, 30, 29) */
+    --elevation-2: #272524;  /* +8% white: RGB(39, 37, 36) */
+    --elevation-3: #31302F;  /* +12% white: RGB(49, 48, 47) */
+    --elevation-4: #3B3A39;  /* +16% white: RGB(59, 58, 57) */
     
-    /* Navigation - Dark glass */
-    --nav-bg: rgba(20, 30, 45, 0.75);
+    /* Or use HSL for precision */
+    --elevation-0-hsl: hsl(20, 6%, 7%);
+    --elevation-1-hsl: hsl(20, 6%, 12%);
+    --elevation-2-hsl: hsl(20, 6%, 16%);
+    --elevation-3-hsl: hsl(20, 6%, 20%);
+    --elevation-4-hsl: hsl(20, 6%, 24%);
+    
+    /* Shadows - Softer, more ambient */
+    --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.60);
+    --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.70);
+    
+    /* Navigation - Consistent with surface system */
+    --nav-bg: rgba(30, 28, 26, 0.75);
     --nav-border: rgba(255, 255, 255, 0.10);
     
-    /* Tailwind Semantic Tokens */
-    --background: 215 48% 8%;
-    --foreground: 215 20% 95%;
-    --card: 215 48% 12%;
-    --card-foreground: 215 20% 95%;
-    --muted: 204 20% 25%;
-    --muted-foreground: 214 22% 75%;
-    --border: 204 20% 25%;
-    --input: 204 20% 25%;
+    /* Tailwind Semantic Tokens - Warm neutrals */
+    --background: 20 6% 7%;         /* Warm hue */
+    --foreground: 0 0% 98%;        /* Pure white */
+    --card: 20 6% 12%;             /* Warm elevation-1 */
+    --card-foreground: 0 0% 98%;
+    --muted: 20 6% 20%;            /* Warm elevation-3 */
+    --muted-foreground: 0 0% 75%;
+    --border: 20 6% 25%;
+    --input: 20 6% 16%;            /* Warm elevation-2 */
   }
 
 }
@@ -194,276 +295,111 @@
 }
 
 /* ============================================
-   GLOBAL DARK MODE OVERRIDES
-   Force all Tailwind utility classes to adapt automatically
+   MINIMAL DARK MODE OVERRIDES
+   Most styling now handled by semantic tokens in components
+   Only override native browser elements that can't use Tailwind
    ============================================ */
 
-/* Background Colors - Force all whites to dark */
-.dark .bg-white { background-color: rgb(17 24 39) !important; }
-.dark .bg-gray-50 { background-color: rgb(31 41 55) !important; }
-.dark .bg-gray-100 { background-color: rgb(31 41 55) !important; }
-.dark .bg-neutral-50 { background-color: rgb(31 41 55) !important; }
-.dark .bg-neutral-100 { background-color: rgb(31 41 55) !important; }
-.dark .bg-slate-50 { background-color: rgb(31 41 55) !important; }
-.dark .bg-slate-100 { background-color: rgb(31 41 55) !important; }
-
-/* Text Colors - Invert gray scale */
-.dark .text-gray-900 { color: rgb(243 244 246) !important; }
-.dark .text-gray-800 { color: rgb(229 231 235) !important; }
-.dark .text-gray-700 { color: rgb(209 213 219) !important; }
-.dark .text-gray-600 { color: rgb(156 163 175) !important; }
-.dark .text-gray-500 { color: rgb(156 163 175) !important; }
-.dark .text-gray-400 { color: rgb(209 213 219) !important; }
-.dark .text-neutral-900 { color: rgb(243 244 246) !important; }
-.dark .text-neutral-800 { color: rgb(229 231 235) !important; }
-.dark .text-neutral-700 { color: rgb(209 213 219) !important; }
-.dark .text-neutral-600 { color: rgb(156 163 175) !important; }
-.dark .text-neutral-500 { color: rgb(156 163 175) !important; }
-.dark .text-slate-900 { color: rgb(243 244 246) !important; }
-.dark .text-slate-800 { color: rgb(229 231 235) !important; }
-.dark .text-slate-700 { color: rgb(209 213 219) !important; }
-.dark .text-slate-600 { color: rgb(156 163 175) !important; }
-
-/* Border Colors */
-.dark .border-gray-200 { border-color: rgb(55 65 81) !important; }
-.dark .border-gray-300 { border-color: rgb(75 85 99) !important; }
-.dark .border-neutral-200 { border-color: rgb(55 65 81) !important; }
-.dark .border-neutral-300 { border-color: rgb(75 85 99) !important; }
-.dark .border-slate-200 { border-color: rgb(55 65 81) !important; }
-.dark .border-slate-300 { border-color: rgb(75 85 99) !important; }
-
-/* Hover States - Critical for tables/lists */
-.dark .hover\:bg-white:hover { background-color: rgb(31 41 55) !important; }
-.dark .hover\:bg-gray-50:hover { background-color: rgb(55 65 81) !important; }
-.dark .hover\:bg-gray-100:hover { background-color: rgb(55 65 81) !important; }
-.dark .hover\:bg-neutral-50:hover { background-color: rgb(55 65 81) !important; }
-.dark .hover\:bg-slate-50:hover { background-color: rgb(55 65 81) !important; }
-
-/* Textarea & Input specific */
-.dark textarea { 
-  background-color: rgb(31 41 55) !important;
-  border-color: rgb(75 85 99) !important;
-  color: rgb(243 244 246) !important;
-}
-.dark textarea::placeholder {
-  color: rgb(156 163 175) !important;
-}
-
-/* Select dropdowns */
-.dark select {
-  background-color: rgb(31 41 55) !important;
-  border-color: rgb(75 85 99) !important;
-  color: rgb(243 244 246) !important;
-}
-
-/* Pagination & Navigation specific */
-.dark button[class*="bg-white"],
-.dark a[class*="bg-white"] {
-  background-color: rgb(31 41 55) !important;
-}
-
-/* Ring Colors (focus states) */
-.dark .ring-gray-200 { --tw-ring-color: rgb(55 65 81) !important; }
-
-/* Divide Colors (between elements) */
-.dark .divide-gray-200 > * + * { border-color: rgb(55 65 81) !important; }
-
-/* Shadow overrides for cards and panels */
-.dark [class*="shadow-"] {
-  --tw-shadow-color: rgba(0, 0, 0, 0.5) !important;
-}
-
-/* Ensure all form controls are dark */
+/* Native Form Elements (can't use Tailwind classes) */
+.dark textarea,
 .dark input[type="text"],
 .dark input[type="email"], 
 .dark input[type="password"],
 .dark input[type="number"],
 .dark input[type="tel"],
-.dark input[type="date"] {
-  background-color: rgb(31 41 55) !important;
-  border-color: rgb(75 85 99) !important;
-  color: rgb(243 244 246) !important;
+.dark input[type="date"],
+.dark select {
+  background-color: var(--elevation-1) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.dark input[type="text"]::placeholder,
-.dark input[type="email"]::placeholder,
-.dark input[type="password"]::placeholder,
-.dark input[type="number"]::placeholder,
-.dark input[type="tel"]::placeholder {
-  color: rgb(156 163 175) !important;
+.dark textarea::placeholder,
+.dark input::placeholder {
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
-/* Footer - Force dark */
-.dark .liquid-glass-footer,
-.dark .liquid-glass-footer-content,
-.dark .liquid-glass-footer-bottom,
-.dark footer {
-  background-color: rgb(17 24 39) !important;
-  border-color: rgb(75 85 99) !important;
+/* Native Table Elements (if using <table> tags) */
+.dark table {
+  background-color: var(--elevation-0);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-.dark .liquid-glass-footer-title,
+.dark thead {
+  background-color: var(--elevation-1);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark tbody tr:hover {
+  background-color: var(--elevation-2) !important;
+}
+
+/* Footer (if uses hardcoded classes) */
+.dark .liquid-glass-footer {
+  background-color: var(--elevation-0) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
 .dark .liquid-glass-footer h3,
 .dark .liquid-glass-footer h4 {
-  color: rgb(243 244 246) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.dark .liquid-glass-footer p,
-.dark .liquid-glass-footer a,
-.dark .liquid-glass-footer-link {
-  color: rgb(156 163 175) !important;
+/* ============================================
+   BROWSER FALLBACKS & PERFORMANCE NOTES
+   ============================================ */
+
+/* Backdrop Filter Fallbacks */
+@supports not (backdrop-filter: blur(12px)) {
+  .liquid-glass-card {
+    /* Fallback for browsers without backdrop-filter support */
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .liquid-glass-card {
+    background: rgba(18, 17, 16, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
 }
 
-/* Tables - Force all table elements dark */
-.dark table,
-.dark thead,
-.dark tbody,
-.dark tfoot,
-.dark tr,
-.dark th,
-.dark td {
-  background-color: rgb(17 24 39) !important;
-  border-color: rgb(75 85 99) !important;
-  color: rgb(243 244 246) !important;
+/* CSS Custom Properties Fallbacks */
+@supports not (color: hsl(var(--elevation-0-hsl))) {
+  .dark {
+    --elevation-0: #121110;
+    --elevation-1: #1F1E1D;
+    --elevation-2: #272524;
+    --elevation-3: #31302F;
+    --elevation-4: #3B3A39;
+  }
 }
 
-/* Table hover states */
-.dark tr:hover,
-.dark tr:hover td {
-  background-color: rgb(31 41 55) !important;
+/* Performance Optimizations */
+.liquid-glass-card {
+  /* Enable hardware acceleration for smooth animations */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
 }
 
-/* List containers (orders, recipes, worklogs) */
-.dark [class*="list"],
-.dark [class*="List"],
-.dark [class*="table"],
-.dark [class*="Table"] {
-  background-color: rgb(17 24 39) !important;
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-card,
+  .liquid-glass-card * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
-/* Grid and flex containers */
-.dark [class*="grid"],
-.dark [class*="Grid"],
-.dark [class*="flex"] {
-  background-color: transparent !important;
-}
-
-/* Specific list item backgrounds */
-.dark [role="row"],
-.dark [role="gridcell"],
-.dark [role="cell"] {
-  background-color: rgb(17 24 39) !important;
-  border-color: rgb(75 85 99) !important;
-}
-
-/* Pagination components */
-.dark nav[aria-label*="pagination"],
-.dark nav[aria-label*="Pagination"],
-.dark [class*="pagination"],
-.dark [class*="Pagination"] {
-  background-color: rgb(17 24 39) !important;
-}
-
-/* Dropdown menus and selects */
-.dark [role="listbox"],
-.dark [role="menu"],
-.dark [role="option"] {
-  background-color: rgb(31 41 55) !important;
-  color: rgb(243 244 246) !important;
-}
-
-/* Gradient backgrounds - Force dark variants */
-.dark [class*="from-primary-"],
-.dark [class*="from-success-"],
-.dark [class*="from-purple-"],
-.dark [class*="from-amber-"] {
-  background-image: linear-gradient(to bottom right, rgb(31 41 55), rgb(17 24 39)) !important;
-}
-
-/* Specific calculation result cards */
-.dark [class*="from-primary-50"],
-.dark [class*="from-success-50"],
-.dark [class*="from-purple-50"],
-.dark [class*="from-amber-50"] {
-  background: rgb(31 41 55) !important;
-}
-
-/* Text colors in calculation cards */
-.dark [class*="text-primary-600"],
-.dark [class*="text-success-600"],
-.dark [class*="text-purple-600"],
-.dark [class*="text-amber-600"] {
-  color: rgb(156 163 175) !important;
-}
-
-.dark [class*="text-primary-800"],
-.dark [class*="text-success-800"],
-.dark [class*="text-purple-800"],
-.dark [class*="text-amber-800"] {
-  color: rgb(243 244 246) !important;
-}
-
-/* Border colors in calculation cards */
-.dark [class*="border-primary-200"],
-.dark [class*="border-success-200"],
-.dark [class*="border-purple-200"],
-.dark [class*="border-amber-200"] {
-  border-color: rgb(75 85 99) !important;
-}
-
-/* Info/alert boxes */
-.dark [class*="bg-amber-50"],
-.dark [class*="bg-primary-50"],
-.dark [class*="bg-success-50"],
-.dark [class*="bg-info-50"] {
-  background-color: rgb(31 41 55) !important;
-}
-
-/* Badge/pill components (capsule labels) */
-.dark [class*="badge"],
-.dark [class*="Badge"],
-.dark [class*="pill"],
-.dark [class*="Pill"] {
-  background-color: rgb(55 65 81) !important;
-  color: rgb(229 231 235) !important;
-}
-
-/* Badge icons/dots - EXCLUDE from bg override */
-.dark span[class*="bg-"]:not([class*="rounded-full"]),
-.dark div[class*="bg-"]:not([class*="rounded-full"]):not([class*="badge"]) {
-  /* Only override non-circular elements */
-}
-
-/* Small circular status indicators - PRESERVE their colors */
-.dark span.h-2.w-2.rounded-full,
-.dark span[class*="h-2"][class*="w-2"][class*="rounded-full"],
-.dark div.h-2.w-2.rounded-full {
-  /* Don't override - let original bg-info-500, bg-success-500 show */
-  background-color: inherit !important;
-}
-
-/* Backdrop blur cards - CRITICAL for 其他訊息卡 */
-.dark [class*="backdrop-blur"],
-.dark [class*="bg-white/"],
-.dark [class*="bg-gray-50/"],
-.dark [class*="bg-neutral-50/"] {
-  background-color: rgb(31 41 55) !important;
-}
-
-/* Recipe cards and list items - CRITICAL */
-.dark [class*="recipe"],
-.dark [class*="Recipe"],
-.dark article,
-.dark [role="article"] {
-  background-color: rgb(31 41 55) !important;
-}
-
-/* All cards with any opacity/transparency */
-.dark div[class*="/75"],
-.dark div[class*="/80"],
-.dark div[class*="/85"],
-.dark div[class*="/90"] {
-  background-color: rgb(31 41 55) !important;
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dark .liquid-glass-card {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(18, 17, 16, 0.98);
+  }
+  
+  .dark .liquid-glass-card .liquid-glass-caustic {
+    opacity: 0.1; /* Reduce glow for high contrast */
+  }
 }
 
 /* 自定義樣式 */

@@ -44,9 +44,9 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 // 變體樣式映射
 const variantStyles: Record<CardVariant, string> = {
-  default: 'bg-white dark:bg-gray-900 border border-neutral-200 dark:border-gray-700 shadow-apple-md',
-  elevated: 'bg-white dark:bg-gray-900 border border-neutral-200 dark:border-gray-700 shadow-apple-lg',
-  flat: 'bg-white dark:bg-gray-900 border border-neutral-200 dark:border-gray-700 shadow-none',
+  default: 'bg-white dark:bg-elevation-1 border border-neutral-200 dark:border-white/10 shadow-apple-md',
+  elevated: 'bg-white dark:bg-elevation-2 border border-neutral-200 dark:border-white/10 shadow-apple-lg',
+  flat: 'bg-white dark:bg-elevation-1 border border-neutral-200 dark:border-white/10 shadow-none',
   glass: 'liquid-glass-card liquid-glass-card-elevated',
   modal: 'liquid-glass-modal',
   dropdown: 'liquid-glass-dropdown',
@@ -125,7 +125,7 @@ const CardTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-xl font-semibold leading-tight",
-      "text-neutral-800 dark:text-neutral-100",
+      "text-neutral-800 dark:text-white/95",
       "tracking-tight",
       className
     )}
@@ -141,7 +141,7 @@ const CardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "text-sm text-neutral-600 dark:text-neutral-300",
+      "text-sm text-neutral-600 dark:text-white/75",
       "leading-relaxed",
       className
     )}

@@ -69,12 +69,12 @@ export function NavDropdown({ label, items, active = false }: NavDropdownProps) 
               <Link
                 key={child.href}
                 href={child.href as Route}
-                className="liquid-glass-nav-link-with-icon flex items-center px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
+                className="liquid-glass-nav-link-with-icon flex items-center px-4 py-3 text-sm text-neutral-700 dark:text-white/75 hover:bg-white/50 dark:hover:bg-elevation-2 transition-all duration-200"
                 onClick={() => setIsOpen(false)}
                 aria-label={`前往 ${child.label}`}
               >
                 {IconComponent && (
-                  <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-neutral-400" />
+                  <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-white/55" />
                 )}
                 <span>{child.label}</span>
               </Link>
