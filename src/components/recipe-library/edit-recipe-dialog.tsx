@@ -288,14 +288,14 @@ export function EditRecipeDialog({
             </div>
 
             {fields.length === 0 && (
-              <p className="text-sm text-neutral-500 dark:text-white/65 text-center py-4 border border-dashed border-neutral-300 rounded-lg">
+              <p className="text-sm text-neutral-500 dark:text-white/65 text-center py-4 border border-dashed border-neutral-300 dark:border-neutral-600 rounded-lg">
                 尚未添加任何原料，點擊上方「添加原料」按鈕開始
               </p>
             )}
 
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-start gap-2 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+                <div key={field.id} className="flex items-start gap-2 p-3 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg border border-neutral-200 dark:border-neutral-700">
                   <div className="flex-1 grid grid-cols-2 gap-2">
                     {/* 原料名稱 */}
                     <div className="col-span-2 sm:col-span-1">
@@ -342,7 +342,7 @@ export function EditRecipeDialog({
                     variant="ghost"
                     size="sm"
                     onClick={() => remove(index)}
-                    className="h-10 w-10 p-0 text-danger-600 hover:bg-danger-50 transition-apple shrink-0"
+                    className="h-10 w-10 p-0 text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-apple shrink-0"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
