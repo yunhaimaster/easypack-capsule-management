@@ -34,6 +34,8 @@ interface ValidationResult {
 export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogProps) {
   const [step, setStep] = useState<ImportStep>('upload')
   const [file, setFile] = useState<File | null>(null)
+  const [fileBlob, setFileBlob] = useState<Blob | null>(null) // Store file content
+  const [fileName, setFileName] = useState<string>('') // Store file name
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [importResult, setImportResult] = useState<{ created: number; updated: number } | null>(null)
@@ -112,6 +114,11 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
     setError(null)
 
     try {
+      // Store file content as Blob to prevent stale file reference
+      const fileContent = new Blob([await fileToValidate.arrayBuffer()], { type: fileToValidate.type })
+      setFileBlob(fileContent)
+      setFileName(fileToValidate.name)
+
       const formData = new FormData()
       formData.append('file', fileToValidate)
       formData.append('dryRun', 'true')
@@ -161,18 +168,21 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       setError(err instanceof Error ? err.message : '驗證失敗，請檢查文件格式')
       setStep('upload')
       setFile(null)
+      setFileBlob(null)
+      setFileName('')
     }
   }
 
   const handleImport = async () => {
-    if (!file) return
+    if (!fileBlob || !fileName) return
 
     setStep('importing')
     setError(null)
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      // Use stored Blob with original filename
+      formData.append('file', fileBlob, fileName)
       formData.append('dryRun', 'false')
 
       const response = await fetch('/api/work-orders/import', {
@@ -214,6 +224,8 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
   const handleClose = () => {
     setStep('upload')
     setFile(null)
+    setFileBlob(null)
+    setFileName('')
     setValidationResult(null)
     setError(null)
     setImportResult(null)
