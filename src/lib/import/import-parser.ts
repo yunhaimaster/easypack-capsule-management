@@ -51,27 +51,57 @@ export interface ImportValidationResult {
  * Column mapping for Chinese headers to internal field names
  */
 const COLUMN_MAPPINGS: Record<string, string> = {
-  'JOB標號': 'jobNumber',
-  'job標號': 'jobNumber',
-  '標記日期': 'markedDate',
+  // Basic Info - Updated to match export
+  '訂單編號': 'jobNumber',
+  'JOB標號': 'jobNumber', // Legacy support
+  'job標號': 'jobNumber', // Legacy support
+  '創建日期': 'markedDate',
+  '標記日期': 'markedDate', // Legacy support
   '客戶名稱': 'customerName',
   '負責人': 'personInCharge',
   '工作類型': 'workType',
   '狀態': 'status',
-  '新品VIP': 'isNewProductVip',
-  '複雜度VIP': 'isComplexityVip',
+  
+  // VIP Flags - Updated to match export
+  '客服VIP': 'isCustomerServiceVip',
+  '老闆VIP': 'isBossVip',
+  '新品VIP': 'isNewProductVip', // Legacy support
+  '複雜度VIP': 'isComplexityVip', // Legacy support
+  
+  // Material Ready Status - New
+  '預計生產物料到齊日期': 'expectedProductionMaterialsDate',
+  '預計包裝物料到齊日期': 'expectedPackagingMaterialsDate',
+  '生產物料齊': 'productionMaterialsReady',
+  '包裝物料齊': 'packagingMaterialsReady',
+  
+  // Quantities
+  '生產數量': 'productionQuantity',
+  '包裝數量': 'packagingQuantity',
+  
+  // Delivery Dates - New
+  '要求交貨日期': 'requestedDeliveryDate',
+  '內部預計交貨期': 'internalExpectedDate',
+  
+  // Status Flags - New
+  '客人要求加急': 'isUrgent',
+  '已開生產線': 'productionStarted',
+  '已經完成': 'isCompleted',
+  
+  // Description
+  '工作描述': 'workDescription',
+  
+  // Legacy fields (deprecated but kept for compatibility)
   '年份類別': 'yearCategory',
   '預計完成日期': 'expectedCompletionDate',
   '資料齊全日期': 'dataCompleteDate',
   '通知日期': 'notifiedDate',
   '收數日期': 'paymentReceivedDate',
   '出貨日期': 'shippedDate',
-  '生產數量': 'productionQuantity',
-  '包裝數量': 'packagingQuantity',
   '內部交貨時間': 'internalDeliveryTime',
   '客戶要求時間': 'customerRequestedTime',
-  '工作描述': 'workDescription',
   '備註': 'notes',
+  
+  // Capsulation Order fields
   '產品名稱': 'productName',
   '膠囊顏色': 'capsuleColor',
   '膠囊尺寸': 'capsuleSize',
@@ -181,21 +211,30 @@ export async function validateImportData(
     const rowNum = index + 2 // +2 because: +1 for 0-index, +1 for header row
     
     // BLOCKING: Missing required fields
-    if (!row.jobNumber || String(row.jobNumber).trim() === '') {
-      errors.push({
-        row: rowNum,
-        field: 'jobNumber',
-        level: ValidationLevel.BLOCKING,
-        message: 'JOB標號為必填項'
-      })
-    }
-    
     if (!row.customerName || String(row.customerName).trim() === '') {
       errors.push({
         row: rowNum,
         field: 'customerName',
         level: ValidationLevel.BLOCKING,
         message: '客戶名稱為必填項'
+      })
+    }
+    
+    if (!row.personInCharge || String(row.personInCharge).trim() === '') {
+      errors.push({
+        row: rowNum,
+        field: 'personInCharge',
+        level: ValidationLevel.BLOCKING,
+        message: '負責人為必填項'
+      })
+    }
+    
+    if (!row.workType || String(row.workType).trim() === '') {
+      errors.push({
+        row: rowNum,
+        field: 'workType',
+        level: ValidationLevel.BLOCKING,
+        message: '工作類型為必填項'
       })
     }
     
@@ -308,24 +347,52 @@ export async function validateImportData(
  */
 export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, unknown> {
   return {
+    // Basic Info
     jobNumber: String(row.jobNumber || '').trim(),
     markedDate: row.markedDate ? new Date(String(row.markedDate)).toISOString() : null,
     customerName: String(row.customerName || '').trim(),
+    personInCharge: String(row.personInCharge || '').trim(),
     workType: WORK_TYPE_MAPPINGS[String(row.workType || '').trim()] || WorkType.PRODUCTION,
     status: STATUS_MAPPINGS[String(row.status || '').trim()] || WorkOrderStatus.PENDING,
+    
+    // VIP Flags - Updated to match export
+    isCustomerServiceVip: String(row.isCustomerServiceVip || '').trim() === '是',
+    isBossVip: String(row.isBossVip || '').trim() === '是',
+    // Legacy support
     isNewProductVip: String(row.isNewProductVip || '').trim() === '是',
     isComplexityVip: String(row.isComplexityVip || '').trim() === '是',
+    
+    // Material Ready Status - New
+    expectedProductionMaterialsDate: row.expectedProductionMaterialsDate ? new Date(String(row.expectedProductionMaterialsDate)).toISOString() : null,
+    expectedPackagingMaterialsDate: row.expectedPackagingMaterialsDate ? new Date(String(row.expectedPackagingMaterialsDate)).toISOString() : null,
+    productionMaterialsReady: String(row.productionMaterialsReady || '').trim() === '是',
+    packagingMaterialsReady: String(row.packagingMaterialsReady || '').trim() === '是',
+    
+    // Quantities
+    productionQuantity: row.productionQuantity ? Number(row.productionQuantity) : null,
+    packagingQuantity: row.packagingQuantity ? Number(row.packagingQuantity) : null,
+    
+    // Delivery Dates - New
+    requestedDeliveryDate: row.requestedDeliveryDate ? new Date(String(row.requestedDeliveryDate)).toISOString() : null,
+    internalExpectedDate: row.internalExpectedDate ? new Date(String(row.internalExpectedDate)).toISOString() : null,
+    
+    // Status Flags - New
+    isUrgent: String(row.isUrgent || '').trim() === '是',
+    productionStarted: String(row.productionStarted || '').trim() === '是',
+    isCompleted: String(row.isCompleted || '').trim() === '是',
+    
+    // Description
+    workDescription: String(row.workDescription || '').trim(),
+    
+    // Legacy fields (deprecated but kept for compatibility)
     yearCategory: String(row.yearCategory || '').trim() || null,
     expectedCompletionDate: row.expectedCompletionDate ? new Date(String(row.expectedCompletionDate)).toISOString() : null,
     dataCompleteDate: row.dataCompleteDate ? new Date(String(row.dataCompleteDate)).toISOString() : null,
     notifiedDate: row.notifiedDate ? new Date(String(row.notifiedDate)).toISOString() : null,
     paymentReceivedDate: row.paymentReceivedDate ? new Date(String(row.paymentReceivedDate)).toISOString() : null,
     shippedDate: row.shippedDate ? new Date(String(row.shippedDate)).toISOString() : null,
-    productionQuantity: row.productionQuantity ? Number(row.productionQuantity) : null,
-    packagingQuantity: row.packagingQuantity ? Number(row.packagingQuantity) : null,
     internalDeliveryTime: String(row.internalDeliveryTime || '').trim() || null,
     customerRequestedTime: String(row.customerRequestedTime || '').trim() || null,
-    workDescription: String(row.workDescription || '').trim(),
     notes: String(row.notes || '').trim() || null
   }
 }
