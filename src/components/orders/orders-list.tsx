@@ -343,7 +343,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
             <span className="sr-only" role="status">{statusMessage}</span>
             <table className="w-full">
               <thead>
-                <tr className="border-b border-neutral-200 bg-neutral-50">
+                <tr className="border-b border-neutral-200 dark:border-neutral-700 bg-surface-secondary/50">
                   <th
                     scope="col"
                     className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
@@ -462,7 +462,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   orders.map((order) => (
                     <tr 
                       key={order.id} 
-                      className="border-b border-neutral-100 hover:bg-neutral-50 cursor-pointer transition-colors"
+                      className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 cursor-pointer transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
                       <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
