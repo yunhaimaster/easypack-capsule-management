@@ -233,90 +233,113 @@ export default function EditWorkOrderPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                   訂單編號（如有）
-                </label>
+                </Text.Primary>
                 <Input
                   value={formData.jobNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, jobNumber: e.target.value }))}
                   placeholder="例如: JOB-2025-001"
+                  className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
-                  客戶名稱 <span className="text-danger-600">*</span>
-                </label>
+                <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                  客戶名稱 <Text.Danger as="span">*</Text.Danger>
+                </Text.Primary>
                 <Input
                   required
                   value={formData.customerName}
                   onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
                   placeholder="輸入客戶名稱"
+                  className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
-                  負責人 <span className="text-danger-600">*</span>
-                </label>
+                <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                  負責人 <Text.Danger as="span">*</Text.Danger>
+                </Text.Primary>
                 {usersLoading ? (
-                  <div className="text-sm text-neutral-500 dark:text-white/65">載入用戶列表中...</div>
+                  <div className="flex items-center gap-2">
+                    <LoadingSpinner size="sm" />
+                    <Text.Tertiary className="text-xs sm:text-sm">
+                      載入用戶列表中...
+                    </Text.Tertiary>
+                  </div>
                 ) : (
-                  <select
-                    required
+                  <Select
                     value={formData.personInChargeId}
-                    onChange={(e) => setFormData(prev => ({ ...prev, personInChargeId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, personInChargeId: value }))}
                   >
-                    <option value="">請選擇負責人</option>
-                    {users?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.nickname || user.phoneE164}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
+                      <SelectValue placeholder="請選擇負責人" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users?.map((user: any) => (
+                        <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
+                          {user.nickname || user.phoneE164}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
-                  工作類型 <span className="text-danger-600">*</span>
-                </label>
-                <select
-                  required
+                <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                  工作類型 <Text.Danger as="span">*</Text.Danger>
+                </Text.Primary>
+                <Select
                   value={formData.workType}
-                  onChange={(e) => setFormData(prev => ({ ...prev, workType: e.target.value as any }))}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, workType: value as any }))}
                 >
-                  <option value="PACKAGING">包裝</option>
-                  <option value="PRODUCTION">生產</option>
-                  <option value="PRODUCTION_PACKAGING">生產+包裝</option>
-                  <option value="WAREHOUSING">倉務</option>
-                </select>
+                  <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
+                    <SelectValue placeholder="請選擇工作類型" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PACKAGING" className="text-sm sm:text-base">包裝</SelectItem>
+                    <SelectItem value="PRODUCTION" className="text-sm sm:text-base">生產</SelectItem>
+                    <SelectItem value="PRODUCTION_PACKAGING" className="text-sm sm:text-base">生產+包裝</SelectItem>
+                    <SelectItem value="WAREHOUSING" className="text-sm sm:text-base">倉務</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             {/* VIP標記 */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">VIP標記</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
+                VIP標記
+              </Text.Primary>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="isCustomerServiceVip"
                     checked={formData.isCustomerServiceVip}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCustomerServiceVip: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="isCustomerServiceVip" className="text-sm font-medium leading-none">
+                  {/* NOTE: Using raw label because Text component doesn't support htmlFor */}
+                  <label 
+                    htmlFor="isCustomerServiceVip" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-primary-600 text-neutral-800 dark:text-white/95"
+                  >
                     客服VIP
                   </label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="isBossVip"
                     checked={formData.isBossVip}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isBossVip: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="isBossVip" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="isBossVip" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-primary-600 text-neutral-800 dark:text-white/95"
+                  >
                     老闆VIP
                   </label>
                 </div>
@@ -324,48 +347,60 @@ export default function EditWorkOrderPage() {
             </div>
 
             {/* 物料到齊狀態 */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">物料到齊狀態</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
+                物料到齊狀態
+              </Text.Primary>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-4 sm:mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     預計生產物料到齊的日期
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={formData.expectedProductionMaterialsDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, expectedProductionMaterialsDate: e.target.value }))}
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     預計包裝物料到齊的日期
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={formData.expectedPackagingMaterialsDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, expectedPackagingMaterialsDate: e.target.value }))}
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
               </div>
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="productionMaterialsReady"
                     checked={formData.productionMaterialsReady}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, productionMaterialsReady: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="productionMaterialsReady" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="productionMaterialsReady" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
+                  >
                     生產物料齊
                   </label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="packagingMaterialsReady"
                     checked={formData.packagingMaterialsReady}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, packagingMaterialsReady: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="packagingMaterialsReady" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="packagingMaterialsReady" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
+                  >
                     包裝物料齊
                   </label>
                 </div>
@@ -373,92 +408,124 @@ export default function EditWorkOrderPage() {
             </div>
 
             {/* 數量 */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">數量</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <div className="mb-4 sm:mb-5">
+                <Text.Primary as="h3" className="text-base sm:text-lg font-semibold inline">
+                  數量
+                </Text.Primary>
+                <Text.Tertiary as="span" className="text-xs sm:text-sm ml-2 sm:ml-3">
+                  （可選，不同單位：如包裝用瓶數、生產用粒數）
+                </Text.Tertiary>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     生產數量
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="number"
                     value={formData.productionQuantity}
                     onChange={(e) => setFormData(prev => ({ ...prev, productionQuantity: e.target.value }))}
                     placeholder="例如: 10000"
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     包裝數量
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="number"
                     value={formData.packagingQuantity}
                     onChange={(e) => setFormData(prev => ({ ...prev, packagingQuantity: e.target.value }))}
                     placeholder="例如: 5000"
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
               </div>
             </div>
 
             {/* 交貨期 */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">交貨期</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <div className="mb-4 sm:mb-5">
+                <Text.Primary as="h3" className="text-base sm:text-lg font-semibold inline">
+                  交貨期
+                </Text.Primary>
+                <Text.Tertiary as="span" className="text-xs sm:text-sm ml-2 sm:ml-3">
+                  （可選，支援導入歷史資料）
+                </Text.Tertiary>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     要求交貨的日期
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={formData.requestedDeliveryDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, requestedDeliveryDate: e.target.value }))}
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     內部預計交貨期
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={formData.internalExpectedDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, internalExpectedDate: e.target.value }))}
+                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
               </div>
             </div>
 
             {/* 狀態標記 */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">狀態標記</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
+                狀態標記
+              </Text.Primary>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="isUrgent"
                     checked={formData.isUrgent}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isUrgent: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="isUrgent" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="isUrgent" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-warning-600 text-neutral-800 dark:text-white/95"
+                  >
                     客人要求加急
                   </label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="productionStarted"
                     checked={formData.productionStarted}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, productionStarted: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="productionStarted" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="productionStarted" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-info-600 text-neutral-800 dark:text-white/95"
+                  >
                     已開生產線
                   </label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="isCompleted"
                     checked={formData.isCompleted}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCompleted: checked as boolean }))}
+                    className="transition-apple"
                   />
-                  <label htmlFor="isCompleted" className="text-sm font-medium leading-none">
+                  <label 
+                    htmlFor="isCompleted" 
+                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
+                  >
                     已經完成
                   </label>
                 </div>
@@ -466,17 +533,17 @@ export default function EditWorkOrderPage() {
             </div>
 
             {/* 工作描述 */}
-            <div className="border-t pt-6">
-              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
-                工作描述 <span className="text-danger-600">*</span>
-              </label>
-              <textarea
+            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+              <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                工作描述 <Text.Danger as="span">*</Text.Danger>
+              </Text.Primary>
+              <Textarea
                 required
                 value={formData.workDescription}
                 onChange={(e) => setFormData(prev => ({ ...prev, workDescription: e.target.value }))}
                 placeholder="描述此工作單的具體內容..."
-                rows={4}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                rows={5}
+                className="transition-apple text-sm sm:text-base"
               />
             </div>
 
