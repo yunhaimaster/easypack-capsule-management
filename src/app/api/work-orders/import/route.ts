@@ -291,7 +291,7 @@ export async function POST(request: NextRequest) {
           const personInChargeName = row.personInCharge as string
           let personInChargeId: string | null = null
 
-          if (personInChargeName) {
+          if (personInChargeName && String(personInChargeName).trim() !== '') {
             // Check if manually mapped
             if (userMappings[personInChargeName]) {
               personInChargeId = userMappings[personInChargeName]
@@ -301,21 +301,17 @@ export async function POST(request: NextRequest) {
               if (matchResult.matchedUser && (matchResult.confidence === 'exact' || matchResult.confidence === 'high')) {
                 personInChargeId = matchResult.matchedUser.id
               } else {
-                result.errors.push({
+                // INFO: Can't match person, will be set to null
+                result.warnings.push({
                   row: rowNum,
-                  error: `無法匹配負責人 "${personInChargeName}"，請提供用戶映射`
+                  message: `無法匹配負責人 "${personInChargeName}"，將設為未指定`
                 })
-                result.skipped++
-                continue
+                personInChargeId = null
               }
             }
           } else {
-            result.errors.push({
-              row: rowNum,
-              error: '缺少負責人資訊'
-            })
-            result.skipped++
-            continue
+            // INFO: No person in charge provided, will be set to null
+            personInChargeId = null
           }
 
           // Check duplicate jobNumber (final check before insert)

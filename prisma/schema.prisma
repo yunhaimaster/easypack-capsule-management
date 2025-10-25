@@ -254,9 +254,9 @@ model UnifiedWorkOrder {
   markedDate            DateTime  @default(now())  // 記號日期（系統自動記錄創建時間）
   customerName          String    @db.VarChar(200)
   
-  // User references with safe deletion
-  personInChargeId      String
-  personInCharge        User     @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)
+  // User references with safe deletion (nullable for legacy imports)
+  personInChargeId      String?
+  personInCharge        User?     @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)
   
   workType              WorkType
   
