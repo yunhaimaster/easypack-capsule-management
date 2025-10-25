@@ -59,22 +59,30 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      const payload = {
+        personInChargeId: data.personInChargeId === 'UNASSIGNED' ? null : data.personInChargeId,
+        workType: data.workType,
+        workDescription: data.workDescription
+      }
+      
+      // Debug: Log what we're sending
+      console.log('[QuickEditModal] Sending payload:', payload)
+      
       const response = await fetch(`/api/work-orders/${workOrder.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          personInChargeId: data.personInChargeId === 'UNASSIGNED' ? null : data.personInChargeId,
-          workType: data.workType,
-          workDescription: data.workDescription
-        })
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
         const error = await response.json()
+        console.error('[QuickEditModal] API Error:', error)
         throw new Error(error.error || '更新失敗')
       }
 
-      return response.json()
+      const result = await response.json()
+      console.log('[QuickEditModal] API Success:', result)
+      return result
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workOrders'] })

@@ -140,14 +140,20 @@ export default function EditWorkOrderPage() {
         isCompleted: formData.isCompleted
       }
 
+      // Debug: Log what we're sending
+      console.log('[EditPage] Sending payload:', payload)
+      console.log('[EditPage] personInChargeId:', payload.personInChargeId)
+
       await updateMutation.mutateAsync({ id, data: payload })
+      
+      console.log('[EditPage] Update successful')
       setSuccessMessage('工作單更新成功！')
       
       setTimeout(() => {
         router.push(`/work-orders/${id}` as never)
       }, 1500)
     } catch (error: any) {
-      console.error('更新失敗:', error)
+      console.error('[EditPage] Update failed:', error)
       setErrorMessage(error?.message || '更新工作單失敗，請稍後重試')
     }
   }
