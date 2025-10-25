@@ -37,6 +37,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [importResult, setImportResult] = useState<{ created: number; updated: number } | null>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -62,6 +63,47 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       setFile(selectedFile)
       setError(null)
       handleValidate(selectedFile)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(true)
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+
+    const droppedFiles = e.dataTransfer.files
+    if (droppedFiles.length > 0) {
+      const droppedFile = droppedFiles[0]
+      
+      // Validate file type
+      const allowedTypes = ['.csv', '.xlsx', '.xls']
+      const fileExtension = droppedFile.name.toLowerCase().substring(droppedFile.name.lastIndexOf('.'))
+      
+      if (allowedTypes.includes(fileExtension)) {
+        setFile(droppedFile)
+        setError(null)
+        handleValidate(droppedFile)
+      } else {
+        setError('不支援的文件格式，請選擇 CSV 或 XLSX 文件')
+      }
     }
   }
 
@@ -160,6 +202,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
     setValidationResult(null)
     setError(null)
     setImportResult(null)
+    setIsDragOver(false)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -203,11 +246,23 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
         </label>
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-neutral-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary-400 hover:bg-primary-50/50 transition-colors"
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            isDragOver
+              ? 'border-primary-500 bg-primary-100/50'
+              : 'border-neutral-300 hover:border-primary-400 hover:bg-primary-50/50'
+          }`}
         >
-          <Upload className="h-12 w-12 text-neutral-400 mx-auto mb-3" />
-          <p className="text-sm text-neutral-600 mb-1">
-            點擊選擇文件或拖放文件到此處
+          <Upload className={`h-12 w-12 mx-auto mb-3 ${
+            isDragOver ? 'text-primary-600' : 'text-neutral-400'
+          }`} />
+          <p className={`text-sm mb-1 ${
+            isDragOver ? 'text-primary-700 font-medium' : 'text-neutral-600'
+          }`}>
+            {isDragOver ? '放開文件以上傳' : '點擊選擇文件或拖放文件到此處'}
           </p>
           <p className="text-xs text-neutral-500">
             支援 CSV、XLSX 格式
