@@ -110,7 +110,11 @@ export async function POST(request: NextRequest) {
         const sheetName = workbook.SheetNames[0]
         const worksheet = workbook.Sheets[sheetName]
         
+        console.log('[Import] Excel parsing started')
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+        console.log('[Import] jsonData length:', jsonData.length)
+        console.log('[Import] First row (headers):', jsonData[0])
+        
         if (jsonData.length === 0) {
           return NextResponse.json(
             { success: false, error: 'Excel文件為空或格式不正確' },
@@ -128,6 +132,9 @@ export async function POST(request: NextRequest) {
           return String(h || '').trim()
         })
         
+        console.log('[Import] Normalized headers:', normalizedHeaders)
+        console.log('[Import] Data rows to process:', jsonData.length - 1)
+        
         const rows = (jsonData.slice(1) as any[][]).map((row: any[]) => {
           const obj: Record<string, unknown> = {}
           normalizedHeaders.forEach((header, index) => {
@@ -135,6 +142,10 @@ export async function POST(request: NextRequest) {
           })
           return obj
         })
+        
+        console.log('[Import] Rows array length:', rows.length)
+        console.log('[Import] First row object keys:', rows[0] ? Object.keys(rows[0]).length : 0)
+        console.log('[Import] First row object sample:', rows[0] ? Object.entries(rows[0]).slice(0, 3) : 'No rows')
         
         data = { headers: normalizedHeaders, rows }
       } else {
