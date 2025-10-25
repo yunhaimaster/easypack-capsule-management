@@ -44,7 +44,7 @@ export function TabsList({ children, className }: TabsListProps) {
   return (
     <div
       className={cn(
-        'inline-flex h-10 items-center justify-center rounded-lg bg-neutral-100 p-1 text-neutral-600 dark:text-white/75',
+        'inline-flex h-10 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800/30 p-1 text-neutral-600 dark:text-white/75',
         className
       )}
       role="tablist"
@@ -74,7 +74,7 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
         'flex items-center justify-center whitespace-nowrap rounded-md px-3 h-8 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         isSelected
           ? 'bg-surface-primary text-neutral-900 dark:text-white/95 shadow-sm'
-          : 'bg-transparent text-neutral-600 hover:text-neutral-900 dark:text-white/75 hover:bg-surface-primary/50',
+          : 'bg-transparent text-neutral-700 dark:text-white/85 hover:text-neutral-900 dark:hover:text-white/95 hover:bg-surface-primary/50',
         className
       )}
     >
