@@ -87,11 +87,13 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       const result = await response.json()
       
       if (result.success) {
+        // Handle validation response structure
+        const validation = result.validation || result.data
         setValidationResult({
-          valid: result.data.summary.successful,
-          invalid: result.data.summary.failed,
-          duplicates: result.data.summary.duplicates,
-          errors: result.data.errors || []
+          valid: validation.valid || 0,
+          invalid: validation.errors || 0,
+          duplicates: 0, // Not tracked in current validation
+          errors: validation.details || []
         })
         setStep('preview')
       } else {
@@ -129,9 +131,11 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       const result = await response.json()
       
       if (result.success) {
+        // Handle import response structure
+        const data = result.data
         setImportResult({
-          created: result.data.summary.successful,
-          updated: result.data.summary.updated || 0
+          created: data.imported || 0,
+          updated: 0 // Not tracked in current implementation
         })
         setStep('success')
         
