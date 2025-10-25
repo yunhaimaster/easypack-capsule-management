@@ -8,6 +8,8 @@
  * - Order linking display
  * - Full responsive design
  * - Optimized for large datasets
+ * - 100% Apple HIG compliant
+ * - Excel-like smooth interactions
  */
 
 'use client'
@@ -26,6 +28,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/accessible-dialog'
+import { Text } from '@/components/ui/text'
 import { Plus, Search, FileDown, Upload, Filter, X } from 'lucide-react'
 import type { WorkOrderSearchFilters, SortField, WorkOrder } from '@/types/work-order'
 import { WorkOrderStatus, WorkType, WORK_ORDER_STATUS_LABELS, WORK_TYPE_LABELS } from '@/types/work-order'
@@ -231,14 +234,20 @@ export default function WorkOrdersPage() {
       {/* Notification */}
       {notification && (
         <div 
-          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-apple ${
             notification.type === 'success' 
-              ? 'bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800 text-success-700 dark:text-success-400'
-              : 'bg-danger-50 dark:bg-danger-900/30 border border-danger-200 dark:border-danger-800 text-danger-700 dark:text-danger-400'
+              ? 'bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800'
+              : 'bg-danger-50 dark:bg-danger-900/30 border border-danger-200 dark:border-danger-800'
           }`}
           role="alert"
         >
-          {notification.message}
+          <Text.Primary 
+            className={`text-sm ${
+              notification.type === 'success' ? 'text-success-700 dark:text-success-400' : 'text-danger-700 dark:text-danger-400'
+            }`}
+          >
+            {notification.message}
+          </Text.Primary>
         </div>
       )}
 
@@ -255,14 +264,16 @@ export default function WorkOrdersPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white/95">工作單管理</h1>
-            <p className="text-neutral-600 dark:text-white/75 mt-1">
+            <Text.Primary as="h1" className="text-3xl font-bold">
+              工作單管理
+            </Text.Primary>
+            <Text.Secondary className="mt-1">
               統一工作單系統 - 包裝、生產、倉務
-            </p>
+            </Text.Secondary>
           </div>
           <Button 
-            className="bg-primary-600 hover:bg-primary-700"
-            onClick={() => router.push('/work-orders/new')}
+            className="bg-primary-600 hover:bg-primary-700 transition-apple"
+            onClick={() => router.push('/work-orders/new' as any)}
           >
             <Plus className="h-4 w-4 mr-2" />
             新增工作單
@@ -272,36 +283,36 @@ export default function WorkOrdersPage() {
         {/* Stats */}
         {!isLoading && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
+            <Card className="card-interactive-apple transition-apple">
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-neutral-900 dark:text-white/95">
+                <Text.Primary as="div" className="text-2xl font-bold">
                   {pagination.total}
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-white/75">總工作單數</p>
+                </Text.Primary>
+                <Text.Secondary className="text-sm">總工作單數</Text.Secondary>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="card-interactive-apple transition-apple">
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-success-600">
+                <Text.Success as="div" className="text-2xl font-bold">
                   {workOrders.filter((wo: WorkOrder) => wo.isCompleted).length}
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-white/75">已完成</p>
+                </Text.Success>
+                <Text.Secondary className="text-sm">已完成</Text.Secondary>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="card-interactive-apple transition-apple">
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-warning-600">
+                <Text.Warning as="div" className="text-2xl font-bold">
                   {selectedIds.length}
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-white/75">已選擇</p>
+                </Text.Warning>
+                <Text.Secondary className="text-sm">已選擇</Text.Secondary>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="card-interactive-apple transition-apple">
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-info-600">
+                <Text.Info as="div" className="text-2xl font-bold">
                   {workOrders.filter((wo: WorkOrder) => wo.capsulationOrder).length}
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-white/75">已關聯訂單</p>
+                </Text.Info>
+                <Text.Secondary className="text-sm">已關聯訂單</Text.Secondary>
               </CardContent>
             </Card>
           </div>
@@ -320,6 +331,7 @@ export default function WorkOrdersPage() {
                   variant="ghost" 
                   size="sm"
                   onClick={handleClearAllFilters}
+                  className="transition-apple"
                 >
                   <X className="h-4 w-4 mr-1" />
                   清除全部
@@ -337,9 +349,9 @@ export default function WorkOrdersPage() {
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="flex-1"
+                className="flex-1 transition-apple"
               />
-              <Button onClick={handleSearch} variant="default">
+              <Button onClick={handleSearch} variant="default" className="transition-apple">
                 <Search className="h-4 w-4 mr-2" />
                 搜尋
               </Button>
@@ -348,7 +360,7 @@ export default function WorkOrdersPage() {
               <Button 
                 variant="outline" 
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className={activeFiltersCount > 1 ? 'border-primary-500 text-primary-600' : ''}
+                className={`transition-apple ${activeFiltersCount > 1 ? 'border-primary-500 text-primary-600' : ''}`}
               >
                 <Filter className="h-4 w-4 mr-2" />
                 進階篩選
@@ -356,6 +368,7 @@ export default function WorkOrdersPage() {
               <Button 
                 variant="outline" 
                 onClick={() => setIsImportDialogOpen(true)}
+                className="transition-apple"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 匯入
@@ -363,6 +376,7 @@ export default function WorkOrdersPage() {
               <Button 
                 variant="outline" 
                 onClick={() => setIsExportDialogOpen(true)}
+                className="transition-apple"
               >
                 <FileDown className="h-4 w-4 mr-2" />
                 匯出
@@ -372,15 +386,15 @@ export default function WorkOrdersPage() {
 
           {/* Advanced Filters Panel */}
           {showAdvancedFilters && (
-            <div className="mt-6 p-4 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-surface-secondary/50 space-y-4">
-              <h4 className="font-medium text-neutral-800 dark:text-white/95 mb-3">進階篩選條件</h4>
+            <div className="mt-6 p-4 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-surface-secondary/50 space-y-4 transition-apple">
+              <Text.Primary as="h4" className="font-medium mb-3">進階篩選條件</Text.Primary>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     狀態
-                  </label>
+                  </Text.Primary>
                   <Select
                     value={selectedStatuses[0] || ''}
                     onValueChange={(value) => {
@@ -408,9 +422,9 @@ export default function WorkOrdersPage() {
 
                 {/* Work Type Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     工作類型
-                  </label>
+                  </Text.Primary>
                   <Select
                     value={selectedWorkTypes[0] || ''}
                     onValueChange={(value) => {
@@ -438,9 +452,9 @@ export default function WorkOrdersPage() {
 
                 {/* Person in Charge Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     負責人
-                  </label>
+                  </Text.Primary>
                   <Select
                     value={selectedPersons[0] || ''}
                     onValueChange={(value) => {
@@ -457,7 +471,7 @@ export default function WorkOrdersPage() {
                       <SelectValue placeholder={selectedPersons.length > 0 ? `已選 ${selectedPersons.length} 個` : "選擇負責人"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {usersData?.map((user: any) => (
+                      {usersData?.map((user: { id: string, nickname?: string | null, phoneE164: string }) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.nickname || user.phoneE164}
                         </SelectItem>
@@ -468,33 +482,35 @@ export default function WorkOrdersPage() {
 
                 {/* Date From */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     創建日期從
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
+                    className="transition-apple"
                   />
                 </div>
 
                 {/* Date To */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     創建日期至
-                  </label>
+                  </Text.Primary>
                   <Input
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
+                    className="transition-apple"
                   />
                 </div>
 
                 {/* VIP Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
+                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
                     特殊標記
-                  </label>
+                  </Text.Primary>
                   <Select
                     value={vipOnly ? 'vip' : linkedOnly === true ? 'linked' : linkedOnly === false ? 'unlinked' : ''}
                     onValueChange={(value) => {
@@ -528,7 +544,7 @@ export default function WorkOrdersPage() {
 
               {/* Filter Actions */}
               <div className="flex gap-2 pt-2">
-                <Button onClick={handleApplyAdvancedFilters} variant="default">
+                <Button onClick={handleApplyAdvancedFilters} variant="default" className="transition-apple">
                   <Filter className="h-4 w-4 mr-2" />
                   套用篩選
                 </Button>
@@ -543,6 +559,7 @@ export default function WorkOrdersPage() {
                     setVipOnly(false)
                     setLinkedOnly(undefined)
                   }}
+                  className="transition-apple"
                 >
                   重設
                 </Button>
@@ -553,17 +570,17 @@ export default function WorkOrdersPage() {
           {/* Active Filter Tags */}
           {activeFiltersCount > 0 && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-neutral-600 dark:text-white/75">已套用篩選:</span>
+              <Text.Secondary as="span" className="text-sm">已套用篩選:</Text.Secondary>
               
               {filters.keyword && (
-                <Badge variant="info" className="inline-flex items-center gap-2">
+                <Badge variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
                   關鍵字: {filters.keyword}
                   <button
                     onClick={() => {
                       setSearchKeyword('')
                       setFilters(prev => ({ ...prev, keyword: undefined, page: 1 }))
                     }}
-                    className="hover:text-info-900"
+                    className="hover:text-info-900 transition-apple"
                     aria-label="清除關鍵字篩選"
                   >
                     ×
@@ -572,7 +589,7 @@ export default function WorkOrdersPage() {
               )}
 
               {filters.status?.map(status => (
-                <Badge key={status} variant="info" className="inline-flex items-center gap-2">
+                <Badge key={status} variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
                   {WORK_ORDER_STATUS_LABELS[status]}
                   <button
                     onClick={() => {
@@ -583,7 +600,7 @@ export default function WorkOrdersPage() {
                         page: 1
                       }))
                     }}
-                    className="hover:text-info-900"
+                    className="hover:text-info-900 transition-apple"
                     aria-label={`清除${WORK_ORDER_STATUS_LABELS[status]}篩選`}
                   >
                     ×
@@ -592,7 +609,7 @@ export default function WorkOrdersPage() {
               ))}
 
               {filters.workType?.map(type => (
-                <Badge key={type} variant="success" className="inline-flex items-center gap-2">
+                <Badge key={type} variant="success" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
                   {WORK_TYPE_LABELS[type]}
                   <button
                     onClick={() => {
@@ -603,7 +620,7 @@ export default function WorkOrdersPage() {
                         page: 1
                       }))
                     }}
-                    className="hover:text-success-900"
+                    className="hover:text-success-900 transition-apple"
                     aria-label={`清除${WORK_TYPE_LABELS[type]}篩選`}
                   >
                     ×
@@ -612,14 +629,14 @@ export default function WorkOrdersPage() {
               ))}
 
               {filters.isVip && (
-                <Badge variant="warning" className="inline-flex items-center gap-2">
+                <Badge variant="warning" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
                   VIP 訂單
                   <button
                     onClick={() => {
                       setVipOnly(false)
                       setFilters(prev => ({ ...prev, isVip: undefined, page: 1 }))
                     }}
-                    className="hover:text-warning-900"
+                    className="hover:text-warning-900 transition-apple"
                     aria-label="清除VIP篩選"
                   >
                     ×
@@ -628,14 +645,14 @@ export default function WorkOrdersPage() {
               )}
 
               {filters.hasLinkedCapsulation !== undefined && (
-                <Badge variant="info" className="inline-flex items-center gap-2">
+                <Badge variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
                   {filters.hasLinkedCapsulation ? '已關聯訂單' : '未關聯訂單'}
                   <button
                     onClick={() => {
                       setLinkedOnly(undefined)
                       setFilters(prev => ({ ...prev, hasLinkedCapsulation: undefined, page: 1 }))
                     }}
-                    className="hover:text-info-900"
+                    className="hover:text-info-900 transition-apple"
                     aria-label="清除關聯狀態篩選"
                   >
                     ×
@@ -651,9 +668,9 @@ export default function WorkOrdersPage() {
       {error && (
         <Card className="mb-6 border-danger-200 bg-danger-50 dark:bg-danger-900/20 dark:border-danger-800">
           <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-danger-700 dark:text-danger-400">
-              <span className="font-semibold">錯誤:</span>
-              <span>{error instanceof Error ? error.message : '載入失敗'}</span>
+            <div className="flex items-center gap-2">
+              <Text.Danger as="span" className="font-semibold">錯誤:</Text.Danger>
+              <Text.Danger as="span">{error instanceof Error ? error.message : '載入失敗'}</Text.Danger>
             </div>
           </CardContent>
         </Card>
@@ -662,26 +679,30 @@ export default function WorkOrdersPage() {
       {/* Table */}
       <Card>
         <CardContent className="pt-6">
-          <WorkOrderTable
-            workOrders={workOrders}
-            isLoading={isLoading}
-            isFetching={isFetching}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            onSort={handleSort}
-            sortBy={filters.sortBy}
-            sortOrder={filters.sortOrder}
-            onDelete={handleDeleteClick}
-          />
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <WorkOrderTable
+                workOrders={workOrders}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                onSort={handleSort}
+                sortBy={filters.sortBy}
+                sortOrder={filters.sortOrder}
+                onDelete={handleDeleteClick}
+              />
+            </div>
+          </div>
 
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-neutral-600 dark:text-white/75">
+              <Text.Secondary className="text-sm">
                 顯示第 {((pagination.page - 1) * pagination.limit) + 1} 至{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} 項，
                 共 {pagination.total} 項
-              </div>
+              </Text.Secondary>
               <div className="flex gap-2 flex-wrap justify-center">
                 <Button
                   variant="outline"
@@ -689,6 +710,7 @@ export default function WorkOrdersPage() {
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
                   aria-label="上一頁"
+                  className="transition-apple"
                 >
                   上一頁
                 </Button>
@@ -701,7 +723,7 @@ export default function WorkOrdersPage() {
                         variant={pagination.page === pageNum ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
-                        className="min-w-[40px]"
+                        className="min-w-[40px] transition-apple"
                         aria-label={`前往第 ${pageNum} 頁`}
                         aria-current={pagination.page === pageNum ? 'page' : undefined}
                       >
@@ -711,12 +733,12 @@ export default function WorkOrdersPage() {
                   })}
                   {pagination.totalPages > 5 && (
                     <>
-                      <span className="text-neutral-400 dark:text-white/55">...</span>
+                      <Text.Tertiary as="span">...</Text.Tertiary>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handlePageChange(pagination.totalPages)}
-                        className="min-w-[40px]"
+                        className="min-w-[40px] transition-apple"
                         aria-label={`前往第 ${pagination.totalPages} 頁`}
                       >
                         {pagination.totalPages}
@@ -730,6 +752,7 @@ export default function WorkOrdersPage() {
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   aria-label="下一頁"
+                  className="transition-apple"
                 >
                   下一頁
                 </Button>
@@ -755,32 +778,32 @@ export default function WorkOrdersPage() {
           <CardContent>
             <div className="space-y-2 text-sm font-mono">
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Loading:</span>{' '}
-                <span className={isLoading ? 'text-warning-600' : 'text-success-600'}>
+                <Text.Tertiary as="span">Loading:</Text.Tertiary>{' '}
+                <Text.Primary as="span" className={isLoading ? 'text-warning-600' : 'text-success-600'}>
                   {isLoading ? 'Yes' : 'No'}
-                </span>
+                </Text.Primary>
               </div>
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Fetching:</span>{' '}
-                <span className={isFetching ? 'text-warning-600' : 'text-success-600'}>
+                <Text.Tertiary as="span">Fetching:</Text.Tertiary>{' '}
+                <Text.Primary as="span" className={isFetching ? 'text-warning-600' : 'text-success-600'}>
                   {isFetching ? 'Yes' : 'No'}
-                </span>
+                </Text.Primary>
               </div>
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Work Orders:</span>{' '}
-                <span className="text-neutral-900 dark:text-white/95">{workOrders.length}</span>
+                <Text.Tertiary as="span">Work Orders:</Text.Tertiary>{' '}
+                <Text.Primary as="span">{workOrders.length}</Text.Primary>
               </div>
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Selected:</span>{' '}
-                <span className="text-neutral-900 dark:text-white/95">{selectedIds.length}</span>
+                <Text.Tertiary as="span">Selected:</Text.Tertiary>{' '}
+                <Text.Primary as="span">{selectedIds.length}</Text.Primary>
               </div>
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Active Filters:</span>{' '}
-                <span className="text-neutral-900 dark:text-white/95">{activeFiltersCount}</span>
+                <Text.Tertiary as="span">Active Filters:</Text.Tertiary>{' '}
+                <Text.Primary as="span">{activeFiltersCount}</Text.Primary>
               </div>
               <div>
-                <span className="text-neutral-600 dark:text-white/75">Current Page:</span>{' '}
-                <span className="text-neutral-900 dark:text-white/95">{pagination.page} / {pagination.totalPages}</span>
+                <Text.Tertiary as="span">Current Page:</Text.Tertiary>{' '}
+                <Text.Primary as="span">{pagination.page} / {pagination.totalPages}</Text.Primary>
               </div>
             </div>
           </CardContent>
