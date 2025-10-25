@@ -119,15 +119,24 @@ export async function POST(request: NextRequest) {
         }
         
         const headers = jsonData[0] as string[]
+        
+        // Normalize headers (remove \r\n line breaks from multi-line Excel headers)
+        const normalizedHeaders = headers.map(h => {
+          if (typeof h === 'string') {
+            return h.trim().replace(/[\r\n]+/g, '')
+          }
+          return String(h || '').trim()
+        })
+        
         const rows = (jsonData.slice(1) as any[][]).map((row: any[]) => {
           const obj: Record<string, unknown> = {}
-          headers.forEach((header, index) => {
+          normalizedHeaders.forEach((header, index) => {
             obj[header] = row[index] || ''
           })
           return obj
         })
         
-        data = { headers, rows }
+        data = { headers: normalizedHeaders, rows }
       } else {
         return NextResponse.json(
           { success: false, error: '不支援的文件格式，請使用 CSV 或 XLSX' },
