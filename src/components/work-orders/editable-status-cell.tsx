@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { WorkOrderStatus, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
+import { workOrderKeys } from '@/lib/queries/work-orders'
 import { Check, X } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -68,7 +69,7 @@ export function EditableStatusCell({
     },
     onSuccess: () => {
       // Invalidate and refetch work orders
-      queryClient.invalidateQueries({ queryKey: ['workOrders'] })
+      queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setIsEditing(false)
       onSuccess?.()
     },

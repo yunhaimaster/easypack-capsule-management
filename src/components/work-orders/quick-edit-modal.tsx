@@ -20,6 +20,7 @@ import { Text } from '@/components/ui/text'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { WorkType, WORK_TYPE_LABELS, WorkOrder } from '@/types/work-order'
 import { User } from '@/types/work-order'
+import { workOrderKeys } from '@/lib/queries/work-orders'
 import { Edit3, Save, X } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -87,9 +88,9 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
     onSuccess: async () => {
       console.log('[QuickEditModal] Update successful, refreshing list...')
       
-      // Invalidate and refetch to ensure UI updates
-      await queryClient.invalidateQueries({ queryKey: ['workOrders'] })
-      await queryClient.refetchQueries({ queryKey: ['workOrders'] })
+      // Invalidate and refetch ALL work order lists (regardless of filters)
+      await queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
+      await queryClient.refetchQueries({ queryKey: workOrderKeys.lists() })
       
       console.log('[QuickEditModal] List refreshed')
       

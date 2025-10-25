@@ -14,6 +14,7 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { workOrderKeys } from '@/lib/queries/work-orders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Circle } from 'lucide-react'
 
@@ -59,7 +60,7 @@ export function EditableCheckboxCell({
     },
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['workOrders'] })
+      queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       onSuccess?.()
     },
     onError: (error: Error) => {
