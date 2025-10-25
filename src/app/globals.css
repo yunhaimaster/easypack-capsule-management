@@ -3342,6 +3342,64 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+/* Ensure MarkdownRenderer content has proper dark mode styling in AI messages */
+.dark .ai-message-assistant .prose {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose h1,
+.dark .ai-message-assistant .prose h2,
+.dark .ai-message-assistant .prose h3,
+.dark .ai-message-assistant .prose h4,
+.dark .ai-message-assistant .prose h5,
+.dark .ai-message-assistant .prose h6 {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose p {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose li {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose strong {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose em {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose code {
+  color: rgba(226, 232, 240, 0.95) !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark .ai-message-assistant .prose pre {
+  color: rgba(226, 232, 240, 0.95) !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark .ai-message-assistant .prose blockquote {
+  color: rgba(226, 232, 240, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  background: rgba(30, 41, 59, 0.4) !important;
+}
+
+.dark .ai-message-assistant .prose table {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose th {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
+.dark .ai-message-assistant .prose td {
+  color: rgba(226, 232, 240, 0.95) !important;
+}
+
 .ai-message-content {
   display: flex;
   flex-direction: column;
