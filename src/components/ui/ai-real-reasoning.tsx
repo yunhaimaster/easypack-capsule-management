@@ -72,28 +72,28 @@ export function AIReasoningIndicator({ isReasoning, enableReasoning = false }: A
   if (!isReasoning || !enableReasoning) return null
 
   return (
-    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200 mb-3">
+    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200 dark:border-purple-800/30 mb-3">
       <div className="flex-shrink-0">
-        <Brain className="w-6 h-6 text-purple-600 animate-pulse" />
+        <Brain className="w-6 h-6 text-purple-600 dark:text-purple-400 animate-pulse" />
       </div>
       <div className="flex-1">
         <div className="flex items-center space-x-2">
-          <h4 className="font-medium text-purple-900">
+          <h4 className="font-medium text-purple-900 dark:text-purple-200">
             AI 深度思考中
           </h4>
-          <span className="text-purple-600 text-sm">
+          <span className="text-purple-600 dark:text-purple-400 text-sm">
             推理模式
           </span>
         </div>
-        <p className="text-sm text-purple-700 mt-1">
+        <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
           AI 正在進行深度分析和推理，這可能需要更長時間
         </p>
       </div>
       <div className="flex-shrink-0">
         <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     </div>
