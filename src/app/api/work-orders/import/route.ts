@@ -384,12 +384,16 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[API] POST /api/work-orders/import error:', error)
 
+    const message = error instanceof Error ? error.message : '匯入工作單失敗'
+    const isBusinessRollback = typeof error === 'object' && error !== null && 'message' in (error as any)
+      && String((error as any).message).includes('匯入失敗率超過')
+
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : '匯入工作單失敗'
+        error: message
       },
-      { status: 500 }
+      { status: isBusinessRollback ? 400 : 500 }
     )
   }
 }
