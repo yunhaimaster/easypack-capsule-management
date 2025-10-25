@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Text } from '@/components/ui/text'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react'
@@ -343,34 +344,30 @@ export default function WorkOrderDetailPage() {
                   配方成分
                 </Text.Primary>
                 <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden transition-apple">
-                  <table className="w-full">
-                    <thead className="bg-surface-secondary/50">
-                      <tr>
-                        <th className="px-3 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">
-                          <Text.Primary>原料名稱</Text.Primary>
-                        </th>
-                        <th className="px-3 sm:px-4 py-2 text-right text-xs sm:text-sm font-medium">
-                          <Text.Primary>單位含量 (mg)</Text.Primary>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs sm:text-sm">
+                          原料名稱
+                        </TableHead>
+                        <TableHead className="text-xs sm:text-sm text-right">
+                          單位含量 (mg)
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {workOrder.capsulationOrder.ingredients.map((ing: any, index: number) => (
-                        <tr key={index} className="border-t border-neutral-200 dark:border-neutral-700">
-                          <td className="px-3 sm:px-4 py-2">
-                            <Text.Primary className="text-xs sm:text-sm">
-                              {ing.materialName}
-                            </Text.Primary>
-                          </td>
-                          <td className="px-3 sm:px-4 py-2 text-right">
-                            <Text.Primary className="text-xs sm:text-sm">
-                              {ing.unitContentMg}
-                            </Text.Primary>
-                          </td>
-                        </tr>
+                        <TableRow key={index}>
+                          <TableCell className="text-xs sm:text-sm">
+                            {ing.materialName}
+                          </TableCell>
+                          <TableCell className="text-xs sm:text-sm text-right">
+                            {ing.unitContentMg}
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             )}
