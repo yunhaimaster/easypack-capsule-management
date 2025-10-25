@@ -32,16 +32,16 @@ const CATEGORY_COLORS: Record<string, {
   border: string
   hover: string
 }> = {
-  sleep: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', hover: 'hover:bg-purple-100' },
-  digest: { bg: 'bg-success-50', text: 'text-success-700', border: 'border-green-200', hover: 'hover:bg-success-100' },
-  immune: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', hover: 'hover:bg-blue-100' },
-  beauty: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200', hover: 'hover:bg-pink-100' },
-  energy: { bg: 'bg-warning-50', text: 'text-warning-700', border: 'border-orange-200', hover: 'hover:bg-warning-100' },
+  sleep: { bg: 'bg-info-50', text: 'text-info-700', border: 'border-info-200', hover: 'hover:bg-info-100' },
+  digest: { bg: 'bg-success-50', text: 'text-success-700', border: 'border-success-200', hover: 'hover:bg-success-100' },
+  immune: { bg: 'bg-primary-50', text: 'text-primary-700', border: 'border-primary-200', hover: 'hover:bg-primary-100' },
+  beauty: { bg: 'bg-info-50', text: 'text-info-700', border: 'border-info-200', hover: 'hover:bg-info-100' },
+  energy: { bg: 'bg-warning-50', text: 'text-warning-700', border: 'border-warning-200', hover: 'hover:bg-warning-100' },
   bone: { bg: 'bg-neutral-50', text: 'text-neutral-700 dark:text-white/85', border: 'border-neutral-200', hover: 'hover:bg-neutral-100' },
-  cardio: { bg: 'bg-danger-50', text: 'text-danger-700', border: 'border-red-200', hover: 'hover:bg-danger-100' },
-  vision: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', hover: 'hover:bg-cyan-100' },
-  women: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', hover: 'hover:bg-rose-100' },
-  men: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', hover: 'hover:bg-indigo-100' },
+  cardio: { bg: 'bg-danger-50', text: 'text-danger-700', border: 'border-danger-200', hover: 'hover:bg-danger-100' },
+  vision: { bg: 'bg-secondary-50', text: 'text-secondary-700', border: 'border-secondary-200', hover: 'hover:bg-secondary-100' },
+  women: { bg: 'bg-info-50', text: 'text-info-700', border: 'border-info-200', hover: 'hover:bg-info-100' },
+  men: { bg: 'bg-primary-50', text: 'text-primary-700', border: 'border-primary-200', hover: 'hover:bg-primary-100' },
 }
 
 export function EffectBadges({ effectsAnalysis, maxBadges = 3, onFilterClick, className }: EffectBadgesProps) {

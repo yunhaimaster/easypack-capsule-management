@@ -187,7 +187,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
 
       <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="space-x-2">
-          <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+          <Button type="submit" className="bg-primary-600 hover:bg-primary-700">
             <Search className="h-4 w-4 mr-2" />
             搜尋工時
           </Button>

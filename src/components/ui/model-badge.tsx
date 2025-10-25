@@ -19,27 +19,27 @@ const modelConfig: Record<ModelType, {
   'gpt': {
     label: 'GPT-5',
     icon: Brain,
-    className: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20 hover:bg-emerald-500/20',
+    className: 'bg-success-500/10 text-success-700 border-success-500/20 hover:bg-success-500/20',
   },
   'claude': {
     label: 'Claude',
     icon: Sparkles,
-    className: 'bg-violet-500/10 text-violet-700 border-violet-500/20 hover:bg-violet-500/20',
+    className: 'bg-info-500/10 text-info-700 border-info-500/20 hover:bg-info-500/20',
   },
   'grok': {
     label: 'Grok',
     icon: Zap,
-    className: 'bg-warning-500/10 text-warning-700 border-orange-500/20 hover:bg-warning-500/20',
+    className: 'bg-warning-500/10 text-warning-700 border-warning-500/20 hover:bg-warning-500/20',
   },
   'gpt-mini': {
     label: 'GPT-5 Mini',
     icon: Brain,
-    className: 'bg-cyan-500/10 text-cyan-700 border-cyan-500/20 hover:bg-cyan-500/20',
+    className: 'bg-secondary-500/10 text-secondary-700 border-secondary-500/20 hover:bg-secondary-500/20',
   },
   'deepseek': {
     label: 'DeepSeek',
     icon: Brain,
-    className: 'bg-violet-500/10 text-violet-700 border-violet-500/20 hover:bg-violet-500/20',
+    className: 'bg-info-500/10 text-info-700 border-info-500/20 hover:bg-info-500/20',
   },
   'info': {
     label: 'AI 模型',

@@ -201,7 +201,7 @@ export function SaveRecipeDialog({
           </div>
 
           {!existingRecipe && (orderData.processIssues || orderData.qualityNotes) && (
-            <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900 space-y-2">
+            <div className="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-900 space-y-2">
               <div className="space-y-2">
                 {orderData.processIssues && (
                   <p className="whitespace-pre-line">
@@ -218,7 +218,7 @@ export function SaveRecipeDialog({
                   </p>
                 )}
               </div>
-              <p className="text-xs text-blue-800">
+              <p className="text-xs text-primary-800">
                 以上內容保存時會自動合併到配方備註，可在下方自行補充或修改。
               </p>
             </div>

@@ -44,8 +44,8 @@ export function WorklogsPageClient() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
-              <span className="px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-300/40 text-indigo-700 text-sm font-medium leading-none">最新工時優先</span>
-              <span className="px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-300/40 text-purple-700 text-sm font-medium leading-none">訂單交叉查看</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 text-sm font-medium leading-none">最新工時優先</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-info-500/15 border border-info-300/40 text-info-700 text-sm font-medium leading-none">訂單交叉查看</span>
             </div>
           </div>
         </section>

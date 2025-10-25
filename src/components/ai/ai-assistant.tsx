@@ -98,7 +98,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
         <Button 
           variant="outline" 
           size="sm"
-          className="fixed bottom-4 right-4 z-50 shadow-lg bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+          className="fixed bottom-4 right-4 z-50 shadow-lg bg-primary-600 hover:bg-primary-700 text-white border-primary-600"
         >
           <Bot className="h-4 w-4 mr-2" />
           AI 助手
@@ -108,7 +108,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center">
-              <Bot className="h-5 w-5 mr-2 text-blue-600" />
+              <Bot className="h-5 w-5 mr-2 text-primary-600" />
               AI 訂單助手
             </div>
             <div className="flex items-center space-x-2">
@@ -137,16 +137,16 @@ export function AIAssistant({ orders }: AIAssistantProps) {
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {messages.length === 0 ? (
             <div className="text-center py-8 text-neutral-500 dark:text-white/65">
-              <Bot className="h-12 w-12 mx-auto mb-4 opacity-50 text-blue-600" />
+              <Bot className="h-12 w-12 mx-auto mb-4 opacity-50 text-primary-600" />
               <p className="text-lg font-medium mb-2">歡迎使用 AI 訂單助手！</p>
               <p className="text-sm mb-4">您可以詢問關於訂單的任何問題，例如：</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                 <button
                   onClick={() => setInput('顯示所有未完工的訂單')}
-                  className="bg-blue-50 hover:bg-blue-100 p-3 rounded-lg text-left transition-colors cursor-pointer"
+                  className="bg-primary-50 hover:bg-primary-100 p-3 rounded-lg text-left transition-colors cursor-pointer"
                 >
-                  <p className="font-medium text-blue-800 mb-1">查詢訂單</p>
-                  <p className="text-blue-600">&ldquo;顯示所有未完工的訂單&rdquo;</p>
+                  <p className="font-medium text-primary-800 mb-1">查詢訂單</p>
+                  <p className="text-primary-600">&ldquo;顯示所有未完工的訂單&rdquo;</p>
                 </button>
                 <button
                   onClick={() => setInput('哪個客戶的訂單最多？')}
@@ -180,7 +180,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
                 <div
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-neutral-100 text-neutral-900 dark:text-white/95'
                   }`}
                 >
@@ -194,7 +194,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
             <div className="flex justify-start">
               <div className="bg-neutral-100 rounded-lg p-3">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                  <Loader2 className="h-4 w-4 animate-spin text-primary-600" />
                   <span className="text-sm text-neutral-600 dark:text-white/75">AI 正在思考...</span>
                 </div>
               </div>
@@ -215,7 +215,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
             onClick={handleSendMessage}
             disabled={!input.trim() || isLoading}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-primary-600 hover:bg-primary-700"
           >
             <Send className="h-4 w-4" />
           </Button>

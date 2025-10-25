@@ -612,7 +612,7 @@ export default function AIRecipeGeneratorPage() {
 
                       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                         {timeText && (
-                          <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/60 rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-surface-primary/60 rounded-full px-2.5 py-1">
                             <Clock className="h-3.5 w-3.5" />
                             {timeText}
                           </span>

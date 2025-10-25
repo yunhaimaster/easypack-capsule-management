@@ -313,8 +313,8 @@ export function ResponsiveWorklogsList() {
                   onClick={() => handlePageChange(pageNumber)}
                   className={`px-3 py-1 rounded-full border text-sm transition-colors ${
                     pageNumber === pagination.page
-                      ? 'border-indigo-400 bg-indigo-500/10 text-indigo-700'
-                      : 'border-white/60 dark:border-white/20 bg-white/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-indigo-200 hover:text-indigo-600'
+                      ? 'border-primary-400 bg-primary-500/10 text-primary-700'
+                      : 'border-white/60 dark:border-white/20 bg-surface-primary/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-primary-200 hover:text-primary-600'
                   }`}
                 >
                   {pageNumber}
@@ -374,9 +374,9 @@ export function ResponsiveWorklogsList() {
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-gradient-to-r from-indigo-500/15 via-indigo-400/10 to-purple-500/15 border border-indigo-100 px-3 py-2 text-xs text-indigo-600">
+                <div className="rounded-xl bg-gradient-to-r from-primary-500/15 via-primary-400/10 to-info-500/15 border border-primary-100 px-3 py-2 text-xs text-primary-600">
                   <p className="font-medium">備註</p>
-                  <p className="mt-1 text-xs leading-relaxed text-indigo-700">
+                  <p className="mt-1 text-xs leading-relaxed text-primary-700">
                     {worklog.notes ? worklog.notes : '無備註'}
                   </p>
                 </div>
@@ -411,8 +411,8 @@ export function ResponsiveWorklogsList() {
                 onClick={() => handlePageChange(pageNumber)}
                 className={`px-3 py-1 rounded-full border text-sm transition-colors ${
                   pageNumber === pagination.page
-                    ? 'border-indigo-400 bg-indigo-500/10 text-indigo-700'
-                    : 'border-white/60 dark:border-white/20 bg-white/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-indigo-200 hover:text-indigo-600'
+                    ? 'border-primary-400 bg-primary-500/10 text-primary-700'
+                    : 'border-white/60 dark:border-white/20 bg-surface-primary/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-primary-200 hover:text-primary-600'
                 }`}
               >
                 {pageNumber}

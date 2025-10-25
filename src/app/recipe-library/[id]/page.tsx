@@ -709,7 +709,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   <div className="space-y-2">
                     {recipe.sourceOrderIds.map((orderId, index) => (
                       <Link key={orderId} href={`/orders/${orderId}`}>
-                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral-200 hover:border-violet-300 hover:bg-info-50/30 transition-all cursor-pointer group">
+                        <div className="flex items-center justify-between p-3 bg-surface-primary rounded-lg border border-neutral-200 hover:border-info-300 hover:bg-info-50/30 transition-all cursor-pointer group">
                           <div className="flex items-center gap-2">
                             <Eye className="h-4 w-4 text-neutral-400 dark:text-white/55 group-hover:text-info-600" />
                             <span className="text-sm text-neutral-700 dark:text-white/85 group-hover:text-info-700 font-medium">

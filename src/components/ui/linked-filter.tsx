@@ -272,7 +272,7 @@ export function LinkedFilter({
 
     return createPortal(
       <div 
-        className="fixed z-[9999] bg-white border border-neutral-200 rounded-md shadow-lg max-h-60 overflow-auto"
+        className="fixed z-[9999] bg-surface-primary border border-neutral-200 rounded-md shadow-lg max-h-60 overflow-auto"
         style={{
           top: position.top,
           left: position.left,

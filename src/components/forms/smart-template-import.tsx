@@ -624,7 +624,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                           <Label className="text-xs font-medium">原料清單</Label>
                           <div className="mt-1 space-y-1">
                             {selectedRecipe.ingredients.map((ing, idx) => (
-                              <div key={idx} className="flex justify-between text-xs bg-white p-2 rounded border border-neutral-200">
+                              <div key={idx} className="flex justify-between text-xs bg-surface-primary p-2 rounded border border-neutral-200">
                                 <span className="font-medium">{ing.materialName}</span>
                                 <span className="text-neutral-600 dark:text-white/75">{formatNumber(ing.unitContentMg)} mg</span>
                               </div>

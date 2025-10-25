@@ -667,7 +667,7 @@ export default function GranulationAnalyzerPage() {
                 
                 <div className="grid grid-cols-1 gap-4">
                   {ingredients.map((ingredient, index) => (
-                    <div key={index} className="flex gap-3 items-center p-4 bg-white rounded-lg border border-neutral-200">
+                    <div key={index} className="flex gap-3 items-center p-4 bg-surface-primary rounded-lg border border-neutral-200">
                       <div className="flex-1">
                         <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                           原料名稱
@@ -833,7 +833,7 @@ export default function GranulationAnalyzerPage() {
                             </div>
                             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                               {duration && (
-                                <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
+                                <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-surface-primary/70 px-2.5 py-1 rounded-full">
                                   <Clock className="h-3.5 w-3.5" />
                                   {duration}
                                 </span>
@@ -910,7 +910,7 @@ export default function GranulationAnalyzerPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                     {consensusDuration && (
-                      <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-surface-primary/70 px-2.5 py-1 rounded-full">
                         <Clock className="h-3.5 w-3.5" />
                         {consensusDuration}
                       </span>

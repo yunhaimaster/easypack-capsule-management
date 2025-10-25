@@ -36,7 +36,7 @@ export function MarketingInput({ ingredients, setIngredients }: MarketingInputPr
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4">
         {ingredients.map((ingredient, index) => (
-          <div key={index} className="flex flex-col gap-4 md:flex-row md:items-center p-4 bg-white rounded-lg border border-neutral-200">
+          <div key={index} className="flex flex-col gap-4 md:flex-row md:items-center p-4 bg-surface-primary rounded-lg border border-neutral-200">
             <div className="w-full md:w-1/2">
               <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 原料名稱

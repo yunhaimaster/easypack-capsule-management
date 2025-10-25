@@ -883,7 +883,7 @@ export default function RecipeLibraryPage() {
                             <Brain className="h-4 w-4 mr-2" />
                             <span className="hidden sm:inline">分析全部</span>
                             <span className="sm:hidden">全部</span>
-                            <Badge className="ml-2 bg-white/20 text-white border-0">
+                            <Badge className="ml-2 bg-surface-primary/20 text-white border-0">
                               {unanalyzedCount}
                             </Badge>
                           </Button>

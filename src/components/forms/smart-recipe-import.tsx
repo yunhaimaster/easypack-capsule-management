@@ -440,7 +440,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
               </CardHeader>
               <CardContent className="space-y-4">
                 {isLoadingImage ? (
-                  <div className="border-2 border-dashed rounded-2xl p-12 text-center border-blue-300 bg-blue-50/50">
+                  <div className="border-2 border-dashed rounded-2xl p-12 text-center border-primary-300 bg-primary-50/50">
                     <Loader2 className="w-12 h-12 mx-auto mb-3 text-primary-500 animate-spin" aria-hidden="true" />
                     <p className="text-sm text-primary-700 font-medium mb-2">載入圖片中...</p>
                     <p className="text-xs text-primary-600">請稍候，大圖片可能需要幾秒鐘</p>
@@ -450,7 +450,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                     <div
                       className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
                         isRecipeDragging
-                          ? 'border-emerald-500 bg-emerald-50/50 scale-[1.02]'
+                          ? 'border-success-500 bg-success-50/50 scale-[1.02]'
                           : 'border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50/50'
                       }`}
                       onDragEnter={handleDragEnter}
@@ -459,7 +459,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                       onDrop={handleDrop}
                     >
                       <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors ${
-                        isRecipeDragging ? 'bg-emerald-500/10' : 'bg-neutral-900/5'
+                        isRecipeDragging ? 'bg-success-500/10' : 'bg-neutral-900/5'
                       }`}>
                         <Upload className={`w-8 h-8 transition-colors ${
                           isRecipeDragging ? 'text-success-600' : 'text-neutral-500 dark:text-white/65'
@@ -487,7 +487,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                   </>
                 ) : (
                   <div className="space-y-3">
-                    <div className="bg-emerald-50/80 rounded-xl p-4 border border-emerald-200">
+                    <div className="bg-success-50/80 rounded-xl p-4 border border-success-200">
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
                         <div className="flex-1 min-w-0">
@@ -504,7 +504,7 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                           }}
                           variant="ghost"
                           size="sm"
-                          className="text-success-600 hover:text-success-700 hover:bg-emerald-100"
+                          className="text-success-600 hover:text-success-700 hover:bg-success-100"
                         >
                           更換
                         </Button>

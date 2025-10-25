@@ -340,10 +340,10 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   const statusLabel = STATUS_ORDER[status] === 0 ? '進行中' : STATUS_ORDER[status] === 1 ? '未開始' : '已完成'
                   const statusBadgeClass =
                     STATUS_ORDER[status] === 0
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : STATUS_ORDER[status] === 1
                         ? 'bg-neutral-600 text-white'
-                        : 'bg-emerald-600 text-white'
+                        : 'bg-success-600 text-white'
 
                   const latestWorklog = order.worklogs && order.worklogs.length > 0
                     ? order.worklogs[order.worklogs.length - 1]
@@ -373,7 +373,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                               )}
                               {order.qualityNotes && order.qualityNotes.trim() !== '' && (
                                 <div title={`品管備註: ${order.qualityNotes}`}>
-                                  <ClipboardCheck className="h-3.5 w-3.5 text-blue-500" aria-hidden="true" />
+                                  <ClipboardCheck className="h-3.5 w-3.5 text-primary-500" aria-hidden="true" />
                                 </div>
                               )}
                             </div>
@@ -426,7 +426,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                                   .sort((a, b) => (b.unitContentMg || 0) - (a.unitContentMg || 0))
                                   .slice(0, 3)
                                   .map((ingredient, index) => (
-                                    <span key={index} className="bg-white/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
+                                    <span key={index} className="bg-surface-primary/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
                                       {ingredient.materialName}
                                     </span>
                                   ))}
@@ -458,7 +458,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                               e.stopPropagation()
                               window.location.href = `/orders/${order.id}/edit`
                             }}
-                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                            className="text-primary-600 hover:text-primary-800 transition-colors"
                             title="編輯訂單"
                             aria-label="編輯訂單"
                           >
@@ -527,7 +527,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                       <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95">{order.productName}</h3>
                       <p className="text-xs text-neutral-500 dark:text-white/65">{order.customerName}</p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-emerald-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-blue-600 text-white' : 'bg-neutral-600 text-white'}`}>
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-success-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-primary-600 text-white' : 'bg-neutral-600 text-white'}`}>
                       {statusLabel}
                     </span>
                   </div>
@@ -560,7 +560,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   {order.ingredients && order.ingredients.length > 0 ? (
                     <div className="flex flex-wrap gap-2 text-xs">
                       {order.ingredients.slice(0, 3).map((ingredient, index) => (
-                        <span key={index} className="bg-white/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
+                        <span key={index} className="bg-surface-primary/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
                           {ingredient.materialName}
                         </span>
                       ))}
@@ -583,7 +583,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                     </Button>
                     <Button
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-primary-600 hover:bg-primary-700"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleOrderAIClick(order)

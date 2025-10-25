@@ -50,8 +50,8 @@ export function OrdersPageClient() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
-              <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-300/40 text-emerald-700 text-sm font-medium leading-none">即時更新</span>
-              <span className="px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-300/40 text-blue-700 text-sm font-medium leading-none">資料匯出</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-success-500/15 border border-success-300/40 text-success-700 text-sm font-medium leading-none">即時更新</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 text-sm font-medium leading-none">資料匯出</span>
             </div>
           </div>
         </section>
@@ -70,7 +70,7 @@ export function OrdersPageClient() {
           }}
         />
         <div className="flex justify-end">
-          <Link href="/orders/new" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+          <Link href="/orders/new" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
             + 新建訂單
           </Link>
         </div>
