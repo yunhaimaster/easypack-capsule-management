@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "UnifiedWorkOrder" ALTER COLUMN "personInChargeId" DROP NOT NULL;
+ALTER TABLE "unified_work_orders" ALTER COLUMN "personInChargeId" DROP NOT NULL;
