@@ -77,7 +77,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             {duration && (
-              <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-surface-primary/70 px-2.5 py-1 rounded-full">
                 <Clock className="h-3.5 w-3.5" />
                 {duration}
               </span>
@@ -126,7 +126,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="text-left px-3 py-2 text-xs text-neutral-700 dark:text-white/85 hover:bg-white hover:text-primary-600 rounded transition-colors border border-transparent hover:border-primary-200"
+                  className="text-left px-3 py-2 text-xs text-neutral-700 dark:text-white/85 hover:bg-surface-primary hover:text-primary-600 rounded transition-colors border border-transparent hover:border-primary-200"
                 >
                   <span className="font-medium text-neutral-500 dark:text-white/65 mr-2">{index}.</span>
                   {item.title}

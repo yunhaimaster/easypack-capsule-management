@@ -77,7 +77,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'users'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Users className="h-4 w-4" />
@@ -89,7 +89,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'sessions'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Monitor className="h-4 w-4" />
@@ -101,7 +101,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'devices'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Smartphone className="h-4 w-4" />
@@ -113,7 +113,7 @@ export function AdminPageClient() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
               activeTab === 'logs'
                 ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-white dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <FileText className="h-4 w-4" />

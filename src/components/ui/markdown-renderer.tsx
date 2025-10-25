@@ -102,17 +102,17 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-neutral-100">
+            <thead className="bg-neutral-100 dark:bg-elevation-1">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-neutral-200 bg-white">
+            <tbody className="divide-y divide-neutral-200 bg-surface-primary dark:bg-elevation-1">
               {children}
             </tbody>
           ),
           tr: ({ children }) => (
-            <tr className="hover:bg-neutral-50 transition-colors">
+            <tr className="hover:bg-neutral-50 dark:hover:bg-elevation-2 transition-colors">
               {children}
             </tr>
           ),

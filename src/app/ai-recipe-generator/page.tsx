@@ -491,7 +491,7 @@ export default function AIRecipeGeneratorPage() {
                     <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                       劑型
                     </label>
-                    <div className="px-3 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-neutral-600 dark:text-white/75">
+                    <div className="px-3 py-2 bg-surface-primary border border-neutral-300 rounded-lg text-neutral-800 dark:text-white/95">
                       <span className="flex items-center">
                         <span className="mr-2">💊</span>
                         膠囊（固定）
