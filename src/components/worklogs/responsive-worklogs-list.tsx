@@ -359,18 +359,18 @@ export function ResponsiveWorklogsList() {
                 </div>
 
                 <div className="rounded-2xl bg-white/75 border border-white/60 p-3 space-y-2">
-                  <div className="font-medium text-neutral-900">{worklog.order?.productName || '未指派訂單'}</div>
+                  <div className="font-medium text-neutral-900 dark:text-white/95">{worklog.order?.productName || '未指派訂單'}</div>
                   <div className="text-xs text-neutral-500 dark:text-white/65">客戶：{worklog.order?.customerName || '未填寫'}</div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs text-neutral-500 dark:text-white/65">
                   <div className="rounded-xl bg-white/75 border border-white/60 px-3 py-2">
-                    <p className="uppercase tracking-[0.12em] text-[11px] text-neutral-400 mb-1">工時範圍</p>
-                    <p className="text-sm font-medium text-neutral-900">{worklog.startTime} - {worklog.endTime}</p>
+                    <p className="uppercase tracking-[0.12em] text-[11px] text-neutral-400 dark:text-white/55 mb-1">工時範圍</p>
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white/95">{worklog.startTime} - {worklog.endTime}</p>
                   </div>
                     <div className="rounded-xl bg-white/75 border border-white/60 px-3 py-2">
-                    <p className="uppercase tracking-[0.12em] text-[11px] text-neutral-400 mb-1">總工時</p>
-                    <p className="text-sm font-medium text-neutral-900">{worklog.calculatedWorkUnits.toFixed(1)} 工時</p>
+                    <p className="uppercase tracking-[0.12em] text-[11px] text-neutral-400 dark:text-white/55 mb-1">總工時</p>
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white/95">{worklog.calculatedWorkUnits.toFixed(1)} 工時</p>
                   </div>
                 </div>
 
@@ -404,7 +404,7 @@ export function ResponsiveWorklogsList() {
         )}
 
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 text-sm text-neutral-600">
+                <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-white/75">
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}

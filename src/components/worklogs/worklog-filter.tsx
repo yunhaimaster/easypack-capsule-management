@@ -83,7 +83,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">訂單關鍵字</label>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">訂單關鍵字</label>
           <div className="relative">
             <Input
               value={orderKeyword}
@@ -108,7 +108,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">備註關鍵字</label>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">備註關鍵字</label>
           <div className="relative">
             <Input
               value={notesKeyword}
@@ -133,7 +133,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">開始日期</label>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">開始日期</label>
           <div className="relative">
             <Input
               type="date"
@@ -159,7 +159,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">結束日期</label>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">結束日期</label>
           <div className="relative">
             <Input
               type="date"
@@ -195,7 +195,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
             重設篩選
           </Button>
         </div>
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 dark:text-white/65">
           最新工時會固定顯示在最上方，可輸入關鍵字或選擇日期範圍進行進階搜尋。
         </p>
       </div>

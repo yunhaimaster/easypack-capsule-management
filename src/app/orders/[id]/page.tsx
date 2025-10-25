@@ -350,12 +350,12 @@ export default function OrderDetailPage() {
                     客戶資訊
                   </h4>
                   <div className="grid grid-cols-1 gap-1 text-xs md:text-sm text-neutral-700 dark:text-white/85">
-                    <p><span className="font-medium text-neutral-900">客戶名稱：</span>{order.customerName}</p>
-                    <p><span className="font-medium text-neutral-900">產品名字：</span>{order.productName}</p>
-                    <p><span className="font-medium text-neutral-900">訂單數量：</span>{formatNumber(order.productionQuantity)} 粒</p>
-                    <p><span className="font-medium text-neutral-900">實際生產數量：</span>{order.actualProductionQuantity != null ? formatNumber(order.actualProductionQuantity) + ' 粒' : '—'}</p>
-                    <p><span className="font-medium text-neutral-900">材料可做數量：</span>{order.materialYieldQuantity != null ? formatNumber(order.materialYieldQuantity) + ' 粒' : '—'}</p>
-                    <p><span className="font-medium text-neutral-900">客服：</span>{order.customerService || '未填寫'}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">客戶名稱：</span>{order.customerName}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">產品名字：</span>{order.productName}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">訂單數量：</span>{formatNumber(order.productionQuantity)} 粒</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">實際生產數量：</span>{order.actualProductionQuantity != null ? formatNumber(order.actualProductionQuantity) + ' 粒' : '—'}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">材料可做數量：</span>{order.materialYieldQuantity != null ? formatNumber(order.materialYieldQuantity) + ' 粒' : '—'}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">客服：</span>{order.customerService || '未填寫'}</p>
                   </div>
                 </div>
 
@@ -496,7 +496,7 @@ export default function OrderDetailPage() {
                     className="p-4 space-y-3"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h4 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 leading-tight flex-1">
+                      <h4 className="text-base font-semibold text-neutral-800 dark:text-white/95 leading-tight flex-1">
                         {ingredient.materialName}
                       </h4>
                       <div className="flex flex-col items-end gap-1.5 text-xs font-medium flex-shrink-0">
@@ -581,7 +581,7 @@ export default function OrderDetailPage() {
                           </h4>
                           <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55 flex-shrink-0">
                             <span className="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full">工時：{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
-                            <span className="bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
+                            <span className="bg-neutral-50 dark:bg-elevation-2 text-neutral-700 dark:text-white/75 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
                           </div>
                         </div>
                         <div className="text-sm text-neutral-700 dark:text-neutral-300 space-y-2 leading-relaxed">

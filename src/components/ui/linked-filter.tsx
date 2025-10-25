@@ -301,7 +301,7 @@ export function LinkedFilter({
       <div className="flex flex-col gap-4 mb-5 sm:mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-700 tracking-wide uppercase">訂單篩選</h3>
+            <h3 className="text-sm font-semibold text-neutral-700 dark:text-white/85 tracking-wide uppercase">訂單篩選</h3>
             <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、產品、原料與膠囊規格的即時篩查</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
@@ -328,7 +328,7 @@ export function LinkedFilter({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 客戶名稱篩選 */}
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
             客戶名稱
           </label>
           <div className="relative">
@@ -357,7 +357,7 @@ export function LinkedFilter({
 
         {/* 產品名稱篩選 */}
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
             產品名稱
           </label>
           <div className="relative">
@@ -386,7 +386,7 @@ export function LinkedFilter({
 
         {/* 原料名稱篩選 */}
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
             原料名稱
           </label>
           <div className="relative">
@@ -415,7 +415,7 @@ export function LinkedFilter({
 
         {/* 膠囊類型篩選 */}
         <div className="relative">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
             膠囊類型
           </label>
           <div className="relative">

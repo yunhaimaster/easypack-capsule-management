@@ -500,11 +500,11 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
       {/* Mobile cards */}
       <div className="lg:hidden space-y-4">
         {loading ? (
-          <div className="text-center py-8 text-neutral-500">
+          <div className="text-center py-8 text-neutral-500 dark:text-white/65">
             載入中...
           </div>
         ) : orders.length === 0 ? (
-          <div className="text-center py-8 text-neutral-500">
+          <div className="text-center py-8 text-neutral-500 dark:text-white/65">
             沒有找到訂單
           </div>
         ) : (
@@ -524,15 +524,15 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-semibold text-neutral-900">{order.productName}</h3>
-                      <p className="text-xs text-neutral-500">{order.customerName}</p>
+                      <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95">{order.productName}</h3>
+                      <p className="text-xs text-neutral-500 dark:text-white/65">{order.customerName}</p>
                     </div>
                     <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-emerald-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-blue-600 text-white' : 'bg-neutral-600 text-white'}`}>
                       {statusLabel}
                     </span>
                   </div>
 
-                  <div className="text-xs text-neutral-500 space-y-1">
+                  <div className="text-xs text-neutral-500 dark:text-white/65 space-y-1">
                     {STATUS_ORDER[status] === 2 && order.completionDate && (
                       <div>完成：{typeof order.completionDate === 'string' ? order.completionDate : formatDateOnly(order.completionDate)}</div>
                     )}
@@ -544,14 +544,14 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs text-neutral-600">
+                  <div className="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-white/75">
                     <div>
-                      <span className="block text-neutral-400">訂單數量</span>
+                      <span className="block text-neutral-400 dark:text-white/55">訂單數量</span>
                       <span className="text-sm font-semibold text-neutral-900">{order.productionQuantity?.toLocaleString()} 粒</span>
                     </div>
                     {order.actualProductionQuantity != null && (
                       <div>
-                        <span className="block text-neutral-400">實際生產</span>
+                        <span className="block text-neutral-400 dark:text-white/55">實際生產</span>
                         <span className="text-sm font-semibold text-neutral-900">{order.actualProductionQuantity.toLocaleString()} 粒</span>
                       </div>
                     )}
@@ -565,7 +565,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                         </span>
                       ))}
                       {order.ingredients.length > 3 && (
-                        <span className="text-neutral-400">+{order.ingredients.length - 3}</span>
+                        <span className="text-neutral-400 dark:text-white/55">+{order.ingredients.length - 3}</span>
                       )}
                     </div>
                   ) : null}
@@ -615,7 +615,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
             上一頁
           </Button>
           
-          <span className="text-sm text-neutral-600 px-4">
+          <span className="text-sm text-neutral-600 dark:text-white/75 px-4">
             第 {filters.page} 頁，共 {pagination.totalPages} 頁
           </span>
           

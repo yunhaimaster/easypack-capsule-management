@@ -47,8 +47,8 @@ export function IngredientsPopup({ ingredients, children, side = 'right' }: Ingr
           <div className="liquid-glass-content p-4">
             {/* Header */}
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-neutral-200/50">
-              <Package className="h-4 w-4 text-neutral-600" />
-              <h4 className="font-semibold text-neutral-800 text-sm">
+              <Package className="h-4 w-4 text-neutral-600 dark:text-white/75" />
+              <h4 className="font-semibold text-neutral-800 dark:text-white/95 text-sm">
                 原料清單 ({ingredients.length})
               </h4>
             </div>
@@ -86,8 +86,8 @@ export function IngredientsPopup({ ingredients, children, side = 'right' }: Ingr
 
             {/* Footer - Total */}
             <div className="mt-3 pt-3 border-t border-neutral-200/50 flex justify-between items-center text-xs">
-              <span className="text-neutral-600">總含量</span>
-              <span className="font-semibold text-neutral-800 font-mono">
+              <span className="text-neutral-600 dark:text-white/75">總含量</span>
+              <span className="font-semibold text-neutral-800 dark:text-white/95 font-mono">
                 {ingredients.reduce((sum, ing) => sum + (ing.unitContentMg ?? 0), 0).toLocaleString()} mg
               </span>
             </div>
