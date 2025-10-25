@@ -137,7 +137,7 @@ export default function WorkOrdersPage() {
           <div className="flex gap-4">
             <div className="flex-1 flex gap-2">
               <Input
-                placeholder="搜尋 JOB標號、客戶名稱、工作描述..."
+                placeholder="搜尋訂單編號、客戶名稱、工作描述..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}

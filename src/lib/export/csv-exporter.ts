@@ -64,25 +64,41 @@ function workOrderToRow(
     personInCharge: () => workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '',
     workType: () => WORK_TYPE_NAMES[workOrder.workType] || workOrder.workType,
     status: () => STATUS_NAMES[workOrder.status] || workOrder.status,
-    isNewProductVip: () => workOrder.isNewProductVip ? '是' : '否',
-    isComplexityVip: () => workOrder.isComplexityVip ? '是' : '否',
-    yearCategory: () => workOrder.yearCategory || '',
-    expectedCompletionDate: () => formatDate(workOrder.expectedCompletionDate),
-    dataCompleteDate: () => formatDate(workOrder.dataCompleteDate),
-    notifiedDate: () => formatDate(workOrder.notifiedDate),
-    paymentReceivedDate: () => formatDate(workOrder.paymentReceivedDate),
-    shippedDate: () => formatDate(workOrder.shippedDate),
+    
+    // New VIP flags
+    isCustomerServiceVip: () => workOrder.isCustomerServiceVip ? '是' : '否',
+    isBossVip: () => workOrder.isBossVip ? '是' : '否',
+    
+    // New material ready status
+    expectedProductionMaterialsDate: () => formatDate(workOrder.expectedProductionMaterialsDate),
+    expectedPackagingMaterialsDate: () => formatDate(workOrder.expectedPackagingMaterialsDate),
+    productionMaterialsReady: () => workOrder.productionMaterialsReady ? '是' : '否',
+    packagingMaterialsReady: () => workOrder.packagingMaterialsReady ? '是' : '否',
+    
+    // Quantities
     productionQuantity: () => workOrder.productionQuantity?.toString() || '',
     packagingQuantity: () => workOrder.packagingQuantity?.toString() || '',
-    internalDeliveryTime: () => workOrder.internalDeliveryTime || '',
-    customerRequestedTime: () => workOrder.customerRequestedTime || '',
+    
+    // New delivery dates
+    requestedDeliveryDate: () => formatDate(workOrder.requestedDeliveryDate),
+    internalExpectedDate: () => formatDate(workOrder.internalExpectedDate),
+    
+    // New status flags
+    isUrgent: () => workOrder.isUrgent ? '是' : '否',
+    productionStarted: () => workOrder.productionStarted ? '是' : '否',
+    isCompleted: () => workOrder.isCompleted ? '是' : '否',
+    
+    // Description
     workDescription: () => workOrder.workDescription,
-    notes: () => workOrder.notes || '',
+    
+    // Capsulation order fields
     productName: () => workOrder.capsulationOrder?.productName || '',
     capsuleColor: () => workOrder.capsulationOrder?.capsuleColor || '',
     capsuleSize: () => workOrder.capsulationOrder?.capsuleSize || '',
     capsuleType: () => workOrder.capsulationOrder?.capsuleType || '',
     customerService: () => workOrder.capsulationOrder?.customerService?.nickname || workOrder.capsulationOrder?.customerService?.phoneE164 || '',
+    
+    // Metadata
     createdAt: () => formatDate(workOrder.createdAt),
     updatedAt: () => formatDate(workOrder.updatedAt)
   }

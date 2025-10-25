@@ -15,36 +15,38 @@ import { prepareChineseForExcel } from './encoding-utils'
  */
 export const WORK_ORDER_COLUMNS = {
   // Basic Info
-  jobNumber: 'JOB標號',
-  markedDate: '標記日期',
+  jobNumber: '訂單編號',
+  markedDate: '記號日期',
   customerName: '客戶名稱',
   personInCharge: '負責人',
   workType: '工作類型',
   status: '狀態',
   
-  // VIP Flags
-  isNewProductVip: '新品VIP',
-  isComplexityVip: '複雜度VIP',
-  yearCategory: '年份類別',
+  // VIP Flags (Updated)
+  isCustomerServiceVip: '客服VIP',
+  isBossVip: '老闆VIP',
   
-  // Dates
-  expectedCompletionDate: '預計完成日期',
-  dataCompleteDate: '資料齊全日期',
-  notifiedDate: '通知日期',
-  paymentReceivedDate: '收數日期',
-  shippedDate: '出貨日期',
+  // Material Ready Status (New)
+  expectedProductionMaterialsDate: '預計生產物料到齊日期',
+  expectedPackagingMaterialsDate: '預計包裝物料到齊日期',
+  productionMaterialsReady: '生產物料齊',
+  packagingMaterialsReady: '包裝物料齊',
   
   // Quantities
   productionQuantity: '生產數量',
   packagingQuantity: '包裝數量',
   
-  // Time
-  internalDeliveryTime: '內部交貨時間',
-  customerRequestedTime: '客戶要求時間',
+  // Delivery Dates (New)
+  requestedDeliveryDate: '要求交貨日期',
+  internalExpectedDate: '內部預計交貨期',
+  
+  // Status Flags (New)
+  isUrgent: '客人要求加急',
+  productionStarted: '已開生產線',
+  isCompleted: '已經完成',
   
   // Description
   workDescription: '工作描述',
-  notes: '備註',
   
   // Capsulation Order (if exists)
   productName: '產品名稱',
@@ -112,25 +114,41 @@ function workOrderToRow(
     personInCharge: () => workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '',
     workType: () => WORK_TYPE_NAMES[workOrder.workType] || workOrder.workType,
     status: () => STATUS_NAMES[workOrder.status] || workOrder.status,
-    isNewProductVip: () => workOrder.isNewProductVip ? '是' : '否',
-    isComplexityVip: () => workOrder.isComplexityVip ? '是' : '否',
-    yearCategory: () => workOrder.yearCategory || '',
-    expectedCompletionDate: () => formatDate(workOrder.expectedCompletionDate),
-    dataCompleteDate: () => formatDate(workOrder.dataCompleteDate),
-    notifiedDate: () => formatDate(workOrder.notifiedDate),
-    paymentReceivedDate: () => formatDate(workOrder.paymentReceivedDate),
-    shippedDate: () => formatDate(workOrder.shippedDate),
+    
+    // New VIP flags
+    isCustomerServiceVip: () => workOrder.isCustomerServiceVip ? '是' : '否',
+    isBossVip: () => workOrder.isBossVip ? '是' : '否',
+    
+    // New material ready status
+    expectedProductionMaterialsDate: () => formatDate(workOrder.expectedProductionMaterialsDate),
+    expectedPackagingMaterialsDate: () => formatDate(workOrder.expectedPackagingMaterialsDate),
+    productionMaterialsReady: () => workOrder.productionMaterialsReady ? '是' : '否',
+    packagingMaterialsReady: () => workOrder.packagingMaterialsReady ? '是' : '否',
+    
+    // Quantities
     productionQuantity: () => workOrder.productionQuantity || '',
     packagingQuantity: () => workOrder.packagingQuantity || '',
-    internalDeliveryTime: () => workOrder.internalDeliveryTime || '',
-    customerRequestedTime: () => workOrder.customerRequestedTime || '',
+    
+    // New delivery dates
+    requestedDeliveryDate: () => formatDate(workOrder.requestedDeliveryDate),
+    internalExpectedDate: () => formatDate(workOrder.internalExpectedDate),
+    
+    // New status flags
+    isUrgent: () => workOrder.isUrgent ? '是' : '否',
+    productionStarted: () => workOrder.productionStarted ? '是' : '否',
+    isCompleted: () => workOrder.isCompleted ? '是' : '否',
+    
+    // Description
     workDescription: () => workOrder.workDescription,
-    notes: () => workOrder.notes || '',
+    
+    // Capsulation order fields
     productName: () => workOrder.capsulationOrder?.productName || '',
     capsuleColor: () => workOrder.capsulationOrder?.capsuleColor || '',
     capsuleSize: () => workOrder.capsulationOrder?.capsuleSize || '',
     capsuleType: () => workOrder.capsulationOrder?.capsuleType || '',
     customerService: () => workOrder.capsulationOrder?.customerService?.nickname || workOrder.capsulationOrder?.customerService?.phoneE164 || '',
+    
+    // Metadata
     createdAt: () => formatDate(workOrder.createdAt),
     updatedAt: () => formatDate(workOrder.updatedAt)
   }

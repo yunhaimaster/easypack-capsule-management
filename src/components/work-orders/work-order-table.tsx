@@ -11,7 +11,7 @@ import { WorkOrder } from '@/types/work-order'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Eye, Edit, Trash2, ArrowUpDown } from 'lucide-react'
+import { Eye, Edit, Trash2, ArrowUpDown, CheckCircle, XCircle, AlertCircle, Star } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 
@@ -46,6 +46,12 @@ function SkeletonRow() {
       </td>
       <td className="px-4 py-3">
         <Skeleton className="h-6 w-16" />
+      </td>
+      <td className="px-4 py-3">
+        <Skeleton className="h-5 w-24" />
+      </td>
+      <td className="px-4 py-3">
+        <Skeleton className="h-5 w-20" />
       </td>
       <td className="px-4 py-3">
         <Skeleton className="h-5 w-24" />
@@ -199,7 +205,7 @@ export function WorkOrderTable({
               </th>
               <SortableHeader
                 field="jobNumber"
-                label="JOB標號"
+                label="訂單編號"
                 currentSort={sortBy}
                 sortOrder={sortOrder}
                 onSort={onSort}
@@ -211,6 +217,9 @@ export function WorkOrderTable({
                 sortOrder={sortOrder}
                 onSort={onSort}
               />
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+                VIP標記
+              </th>
               <SortableHeader
                 field="status"
                 label="狀態"
@@ -224,9 +233,15 @@ export function WorkOrderTable({
               <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
                 負責人
               </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+                物料狀態
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+                狀態標記
+              </th>
               <SortableHeader
-                field="expectedCompletionDate"
-                label="預計完成日期"
+                field="markedDate"
+                label="記號日期"
                 currentSort={sortBy}
                 sortOrder={sortOrder}
                 onSort={onSort}
@@ -249,7 +264,7 @@ export function WorkOrderTable({
             {/* Actual data rows */}
             {!isLoading && workOrders.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-neutral-500">
+                <td colSpan={11} className="px-4 py-12 text-center text-neutral-500">
                   沒有找到工作單
                 </td>
               </tr>
@@ -270,7 +285,7 @@ export function WorkOrderTable({
                   <Checkbox
                     checked={selectedIds.includes(workOrder.id)}
                     onCheckedChange={(checked) => handleSelectRow(workOrder.id, checked as boolean)}
-                    aria-label={`選擇 ${workOrder.jobNumber}`}
+                    aria-label={`選擇 ${workOrder.jobNumber || workOrder.customerName}`}
                   />
                 </td>
                 <td className="px-4 py-3">
@@ -278,11 +293,30 @@ export function WorkOrderTable({
                     href={`/work-orders/${workOrder.id}` as never}
                     className="text-primary-600 hover:text-primary-700 hover:underline font-medium"
                   >
-                    {workOrder.jobNumber}
+                    {workOrder.jobNumber || '-'}
                   </Link>
                 </td>
                 <td className="px-4 py-3 text-neutral-800">
                   {workOrder.customerName}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {workOrder.isCustomerServiceVip && (
+                      <Badge variant="warning" className="text-xs">
+                        <Star className="h-3 w-3 mr-1" />
+                        客服VIP
+                      </Badge>
+                    )}
+                    {workOrder.isBossVip && (
+                      <Badge variant="danger" className="text-xs">
+                        <Star className="h-3 w-3 mr-1" />
+                        老闆VIP
+                      </Badge>
+                    )}
+                    {!workOrder.isCustomerServiceVip && !workOrder.isBossVip && (
+                      <span className="text-neutral-400 text-xs">-</span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={workOrder.status} />
@@ -293,9 +327,59 @@ export function WorkOrderTable({
                 <td className="px-4 py-3 text-neutral-700">
                   {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
                 </td>
-                <td className="px-4 py-3 text-neutral-700">
-                  {workOrder.expectedCompletionDate 
-                    ? new Date(workOrder.expectedCompletionDate).toLocaleDateString('zh-HK')
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2 text-xs">
+                    {workOrder.productionMaterialsReady ? (
+                      <div className="flex items-center gap-1 text-success-600" title="生產物料齊">
+                        <CheckCircle className="h-4 w-4" />
+                        <span>生產</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-neutral-400" title="生產物料未齊">
+                        <XCircle className="h-4 w-4" />
+                        <span>生產</span>
+                      </div>
+                    )}
+                    {workOrder.packagingMaterialsReady ? (
+                      <div className="flex items-center gap-1 text-success-600" title="包裝物料齊">
+                        <CheckCircle className="h-4 w-4" />
+                        <span>包裝</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-neutral-400" title="包裝物料未齊">
+                        <XCircle className="h-4 w-4" />
+                        <span>包裝</span>
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {workOrder.isUrgent && (
+                      <Badge variant="danger" className="text-xs">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        加急
+                      </Badge>
+                    )}
+                    {workOrder.productionStarted && (
+                      <Badge variant="info" className="text-xs">
+                        生產中
+                      </Badge>
+                    )}
+                    {workOrder.isCompleted && (
+                      <Badge variant="success" className="text-xs">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        完成
+                      </Badge>
+                    )}
+                    {!workOrder.isUrgent && !workOrder.productionStarted && !workOrder.isCompleted && (
+                      <span className="text-neutral-400 text-xs">-</span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-neutral-700 text-sm">
+                  {workOrder.markedDate 
+                    ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK')
                     : '-'
                   }
                 </td>
