@@ -8,6 +8,7 @@ import { calculateWorkUnits } from '@/lib/worklog'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
+import Papa from 'papaparse'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 180 // 3 minutes
@@ -255,21 +256,30 @@ export async function POST(request: NextRequest) {
         'Content-Disposition': `attachment; filename="worklogs-${Date.now()}.csv"`,
       })
 
-      const csvRows = [
-        ['日期', '訂單', '客戶', '開始', '結束', '人數', '工時', '備註'],
-        ...worklogs.map((log) => [
-          DateTime.fromJSDate(log.workDate, { zone: 'Asia/Hong_Kong' }).toFormat('yyyy-MM-dd'),
-          log.order?.productName || '-',
-          log.order?.customerName || '-',
-          log.startTime,
-          log.endTime,
-          log.headcount,
-          log.calculatedWorkUnits ?? '-',
-          log.notes || '',
-        ]),
-      ]
+      // Prepare data for CSV export
+      const csvData = worklogs.map((log) => ({
+        日期: DateTime.fromJSDate(log.workDate, { zone: 'Asia/Hong_Kong' }).toFormat('yyyy-MM-dd'),
+        訂單: log.order?.productName || '-',
+        客戶: log.order?.customerName || '-',
+        開始: log.startTime,
+        結束: log.endTime,
+        人數: log.headcount,
+        工時: log.calculatedWorkUnits ?? '-',
+        備註: log.notes || '',
+      }))
 
-      const csvContent = csvRows.map((row) => row.join(',')).join('\n')
+      // Generate CSV using PapaParse for proper escaping
+      const csv = Papa.unparse(csvData, {
+        header: true,
+        quotes: true, // Quote all fields for safety
+        quoteChar: '"',
+        escapeChar: '"',
+        delimiter: ',',
+        newline: '\r\n' // Windows-style line endings for better Excel compatibility
+      })
+
+      // Add UTF-8 BOM for proper Chinese character display in Excel
+      const csvContent = '\uFEFF' + csv
       return new Response(csvContent, { headers })
     }
 
