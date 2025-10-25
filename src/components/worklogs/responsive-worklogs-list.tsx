@@ -250,7 +250,7 @@ export function ResponsiveWorklogsList() {
                 </tr>
               ) : (
                 worklogs.map((worklog) => (
-                  <tr key={worklog.id} className="border-b border-neutral-100 hover:bg-white/80 transition-colors">
+                  <tr key={worklog.id} className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors">
                     <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95 font-semibold text-neutral-900">
                       {formatWorkDate(worklog.workDate)}
                     </td>

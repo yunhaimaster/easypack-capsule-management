@@ -353,7 +353,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   return (
                     <tr
                       key={order.id}
-                      className="border-b border-neutral-100 dark:border-white/10 hover:bg-white/80 dark:hover:bg-elevation-1 transition-colors"
+                      className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
