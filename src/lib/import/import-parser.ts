@@ -432,31 +432,46 @@ export async function validateImportData(
  * Handles data transformation and defaults
  */
 export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, unknown> {
+  // First, apply COLUMN_MAPPINGS to transform Excel headers to field names
+  const mappedRow: Record<string, unknown> = {}
+  
+  Object.entries(row).forEach(([header, value]) => {
+    const normalizedHeader = normalizeColumnName(header)
+    const mappedField = COLUMN_MAPPINGS[header] || COLUMN_MAPPINGS[normalizedHeader]
+    
+    if (mappedField) {
+      mappedRow[mappedField] = value
+    } else {
+      // Keep unmapped fields as-is (for debugging)
+      mappedRow[header] = value
+    }
+  })
+  
   // Parse quantities with units
-  const productionResult = parseQuantityWithUnit(row.productionQuantity)
-  const packagingResult = parseQuantityWithUnit(row.packagingQuantity)
+  const productionResult = parseQuantityWithUnit(mappedRow.productionQuantity)
+  const packagingResult = parseQuantityWithUnit(mappedRow.packagingQuantity)
 
   return {
     // Basic Info
-    jobNumber: String(row.jobNumber || '').trim(),
-    markedDate: row.markedDate ? new Date(String(row.markedDate)).toISOString() : null,
-    customerName: String(row.customerName || '').trim(),
-    personInCharge: String(row.personInCharge || '').trim(),
-    workType: WORK_TYPE_MAPPINGS[String(row.workType || '').trim()] || WorkType.PRODUCTION,
-    status: STATUS_MAPPINGS[String(row.status || '').trim()] || WorkOrderStatus.PENDING,
+    jobNumber: String(mappedRow.jobNumber || '').trim(),
+    markedDate: mappedRow.markedDate ? new Date(String(mappedRow.markedDate)).toISOString() : null,
+    customerName: String(mappedRow.customerName || '').trim(),
+    personInCharge: String(mappedRow.personInCharge || '').trim(),
+    workType: WORK_TYPE_MAPPINGS[String(mappedRow.workType || '').trim()] || WorkType.PRODUCTION,
+    status: STATUS_MAPPINGS[String(mappedRow.status || '').trim()] || WorkOrderStatus.PENDING,
     
     // VIP Flags - Updated to match export
-    isCustomerServiceVip: String(row.isCustomerServiceVip || '').trim() === '是' || String(row.isCustomerServiceVip || '').toUpperCase() === 'TRUE',
-    isBossVip: String(row.isBossVip || '').trim() === '是' || String(row.isBossVip || '').toUpperCase() === 'TRUE',
+    isCustomerServiceVip: String(mappedRow.isCustomerServiceVip || '').trim() === '是' || String(mappedRow.isCustomerServiceVip || '').toUpperCase() === 'TRUE',
+    isBossVip: String(mappedRow.isBossVip || '').trim() === '是' || String(mappedRow.isBossVip || '').toUpperCase() === 'TRUE',
     // Legacy support
-    isNewProductVip: String(row.isNewProductVip || '').trim() === '是',
-    isComplexityVip: String(row.isComplexityVip || '').trim() === '是',
+    isNewProductVip: String(mappedRow.isNewProductVip || '').trim() === '是',
+    isComplexityVip: String(mappedRow.isComplexityVip || '').trim() === '是',
     
     // Material Ready Status - New
-    expectedProductionMaterialsDate: row.expectedProductionMaterialsDate ? new Date(String(row.expectedProductionMaterialsDate)).toISOString() : null,
-    expectedPackagingMaterialsDate: row.expectedPackagingMaterialsDate ? new Date(String(row.expectedPackagingMaterialsDate)).toISOString() : null,
-    productionMaterialsReady: String(row.productionMaterialsReady || '').trim() === '是',
-    packagingMaterialsReady: String(row.packagingMaterialsReady || '').trim() === '是',
+    expectedProductionMaterialsDate: mappedRow.expectedProductionMaterialsDate ? new Date(String(mappedRow.expectedProductionMaterialsDate)).toISOString() : null,
+    expectedPackagingMaterialsDate: mappedRow.expectedPackagingMaterialsDate ? new Date(String(mappedRow.expectedPackagingMaterialsDate)).toISOString() : null,
+    productionMaterialsReady: String(mappedRow.productionMaterialsReady || '').trim() === '是',
+    packagingMaterialsReady: String(mappedRow.packagingMaterialsReady || '').trim() === '是',
     
     // Quantities with units - PARSED from combined format
     productionQuantity: productionResult.quantity,
@@ -465,27 +480,27 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     packagingQuantityStat: packagingResult.unit,
     
     // Delivery Dates - New
-    requestedDeliveryDate: row.requestedDeliveryDate ? new Date(String(row.requestedDeliveryDate)).toISOString() : null,
-    internalExpectedDate: row.internalExpectedDate ? new Date(String(row.internalExpectedDate)).toISOString() : null,
+    requestedDeliveryDate: mappedRow.requestedDeliveryDate ? new Date(String(mappedRow.requestedDeliveryDate)).toISOString() : null,
+    internalExpectedDate: mappedRow.internalExpectedDate ? new Date(String(mappedRow.internalExpectedDate)).toISOString() : null,
     
     // Status Flags - New
-    isUrgent: String(row.isUrgent || '').trim() === '是',
-    productionStarted: String(row.productionStarted || '').trim() === '是',
-    isCompleted: String(row.isCompleted || '').trim() === '是',
+    isUrgent: String(mappedRow.isUrgent || '').trim() === '是',
+    productionStarted: String(mappedRow.productionStarted || '').trim() === '是',
+    isCompleted: String(mappedRow.isCompleted || '').trim() === '是',
     
     // Description
-    workDescription: String(row.workDescription || '').trim() || '（匯入時無描述）',
+    workDescription: String(mappedRow.workDescription || '').trim() || '（匯入時無描述）',
     
     // Legacy fields (deprecated but kept for compatibility)
-    yearCategory: String(row.yearCategory || '').trim() || null,
-    expectedCompletionDate: row.expectedCompletionDate ? new Date(String(row.expectedCompletionDate)).toISOString() : null,
-    dataCompleteDate: row.dataCompleteDate ? new Date(String(row.dataCompleteDate)).toISOString() : null,
-    notifiedDate: row.notifiedDate ? new Date(String(row.notifiedDate)).toISOString() : null,
-    paymentReceivedDate: row.paymentReceivedDate ? new Date(String(row.paymentReceivedDate)).toISOString() : null,
-    shippedDate: row.shippedDate ? new Date(String(row.shippedDate)).toISOString() : null,
-    internalDeliveryTime: String(row.internalDeliveryTime || '').trim() || null,
-    customerRequestedTime: String(row.customerRequestedTime || '').trim() || null,
-    notes: String(row.notes || '').trim() || null
+    yearCategory: String(mappedRow.yearCategory || '').trim() || null,
+    expectedCompletionDate: mappedRow.expectedCompletionDate ? new Date(String(mappedRow.expectedCompletionDate)).toISOString() : null,
+    dataCompleteDate: mappedRow.dataCompleteDate ? new Date(String(mappedRow.dataCompleteDate)).toISOString() : null,
+    notifiedDate: mappedRow.notifiedDate ? new Date(String(mappedRow.notifiedDate)).toISOString() : null,
+    paymentReceivedDate: mappedRow.paymentReceivedDate ? new Date(String(mappedRow.paymentReceivedDate)).toISOString() : null,
+    shippedDate: mappedRow.shippedDate ? new Date(String(mappedRow.shippedDate)).toISOString() : null,
+    internalDeliveryTime: String(mappedRow.internalDeliveryTime || '').trim() || null,
+    customerRequestedTime: String(mappedRow.customerRequestedTime || '').trim() || null,
+    notes: String(mappedRow.notes || '').trim() || null
   }
 }
 
