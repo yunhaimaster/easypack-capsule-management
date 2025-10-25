@@ -162,20 +162,20 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
                   </div>
                   
                   {/* Progress Indicator */}
-                  <div className="mt-6 p-4 bg-info-50 rounded-lg border border-info-200">
-                    <p className="text-sm font-medium text-info-700 mb-2">正在生成行銷分析…</p>
-                    <div className="w-full h-2 bg-info-100 rounded-full overflow-hidden mb-2">
+                  <div className="mt-6 p-4 bg-info-50 dark:bg-info-900/20 rounded-lg border border-info-200 dark:border-info-800/30">
+                    <p className="text-sm font-medium text-info-700 dark:text-info-300 mb-2">正在生成行銷分析…</p>
+                    <div className="w-full h-2 bg-info-100 dark:bg-info-800/30 rounded-full overflow-hidden mb-2">
                       <div 
-                        className="h-full bg-info-500 transition-all duration-300"
+                        className="h-full bg-info-500 dark:bg-info-400 transition-all duration-300"
                         style={{ width: `${Math.min(100, (loadingSeconds / 60) * 100)}%` }}
                       />
                     </div>
                     {showDelayNotice ? (
-                      <p className="text-xs text-info-600">
+                      <p className="text-xs text-info-600 dark:text-info-400">
                         DeepSeek V3.1 Terminus 深度思考中，請稍候或稍後回來查看結果...
                       </p>
                     ) : (
-                      <p className="text-xs text-info-600">
+                      <p className="text-xs text-info-600 dark:text-info-400">
                         預計需要 20-40 秒，DeepSeek 正在分析成分合規性與市場策略...
                       </p>
                     )}
