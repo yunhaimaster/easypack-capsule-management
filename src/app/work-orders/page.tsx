@@ -142,6 +142,11 @@ export default function WorkOrdersPage() {
     }
   }, [filters])
 
+  // Debug: Log delete confirmation state changes
+  useEffect(() => {
+    console.log('[WorkOrders] deleteConfirmation state changed:', deleteConfirmation)
+  }, [deleteConfirmation])
+
   // Fetch on mount and when filters change
   useEffect(() => {
     fetchWorkOrders()
@@ -291,12 +296,16 @@ export default function WorkOrdersPage() {
 
   // Handle single delete
   const handleDeleteClick = (id: string) => {
+    console.log('[WorkOrders] Delete clicked for ID:', id)
     setDeleteConfirmation({ isOpen: true, ids: [id] })
+    console.log('[WorkOrders] Delete confirmation state set:', { isOpen: true, ids: [id] })
   }
 
   // Handle bulk delete
   const handleBulkDeleteClick = () => {
+    console.log('[WorkOrders] Bulk delete clicked for IDs:', selectedIds)
     setDeleteConfirmation({ isOpen: true, ids: selectedIds })
+    console.log('[WorkOrders] Delete confirmation state set:', { isOpen: true, ids: selectedIds })
   }
 
   // Confirm delete
@@ -1006,7 +1015,10 @@ export default function WorkOrdersPage() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         open={deleteConfirmation.isOpen}
-        onOpenChange={(open) => !open && setDeleteConfirmation({ isOpen: false, ids: [] })}
+        onOpenChange={(open) => {
+          console.log('[WorkOrders] ConfirmDialog onOpenChange called:', open)
+          !open && setDeleteConfirmation({ isOpen: false, ids: [] })
+        }}
         title="確認刪除"
         description={
           deleteConfirmation.ids.length === 1
