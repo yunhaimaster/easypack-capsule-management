@@ -78,7 +78,7 @@ export const updateWorkOrderSchema = z.object({
   jobNumber: z.string().max(100).trim().optional().nullable(),
   status: workOrderStatusSchema.optional(),
   customerName: z.string().min(1).max(200).trim().optional(),
-  personInChargeId: z.string().cuid('無效的負責人ID').optional(),
+  personInChargeId: z.union([z.string().cuid('無效的負責人ID'), z.null()]).optional(),
   workType: workTypeSchema.optional(),
   
   // VIP標記
