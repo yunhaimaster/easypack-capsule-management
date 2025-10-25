@@ -122,7 +122,7 @@ export function OrderAIAssistant({ order, onModalReplace, onClose, isOpen: exter
     <>
       <Button 
         variant="default"
-        className={`bg-purple-600 hover:bg-purple-700 text-white border-purple-600 shadow-md hover:shadow-lg transition-all duration-500 relative z-[2100] liquid-glass-card-interactive h-10 px-4 ${isOpen ? 'scale-95 opacity-70 pointer-events-none' : 'scale-100 opacity-100'}`}
+        className={`bg-info-600 hover:bg-info-700 text-white border-info-600 shadow-md hover:shadow-lg transition-all duration-500 relative z-[2100] liquid-glass-card-interactive h-10 px-4 ${isOpen ? 'scale-95 opacity-70 pointer-events-none' : 'scale-100 opacity-100'}`}
         onClick={() => {
           if (externalIsOpen === undefined) {
             setInternalIsOpen(true)
@@ -192,7 +192,7 @@ export function OrderAIAssistant({ order, onModalReplace, onClose, isOpen: exter
 
                     {message.suggestions && message.suggestions.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-xs font-medium text-[rgba(18,42,64,0.65)]">建議問題</p>
+                        <p className="text-xs font-medium text-[rgba(18,42,64,0.65)] dark:text-white/75">建議問題</p>
                         {message.suggestions.map((suggestion, idx) => (
                           <button
                             key={idx}

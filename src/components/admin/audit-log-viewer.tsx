@@ -185,13 +185,15 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
               </span>
             </div>
             {onClearFilter && (
-              <button
+              <Button
                 onClick={onClearFilter}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm text-info-700 hover:bg-info-100 rounded transition-colors"
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1 text-info-700 hover:bg-info-100"
               >
                 <X className="h-4 w-4" />
                 顯示全部
-              </button>
+              </Button>
             )}
           </div>
         </Card>
@@ -263,12 +265,12 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                       )}
                     </div>
                     {log.metadata && Object.keys(log.metadata as Record<string, any>).length > 0 && (
-                      <div className="mt-2 p-2 bg-neutral-50 rounded text-xs">
+                      <div className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800/30 rounded text-xs">
                         <div className="space-y-0.5">
                           {Object.entries(log.metadata as Record<string, any>).map(([key, value]) => (
                             <div key={key} className="flex gap-2">
-                              <span className="text-neutral-500 dark:text-white/65 font-medium min-w-[80px]">{key}:</span>
-                              <span className="text-neutral-700 dark:text-white/85">{String(value)}</span>
+                              <span className="text-neutral-500 dark:text-white/75 font-medium min-w-[80px]">{key}:</span>
+                              <span className="text-neutral-700 dark:text-white/95">{String(value)}</span>
                             </div>
                           ))}
                         </div>

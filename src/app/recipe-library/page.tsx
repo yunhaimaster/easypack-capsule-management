@@ -715,7 +715,7 @@ export default function RecipeLibraryPage() {
                         />
                       </div>
                       {/* View Mode Toggle */}
-                      <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-lg">
+                      <div className="flex items-center gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/30 rounded-lg">
                         <Button
                           size="sm"
                           variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -891,7 +891,7 @@ export default function RecipeLibraryPage() {
                       })()}
                       
                       {/* View Mode Toggle */}
-                      <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-lg">
+                      <div className="flex items-center gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/30 rounded-lg">
                         <Button
                           size="sm"
                           variant={viewMode === 'list' ? 'default' : 'ghost'}

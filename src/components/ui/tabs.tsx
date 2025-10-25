@@ -74,7 +74,7 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
         'flex items-center justify-center whitespace-nowrap rounded-md px-3 h-8 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         isSelected
           ? 'bg-surface-primary text-neutral-900 dark:text-white/95 shadow-sm'
-          : 'text-neutral-600 hover:text-neutral-900 dark:text-white/95 hover:bg-surface-primary/50',
+          : 'bg-transparent text-neutral-600 hover:text-neutral-900 dark:text-white/75 hover:bg-surface-primary/50',
         className
       )}
     >

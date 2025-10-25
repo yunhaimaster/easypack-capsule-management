@@ -222,8 +222,9 @@ export function ResponsiveWorklogsList() {
       </div>
 
       <div className="hidden lg:block">
-        <TableWrapper>
-          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+        <div className="table-scroll-container">
+          <TableWrapper>
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
             <thead className="bg-white/80 dark:bg-elevation-0/80">
               <tr>
                 <th className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">工時日期</th>
@@ -299,7 +300,8 @@ export function ResponsiveWorklogsList() {
               )}
             </tbody>
           </table>
-        </TableWrapper>
+          </TableWrapper>
+        </div>
 
         {pagination && pagination.totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 text-sm text-neutral-600 dark:text-white/75">

@@ -228,19 +228,19 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
             </Button>
             
             {loading && (
-              <div className="space-y-2 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+              <div className="space-y-2 p-3 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/30 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary-600" />
-                  <span className="text-sm font-medium text-primary-800">
+                  <Clock className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+                  <span className="text-sm font-medium text-primary-800 dark:text-primary-200">
                     已用時間：{Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
                   </span>
                 </div>
-                <p className="text-xs text-primary-600">
+                <p className="text-xs text-primary-600 dark:text-primary-300">
                   {progressMessage}
                 </p>
-                <div className="w-full bg-primary-200 rounded-full h-1.5">
+                <div className="w-full bg-primary-200 dark:bg-primary-800/30 rounded-full h-1.5">
                   <div 
-                    className="bg-primary-600 h-1.5 rounded-full transition-all duration-300"
+                    className="bg-primary-600 dark:bg-primary-400 h-1.5 rounded-full transition-all duration-300"
                     style={{ width: `${Math.min((elapsedTime / 120) * 100, 100)}%` }}
                   />
                 </div>
@@ -275,7 +275,7 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
                     {suggestion.description}
                   </p>
                   {suggestion.impact && (
-                    <p className="text-xs text-primary-600 bg-white/50 p-2 rounded">
+                    <p className="text-xs text-primary-600 dark:text-primary-400 bg-white/50 dark:bg-neutral-800/30 p-2 rounded">
                       💡 預期效果：{suggestion.impact}
                     </p>
                   )}

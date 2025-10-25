@@ -29,7 +29,7 @@ export function LiquidGlassLoading({
         <div className="liquid-glass-loader-card">
           <div className="liquid-glass-loader-spot" aria-hidden />
           <div className="space-y-4 text-center">
-            <h2 className="text-lg font-semibold text-[--brand-neutral] tracking-wide">
+            <h2 className="text-lg font-semibold text-[--brand-neutral] dark:text-white/95 tracking-wide">
               {title}
             </h2>
             <p className="text-sm text-neutral-600 dark:text-white/75 max-w-sm mx-auto leading-relaxed">

@@ -27,7 +27,7 @@ export function AIThinkingIndicator({ isThinking, enableReasoning = false }: AIT
   if (!isThinking) return null
 
   return (
-    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-neutral-50 to-neutral-100 rounded-xl border border-neutral-200">
+    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-neutral-50 to-neutral-100 dark:from-neutral-800/50 dark:to-neutral-700/50 rounded-xl border border-neutral-200 dark:border-neutral-700/50">
       <div className="flex-shrink-0">
         {enableReasoning ? (
           <div className="relative">
@@ -53,7 +53,7 @@ export function AIThinkingIndicator({ isThinking, enableReasoning = false }: AIT
               AI 正在進行深度分析與推理
               <span className="inline-block w-2 ml-1">{dots}</span>
               <br />
-              <span className="text-xs text-primary-600">
+              <span className="text-xs text-primary-600 dark:text-primary-400">
                 這可能需要更長時間，但會提供更深入的分析
               </span>
             </>
@@ -68,9 +68,9 @@ export function AIThinkingIndicator({ isThinking, enableReasoning = false }: AIT
       {enableReasoning && (
         <div className="flex-shrink-0">
           <div className="flex space-x-1">
-            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="w-2 h-2 bg-neutral-400 dark:bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 bg-neutral-400 dark:bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 bg-neutral-400 dark:bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
           </div>
         </div>
       )}

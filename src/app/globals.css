@@ -241,6 +241,10 @@
   }
 
   .dark {
+    /* Dark Mode CSS Variables */
+    --popover: 20 15% 8%;           /* Dark background for dropdowns */
+    --popover-foreground: 0 0% 95%; /* Light text for dropdowns */
+    
     /* Warm Adapted Liquid Glass - Glowing from within */
     /* Using warm tint (slight orange) for comfort */
     --liquid-glass-bg: rgba(30, 28, 26, 0.75);      /* Warm, slightly more opaque */
@@ -624,6 +628,19 @@
 
 .table-scroll-container::-webkit-scrollbar-thumb:hover {
   background-color: rgba(148, 163, 184, 0.5);
+}
+
+/* Dark mode scroll bar styling */
+.dark .table-scroll-container {
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.dark .table-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+}
+
+.dark .table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.6);
 }
 
 /* 統一顏色變數 */
@@ -3880,6 +3897,14 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(22px);
   border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .liquid-glass-loader-card {
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.8));
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .liquid-glass-loader-spot {

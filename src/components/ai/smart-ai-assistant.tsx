@@ -93,7 +93,7 @@ export function SmartAIAssistant({ orders, currentOrder, pageData, showOnPages =
         <Button 
           variant="outline" 
           size="lg"
-          className={`bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-500 liquid-glass-card-interactive rounded-full h-14 w-14 sm:h-auto sm:w-auto sm:rounded-lg ${isOpen ? 'scale-95 opacity-70 pointer-events-none' : 'scale-100 opacity-100'}`}
+          className={`bg-gradient-to-r from-primary-500 to-info-600 hover:from-primary-600 hover:to-info-700 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-500 liquid-glass-card-interactive rounded-full h-14 w-14 sm:h-auto sm:w-auto sm:rounded-lg ${isOpen ? 'scale-95 opacity-70 pointer-events-none' : 'scale-100 opacity-100'}`}
           onClick={() => setIsOpen(true)}
         >
           <Bot className="h-5 w-5 sm:mr-2" />
@@ -146,7 +146,7 @@ export function SmartAIAssistant({ orders, currentOrder, pageData, showOnPages =
 
                   {message.suggestions && message.suggestions.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs font-medium text-[rgba(18,42,64,0.65)]">建議問題</p>
+                      <p className="text-xs font-medium text-[rgba(18,42,64,0.65)] dark:text-white/75">建議問題</p>
                       {message.suggestions.map((suggestion, idx) => (
                         <button
                           key={idx}

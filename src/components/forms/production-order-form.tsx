@@ -1343,21 +1343,21 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
           </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg border border-primary-200">
-              <p className="text-sm text-primary-600 font-medium">單粒總重量</p>
-              <p className="text-lg sm:text-xl font-semibold text-primary-800">
+            <div className="text-center p-4 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/30 rounded-lg border border-primary-200 dark:border-primary-800/30">
+              <p className="text-sm text-primary-600 dark:text-primary-400 font-medium">單粒總重量</p>
+              <p className="text-lg sm:text-xl font-semibold text-primary-800 dark:text-primary-200">
                 {typeof unitTotalWeight === 'number' ? formatIngredientWeight(unitTotalWeight) : '0'} mg
               </p>
             </div>
-            <div className="text-center p-4 bg-gradient-to-br from-success-50 to-success-100 rounded-lg border border-success-200">
-              <p className="text-sm text-success-600 font-medium">批次總重量</p>
-              <p className="text-lg sm:text-xl font-semibold text-success-800">
+            <div className="text-center p-4 bg-gradient-to-br from-success-50 to-success-100 dark:from-success-900/20 dark:to-success-800/30 rounded-lg border border-success-200 dark:border-success-800/30">
+              <p className="text-sm text-success-600 dark:text-success-400 font-medium">批次總重量</p>
+              <p className="text-lg sm:text-xl font-semibold text-success-800 dark:text-success-200">
                 {convertWeight(batchTotalWeight).display}
               </p>
             </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
-              <p className="text-sm text-purple-600 font-medium">生產數量</p>
-              <p className="text-lg sm:text-xl font-semibold text-purple-800">
+            <div className="text-center p-4 bg-gradient-to-br from-info-50 to-info-100 dark:from-info-900/20 dark:to-info-800/30 rounded-lg border border-info-200 dark:border-info-800/30">
+              <p className="text-sm text-info-600 dark:text-info-400 font-medium">生產數量</p>
+              <p className="text-lg sm:text-xl font-semibold text-info-800 dark:text-info-200">
                 {formatNumber(watchedQuantity || 0)} 粒
               </p>
             </div>

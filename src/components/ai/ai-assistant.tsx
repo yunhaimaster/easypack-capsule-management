@@ -181,7 +181,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user'
                       ? 'bg-primary-600 text-white'
-                      : 'bg-neutral-100 text-neutral-900 dark:text-white/95'
+                      : 'bg-neutral-100 dark:bg-neutral-800/50 text-neutral-900 dark:text-white/95'
                   }`}
                 >
                   <MarkdownRenderer content={message.content} />
@@ -192,7 +192,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
           
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-neutral-100 rounded-lg p-3">
+              <div className="bg-neutral-100 dark:bg-neutral-800/50 rounded-lg p-3">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-primary-600" />
                   <span className="text-sm text-neutral-600 dark:text-white/75">AI 正在思考...</span>
