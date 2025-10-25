@@ -398,11 +398,18 @@ export async function PATCH(
     
     // Handle Zod validation errors
     if (error && typeof error === 'object' && 'issues' in error) {
+      const zodError = error as { issues: Array<{ path: string[]; message: string }> }
+      const errorMessages = zodError.issues.map(issue => 
+        `${issue.path.join('.')}: ${issue.message}`
+      ).join(', ')
+      
+      console.error('[API] Validation errors:', errorMessages)
+      
       return NextResponse.json(
         {
           success: false,
-          error: '驗證失敗',
-          details: error
+          error: `驗證失敗: ${errorMessages}`,
+          details: zodError.issues
         },
         { status: 400 }
       )
