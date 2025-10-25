@@ -20,9 +20,7 @@ import { Text } from '@/components/ui/text'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { WorkType, WORK_TYPE_LABELS, WorkOrder } from '@/types/work-order'
 import { User } from '@/types/work-order'
-import { workOrderKeys } from '@/lib/queries/work-orders'
 import { Edit3, Save, X } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface QuickEditModalProps {
   workOrder: WorkOrder
@@ -38,15 +36,8 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
     workType: workOrder.workType,
     workDescription: workOrder.workDescription || ''
   })
-
-  // Debug: Log users prop and current selection
-  console.log('[QuickEditModal] Users prop:', users)
-  console.log('[QuickEditModal] Users length:', users?.length)
-  console.log('[QuickEditModal] Current personInChargeId:', workOrder.personInChargeId)
-  console.log('[QuickEditModal] Form personInChargeId:', formData.personInChargeId)
-  console.log('[QuickEditModal] User IDs available:', users?.map(u => ({ id: u.id, nickname: u.nickname })))
-
-  const queryClient = useQueryClient()
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Sync formData when workOrder changes (when modal opens with different work order)
   useEffect(() => {
@@ -57,17 +48,16 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
     })
   }, [workOrder.id, workOrder.personInChargeId, workOrder.workType, workOrder.workDescription])
 
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+  const handleSubmit = async () => {
+    setIsSaving(true)
+    setError(null)
+    
+    try {
       const payload = {
-        personInChargeId: data.personInChargeId === 'UNASSIGNED' ? null : data.personInChargeId,
-        workType: data.workType,
-        workDescription: data.workDescription
+        personInChargeId: formData.personInChargeId === 'UNASSIGNED' ? null : formData.personInChargeId,
+        workType: formData.workType,
+        workDescription: formData.workDescription
       }
-      
-      // Debug: Log what we're sending
-      console.log('[QuickEditModal] Sending payload:', payload)
       
       const response = await fetch(`/api/work-orders/${workOrder.id}`, {
         method: 'PATCH',
@@ -76,34 +66,19 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        console.error('[QuickEditModal] API Error:', error)
-        throw new Error(error.error || '更新失敗')
+        const errorData = await response.json()
+        throw new Error(errorData.error || '更新失敗')
       }
 
-      const result = await response.json()
-      console.log('[QuickEditModal] API Success:', result)
-      return result
-    },
-    onSuccess: async () => {
-      console.log('[QuickEditModal] Update successful, refreshing list...')
-      
-      // Invalidate and refetch ALL work order lists (regardless of filters)
-      await queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
-      await queryClient.refetchQueries({ queryKey: workOrderKeys.lists() })
-      
-      console.log('[QuickEditModal] List refreshed')
-      
+      // Success - call parent's success callback (which will refetch)
       onSuccess?.()
-      onClose()
-    },
-    onError: (error) => {
-      console.error('[QuickEditModal] Mutation error:', error)
+      
+    } catch (err) {
+      console.error('[QuickEditModal] Save error:', err)
+      setError(err instanceof Error ? err.message : '更新失敗，請稍後再試')
+    } finally {
+      setIsSaving(false)
     }
-  })
-
-  const handleSubmit = () => {
-    updateMutation.mutate(formData)
   }
 
   const handleCancel = () => {
@@ -144,7 +119,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
             <Select
               value={formData.personInChargeId}
               onValueChange={(value) => setFormData(prev => ({ ...prev, personInChargeId: value }))}
-              disabled={updateMutation.isPending}
+              disabled={isSaving}
             >
               <SelectTrigger className="transition-apple">
                 <SelectValue placeholder="選擇負責人" />
@@ -168,7 +143,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
             <Select
               value={formData.workType}
               onValueChange={(value) => setFormData(prev => ({ ...prev, workType: value as WorkType }))}
-              disabled={updateMutation.isPending}
+              disabled={isSaving}
             >
               <SelectTrigger className="transition-apple">
                 <SelectValue />
@@ -193,7 +168,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
               onChange={(e) => setFormData(prev => ({ ...prev, workDescription: e.target.value }))}
               placeholder="輸入工作描述..."
               rows={4}
-              disabled={updateMutation.isPending}
+              disabled={isSaving}
               className="transition-apple resize-none"
             />
             <Text.Tertiary className="text-xs mt-1">
@@ -202,12 +177,10 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
           </div>
         </div>
 
-        {/* Error Message */}
-        {updateMutation.isError && (
-          <div className="mt-4 p-3 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg">
-            <Text.Danger className="text-sm">
-              {updateMutation.error instanceof Error ? updateMutation.error.message : '更新失敗，請稍後重試'}
-            </Text.Danger>
+        {/* Error Display */}
+        {error && (
+          <div className="mt-4 p-3 rounded-lg bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800">
+            <Text.Danger className="text-sm">{error}</Text.Danger>
           </div>
         )}
 
@@ -216,7 +189,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
           <Button
             variant="outline"
             onClick={handleCancel}
-            disabled={updateMutation.isPending}
+            disabled={isSaving}
             className="transition-apple"
           >
             <X className="h-4 w-4 mr-2" />
@@ -224,10 +197,10 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={updateMutation.isPending}
+            disabled={isSaving}
             className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white transition-apple min-w-[120px] justify-center"
           >
-            {updateMutation.isPending ? (
+            {isSaving ? (
               <div className="flex items-center">
                 <LoadingSpinner size="sm" className="mr-2" />
                 <span>儲存中...</span>

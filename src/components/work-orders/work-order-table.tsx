@@ -30,6 +30,7 @@ interface WorkOrderTableProps {
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
   onDelete: (id: string) => void
+  onRefresh?: () => Promise<void>  // Add manual refetch callback
 }
 
 /**
@@ -161,7 +162,8 @@ export function WorkOrderTable({
   onSort,
   sortBy,
   sortOrder,
-  onDelete
+  onDelete,
+  onRefresh
 }: WorkOrderTableProps) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null)
   const [quickEditWorkOrder, setQuickEditWorkOrder] = useState<WorkOrder | null>(null)
@@ -525,9 +527,13 @@ export function WorkOrderTable({
           users={users}
           isOpen={!!quickEditWorkOrder}
           onClose={() => setQuickEditWorkOrder(null)}
-          onSuccess={() => {
+          onSuccess={async () => {
             showToast({ title: '更新成功' })
             setQuickEditWorkOrder(null)
+            // Call the parent's refetch function (worklog pattern)
+            if (onRefresh) {
+              await onRefresh()
+            }
           }}
         />
       )}

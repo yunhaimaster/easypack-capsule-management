@@ -10,11 +10,12 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
-import { useWorkOrders, useUsers } from '@/lib/queries/work-orders'
+import { useUsers } from '@/lib/queries/work-orders'
 import { WorkOrderTable } from '@/components/work-orders/work-order-table'
+import { fetchWithTimeout } from '@/lib/api-client'
 import { ExportDialog } from '@/components/work-orders/export-dialog'
 import { ImportDialog } from '@/components/work-orders/import-dialog'
 import { BulkActionBar } from '@/components/work-orders/bulk-action-bar'
@@ -72,29 +73,96 @@ export default function WorkOrdersPage() {
   const [activeSmartFilter, setActiveSmartFilter] = useState<string | null>(null)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
-  // Fetch work orders
-  const { data, isLoading, isFetching, error } = useWorkOrders(filters)
+  // Manual data fetching (worklog pattern)
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([])
+  const [pagination, setPagination] = useState({ page: 1, limit: 25, total: 0, totalPages: 0 })
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
   
   // Fetch users for person filter
   const { data: usersData } = useUsers()
   const users = usersData || []
 
-  const workOrders = data?.data?.workOrders || []
-  const pagination = data?.data?.pagination || { page: 1, limit: 25, total: 0, totalPages: 0 }
+  // Manual fetch function (like worklogs)
+  const fetchWorkOrders = useCallback(async (newFilters = filters) => {
+    setIsLoading(true)
+    setIsFetching(true)
+    setError(null)
+    
+    try {
+      // Abort previous request if any
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      const controller = new AbortController()
+      abortControllerRef.current = controller
+
+      // Build query params
+      const params = new URLSearchParams()
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          if (Array.isArray(value)) {
+            value.forEach(v => params.append(key, String(v)))
+          } else {
+            params.append(key, String(value))
+          }
+        }
+      })
+
+      const response = await fetchWithTimeout(`/api/work-orders?${params.toString()}`, {
+        signal: controller.signal
+      })
+
+      if (!response.ok) {
+        throw new Error('載入工作單失敗')
+      }
+
+      const result = await response.json()
+      if (!result.success) {
+        throw new Error(result.error || '載入工作單失敗')
+      }
+
+      setWorkOrders(result.data.workOrders)
+      setPagination(result.data.pagination)
+
+    } catch (err) {
+      if ((err as DOMException)?.name === 'AbortError') {
+        return
+      }
+      console.error('[WorkOrders] Fetch error:', err)
+      const errorMessage = err instanceof Error ? err.message : '載入工作單失敗'
+      setError(new Error(errorMessage))
+      setNotification({ type: 'error', message: errorMessage })
+    } finally {
+      setIsLoading(false)
+      setIsFetching(false)
+      abortControllerRef.current = null
+    }
+  }, [filters])
+
+  // Fetch on mount and when filters change
+  useEffect(() => {
+    fetchWorkOrders()
+    return () => abortControllerRef.current?.abort()
+  }, [fetchWorkOrders])
 
   // Handle basic search
   const handleSearch = () => {
-    setFilters(prev => ({
-      ...prev,
+    const newFilters = {
+      ...filters,
       keyword: searchKeyword.trim() || undefined,
       page: 1
-    }))
+    }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
   }
 
   // Apply advanced filters
   const handleApplyAdvancedFilters = () => {
-    setFilters(prev => ({
-      ...prev,
+    const newFilters = {
+      ...filters,
       status: selectedStatuses.length > 0 ? selectedStatuses : undefined,
       workType: selectedWorkTypes.length > 0 ? selectedWorkTypes : undefined,
       personInCharge: selectedPersons.length > 0 ? selectedPersons : undefined,
@@ -103,7 +171,9 @@ export default function WorkOrdersPage() {
       isVip: vipOnly || undefined,
       hasLinkedCapsulation: linkedOnly,
       page: 1
-    }))
+    }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
     setShowAdvancedFilters(false)
   }
 
@@ -118,12 +188,14 @@ export default function WorkOrdersPage() {
     setVipOnly(false)
     setLinkedOnly(undefined)
     setActiveSmartFilter(null) // Clear smart filter
-    setFilters({
+    const newFilters = {
       page: 1,
       limit: 25,
-      sortBy: 'createdAt',
-      sortOrder: 'desc'
-    })
+      sortBy: 'createdAt' as SortField,
+      sortOrder: 'desc' as 'asc' | 'desc'
+    }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
   }
 
   // Smart filter handlers
@@ -179,6 +251,7 @@ export default function WorkOrdersPage() {
 
     setActiveSmartFilter(preset.id)
     setFilters(newFilters)
+    fetchWorkOrders(newFilters)
   }
 
   const handleClearSmartFilter = () => {
@@ -188,17 +261,22 @@ export default function WorkOrdersPage() {
 
   // Handle sort
   const handleSort = (field: string) => {
-    setFilters(prev => ({
-      ...prev,
+    const newSortOrder: 'asc' | 'desc' = filters.sortBy === field && filters.sortOrder === 'asc' ? 'desc' : 'asc'
+    const newFilters = {
+      ...filters,
       sortBy: field as SortField,
-      sortOrder: prev.sortBy === field && prev.sortOrder === 'asc' ? 'desc' : 'asc',
+      sortOrder: newSortOrder,
       page: 1
-    }))
+    }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
   }
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
-    setFilters(prev => ({ ...prev, page: newPage }))
+    const newFilters = { ...filters, page: newPage }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
   }
 
   // Handle single delete
@@ -235,10 +313,12 @@ export default function WorkOrdersPage() {
         message: `成功刪除 ${result.deleted || ids.length} 個工作單`
       })
 
-      // Refetch data and clear selection
-      setFilters(prev => ({ ...prev }))
+      // Clear selection and close dialog
       setSelectedIds([])
       setDeleteConfirmation({ isOpen: false, ids: [] })
+
+      // Refetch list immediately (worklog pattern)
+      await fetchWorkOrders()
 
       // Auto-hide notification after 3 seconds
       setTimeout(() => setNotification(null), 3000)
@@ -273,15 +353,21 @@ export default function WorkOrdersPage() {
         message: `成功更新 ${result.updated || selectedIds.length} 個工作單的狀態`
       })
 
-      // Refetch data and clear selection
-      setFilters(prev => ({ ...prev }))
+      // Clear selection and close dialog
       setSelectedIds([])
       setIsBulkStatusDialogOpen(false)
 
-      // Auto-hide notification after 3 seconds
+      // Refetch list immediately (worklog pattern)
+      await fetchWorkOrders()
+
       setTimeout(() => setNotification(null), 3000)
     } catch (error: unknown) {
-      throw error // Let the dialog handle the error
+      const message = error instanceof Error ? error.message : '狀態更新失敗，請稍後重試'
+      setNotification({
+        type: 'error',
+        message
+      })
+      setTimeout(() => setNotification(null), 5000)
     }
   }
 
@@ -801,6 +887,7 @@ export default function WorkOrdersPage() {
                 sortBy={filters.sortBy}
                 sortOrder={filters.sortOrder}
                 onDelete={handleDeleteClick}
+                onRefresh={fetchWorkOrders}
               />
             </div>
           </div>
@@ -929,7 +1016,12 @@ export default function WorkOrdersPage() {
           customerName: wo.customerName,
           productName: wo.workDescription,
           productionStatus: wo.status,
-          createdAt: wo.createdAt?.toString() || new Date().toISOString(),
+          createdAt: new Date(wo.createdAt || Date.now()),
+          productionQuantity: 0,
+          unitWeightMg: 0,
+          batchTotalWeightMg: 0,
+          updatedAt: new Date(wo.updatedAt || Date.now()),
+          ingredients: []
         }))}
         pageData={{
           currentPage: '/work-orders',
