@@ -15,7 +15,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateWorkOrder, useUsers } from '@/lib/queries/work-orders'
 import { workOrderFormSchema } from '@/lib/validations/work-order-validation'
@@ -57,7 +57,9 @@ export default function CreateWorkOrderPage() {
       productionMaterialsReady: false,
       packagingMaterialsReady: false,
       productionQuantity: null,
+      productionQuantityStat: null,
       packagingQuantity: null,
+      packagingQuantityStat: null,
       requestedDeliveryDate: '',
       internalExpectedDate: '',
       isUrgent: false,
@@ -384,37 +386,93 @@ export default function CreateWorkOrderPage() {
                   <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     生產數量
                   </Text.Primary>
-                  <Input
-                    type="number"
-                    {...form.register('productionQuantity', { 
-                      setValueAs: v => v === '' || v === null ? null : parseInt(v)
-                    })}
-                    placeholder="例如: 10000"
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
+                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                    <Input
+                      type="number"
+                      {...form.register('productionQuantity', { 
+                        setValueAs: v => v === '' || v === null ? null : parseInt(v)
+                      })}
+                      placeholder="例如: 10000"
+                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                    />
+                    <Controller
+                      name="productionQuantityStat"
+                      control={form.control}
+                      render={({ field }) => (
+                        <Select value={field.value || ''} onValueChange={field.onChange}>
+                          <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                            <SelectValue placeholder="單位" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="粒">粒</SelectItem>
+                            <SelectItem value="瓶">瓶</SelectItem>
+                            <SelectItem value="盒">盒</SelectItem>
+                            <SelectItem value="袋">袋</SelectItem>
+                            <SelectItem value="包">包</SelectItem>
+                            <SelectItem value="排">排</SelectItem>
+                            <SelectItem value="公斤">公斤</SelectItem>
+                            <SelectItem value="克">克</SelectItem>
+                            <SelectItem value="個">個</SelectItem>
+                            <SelectItem value="其他">其他</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
                   {form.formState.errors.productionQuantity && (
                     <Text.Danger className="text-xs sm:text-sm mt-1.5">
                       {form.formState.errors.productionQuantity.message}
                     </Text.Danger>
                   )}
+                  <Text.Tertiary className="text-xs mt-1">
+                    提示：生產通常用「粒」計算
+                  </Text.Tertiary>
                 </div>
                 <div>
                   <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     包裝數量
                   </Text.Primary>
-                  <Input
-                    type="number"
-                    {...form.register('packagingQuantity', {
-                      setValueAs: v => v === '' || v === null ? null : parseInt(v)
-                    })}
-                    placeholder="例如: 5000"
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
+                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                    <Input
+                      type="number"
+                      {...form.register('packagingQuantity', {
+                        setValueAs: v => v === '' || v === null ? null : parseInt(v)
+                      })}
+                      placeholder="例如: 5000"
+                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                    />
+                    <Controller
+                      name="packagingQuantityStat"
+                      control={form.control}
+                      render={({ field }) => (
+                        <Select value={field.value || ''} onValueChange={field.onChange}>
+                          <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                            <SelectValue placeholder="單位" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="粒">粒</SelectItem>
+                            <SelectItem value="瓶">瓶</SelectItem>
+                            <SelectItem value="盒">盒</SelectItem>
+                            <SelectItem value="袋">袋</SelectItem>
+                            <SelectItem value="包">包</SelectItem>
+                            <SelectItem value="排">排</SelectItem>
+                            <SelectItem value="公斤">公斤</SelectItem>
+                            <SelectItem value="克">克</SelectItem>
+                            <SelectItem value="個">個</SelectItem>
+                            <SelectItem value="其他">其他</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
                   {form.formState.errors.packagingQuantity && (
                     <Text.Danger className="text-xs sm:text-sm mt-1.5">
                       {form.formState.errors.packagingQuantity.message}
                     </Text.Danger>
                   )}
+                  <Text.Tertiary className="text-xs mt-1">
+                    提示：包裝通常用「瓶」、「盒」等計算
+                  </Text.Tertiary>
                 </div>
               </div>
             </div>

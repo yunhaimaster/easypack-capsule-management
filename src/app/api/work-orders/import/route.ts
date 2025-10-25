@@ -220,6 +220,16 @@ export async function POST(request: NextRequest) {
         const rowNum = i + 2 // +2 for header and 0-index
 
         try {
+          // Skip completed orders (user's Excel already cleaned, but handle gracefully)
+          if (row.isCompleted && String(row.isCompleted).trim() === '是') {
+            result.warnings.push({
+              row: rowNum,
+              message: '已完成的工作單，跳過不匯入'
+            })
+            result.skipped++
+            continue
+          }
+
           // Map row to work order data
           const workOrderData = mapRowToWorkOrder(row)
 

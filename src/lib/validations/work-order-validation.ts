@@ -36,10 +36,12 @@ export const workOrderFormSchema = z.object({
     z.number().int("必須為整數").positive("數量必須大於0"),
     z.null()
   ]).optional(),
+  productionQuantityStat: z.string().max(20, "單位不能超過20字元").optional().nullable(),
   packagingQuantity: z.union([
     z.number().int("必須為整數").positive("數量必須大於0"),
     z.null()
   ]).optional(),
+  packagingQuantityStat: z.string().max(20, "單位不能超過20字元").optional().nullable(),
   
   // Delivery Dates - Allow past dates for historical data import
   requestedDeliveryDate: z.string().optional().nullable(),

@@ -256,6 +256,12 @@ export interface WorkOrderSearchFilters {
   limit?: number
   sortBy?: SortField
   sortOrder?: 'asc' | 'desc'
+  
+  // Advanced filters for smart presets
+  productionMaterialsReady?: boolean
+  packagingMaterialsReady?: boolean
+  productionStarted?: boolean
+  isUrgent?: boolean
 }
 
 // ===== Bulk Operations =====

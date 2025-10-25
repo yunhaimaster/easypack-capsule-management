@@ -19,6 +19,7 @@ import { ExportDialog } from '@/components/work-orders/export-dialog'
 import { ImportDialog } from '@/components/work-orders/import-dialog'
 import { BulkActionBar } from '@/components/work-orders/bulk-action-bar'
 import { BulkStatusDialog } from '@/components/work-orders/bulk-status-dialog'
+import { SmartFilters, SmartFilterPreset } from '@/components/work-orders/smart-filters'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -66,6 +67,9 @@ export default function WorkOrdersPage() {
     isOpen: false, 
     ids: [] 
   })
+  
+  // Smart filter state
+  const [activeSmartFilter, setActiveSmartFilter] = useState<string | null>(null)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
   // Fetch work orders
@@ -73,6 +77,7 @@ export default function WorkOrdersPage() {
   
   // Fetch users for person filter
   const { data: usersData } = useUsers()
+  const users = usersData?.data?.users || []
 
   const workOrders = data?.data?.workOrders || []
   const pagination = data?.data?.pagination || { page: 1, limit: 25, total: 0, totalPages: 0 }
@@ -112,12 +117,73 @@ export default function WorkOrdersPage() {
     setDateTo('')
     setVipOnly(false)
     setLinkedOnly(undefined)
+    setActiveSmartFilter(null) // Clear smart filter
     setFilters({
       page: 1,
       limit: 25,
       sortBy: 'createdAt',
       sortOrder: 'desc'
     })
+  }
+
+  // Smart filter handlers
+  const handleSmartFilterSelect = (preset: SmartFilterPreset) => {
+    // Clear existing filters first
+    setSearchKeyword('')
+    setSelectedStatuses([])
+    setSelectedWorkTypes([])
+    setSelectedPersons([])
+    setDateFrom('')
+    setDateTo('')
+    setVipOnly(false)
+    setLinkedOnly(undefined)
+
+    // Apply preset filters
+    const newFilters: WorkOrderSearchFilters = {
+      page: 1,
+      limit: 25,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    }
+
+    if (preset.filters.workTypes) {
+      setSelectedWorkTypes(preset.filters.workTypes)
+      newFilters.workType = preset.filters.workTypes
+    }
+
+    if (preset.filters.statuses) {
+      setSelectedStatuses(preset.filters.statuses)
+      newFilters.status = preset.filters.statuses
+    }
+
+    if (preset.filters.productionStarted !== undefined) {
+      newFilters.productionStarted = preset.filters.productionStarted
+    }
+
+    if (preset.filters.productionMaterialsReady !== undefined) {
+      newFilters.productionMaterialsReady = preset.filters.productionMaterialsReady
+    }
+
+    if (preset.filters.packagingMaterialsReady !== undefined) {
+      newFilters.packagingMaterialsReady = preset.filters.packagingMaterialsReady
+    }
+
+    if (preset.filters.isUrgent !== undefined) {
+      newFilters.isUrgent = preset.filters.isUrgent
+    }
+
+    if (preset.filters.isVip !== undefined) {
+      setVipOnly(true)
+      newFilters.isVip = true
+    }
+
+    setActiveSmartFilter(preset.id)
+    setFilters(newFilters)
+  }
+
+  const handleClearSmartFilter = () => {
+    setActiveSmartFilter(null)
+    handleClearAllFilters()
   }
 
   // Handle sort
@@ -419,6 +485,16 @@ export default function WorkOrdersPage() {
           {/* Advanced Filters Panel - Simplified for mobile */}
           {showAdvancedFilters && (
             <div className="mt-4 p-3 sm:p-4 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-surface-secondary/50 space-y-3 sm:space-y-4 transition-apple">
+              {/* Smart Filters Section */}
+              <SmartFilters
+                activePreset={activeSmartFilter}
+                onPresetSelect={handleSmartFilterSelect}
+                onClearPreset={handleClearSmartFilter}
+              />
+
+              {/* Divider */}
+              <div className="border-t border-neutral-200 dark:border-neutral-700 my-4" />
+
               <Text.Primary as="h4" className="font-medium mb-2 sm:mb-3 text-sm sm:text-base">進階篩選條件</Text.Primary>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -716,6 +792,7 @@ export default function WorkOrdersPage() {
             <div className="inline-block min-w-full align-middle px-2 sm:px-0">
               <WorkOrderTable
                 workOrders={workOrders}
+                users={users}
                 isLoading={isLoading}
                 isFetching={isFetching}
                 selectedIds={selectedIds}

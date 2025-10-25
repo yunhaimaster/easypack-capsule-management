@@ -28,6 +28,18 @@ export interface UserMappingResult {
 }
 
 /**
+ * Split multiple names in a single field
+ * Handles: "Raymond/May", "Raymond-May", "Raymond, May", "Raymond & May"
+ * Returns: ["Raymond", "May"]
+ */
+function splitMultipleNames(name: string): string[] {
+  return name
+    .split(/[\/,&]|-(?=\s|$)/) // Split by /, ,, &, or - (followed by space or end)
+    .map(n => n.trim())
+    .filter(n => n.length > 0)
+}
+
+/**
  * Match a single imported name to existing users
  * 
  * Fallback chain:
@@ -36,6 +48,9 @@ export interface UserMappingResult {
  * 3. Medium similarity (> 0.6)
  * 4. Low similarity (> 0.4) - show alternatives
  * 5. No match
+ * 
+ * Special handling:
+ * - If multiple names in field ("Raymond/May"), picks first best match
  * 
  * @param importedName - Name from imported data
  * @param users - Array of existing users
@@ -50,6 +65,35 @@ export function matchUser(importedName: string, users: User[]): UserMappingResul
     }
   }
   
+  // Handle multiple names in one field (e.g., "Raymond/May")
+  const nameParts = splitMultipleNames(importedName)
+  
+  // If multiple names found, try to match each one and pick the best
+  if (nameParts.length > 1) {
+    const matches = nameParts
+      .map(name => matchSingleName(name, users))
+      .filter(result => result.matchedUser !== null)
+      .sort((a, b) => (b.similarityScore || 0) - (a.similarityScore || 0))
+    
+    if (matches.length > 0) {
+      // Return the best match, but note it was from multi-name field
+      return {
+        ...matches[0],
+        importedName // Keep original field value for reference
+      }
+    }
+    
+    // If no matches found for any name part, fall through to single-name logic
+  }
+  
+  // Single name or no matches from multi-name - use standard matching
+  return matchSingleName(importedName, users)
+}
+
+/**
+ * Internal: Match a single normalized name
+ */
+function matchSingleName(importedName: string, users: User[]): UserMappingResult {
   const normalizedName = normalizeName(importedName)
   
   // 1. Exact match (nickname or phone)

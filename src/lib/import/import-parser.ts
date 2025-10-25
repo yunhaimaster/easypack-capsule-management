@@ -57,30 +57,39 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   'job標號': 'jobNumber', // Legacy support
   '創建日期': 'markedDate',
   '標記日期': 'markedDate', // Legacy support
+  '編碼/日期': 'markedDate', // Excel format
   '客戶名稱': 'customerName',
   '負責人': 'personInCharge',
   '工作類型': 'workType',
   '狀態': 'status',
+  '生產/包裝/標籤': 'workType', // Excel format
   
   // VIP Flags - Updated to match export
   '客服VIP': 'isCustomerServiceVip',
   '老闆VIP': 'isBossVip',
+  '智慧建議客戶VIP': 'isCustomerServiceVip', // Excel format
+  '老闆建議客戶VIP': 'isBossVip', // Excel format
   '新品VIP': 'isNewProductVip', // Legacy support
   '複雜度VIP': 'isComplexityVip', // Legacy support
   
   // Material Ready Status - New
   '預計生產物料到齊日期': 'expectedProductionMaterialsDate',
   '預計包裝物料到齊日期': 'expectedPackagingMaterialsDate',
+  '物料齊日期': 'expectedProductionMaterialsDate', // Excel format (simplified)
   '生產物料齊': 'productionMaterialsReady',
   '包裝物料齊': 'packagingMaterialsReady',
   
-  // Quantities
+  // Quantities (will be parsed to extract number + unit)
   '生產數量': 'productionQuantity',
+  '生產數量（數粒）': 'productionQuantity', // Excel format with unit hint
   '包裝數量': 'packagingQuantity',
   
   // Delivery Dates - New
   '要求交貨日期': 'requestedDeliveryDate',
+  '要求交貨期': 'requestedDeliveryDate', // Excel format
+  '要求日期': 'requestedDeliveryDate', // Excel format (simplified)
   '內部預計交貨期': 'internalExpectedDate',
+  '預計日期': 'internalExpectedDate', // Excel format (simplified)
   
   // Status Flags - New
   '客人要求加急': 'isUrgent',
@@ -133,6 +142,54 @@ const STATUS_MAPPINGS: Record<string, WorkOrderStatus> = {
   '已完成': WorkOrderStatus.COMPLETED,
   '暫停': WorkOrderStatus.ON_HOLD,
   '已取消': WorkOrderStatus.CANCELLED
+}
+
+/**
+ * Parse quantity string with unit
+ * 
+ * Handles various formats:
+ * - "480 瓶" → { quantity: 480, unit: "瓶" }
+ * - "23,600粒" → { quantity: 23600, unit: "粒" }
+ * - "60,000 sachets" → { quantity: 60000, unit: "sachets" }
+ * - "480" → { quantity: 480, unit: null }
+ * - "TBD" or empty → { quantity: null, unit: null }
+ * 
+ * @param value - The quantity string to parse
+ * @returns Object with quantity (number | null) and unit (string | null)
+ */
+export function parseQuantityWithUnit(value: unknown): { quantity: number | null; unit: string | null } {
+  if (!value || value === null || value === undefined) {
+    return { quantity: null, unit: null }
+  }
+
+  const str = String(value).trim()
+  
+  // Handle empty, TBD, 待定, etc.
+  if (str === '' || str.toLowerCase() === 'tbd' || str === '待定' || str === '-') {
+    return { quantity: null, unit: null }
+  }
+
+  // Regex to extract number (with optional commas) and unit
+  // Matches: number (with commas) + optional space + unit text
+  const match = str.match(/^([0-9,]+(?:\.[0-9]+)?)\s*(.*)$/)
+  
+  if (!match) {
+    // No number found, invalid format
+    return { quantity: null, unit: null }
+  }
+
+  // Extract quantity (remove commas)
+  const quantityStr = match[1].replace(/,/g, '')
+  const quantity = Number(quantityStr)
+  
+  if (isNaN(quantity) || quantity < 0) {
+    return { quantity: null, unit: null }
+  }
+
+  // Extract unit (trim whitespace)
+  const unit = match[2].trim() || null
+
+  return { quantity, unit }
 }
 
 /**
@@ -209,6 +266,16 @@ export async function validateImportData(
   
   data.rows.forEach((row, index) => {
     const rowNum = index + 2 // +2 because: +1 for 0-index, +1 for header row
+    
+    // INFO: Skip completed orders (user's choice to exclude them)
+    if (row.isCompleted && String(row.isCompleted).trim() === '是') {
+      errors.push({
+        row: rowNum,
+        field: 'isCompleted',
+        level: ValidationLevel.INFO,
+        message: '已完成的工作單，建議不匯入（將被跳過）'
+      })
+    }
     
     // BLOCKING: Missing required fields
     if (!row.customerName || String(row.customerName).trim() === '') {
@@ -346,6 +413,10 @@ export async function validateImportData(
  * Handles data transformation and defaults
  */
 export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, unknown> {
+  // Parse quantities with units
+  const productionResult = parseQuantityWithUnit(row.productionQuantity)
+  const packagingResult = parseQuantityWithUnit(row.packagingQuantity)
+
   return {
     // Basic Info
     jobNumber: String(row.jobNumber || '').trim(),
@@ -356,8 +427,8 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     status: STATUS_MAPPINGS[String(row.status || '').trim()] || WorkOrderStatus.PENDING,
     
     // VIP Flags - Updated to match export
-    isCustomerServiceVip: String(row.isCustomerServiceVip || '').trim() === '是',
-    isBossVip: String(row.isBossVip || '').trim() === '是',
+    isCustomerServiceVip: String(row.isCustomerServiceVip || '').trim() === '是' || String(row.isCustomerServiceVip || '').toUpperCase() === 'TRUE',
+    isBossVip: String(row.isBossVip || '').trim() === '是' || String(row.isBossVip || '').toUpperCase() === 'TRUE',
     // Legacy support
     isNewProductVip: String(row.isNewProductVip || '').trim() === '是',
     isComplexityVip: String(row.isComplexityVip || '').trim() === '是',
@@ -368,9 +439,11 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     productionMaterialsReady: String(row.productionMaterialsReady || '').trim() === '是',
     packagingMaterialsReady: String(row.packagingMaterialsReady || '').trim() === '是',
     
-    // Quantities
-    productionQuantity: row.productionQuantity ? Number(row.productionQuantity) : null,
-    packagingQuantity: row.packagingQuantity ? Number(row.packagingQuantity) : null,
+    // Quantities with units - PARSED from combined format
+    productionQuantity: productionResult.quantity,
+    productionQuantityStat: productionResult.unit,
+    packagingQuantity: packagingResult.quantity,
+    packagingQuantityStat: packagingResult.unit,
     
     // Delivery Dates - New
     requestedDeliveryDate: row.requestedDeliveryDate ? new Date(String(row.requestedDeliveryDate)).toISOString() : null,

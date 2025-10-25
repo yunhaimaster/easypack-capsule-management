@@ -42,7 +42,9 @@ export default function EditWorkOrderPage() {
     packagingMaterialsReady: false,
     
     productionQuantity: '',
+    productionQuantityStat: '',
     packagingQuantity: '',
+    packagingQuantityStat: '',
     
     requestedDeliveryDate: '',
     internalExpectedDate: '',
@@ -61,7 +63,7 @@ export default function EditWorkOrderPage() {
       setFormData({
         jobNumber: workOrder.jobNumber || '',
         customerName: workOrder.customerName,
-        personInChargeId: workOrder.personInChargeId,
+        personInChargeId: workOrder.personInChargeId || '',
         workType: workOrder.workType,
         workDescription: workOrder.workDescription,
         
@@ -78,7 +80,9 @@ export default function EditWorkOrderPage() {
         packagingMaterialsReady: workOrder.packagingMaterialsReady,
         
         productionQuantity: workOrder.productionQuantity?.toString() || '',
+        productionQuantityStat: workOrder.productionQuantityStat || '',
         packagingQuantity: workOrder.packagingQuantity?.toString() || '',
+        packagingQuantityStat: workOrder.packagingQuantityStat || '',
         
         requestedDeliveryDate: workOrder.requestedDeliveryDate
           ? new Date(workOrder.requestedDeliveryDate).toISOString().split('T')[0]
@@ -103,7 +107,7 @@ export default function EditWorkOrderPage() {
       const payload: any = {
         jobNumber: formData.jobNumber.trim() || null,
         customerName: formData.customerName.trim(),
-        personInChargeId: formData.personInChargeId,
+        personInChargeId: formData.personInChargeId || null,
         workType: formData.workType,
         workDescription: formData.workDescription.trim(),
         
@@ -120,7 +124,9 @@ export default function EditWorkOrderPage() {
         packagingMaterialsReady: formData.packagingMaterialsReady,
         
         productionQuantity: formData.productionQuantity ? parseInt(formData.productionQuantity) : null,
+        productionQuantityStat: formData.productionQuantityStat || null,
         packagingQuantity: formData.packagingQuantity ? parseInt(formData.packagingQuantity) : null,
+        packagingQuantityStat: formData.packagingQuantityStat || null,
         
         requestedDeliveryDate: formData.requestedDeliveryDate
           ? new Date(formData.requestedDeliveryDate).toISOString()
@@ -422,25 +428,75 @@ export default function EditWorkOrderPage() {
                   <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     生產數量
                   </Text.Primary>
-                  <Input
-                    type="number"
-                    value={formData.productionQuantity}
-                    onChange={(e) => setFormData(prev => ({ ...prev, productionQuantity: e.target.value }))}
-                    placeholder="例如: 10000"
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
+                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                    <Input
+                      type="number"
+                      value={formData.productionQuantity}
+                      onChange={(e) => setFormData(prev => ({ ...prev, productionQuantity: e.target.value }))}
+                      placeholder="例如: 10000"
+                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                    />
+                    <Select
+                      value={formData.productionQuantityStat || ''}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, productionQuantityStat: value }))}
+                    >
+                      <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                        <SelectValue placeholder="單位" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="粒">粒</SelectItem>
+                        <SelectItem value="瓶">瓶</SelectItem>
+                        <SelectItem value="盒">盒</SelectItem>
+                        <SelectItem value="袋">袋</SelectItem>
+                        <SelectItem value="包">包</SelectItem>
+                        <SelectItem value="排">排</SelectItem>
+                        <SelectItem value="公斤">公斤</SelectItem>
+                        <SelectItem value="克">克</SelectItem>
+                        <SelectItem value="個">個</SelectItem>
+                        <SelectItem value="其他">其他</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Text.Tertiary className="text-xs mt-1">
+                    提示：生產通常用「粒」計算
+                  </Text.Tertiary>
                 </div>
                 <div>
                   <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
                     包裝數量
                   </Text.Primary>
-                  <Input
-                    type="number"
-                    value={formData.packagingQuantity}
-                    onChange={(e) => setFormData(prev => ({ ...prev, packagingQuantity: e.target.value }))}
-                    placeholder="例如: 5000"
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
+                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                    <Input
+                      type="number"
+                      value={formData.packagingQuantity}
+                      onChange={(e) => setFormData(prev => ({ ...prev, packagingQuantity: e.target.value }))}
+                      placeholder="例如: 5000"
+                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                    />
+                    <Select
+                      value={formData.packagingQuantityStat || ''}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, packagingQuantityStat: value }))}
+                    >
+                      <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                        <SelectValue placeholder="單位" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="粒">粒</SelectItem>
+                        <SelectItem value="瓶">瓶</SelectItem>
+                        <SelectItem value="盒">盒</SelectItem>
+                        <SelectItem value="袋">袋</SelectItem>
+                        <SelectItem value="包">包</SelectItem>
+                        <SelectItem value="排">排</SelectItem>
+                        <SelectItem value="公斤">公斤</SelectItem>
+                        <SelectItem value="克">克</SelectItem>
+                        <SelectItem value="個">個</SelectItem>
+                        <SelectItem value="其他">其他</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Text.Tertiary className="text-xs mt-1">
+                    提示：包裝通常用「瓶」、「盒」等計算
+                  </Text.Tertiary>
                 </div>
               </div>
             </div>
@@ -552,18 +608,18 @@ export default function EditWorkOrderPage() {
               <Button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/30 transition-all duration-300 touch-feedback order-1 sm:order-1"
+                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/30 transition-all duration-300 touch-feedback order-1 sm:order-1 min-w-[140px] justify-center"
               >
                 {updateMutation.isPending ? (
-                  <>
+                  <div className="flex items-center">
                     <LoadingSpinner size="sm" className="mr-2" />
-                    更新中...
-                  </>
+                    <span>更新中...</span>
+                  </div>
                 ) : (
-                  <>
+                  <div className="flex items-center">
                     <Save className="h-4 w-4 mr-2" />
-                    儲存變更
-                  </>
+                    <span>儲存變更</span>
+                  </div>
                 )}
               </Button>
               <Button

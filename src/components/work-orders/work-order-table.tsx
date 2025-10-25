@@ -7,16 +7,21 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { WorkOrder } from '@/types/work-order'
+import { WorkOrder, User } from '@/types/work-order'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Eye, Edit, Trash2, ArrowUpDown, CheckCircle, XCircle, AlertCircle, Star } from 'lucide-react'
+import { Eye, Edit, Trash2, ArrowUpDown, CheckCircle, XCircle, AlertCircle, Star, Edit3 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
+import { EditableStatusCell } from './editable-status-cell'
+import { EditableCheckboxCell } from './editable-checkbox-cell'
+import { QuickEditModal } from './quick-edit-modal'
+import { useToast } from '@/components/ui/toast-provider'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
+  users: User[]  // For quick edit modal
   isLoading: boolean
   isFetching: boolean
   selectedIds: string[]
@@ -148,6 +153,7 @@ function SortableHeader({
  */
 export function WorkOrderTable({
   workOrders,
+  users,
   isLoading,
   isFetching,
   selectedIds,
@@ -158,6 +164,8 @@ export function WorkOrderTable({
   onDelete
 }: WorkOrderTableProps) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null)
+  const [quickEditWorkOrder, setQuickEditWorkOrder] = useState<WorkOrder | null>(null)
+  const { showToast } = useToast()
   
   // Handle select all
   const handleSelectAll = (checked: boolean) => {
@@ -338,7 +346,12 @@ export function WorkOrderTable({
                 
                 {/* Status - Always visible */}
                 <td className="px-2 sm:px-4 py-3">
-                  <StatusBadge status={workOrder.status} />
+                  <EditableStatusCell
+                    workOrderId={workOrder.id}
+                    currentStatus={workOrder.status}
+                    onSuccess={() => showToast({ title: '狀態已更新' })}
+                    onError={(error) => showToast({ title: '更新失敗', description: error.message, variant: 'destructive' })}
+                  />
                 </td>
                 
                 {/* Job Number - Hidden on mobile, visible md+ */}
@@ -397,54 +410,48 @@ export function WorkOrderTable({
                 
                 {/* Material Status - Hidden on mobile/tablet, visible xl+ */}
                 <td className="hidden xl:table-cell px-4 py-3">
-                  <div className="flex items-center gap-2 text-xs">
-                    {workOrder.productionMaterialsReady ? (
-                      <div className="flex items-center gap-1 text-success-600" title="生產物料齊">
-                        <CheckCircle className="h-4 w-4" />
-                        <span>生產</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-neutral-400 dark:text-white/55" title="生產物料未齊">
-                        <XCircle className="h-4 w-4" />
-                        <span>生產</span>
-                      </div>
-                    )}
-                    {workOrder.packagingMaterialsReady ? (
-                      <div className="flex items-center gap-1 text-success-600" title="包裝物料齊">
-                        <CheckCircle className="h-4 w-4" />
-                        <span>包裝</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-neutral-400 dark:text-white/55" title="包裝物料未齊">
-                        <XCircle className="h-4 w-4" />
-                        <span>包裝</span>
-                      </div>
-                    )}
+                  <div className="flex flex-col gap-1">
+                    <EditableCheckboxCell
+                      workOrderId={workOrder.id}
+                      field="productionMaterialsReady"
+                      currentValue={workOrder.productionMaterialsReady}
+                      label="生產物料齊"
+                      onSuccess={() => showToast({ title: '物料狀態已更新' })}
+                      onError={(error) => showToast({ title: '更新失敗', description: error.message, variant: 'destructive' })}
+                    />
+                    <EditableCheckboxCell
+                      workOrderId={workOrder.id}
+                      field="packagingMaterialsReady"
+                      currentValue={workOrder.packagingMaterialsReady}
+                      label="包裝物料齊"
+                      onSuccess={() => showToast({ title: '物料狀態已更新' })}
+                      onError={(error) => showToast({ title: '更新失敗', description: error.message, variant: 'destructive' })}
+                    />
                   </div>
                 </td>
                 
                 {/* Status Marks - Hidden on mobile/tablet, visible xl+ */}
                 <td className="hidden xl:table-cell px-4 py-3">
-                  <div className="flex items-center gap-1 flex-wrap">
+                  <div className="flex flex-col gap-1">
+                    <EditableCheckboxCell
+                      workOrderId={workOrder.id}
+                      field="productionStarted"
+                      currentValue={workOrder.productionStarted}
+                      label="已開生產線"
+                      onSuccess={() => showToast({ title: '生產狀態已更新' })}
+                      onError={(error) => showToast({ title: '更新失敗', description: error.message, variant: 'destructive' })}
+                    />
                     {workOrder.isUrgent && (
-                      <Badge variant="danger" className="text-xs">
+                      <Badge variant="danger" className="text-xs w-fit">
                         <AlertCircle className="h-3 w-3 mr-1" />
                         加急
                       </Badge>
                     )}
-                    {workOrder.productionStarted && (
-                      <Badge variant="info" className="text-xs">
-                        生產中
-                      </Badge>
-                    )}
                     {workOrder.isCompleted && (
-                      <Badge variant="success" className="text-xs">
+                      <Badge variant="success" className="text-xs w-fit">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         完成
                       </Badge>
-                    )}
-                    {!workOrder.isUrgent && !workOrder.productionStarted && !workOrder.isCompleted && (
-                      <span className="text-neutral-400 dark:text-white/55 text-xs">-</span>
                     )}
                   </div>
                 </td>
@@ -463,6 +470,16 @@ export function WorkOrderTable({
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                      onClick={() => setQuickEditWorkOrder(workOrder)}
+                      title="快速編輯"
+                    >
+                      <Edit3 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="sr-only">快速編輯</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       asChild
                       className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                     >
@@ -475,7 +492,7 @@ export function WorkOrderTable({
                       variant="ghost"
                       size="sm"
                       asChild
-                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 hidden sm:flex"
                     >
                       <Link href={`/work-orders/${workOrder.id}/edit`}>
                         <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -485,7 +502,7 @@ export function WorkOrderTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20 hidden sm:flex"
                       onClick={() => onDelete(workOrder.id)}
                     >
                       <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -498,6 +515,20 @@ export function WorkOrderTable({
           </tbody>
         </table>
       </div>
+      
+      {/* Quick Edit Modal */}
+      {quickEditWorkOrder && (
+        <QuickEditModal
+          workOrder={quickEditWorkOrder}
+          users={users}
+          isOpen={!!quickEditWorkOrder}
+          onClose={() => setQuickEditWorkOrder(null)}
+          onSuccess={() => {
+            showToast({ title: '更新成功' })
+            setQuickEditWorkOrder(null)
+          }}
+        />
+      )}
     </div>
   )
 }

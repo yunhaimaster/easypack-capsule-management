@@ -256,7 +256,9 @@ export default function WorkOrderDetailPage() {
                 生產數量
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
-                {workOrder.productionQuantity ? workOrder.productionQuantity.toLocaleString() : '-'}
+                {workOrder.productionQuantity 
+                  ? `${workOrder.productionQuantity.toLocaleString()}${workOrder.productionQuantityStat ? ` ${workOrder.productionQuantityStat}` : ''}`
+                  : '-'}
               </Text.Primary>
             </div>
             <div>
@@ -264,7 +266,9 @@ export default function WorkOrderDetailPage() {
                 包裝數量
               </Text.Tertiary>
               <Text.Primary className="text-sm sm:text-base">
-                {workOrder.packagingQuantity ? workOrder.packagingQuantity.toLocaleString() : '-'}
+                {workOrder.packagingQuantity 
+                  ? `${workOrder.packagingQuantity.toLocaleString()}${workOrder.packagingQuantityStat ? ` ${workOrder.packagingQuantityStat}` : ''}`
+                  : '-'}
               </Text.Primary>
             </div>
           </CardContent>
