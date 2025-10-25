@@ -33,7 +33,7 @@ interface QuickEditModalProps {
 
 export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }: QuickEditModalProps) {
   const [formData, setFormData] = useState({
-    personInChargeId: workOrder.personInChargeId || '',
+    personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
     workType: workOrder.workType,
     workDescription: workOrder.workDescription || ''
   })
@@ -47,7 +47,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          personInChargeId: data.personInChargeId || null,
+          personInChargeId: data.personInChargeId === 'UNASSIGNED' ? null : data.personInChargeId,
           workType: data.workType,
           workDescription: data.workDescription
         })
@@ -74,7 +74,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
   const handleCancel = () => {
     // Reset to original values
     setFormData({
-      personInChargeId: workOrder.personInChargeId || '',
+      personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
       workType: workOrder.workType,
       workDescription: workOrder.workDescription || ''
     })
@@ -115,7 +115,7 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
                 <SelectValue placeholder="選擇負責人" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">未指定</SelectItem>
+                <SelectItem value="UNASSIGNED">未指定</SelectItem>
                 {users.map(user => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.nickname || user.phoneE164}
