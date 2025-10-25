@@ -6,7 +6,13 @@ import { useWorkOrder, useUpdateWorkOrder, useUsers } from '@/lib/queries/work-o
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { Text } from '@/components/ui/text'
+import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
+import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Save } from 'lucide-react'
 
 export default function EditWorkOrderPage() {
@@ -142,54 +148,79 @@ export default function EditWorkOrderPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-neutral-200 rounded w-1/4"></div>
-          <div className="h-96 bg-neutral-200 rounded"></div>
+      <div className="min-h-screen logo-bg-animation flex flex-col">
+        <LiquidGlassNav />
+        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 floating-combined flex-1">
+          <div className="max-w-4xl mx-auto">
+            <Card className="liquid-glass-card transition-apple">
+              <CardContent className="p-8 sm:p-12">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <LoadingSpinner size="lg" />
+                  <Text.Secondary className="text-center">載入工作單資料中...</Text.Secondary>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
+        <LiquidGlassFooter />
       </div>
     )
   }
 
   if (!workOrder) {
     return (
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <Card className="border-danger-200 bg-danger-50">
-          <CardContent className="pt-6">
-            <p className="text-danger-700">工作單不存在</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen logo-bg-animation flex flex-col">
+        <LiquidGlassNav />
+        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 floating-combined flex-1">
+          <div className="max-w-4xl mx-auto">
+            <Card className="liquid-glass-card border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-900/20 transition-apple">
+              <CardContent className="pt-6">
+                <Text.Danger className="text-center">工作單不存在</Text.Danger>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <LiquidGlassFooter />
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen logo-bg-animation flex flex-col">
+      <LiquidGlassNav />
+      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+        <div className="max-w-4xl mx-auto">{/* Header */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push(`/work-orders/${id}` as never)}
+            className="transition-apple"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             返回詳情
           </Button>
-          <h1 className="text-2xl font-bold text-neutral-800 dark:text-white/95">編輯工作單</h1>
+          <Text.Primary as="h1" className="text-xl sm:text-2xl lg:text-3xl font-bold">
+            編輯工作單
+          </Text.Primary>
         </div>
       </div>
 
       {/* Success/Error Messages */}
       {successMessage && (
-        <div className="mb-6 p-4 bg-success-50 border border-success-200 rounded-lg text-success-700">
-          {successMessage}
+        <div className="mb-6 p-4 sm:p-5 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg transition-apple">
+          <Text.Success className="font-medium text-sm sm:text-base">
+            {successMessage}
+          </Text.Success>
         </div>
       )}
 
       {errorMessage && (
-        <div className="mb-6 p-4 bg-danger-50 border border-danger-200 rounded-lg text-danger-700">
-          {errorMessage}
+        <div className="mb-6 p-4 sm:p-5 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg transition-apple">
+          <Text.Danger className="font-medium text-sm sm:text-base">
+            {errorMessage}
+          </Text.Danger>
         </div>
       )}
 
@@ -450,15 +481,15 @@ export default function EditWorkOrderPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
               <Button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="bg-primary-600 hover:bg-primary-700"
+                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/30 transition-all duration-300 touch-feedback order-1 sm:order-1"
               >
                 {updateMutation.isPending ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                    <LoadingSpinner size="sm" className="mr-2" />
                     更新中...
                   </>
                 ) : (
@@ -473,6 +504,7 @@ export default function EditWorkOrderPage() {
                 variant="outline"
                 onClick={() => router.push(`/work-orders/${id}` as never)}
                 disabled={updateMutation.isPending}
+                className="transition-apple order-2 sm:order-2"
               >
                 取消
               </Button>
@@ -480,6 +512,9 @@ export default function EditWorkOrderPage() {
           </form>
         </CardContent>
       </Card>
+        </div>
+      </div>
+      <LiquidGlassFooter />
     </div>
   )
 }
