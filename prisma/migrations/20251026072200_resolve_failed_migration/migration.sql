@@ -1,16 +1,10 @@
--- Resolve failed migration and apply correct schema change
--- The previous migration (20251026072106) failed due to incorrect table name
+-- Apply schema change to make personInChargeId nullable
+-- This replaces the failed 20251026072106 migration
 
--- Step 1: Mark the failed migration as rolled back
-DELETE FROM "_prisma_migrations" 
-WHERE migration_name = '20251026072106_make_person_in_charge_optional' 
-AND finished_at IS NULL;
-
--- Step 2: Apply the actual schema change (if not already applied)
--- Use DO block to check if column is already nullable
+-- Make personInChargeId nullable (idempotent)
 DO $$
 BEGIN
-    -- Check if personInChargeId is NOT NULL
+    -- Check if personInChargeId exists and is NOT NULL
     IF EXISTS (
         SELECT 1 
         FROM information_schema.columns 
