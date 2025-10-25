@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ProductionOrder } from '@/types'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { LinkedFilter } from '@/components/ui/linked-filter'
 import { LiquidGlassConfirmModal, useLiquidGlassModal } from '@/components/ui/liquid-glass-modal'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
@@ -382,10 +383,13 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                       </td>
                       <td className="py-4 px-4 text-sm align-top">
                         <div className="flex flex-col gap-2">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${statusBadgeClass}`}>
+                          <Badge 
+                            variant="outline" 
+                            className={`inline-flex items-center gap-1 ${statusBadgeClass}`}
+                          >
                             {STATUS_ORDER[status] === 0 ? <Timer className="h-3.5 w-3.5" aria-hidden="true" /> : STATUS_ORDER[status] === 2 ? <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> : <Square className="h-3.5 w-3.5" aria-hidden="true" />}
                             {statusLabel}
-                          </span>
+                          </Badge>
                           <div className="text-xs text-neutral-500 dark:text-white/65 leading-relaxed">
                             {STATUS_ORDER[status] === 2 && order.completionDate ? (
                               <div>完成日期：{typeof order.completionDate === 'string' ? order.completionDate : formatDateOnly(order.completionDate)}</div>

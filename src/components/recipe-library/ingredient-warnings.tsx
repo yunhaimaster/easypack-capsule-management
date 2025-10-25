@@ -197,19 +197,19 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
           </div>
           
           {loading && (
-            <div className="mt-3 space-y-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
+            <div className="mt-3 space-y-2 p-3 bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800/30 rounded-lg">
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-warning-600" />
-                <span className="text-sm font-medium text-warning-800">
+                <Clock className="h-4 w-4 text-warning-600 dark:text-warning-400" />
+                <span className="text-sm font-medium text-warning-800 dark:text-warning-200">
                   已用時間：{Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
                 </span>
               </div>
-              <p className="text-xs text-warning-600">
+              <p className="text-xs text-warning-600 dark:text-warning-300">
                 {progressMessage}
               </p>
-              <div className="w-full bg-warning-200 rounded-full h-1.5">
+              <div className="w-full bg-warning-200 dark:bg-warning-800/30 rounded-full h-1.5">
                 <div 
-                  className="bg-warning-600 h-1.5 rounded-full transition-all duration-300"
+                  className="bg-warning-600 dark:bg-warning-400 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${Math.min((elapsedTime / 120) * 100, 100)}%` }}
                 />
               </div>
@@ -286,7 +286,7 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
           {warnings.map((warning, index) => (
             <div
               key={index}
-              className="p-3 bg-white border border-neutral-200 rounded-lg"
+              className="p-3 bg-white dark:bg-neutral-800/30 border border-neutral-200 dark:border-neutral-700 rounded-lg"
             >
               <div className="flex items-start gap-2 mb-2">
                 <Badge
@@ -312,7 +312,7 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
                 </div>
               </div>
               <p className="text-xs text-neutral-600 dark:text-white/75 mb-2">{warning.warning}</p>
-              <p className="text-xs text-primary-600 bg-primary-50 p-2 rounded">
+              <p className="text-xs text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 p-2 rounded">
                 💡 {warning.recommendation}
               </p>
             </div>

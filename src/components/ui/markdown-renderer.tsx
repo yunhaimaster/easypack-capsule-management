@@ -83,20 +83,20 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
             </code>
           ),
           pre: ({ children }) => (
-            <pre className={`p-2 rounded text-xs font-mono overflow-x-auto mb-2 ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100'}`}>
+            <pre className={`p-2 rounded text-xs font-mono overflow-x-auto mb-2 ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100 dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95'}`}>
               {children}
             </pre>
           ),
           // 自定義引用樣式
           blockquote: ({ children }) => (
-            <blockquote className={`border-l-4 pl-3 py-1 mb-2 rounded-r ${whiteText ? 'border-white/40 bg-white/10' : 'border-primary-200 bg-primary-50'}`}>
+            <blockquote className={`border-l-4 pl-3 py-1 mb-2 rounded-r ${whiteText ? 'border-white/40 bg-white/10' : 'border-primary-200 dark:border-primary-800/30 bg-primary-50 dark:bg-primary-900/20'}`}>
               {children}
             </blockquote>
           ),
           // 自定義表格樣式
           table: ({ children }) => (
-            <div className="overflow-x-auto mb-4 rounded-lg border border-neutral-200 shadow-sm">
-              <table className="min-w-full divide-y divide-neutral-200">
+            <div className="overflow-x-auto mb-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm">
+              <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
                 {children}
               </table>
             </div>
@@ -128,7 +128,7 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
           ),
           // 自定義分隔線
           hr: () => (
-            <hr className="border-neutral-200 my-3" />
+            <hr className="border-neutral-200 dark:border-neutral-700 my-3" />
           ),
           // 自定義鏈接樣式
           a: ({ children, href }) => (

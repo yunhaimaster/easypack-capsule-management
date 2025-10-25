@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { IconContainer } from '@/components/ui/icon-container'
 import { Loader2, Download, ImageIcon, CheckCircle, X } from 'lucide-react'
 import { buildChineseImagePrompt, getImageTypeLabel } from '@/components/marketing/prompt-helpers'
 import { useToast } from '@/components/ui/toast-provider'
@@ -526,9 +527,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
       <div className="liquid-glass-content">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <div className="icon-container icon-container-emerald">
-              <ImageIcon className="h-5 w-5 text-white" />
-            </div>
+            <IconContainer icon={ImageIcon} variant="success" size="md" />
             <div>
               <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 包裝設計圖像</h2>
               <p className="text-sm text-neutral-500 dark:text-white/65">
@@ -564,18 +563,18 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
         
         {/* Overall Progress Bar */}
         {isGenerating && (
-          <div className="mb-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+          <div className="mb-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800/30">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-primary-700">
+              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
                 正在生成圖片... ({completedCount}/{totalCount})
               </span>
-              <span className="text-xs text-primary-600">
+              <span className="text-xs text-primary-600 dark:text-primary-400">
                 {generatingCount > 0 && '生成中'}
               </span>
             </div>
-            <div className="w-full h-2 bg-primary-100 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-primary-100 dark:bg-primary-800/30 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-primary-500 transition-all duration-300"
+                className="h-full bg-primary-500 dark:bg-primary-400 transition-all duration-300"
                 style={{ width: `${(completedCount / totalCount) * 100}%` }}
               />
             </div>
@@ -611,7 +610,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
               </div>
 
               <div className={cn(
-                "relative rounded-lg overflow-hidden border border-neutral-200 bg-neutral-50 w-full",
+                "relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/30 w-full",
                 image.type === 'poster' ? 'aspect-[3/4]' : 'aspect-square'
               )}>
                 {image.status === 'pending' && (
@@ -620,8 +619,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   </div>
                 )}
                 {image.status === 'generating' && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-neutral-100">
-                    <Loader2 className="h-8 w-8 animate-spin text-success-600" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-800/30">
+                    <Loader2 className="h-8 w-8 animate-spin text-success-600 dark:text-success-400" />
                   </div>
                 )}
                 {image.status === 'success' && image.imageUrl && (
@@ -701,7 +700,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                           編輯
                         </Button>
                       </div>
-                      <div className="text-xs text-neutral-500 dark:text-white/65 bg-neutral-50 rounded-md p-2 max-h-20 overflow-y-auto">
+                      <div className="text-xs text-neutral-500 dark:text-white/65 bg-neutral-50 dark:bg-neutral-800/30 rounded-md p-2 max-h-20 overflow-y-auto">
                         {image.prompt}
                       </div>
                     </div>
@@ -713,7 +712,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                       <textarea
                         value={editingPrompts[index] || image.prompt}
                         onChange={(e) => handlePromptChange(index, e.target.value)}
-                        className="w-full text-xs border border-neutral-300 rounded-md p-2 min-h-[100px] resize-y focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full text-xs border border-neutral-300 dark:border-neutral-600 rounded-md p-2 min-h-[100px] resize-y focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95"
                         placeholder="修改圖像生成 prompt..."
                       />
                       <div className="flex gap-2">
