@@ -149,7 +149,7 @@ export function OrderLockDialog({
         type="button"
         variant="outline"
         onClick={() => onOpenChange(false)}
-        className="flex-1 bg-white hover:bg-neutral-100 text-neutral-700 dark:text-white/85 border-neutral-300"
+        className="flex-1 bg-surface-primary hover:bg-neutral-100 text-neutral-700 dark:text-white/85 border-neutral-300"
         disabled={isLoading}
       >
         取消

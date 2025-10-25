@@ -12,21 +12,23 @@
 
 .dark .liquid-glass-card[data-glass-tone="neutral"],
 .dark .liquid-glass-card:not([data-glass-tone]) {
-  /* Glowing surface with subtle warm gradient */
+  /* Enhanced warm gradient with subtle blue accent */
   background: linear-gradient(
     152deg, 
-    rgba(35, 32, 30, 0.80) 0%,      /* Brighter top (warm) */
-    rgba(25, 23, 21, 0.75) 100%     /* Darker bottom */
+    rgba(45, 42, 39, 0.85) 0%,      /* Brighter warm top */
+    rgba(35, 32, 30, 0.80) 50%,    /* Mid warm tone */
+    rgba(25, 23, 21, 0.75) 100%    /* Darker warm bottom */
   );
   
-  /* Rim lighting effect (key feature of dark mode glass) */
-  border-color: rgba(255, 255, 255, 0.12);
+  /* Enhanced rim lighting with subtle blue tint */
+  border-color: rgba(255, 255, 255, 0.18);
   
-  /* Soft glow with rim highlights */
+  /* Sophisticated shadow system */
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),   /* Top rim light */
-    inset 0 -1px 0 rgba(0, 0, 0, 0.20),         /* Bottom depth */
-    0 8px 32px rgba(0, 0, 0, 0.60);             /* Ambient shadow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),   /* Enhanced top rim light */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),         /* Deeper bottom depth */
+    0 12px 40px rgba(0, 0, 0, 0.45),            /* Softer ambient shadow */
+    0 4px 16px rgba(0, 0, 0, 0.25);             /* Additional depth */
   
   color: rgba(255, 255, 255, 0.95);
 }
@@ -78,19 +80,21 @@
   opacity: 0.5;
 }
 
-/* Dark mode hover/interactive states */
+/* Enhanced dark mode hover/interactive states */
 .dark .liquid-glass-card:hover,
 .dark .liquid-glass-card.is-touching {
   background: linear-gradient(
     152deg, 
-    rgba(45, 42, 39, 0.85) 0%,      /* Brighter on hover */
-    rgba(35, 32, 30, 0.80) 100%
+    rgba(55, 52, 49, 0.90) 0%,      /* Brighter warm top on hover */
+    rgba(45, 42, 39, 0.85) 50%,     /* Mid warm tone */
+    rgba(35, 32, 30, 0.80) 100%     /* Darker warm bottom */
   );
-  border-color: rgba(255, 255, 255, 0.16);  /* Brighter rim */
+  border-color: rgba(255, 255, 255, 0.22);  /* Enhanced rim lighting */
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),  /* Stronger rim */
-    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    0 16px 48px rgba(0, 0, 0, 0.70);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),  /* Stronger rim light */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.30),      /* Deeper bottom depth */
+    0 16px 48px rgba(0, 0, 0, 0.50),         /* Softer ambient shadow */
+    0 8px 24px rgba(0, 0, 0, 0.30);           /* Additional depth */
 }
 
 /* Dark mode toned variants */
@@ -272,7 +276,20 @@
     --nav-bg: rgba(30, 28, 26, 0.75);
     --nav-border: rgba(255, 255, 255, 0.10);
     
-    /* Tailwind Semantic Tokens - Warm neutrals */
+    /* Enhanced Surface Colors for Pleasant Dark Mode */
+    --surface-primary: #1F1E1D;           /* Warm elevation-1 with subtle blue tint */
+    --surface-primary-hover: #272524;     /* Slightly lighter on hover */
+    --surface-secondary: #272524;         /* Warm elevation-2 */
+    --surface-secondary-hover: #31302F;   /* Slightly lighter on hover */
+    --surface-elevated: #31302F;          /* Warm elevation-3 for cards */
+    --surface-elevated-hover: #3B3A39;    /* Slightly lighter on hover */
+    
+    /* Enhanced Glass Effects for Dark Mode */
+    --glass-bg: rgba(31, 30, 29, 0.8);   /* Semi-transparent surface */
+    --glass-border: rgba(255, 255, 255, 0.1); /* Subtle white border */
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* Softer shadow */
+    
+    /* Tailwind Semantic Tokens - Enhanced warm neutrals */
     --background: 20 6% 7%;         /* Warm hue */
     --foreground: 0 0% 98%;        /* Pure white */
     --card: 20 6% 12%;             /* Warm elevation-1 */
@@ -292,6 +309,78 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ============================================
+   ENHANCED DARK MODE DESIGN
+   Sophisticated dark mode with better visual appeal
+============================================ */
+
+/* Enhanced dark mode background with subtle gradient */
+.dark body {
+  background: linear-gradient(
+    135deg,
+    #0F0E0D 0%,    /* Deep warm black */
+    #121110 50%,   /* Base elevation-0 */
+    #0F0E0D 100%   /* Deep warm black */
+  );
+  background-attachment: fixed;
+}
+
+/* Enhanced dark mode surface colors */
+.dark .bg-surface-primary {
+  background: var(--surface-primary) !important;
+}
+
+.dark .bg-surface-secondary {
+  background: var(--surface-secondary) !important;
+}
+
+.dark .bg-surface-elevated {
+  background: var(--surface-elevated) !important;
+}
+
+/* Enhanced dark mode text contrast */
+.dark .text-neutral-800 {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.dark .text-neutral-700 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.dark .text-neutral-600 {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.dark .text-neutral-500 {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Enhanced dark mode borders */
+.dark .border-neutral-200 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .border-neutral-300 {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Enhanced dark mode shadows */
+.dark .shadow-apple-sm {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .shadow-apple-md {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .shadow-apple-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow-apple-xl {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ============================================

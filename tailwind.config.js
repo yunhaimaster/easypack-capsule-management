@@ -143,6 +143,19 @@ module.exports = {
           light: "#e8f1f5",
           dark: "#1a3a5c",
         },
+        // Surface colors for modern dark mode
+        'surface-primary': {
+          DEFAULT: 'var(--surface-primary)',
+          hover: 'var(--surface-primary-hover)',
+        },
+        'surface-secondary': {
+          DEFAULT: 'var(--surface-secondary)',
+          hover: 'var(--surface-secondary-hover)',
+        },
+        'surface-elevated': {
+          DEFAULT: 'var(--surface-elevated)',
+          hover: 'var(--surface-elevated-hover)',
+        },
         // Elevation system (avoid conflict with existing surface-primary/secondary)
         elevation: {
           0: 'var(--elevation-0)',
