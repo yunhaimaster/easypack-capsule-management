@@ -167,16 +167,16 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
         <div className="liquid-glass-content">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-neutral-800 mb-1 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-white/95 mb-1 flex items-center gap-2">
                 原料相互作用分析
                 {/* 🆕 顯示分析時間 */}
                 {recipe.aiInteractionsAt && (
-                  <span className="text-xs text-neutral-500 font-normal">
+                  <span className="text-xs text-neutral-500 dark:text-white/65 font-normal">
                     (上次: {formatDate(recipe.aiInteractionsAt)})
                   </span>
                 )}
               </h3>
-              <p className="text-xs text-neutral-600">
+              <p className="text-xs text-neutral-600 dark:text-white/75">
                 AI 分析原料之間的潛在相互作用和風險
               </p>
             </div>
@@ -251,7 +251,7 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
             </h3>
             {/* 🆕 顯示分析時間 */}
             {recipe.aiInteractionsAt && (
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs text-neutral-500 dark:text-white/65">
                 ({formatDate(recipe.aiInteractionsAt)})
               </span>
             )}
@@ -306,12 +306,12 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? '�
                     : '低風險'}
                 </Badge>
                 <div className="flex-1">
-                  <p className="text-xs font-medium text-neutral-800">
+                  <p className="text-xs font-medium text-neutral-800 dark:text-white/95">
                     {warning.ingredient1} + {warning.ingredient2}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-neutral-600 mb-2">{warning.warning}</p>
+              <p className="text-xs text-neutral-600 dark:text-white/75 mb-2">{warning.warning}</p>
               <p className="text-xs text-primary-600 bg-primary-50 p-2 rounded">
                 💡 {warning.recommendation}
               </p>

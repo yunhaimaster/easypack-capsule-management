@@ -38,7 +38,7 @@ export function MarketingInput({ ingredients, setIngredients }: MarketingInputPr
         {ingredients.map((ingredient, index) => (
           <div key={index} className="flex flex-col gap-4 md:flex-row md:items-center p-4 bg-white rounded-lg border border-neutral-200">
             <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 原料名稱
               </label>
               <input
@@ -50,7 +50,7 @@ export function MarketingInput({ ingredients, setIngredients }: MarketingInputPr
               />
             </div>
             <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 單粒重量 (mg)
               </label>
               <input
@@ -85,7 +85,7 @@ export function MarketingInput({ ingredients, setIngredients }: MarketingInputPr
           <Plus className="h-4 w-4" />
           新增原料
         </Button>
-        <Badge variant="outline" className="text-xs text-neutral-500">
+        <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
           已輸入 {ingredients.length} 項原料
         </Badge>
       </div>

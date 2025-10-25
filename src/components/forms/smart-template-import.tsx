@@ -436,11 +436,11 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                     >
-                      <Upload className={`w-12 h-12 mx-auto mb-3 ${isTemplateDragging ? 'text-success-600' : 'text-neutral-400'}`} />
-                      <p className={`font-medium ${isTemplateDragging ? 'text-success-700' : 'text-neutral-700'}`}>
+                      <Upload className={`w-12 h-12 mx-auto mb-3 ${isTemplateDragging ? 'text-success-600' : 'text-neutral-400 dark:text-white/55'}`} />
+                      <p className={`font-medium ${isTemplateDragging ? 'text-success-700' : 'text-neutral-700 dark:text-white/85'}`}>
                         {isTemplateDragging ? '放開以上傳圖片' : '拖放圖片至此'}
                       </p>
-                      <p className="text-neutral-500 text-xs mt-2">支持多圖上傳 | 或點擊下方按鈕選擇文件</p>
+                      <p className="text-neutral-500 dark:text-white/65 text-xs mt-2">支持多圖上傳 | 或點擊下方按鈕選擇文件</p>
                     </div>
                     <Button 
                       variant="outline"
@@ -576,7 +576,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-xs text-neutral-600">
+                            <p className="text-xs text-neutral-600 dark:text-white/75">
                               {recipe.ingredients.length} 種原料
                             </p>
                           </div>
@@ -616,7 +616,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                         <div>
                           <h4 className="font-semibold text-sm mb-2">{selectedRecipe.recipeName}</h4>
                           {selectedRecipe.description && (
-                            <p className="text-xs text-neutral-600 mb-2">{selectedRecipe.description}</p>
+                            <p className="text-xs text-neutral-600 dark:text-white/75 mb-2">{selectedRecipe.description}</p>
                           )}
                         </div>
                         
@@ -626,7 +626,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                             {selectedRecipe.ingredients.map((ing, idx) => (
                               <div key={idx} className="flex justify-between text-xs bg-white p-2 rounded border border-neutral-200">
                                 <span className="font-medium">{ing.materialName}</span>
-                                <span className="text-neutral-600">{formatNumber(ing.unitContentMg)} mg</span>
+                                <span className="text-neutral-600 dark:text-white/75">{formatNumber(ing.unitContentMg)} mg</span>
                               </div>
                             ))}
                           </div>
@@ -650,7 +650,7 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                         )}
                       </div>
                     ) : (
-                      <div className="text-center py-12 text-neutral-400 text-sm">
+                      <div className="text-center py-12 text-neutral-400 dark:text-white/55 text-sm">
                         點擊左側配方查看詳情
                       </div>
                     )}

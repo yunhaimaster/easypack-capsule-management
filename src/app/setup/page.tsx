@@ -49,10 +49,10 @@ export default function SetupPage() {
         <div className="max-w-4xl mx-auto">
           {/* 頁面標題 */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-neutral-800 mb-4">
+            <h1 className="text-4xl font-bold text-neutral-800 dark:text-white/95 mb-4">
               🛠️ 數據庫設置
             </h1>
-            <p className="text-lg text-neutral-600">
+            <p className="text-lg text-neutral-600 dark:text-white/75">
               設置 v2.0 功能所需的數據庫表
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function SetupPage() {
                 <div className="icon-container icon-container-blue">
                   <Settings className="h-5 w-5 text-white" />
                 </div>
-                <h2 className="text-xl font-semibold text-neutral-800">設置說明</h2>
+                <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95">設置說明</h2>
               </div>
 
               <div className="space-y-4">
@@ -104,7 +104,7 @@ export default function SetupPage() {
                 <div className="icon-container icon-container-green">
                   <Database className="h-5 w-5 text-white" />
                 </div>
-                <h2 className="text-xl font-semibold text-neutral-800">創建數據庫表</h2>
+                <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95">創建數據庫表</h2>
               </div>
 
               <div className="text-center">
@@ -156,12 +156,12 @@ export default function SetupPage() {
 
                   {createResult.tables && createResult.tables.length > 0 && (
                     <div>
-                      <h4 className="font-medium text-neutral-800 mb-2">已創建的表：</h4>
+                      <h4 className="font-medium text-neutral-800 dark:text-white/95 mb-2">已創建的表：</h4>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {createResult.tables.map((table, index) => (
                           <li key={index} className="flex items-center space-x-2 text-sm">
                             <CheckCircle className="h-4 w-4 text-success-500" />
-                            <span className="text-neutral-700">{table}</span>
+                            <span className="text-neutral-700 dark:text-white/85">{table}</span>
                           </li>
                         ))}
                       </ul>

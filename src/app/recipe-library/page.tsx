@@ -633,10 +633,10 @@ export default function RecipeLibraryPage() {
               <span className="h-2 w-2 rounded-full bg-info-500" />
               配方管理工具
             </div>
-            <h1 className="text-xl md:text-2xl font-semibold text-neutral-800">
+            <h1 className="text-xl md:text-2xl font-semibold text-neutral-800 dark:text-white/95">
               配方庫
             </h1>
-            <p className="text-sm text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-sm text-neutral-600 dark:text-white/75 max-w-2xl mx-auto">
               管理生產配方和模板配方，快速創建新訂單
             </p>
           </div>
@@ -648,8 +648,8 @@ export default function RecipeLibraryPage() {
                 <div className="flex items-center gap-3">
                   <IconContainer icon={Beaker} variant="info" size="md" />
                   <div>
-                    <p className="text-sm text-neutral-600">配方總數</p>
-                    <p className="text-2xl font-bold text-neutral-800">{productionCount + templateCount}</p>
+                    <p className="text-sm text-neutral-600 dark:text-white/75">配方總數</p>
+                    <p className="text-2xl font-bold text-neutral-800 dark:text-white/95">{productionCount + templateCount}</p>
                   </div>
                 </div>
               </div>
@@ -660,8 +660,8 @@ export default function RecipeLibraryPage() {
                 <div className="flex items-center gap-3">
                   <IconContainer icon={Package} variant="success" size="md" />
                   <div>
-                    <p className="text-sm text-neutral-600">生產配方</p>
-                    <p className="text-2xl font-bold text-neutral-800">{productionCount}</p>
+                    <p className="text-sm text-neutral-600 dark:text-white/75">生產配方</p>
+                    <p className="text-2xl font-bold text-neutral-800 dark:text-white/95">{productionCount}</p>
                   </div>
                 </div>
               </div>
@@ -672,8 +672,8 @@ export default function RecipeLibraryPage() {
                 <div className="flex items-center gap-3">
                   <IconContainer icon={Sparkles} variant="primary" size="md" />
                   <div>
-                    <p className="text-sm text-neutral-600">模板配方</p>
-                    <p className="text-2xl font-bold text-neutral-800">{templateCount}</p>
+                    <p className="text-sm text-neutral-600 dark:text-white/75">模板配方</p>
+                    <p className="text-2xl font-bold text-neutral-800 dark:text-white/95">{templateCount}</p>
                   </div>
                 </div>
               </div>
@@ -705,7 +705,7 @@ export default function RecipeLibraryPage() {
                   <div className="flex flex-col gap-4">
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400 dark:text-white/55" />
                         <Input
                           type="text"
                           placeholder="搜尋配方名稱、客戶或產品..."
@@ -807,7 +807,7 @@ export default function RecipeLibraryPage() {
                   <div className="liquid-glass-content">
                     <div className="text-center py-12">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-info-600 mb-4" />
-                      <p className="text-neutral-600">載入配方中...</p>
+                      <p className="text-neutral-600 dark:text-white/75">載入配方中...</p>
                     </div>
                   </div>
                 </Card>
@@ -815,8 +815,8 @@ export default function RecipeLibraryPage() {
                 <Card className="liquid-glass-card">
                   <div className="liquid-glass-content">
                     <div className="text-center py-12">
-                      <Package className="h-12 w-12 mx-auto text-neutral-400 mb-4" />
-                      <p className="text-neutral-600 mb-4">
+                      <Package className="h-12 w-12 mx-auto text-neutral-400 dark:text-white/55 mb-4" />
+                      <p className="text-neutral-600 dark:text-white/75 mb-4">
                         {searchKeyword || effectFilter !== 'all' ? '找不到符合條件的配方' : '尚無生產配方'}
                       </p>
                       {!searchKeyword && effectFilter === 'all' && (
@@ -861,7 +861,7 @@ export default function RecipeLibraryPage() {
                   <div className="flex flex-col gap-4">
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400 dark:text-white/55" />
                         <Input
                           type="text"
                           placeholder="搜尋模板配方..."
@@ -985,7 +985,7 @@ export default function RecipeLibraryPage() {
                   <div className="liquid-glass-content">
                     <div className="text-center py-12">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-info-600 mb-4" />
-                      <p className="text-neutral-600">載入配方中...</p>
+                      <p className="text-neutral-600 dark:text-white/75">載入配方中...</p>
                     </div>
                   </div>
                 </Card>
@@ -993,12 +993,12 @@ export default function RecipeLibraryPage() {
                 <Card className="liquid-glass-card">
                   <div className="liquid-glass-content">
                     <div className="text-center py-12">
-                      <Sparkles className="h-12 w-12 mx-auto text-neutral-400 mb-4" />
-                      <p className="text-neutral-600 mb-4">
+                      <Sparkles className="h-12 w-12 mx-auto text-neutral-400 dark:text-white/55 mb-4" />
+                      <p className="text-neutral-600 dark:text-white/75 mb-4">
                         {searchKeyword || effectFilter !== 'all' ? '找不到符合條件的模板配方' : '尚無模板配方'}
                       </p>
                       {!searchKeyword && effectFilter === 'all' && (
-                        <p className="text-sm text-neutral-500">
+                        <p className="text-sm text-neutral-500 dark:text-white/65">
                           使用上方「智能導入模板」按鈕批量導入配方
                         </p>
                       )}
@@ -1209,17 +1209,17 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
                 size="sm" 
               />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-neutral-800 truncate mb-1 text-sm sm:text-base">
+                <h3 className="font-semibold text-neutral-800 dark:text-white/95 truncate mb-1 text-sm sm:text-base">
                   {recipe.recipeName}
                 </h3>
-                <p className="text-xs sm:text-sm text-neutral-600 truncate">
+                <p className="text-xs sm:text-sm text-neutral-600 dark:text-white/75 truncate">
                   {recipe.customerName}
                 </p>
               </div>
             </div>
 
             <div className="space-y-2 mb-3">
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-white/75">
                 <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>{recipe.ingredients.length} 項原料</span>
               </div>
@@ -1260,7 +1260,7 @@ function RecipeGrid({ recipes, router, viewMode, onMarketingAnalysis, onGranulat
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-neutral-200">
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs text-neutral-500 dark:text-white/65">
                 {recipe.recipeType === 'production' && (
                   <>生產 {recipe.productionCount} 次</>
                 )}
@@ -1317,7 +1317,7 @@ function Pagination({ page, totalPages, onPageChange }: {
       >
         上一頁
       </Button>
-      <span className="flex items-center px-4 text-sm text-neutral-600">
+      <span className="flex items-center px-4 text-sm text-neutral-600 dark:text-white/75">
         第 {page} / {totalPages} 頁
       </span>
       <Button

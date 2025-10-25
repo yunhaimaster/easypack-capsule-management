@@ -95,12 +95,12 @@ export function StickyActionBar({
 
               {/* Keyboard shortcut hint */}
               {showKeyboardHint && isDirty && (
-                <div className="hidden md:flex items-center gap-1.5 text-xs text-neutral-500">
-                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 font-mono">
+                <div className="hidden md:flex items-center gap-1.5 text-xs text-neutral-500 dark:text-white/65">
+                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 dark:text-white/85 font-mono">
                     {isMac ? '⌘' : 'Ctrl'}
                   </kbd>
                   <span>+</span>
-                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 font-mono">
+                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 dark:text-white/85 font-mono">
                     S
                   </kbd>
                   <span className="ml-1">儲存</span>
@@ -138,7 +138,7 @@ export function StickyActionBar({
                   // Dynamic styling based on dirty state
                   isDirty
                     ? "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-600"
+                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-600 dark:text-white/75"
                 )}
               >
                 {isSaving ? (

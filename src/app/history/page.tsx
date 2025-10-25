@@ -189,7 +189,7 @@ export default function HistoryPage() {
       version: 'v1.0.0',
       date: '2025年9月10日',
       type: '初始版本',
-      typeColor: 'bg-neutral-100 text-neutral-800 border-neutral-200',
+      typeColor: 'bg-neutral-100 text-neutral-800 dark:text-white/95 border-neutral-200',
       features: [
         '系統基礎架構建立',
         '用戶認證系統',
@@ -215,11 +215,11 @@ export default function HistoryPage() {
                 返回首頁
               </Button>
             </Link>
-            <h1 className="text-2xl sm:text-3xl md:text-2xl font-bold text-neutral-800">
+            <h1 className="text-2xl sm:text-3xl md:text-2xl font-bold text-neutral-800 dark:text-white/95">
               版本更新歷史
             </h1>
           </div>
-          <p className="text-neutral-600 text-sm sm:text-sm">
+          <p className="text-neutral-600 dark:text-white/75 text-sm sm:text-sm">
             Easy Health 膠囊管理系統的完整更新記錄
           </p>
         </div>
@@ -235,12 +235,12 @@ export default function HistoryPage() {
                       <Tag className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-neutral-800">
+                      <h3 className="text-lg font-semibold text-neutral-800 dark:text-white/95">
                         {version.version}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Calendar className="h-4 w-4 text-neutral-500" />
-                        <span className="text-sm text-neutral-600">{version.date}</span>
+                        <Calendar className="h-4 w-4 text-neutral-500 dark:text-white/65" />
+                        <span className="text-sm text-neutral-600 dark:text-white/75">{version.date}</span>
                       </div>
                     </div>
                   </div>
@@ -249,12 +249,12 @@ export default function HistoryPage() {
                   </span>
                 </div>
                 <div className="space-y-3">
-                  <h4 className="font-medium text-neutral-700">更新內容：</h4>
+                  <h4 className="font-medium text-neutral-700 dark:text-white/85">更新內容：</h4>
                   <ul className="space-y-2">
                     {version.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start gap-2">
                         <span className="text-primary-500 mt-1.5 flex-shrink-0">•</span>
-                        <span className="text-sm text-neutral-600 leading-relaxed">{feature}</span>
+                        <span className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -266,10 +266,10 @@ export default function HistoryPage() {
 
         {/* Footer */}
         <div className="text-center py-8">
-          <p className="text-neutral-500 text-sm">
+          <p className="text-neutral-500 dark:text-white/65 text-sm">
             感謝您使用 Easy Health 膠囊管理系統
           </p>
-          <p className="text-neutral-400 text-xs mt-2">
+          <p className="text-neutral-400 dark:text-white/55 text-xs mt-2">
             如有任何問題或建議，請聯繫技術支援團隊
           </p>
         </div>

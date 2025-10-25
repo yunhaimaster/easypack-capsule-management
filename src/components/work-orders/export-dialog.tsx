@@ -109,7 +109,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <FileDown className="h-6 w-6 text-primary-600" />
-          <h2 className="text-2xl font-bold text-neutral-900">匯出工作單</h2>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white/95">匯出工作單</h2>
         </div>
 
         {/* Export Scope */}
@@ -121,7 +121,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
 
         {/* Format Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-neutral-700 mb-3">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-3">
             選擇格式
           </label>
           <div className="flex gap-4">
@@ -134,7 +134,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
                 onChange={(e) => setFormat(e.target.value as ExportFormat)}
                 className="w-4 h-4 text-primary-600"
               />
-              <span className="text-neutral-700">Excel (XLSX)</span>
+              <span className="text-neutral-700 dark:text-white/85">Excel (XLSX)</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -145,7 +145,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
                 onChange={(e) => setFormat(e.target.value as ExportFormat)}
                 className="w-4 h-4 text-primary-600"
               />
-              <span className="text-neutral-700">CSV</span>
+              <span className="text-neutral-700 dark:text-white/85">CSV</span>
             </label>
           </div>
         </div>
@@ -153,7 +153,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
         {/* Column Selection */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-white/85">
               選擇欄位（{selectedColumns.length} / {allColumns.length}）
             </label>
             <div className="flex gap-2">
@@ -184,7 +184,7 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
                     checked={selectedColumns.includes(key)}
                     onCheckedChange={() => handleToggleColumn(key)}
                   />
-                  <span className="text-sm text-neutral-700">{label}</span>
+                  <span className="text-sm text-neutral-700 dark:text-white/85">{label}</span>
                 </label>
               ))}
             </div>

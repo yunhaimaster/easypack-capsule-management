@@ -91,29 +91,29 @@ export function DeleteWorklogDialog({ isOpen, worklog, onClose, onSuccess }: Del
         <Card className="liquid-glass-card liquid-glass-card-subtle">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 text-neutral-500" />
-              <span className="font-medium text-neutral-900">工時日期</span>
-              <span className="text-neutral-600">{formatWorkDate(worklog.workDate)}</span>
+              <Calendar className="h-4 w-4 text-neutral-500 dark:text-white/65" />
+              <span className="font-medium text-neutral-900 dark:text-white/95">工時日期</span>
+              <span className="text-neutral-600 dark:text-white/75">{formatWorkDate(worklog.workDate)}</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm">
-              <Building2 className="h-4 w-4 text-neutral-500" />
-              <span className="font-medium text-neutral-900">訂單</span>
-              <span className="text-neutral-600">{worklog.order?.productName || '未指派訂單'}</span>
+              <Building2 className="h-4 w-4 text-neutral-500 dark:text-white/65" />
+              <span className="font-medium text-neutral-900 dark:text-white/95">訂單</span>
+              <span className="text-neutral-600 dark:text-white/75">{worklog.order?.productName || '未指派訂單'}</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-neutral-500" />
-              <span className="font-medium text-neutral-900">工時</span>
-              <span className="text-neutral-600">
+              <Clock className="h-4 w-4 text-neutral-500 dark:text-white/65" />
+              <span className="font-medium text-neutral-900 dark:text-white/95">工時</span>
+              <span className="text-neutral-600 dark:text-white/75">
                 {worklog.startTime} - {worklog.endTime} · {worklog.headcount} 人 · {worklog.calculatedWorkUnits.toFixed(1)} 工時
               </span>
             </div>
 
             {worklog.notes && (
               <div className="pt-2 border-t border-neutral-200">
-                <p className="text-xs text-neutral-500 mb-1">備註</p>
-                <p className="text-sm text-neutral-700">{worklog.notes}</p>
+                <p className="text-xs text-neutral-500 dark:text-white/65 mb-1">備註</p>
+                <p className="text-sm text-neutral-700 dark:text-white/85">{worklog.notes}</p>
               </div>
             )}
           </CardContent>

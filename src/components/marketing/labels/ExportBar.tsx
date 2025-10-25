@@ -75,8 +75,8 @@ export function ExportBar({ template, disabled }: ExportBarProps) {
     <div className="liquid-glass-card p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-neutral-900">匯出標籤</h3>
-          <p className="text-sm text-neutral-600 mt-1">
+          <h3 className="font-semibold text-neutral-900 dark:text-white/95">匯出標籤</h3>
+          <p className="text-sm text-neutral-600 dark:text-white/75 mt-1">
             {template ? `準備匯出：${template.name}` : '請先選擇一個設計概念'}
           </p>
         </div>
@@ -103,7 +103,7 @@ export function ExportBar({ template, disabled }: ExportBarProps) {
       </div>
 
       {template && (
-        <div className="mt-3 pt-3 border-t border-neutral-200 grid grid-cols-2 gap-3 text-xs text-neutral-600">
+        <div className="mt-3 pt-3 border-t border-neutral-200 grid grid-cols-2 gap-3 text-xs text-neutral-600 dark:text-white/75">
           <div>
             <span className="font-medium">尺寸：</span>
             {template.size.widthMm}×{template.size.heightMm}mm
@@ -123,7 +123,7 @@ export function ExportBar({ template, disabled }: ExportBarProps) {
         </div>
       )}
 
-      <div className="mt-3 text-xs text-neutral-500 bg-amber-50 border border-amber-200 rounded-lg p-2">
+      <div className="mt-3 text-xs text-neutral-500 dark:text-white/65 bg-amber-50 border border-amber-200 rounded-lg p-2">
         💡 SVG 檔案可在 Adobe Illustrator 中開啟，所有文字和圖形均為可編輯的向量格式
       </div>
     </div>

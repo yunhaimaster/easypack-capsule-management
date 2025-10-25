@@ -78,7 +78,7 @@ const formatDuration = (startedAt?: number, finishedAt?: number) => {
 }
 
 const STATUS_BADGE_CLASS: Record<AnalysisStatus, string> = {
-  idle: 'bg-neutral-500/10 border border-neutral-300/40 text-neutral-600',
+  idle: 'bg-neutral-500/10 border border-neutral-300/40 text-neutral-600 dark:text-white/75',
   loading: 'bg-primary-500/15 border border-primary-300/40 text-primary-700',
   success: 'bg-success-500/15 border border-emerald-300/40 text-success-700',
   error: 'bg-danger-500/15 border border-red-300/40 text-danger-700'
@@ -641,10 +641,10 @@ export default function GranulationAnalyzerPage() {
               <span className="h-2 w-2 rounded-full bg-primary-500" />
               AI 製粒工具
             </div>
-            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800">
+            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800 dark:text-white/95">
               多模型製粒分析
             </h1>
-            <p className="text-sm md:text-sm text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-sm md:text-sm text-neutral-600 dark:text-white/75 max-w-2xl mx-auto">
               使用 3 個不同的 AI 模型同時分析配方是否需要製粒，提供多角度專業見解
             </p>
           </div>
@@ -654,7 +654,7 @@ export default function GranulationAnalyzerPage() {
             <div className="liquid-glass-content p-6">
               <div className="flex items-center space-x-3 mb-6">
                 <IconContainer icon={Brain} variant="success" size="md" />
-                <h2 className="text-lg font-semibold text-neutral-800">配方輸入</h2>
+                <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">配方輸入</h2>
               </div>
 
               <div className="space-y-6">
@@ -669,7 +669,7 @@ export default function GranulationAnalyzerPage() {
                   {ingredients.map((ingredient, index) => (
                     <div key={index} className="flex gap-3 items-center p-4 bg-white rounded-lg border border-neutral-200">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                           原料名稱
                         </label>
                         <input
@@ -685,7 +685,7 @@ export default function GranulationAnalyzerPage() {
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                           單粒重量 (mg)
                         </label>
                         <input
@@ -734,7 +734,7 @@ export default function GranulationAnalyzerPage() {
                     <span className="text-lg leading-none">＋</span>
                     新增原料
                   </Button>
-                  <Badge variant="outline" className="text-xs text-neutral-500">
+                  <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
                     已輸入 {ingredients.length} 項原料
                   </Badge>
                 </div>
@@ -772,8 +772,8 @@ export default function GranulationAnalyzerPage() {
                       <Brain className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-neutral-800">多模型分析結果</h2>
-                      <p className="text-sm text-neutral-500">對照三個模型的分析輸出，擷取最合適的建議。</p>
+                      <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">多模型分析結果</h2>
+                      <p className="text-sm text-neutral-500 dark:text-white/65">對照三個模型的分析輸出，擷取最合適的建議。</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
@@ -822,18 +822,18 @@ export default function GranulationAnalyzerPage() {
                               <IconContainer icon={Sparkles} variant={config.iconVariant} size="md" />
                               <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                  <h3 className="text-base font-semibold text-neutral-800">{config.name}</h3>
+                                  <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">{config.name}</h3>
                                   <ModelBadge model={config.badgeType} />
                                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium min-w-[64px] justify-center ${STATUS_BADGE_CLASS[analysis.status]}`}>
                                     {STATUS_LABEL[analysis.status]}
                                   </span>
                                 </div>
-                                <p className="text-sm text-neutral-600">{config.description}</p>
+                                <p className="text-sm text-neutral-600 dark:text-white/75">{config.description}</p>
                               </div>
                             </div>
                             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                               {duration && (
-                                <span className="inline-flex items-center gap-1 text-xs text-neutral-500 bg-white/70 px-2.5 py-1 rounded-full">
+                                <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
                                   <Clock className="h-3.5 w-3.5" />
                                   {duration}
                                 </span>
@@ -875,9 +875,9 @@ export default function GranulationAnalyzerPage() {
                                 {analysis.content ? (
                                   <MarkdownRenderer content={analysis.content} />
                                 ) : hasRequested ? (
-                                  <p className="text-sm text-neutral-500">模型已啟動，正在生成分析內容...</p>
+                                  <p className="text-sm text-neutral-500 dark:text-white/65">模型已啟動，正在生成分析內容...</p>
                                 ) : (
-                                  <p className="text-sm text-neutral-400">按「開始製粒分析」後，此處會顯示模型的詳細結果。</p>
+                                  <p className="text-sm text-neutral-400 dark:text-white/55">按「開始製粒分析」後，此處會顯示模型的詳細結果。</p>
                                 )}
                               </div>
                               {analysis.status === 'loading' && (
@@ -902,15 +902,15 @@ export default function GranulationAnalyzerPage() {
                     <IconContainer icon={CheckCircle} variant="info" size="md" />
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <h2 className="text-lg font-semibold text-neutral-800">交叉驗證最終結論</h2>
+                        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">交叉驗證最終結論</h2>
                         <ConsensusBadge />
                       </div>
-                      <p className="text-sm text-neutral-600">綜合三個模型輸出，產生可執行的最終建議。</p>
+                      <p className="text-sm text-neutral-600 dark:text-white/75">綜合三個模型輸出，產生可執行的最終建議。</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                     {consensusDuration && (
-                      <span className="inline-flex items-center gap-1 text-xs text-neutral-500 bg-white/70 px-2.5 py-1 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
                         <Clock className="h-3.5 w-3.5" />
                         {consensusDuration}
                       </span>
@@ -936,9 +936,9 @@ export default function GranulationAnalyzerPage() {
                     {consensus?.content ? (
                       <MarkdownRenderer content={consensus.content} />
                     ) : consensusStatus === 'loading' ? (
-                      <p className="text-sm text-neutral-500">正在生成綜合結論...</p>
+                      <p className="text-sm text-neutral-500 dark:text-white/65">正在生成綜合結論...</p>
                     ) : (
-                      <p className="text-sm text-neutral-400">
+                      <p className="text-sm text-neutral-400 dark:text-white/55">
                         當至少有兩個模型完成分析後，可點擊「生成最終結論」獲取交叉驗證建議。
                       </p>
                     )}

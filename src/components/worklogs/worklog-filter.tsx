@@ -61,10 +61,10 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 tracking-wide uppercase">工時篩選</h3>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">快速搜尋訂單與備註，掌握最近工時紀錄</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 dark:text-white/55">快速搜尋訂單與備註，掌握最近工時紀錄</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">每頁顯示</span>
+            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 dark:text-white/55">每頁顯示</span>
             <Select value={String(filters.limit)} onValueChange={(value) => onLimitChange(Number(value))}>
               <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:ring-0 focus:outline-none">
                 <SelectValue placeholder="筆數" />
@@ -94,7 +94,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
             {orderKeyword && (
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
                 onClick={() => {
                   setOrderKeyword('')
                   onSearch({ orderKeyword: '' })
@@ -119,7 +119,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
             {notesKeyword && (
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
                 onClick={() => {
                   setNotesKeyword('')
                   onSearch({ notesKeyword: '' })
@@ -145,7 +145,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
             {dateFrom && (
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
                 onClick={() => {
                   setDateFrom('')
                   onSearch({ dateFrom: '' })
@@ -171,7 +171,7 @@ export function WorklogFilter({ filters, onSearch, onLimitChange, loading = fals
             {dateTo && (
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
                 onClick={() => {
                   setDateTo('')
                   onSearch({ dateTo: '' })

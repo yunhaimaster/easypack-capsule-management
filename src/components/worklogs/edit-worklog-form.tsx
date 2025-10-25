@@ -129,15 +129,15 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
         <CardContent className="space-y-6">
           {/* 订单信息（只读） */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               相關訂單
             </Label>
             <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200">
-              <div className="text-sm text-neutral-900 font-medium">
+              <div className="text-sm text-neutral-900 dark:text-white/95 font-medium">
                 {worklog.order?.productName || '未指派訂單'}
               </div>
-              <div className="text-xs text-neutral-600 mt-1">
+              <div className="text-xs text-neutral-600 dark:text-white/75 mt-1">
                 客戶：{worklog.order?.customerName || '未填寫'}
               </div>
             </div>
@@ -145,7 +145,7 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
 
           {/* 工作日期 */}
           <div className="space-y-2">
-            <Label htmlFor="workDate" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="workDate" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               工作日期 *
             </Label>
@@ -162,7 +162,7 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
 
           {/* 人数 */}
           <div className="space-y-2">
-            <Label htmlFor="headcount" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="headcount" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <Users className="w-4 h-4" />
               人數 *
             </Label>
@@ -181,7 +181,7 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
           {/* 时间范围 */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startTime" className="text-sm font-medium text-neutral-700">
+              <Label htmlFor="startTime" className="text-sm font-medium text-neutral-700 dark:text-white/85">
                 開始時間 *
               </Label>
               <Input
@@ -195,7 +195,7 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endTime" className="text-sm font-medium text-neutral-700">
+              <Label htmlFor="endTime" className="text-sm font-medium text-neutral-700 dark:text-white/85">
                 結束時間 *
               </Label>
               <Input
@@ -223,7 +223,7 @@ export function EditWorklogForm({ worklog, onSuccess, onCancel }: EditWorklogFor
 
           {/* 备注 */}
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <FileText className="w-4 h-4" />
               備註
             </Label>

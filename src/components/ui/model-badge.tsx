@@ -77,7 +77,7 @@ export function ConsensusBadge({ className }: { className?: string }) {
       className={cn(
         'font-medium transition-all duration-300 ease-apple',
         'bg-gradient-to-r from-emerald-500/10 via-violet-500/10 to-orange-500/10',
-        'text-neutral-800 border-neutral-300',
+        'text-neutral-800 dark:text-white/95 border-neutral-300',
         'hover:from-emerald-500/20 hover:via-violet-500/20 hover:to-orange-500/20',
         className
       )}

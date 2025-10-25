@@ -324,13 +324,13 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-neutral-500">
+                  <td colSpan={7} className="text-center py-8 text-neutral-500 dark:text-white/65">
                     載入中...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-neutral-500">
+                  <td colSpan={7} className="text-center py-8 text-neutral-500 dark:text-white/65">
                     沒有找到訂單
                   </td>
                 </tr>
@@ -357,15 +357,15 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                     >
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
                         <div className="flex flex-col gap-1">
-                          <div className="font-semibold text-neutral-900 text-base">{order.productName}</div>
-                          <div className="flex items-center gap-2 text-sm text-neutral-600">
+                          <div className="font-semibold text-neutral-900 dark:text-white/95 text-base">{order.productName}</div>
+                          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-white/75">
                             <span>{order.customerName}</span>
                             {order.customerService && (
-                              <span className="text-xs bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">客服：{order.customerService}</span>
+                              <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">客服：{order.customerService}</span>
                             )}
                           </div>
                           {hasProcessOrQualityIssues(order) && (
-                            <div className="flex items-center gap-1 text-xs text-neutral-400">
+                            <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-white/55">
                               {order.processIssues && order.processIssues.trim() !== '' && (
                                 <div title={`製程問題: ${order.processIssues}`}>
                                   <AlertTriangle className="h-3.5 w-3.5 text-danger-500" aria-hidden="true" />
@@ -386,7 +386,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                             {STATUS_ORDER[status] === 0 ? <Timer className="h-3.5 w-3.5" aria-hidden="true" /> : STATUS_ORDER[status] === 2 ? <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> : <Square className="h-3.5 w-3.5" aria-hidden="true" />}
                             {statusLabel}
                           </span>
-                          <div className="text-xs text-neutral-500 leading-relaxed">
+                          <div className="text-xs text-neutral-500 dark:text-white/65 leading-relaxed">
                             {STATUS_ORDER[status] === 2 && order.completionDate ? (
                               <div>完成日期：{typeof order.completionDate === 'string' ? order.completionDate : formatDateOnly(order.completionDate)}</div>
                             ) : null}
@@ -402,7 +402,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-sm text-neutral-700 align-top">
+                      <td className="py-4 px-4 text-sm text-neutral-700 dark:text-white/85 align-top">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <Package2 className="h-3.5 w-3.5 text-neutral-400" aria-hidden="true" />
@@ -420,7 +420,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                         <div className="text-sm max-w-xs text-neutral-600 leading-relaxed">
                           {order.ingredients && order.ingredients.length > 0 ? (
                             <>
-                              <div className="font-medium text-neutral-700 mb-1">主要原料：</div>
+                              <div className="font-medium text-neutral-700 dark:text-white/85 mb-1">主要原料：</div>
                               <div className="flex flex-wrap gap-1 text-xs">
                                 {order.ingredients
                                   .sort((a, b) => (b.unitContentMg || 0) - (a.unitContentMg || 0))
@@ -447,7 +447,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                               e.stopPropagation()
                               window.location.href = `/orders/${order.id}`
                             }}
-                            className="text-neutral-500 hover:text-neutral-700 transition-colors"
+                            className="text-neutral-500 hover:text-neutral-700 dark:text-white/85 transition-colors"
                             title="查看訂單"
                             aria-label="查看訂單"
                           >

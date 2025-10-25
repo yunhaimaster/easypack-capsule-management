@@ -52,7 +52,7 @@ export function LabelCanvas({ template, onChange, readonly = false }: LabelCanva
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
-          <span className="text-sm text-neutral-600 min-w-[60px] text-center">
+          <span className="text-sm text-neutral-600 dark:text-white/75 min-w-[60px] text-center">
             {Math.round(zoom * 100)}%
           </span>
           <Button
@@ -108,7 +108,7 @@ export function LabelCanvas({ template, onChange, readonly = false }: LabelCanva
           {svgContent ? (
             <div dangerouslySetInnerHTML={{ __html: svgContent }} />
           ) : (
-            <div className="flex items-center justify-center w-full h-64 text-neutral-400">
+            <div className="flex items-center justify-center w-full h-64 text-neutral-400 dark:text-white/55">
               載入中...
             </div>
           )}
@@ -116,7 +116,7 @@ export function LabelCanvas({ template, onChange, readonly = false }: LabelCanva
       </div>
 
       {/* Info */}
-      <div className="flex items-center justify-between text-xs text-neutral-600">
+      <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-white/75">
         <div>
           尺寸：{template.size.widthMm}mm × {template.size.heightMm}mm
         </div>
@@ -131,7 +131,7 @@ export function LabelCanvas({ template, onChange, readonly = false }: LabelCanva
       </div>
 
       {!readonly && (
-        <div className="text-xs text-neutral-500 bg-primary-50 border border-primary-200 rounded-lg p-3">
+        <div className="text-xs text-neutral-500 dark:text-white/65 bg-primary-50 border border-primary-200 rounded-lg p-3">
           💡 提示：點擊「匯出」可下載完整的 SVG 或 PDF 檔案，並在 Illustrator 中進行進階編輯
         </div>
       )}

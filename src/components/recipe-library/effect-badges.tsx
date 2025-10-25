@@ -37,7 +37,7 @@ const CATEGORY_COLORS: Record<string, {
   immune: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', hover: 'hover:bg-blue-100' },
   beauty: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200', hover: 'hover:bg-pink-100' },
   energy: { bg: 'bg-warning-50', text: 'text-warning-700', border: 'border-orange-200', hover: 'hover:bg-warning-100' },
-  bone: { bg: 'bg-neutral-50', text: 'text-neutral-700', border: 'border-neutral-200', hover: 'hover:bg-neutral-100' },
+  bone: { bg: 'bg-neutral-50', text: 'text-neutral-700 dark:text-white/85', border: 'border-neutral-200', hover: 'hover:bg-neutral-100' },
   cardio: { bg: 'bg-danger-50', text: 'text-danger-700', border: 'border-red-200', hover: 'hover:bg-danger-100' },
   vision: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', hover: 'hover:bg-cyan-100' },
   women: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', hover: 'hover:bg-rose-100' },
@@ -96,7 +96,7 @@ export function EffectBadges({ effectsAnalysis, maxBadges = 3, onFilterClick, cl
               <TooltipContent>
                 <div className="max-w-xs">
                   <p className="font-semibold mb-1">{category.name}</p>
-                  <p className="text-xs text-neutral-600">
+                  <p className="text-xs text-neutral-600 dark:text-white/75">
                     點擊以篩選此類別的配方
                   </p>
                 </div>
@@ -109,7 +109,7 @@ export function EffectBadges({ effectsAnalysis, maxBadges = 3, onFilterClick, cl
       {remainingCount > 0 && (
         <Badge 
           variant="outline" 
-          className="text-xs bg-neutral-50 text-neutral-600 border-neutral-200"
+          className="text-xs bg-neutral-50 text-neutral-600 dark:text-white/75 border-neutral-200"
         >
           +{remainingCount}
         </Badge>

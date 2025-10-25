@@ -462,15 +462,15 @@ export function SmartRecipeImport({ onImport, disabled }: SmartRecipeImportProps
                         isRecipeDragging ? 'bg-emerald-500/10' : 'bg-neutral-900/5'
                       }`}>
                         <Upload className={`w-8 h-8 transition-colors ${
-                          isRecipeDragging ? 'text-success-600' : 'text-neutral-500'
+                          isRecipeDragging ? 'text-success-600' : 'text-neutral-500 dark:text-white/65'
                         }`} aria-hidden="true" />
                       </div>
                       <p className={`font-medium transition-colors ${
-                        isRecipeDragging ? 'text-success-700' : 'text-neutral-700'
+                        isRecipeDragging ? 'text-success-700' : 'text-neutral-700 dark:text-white/85'
                       }`}>
                         {isRecipeDragging ? '放開以上傳圖片' : '拖放圖片至此'}
                       </p>
-                      <p className="text-neutral-500 text-sm mt-2">支援 JPG、PNG 等常見格式，建議高解析度以提高辨識準確度</p>
+                      <p className="text-neutral-500 dark:text-white/65 text-sm mt-2">支援 JPG、PNG 等常見格式，建議高解析度以提高辨識準確度</p>
                     </div>
                     <div className="flex justify-center">
                       <Button 

@@ -512,13 +512,13 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">單粒含量</span>
+                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:text-white/55 mb-1">單粒含量</span>
                         <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                           {formatIngredientWeight(ingredient.unitContentMg)} mg
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">批次用量</span>
+                        <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:text-white/55 mb-1">批次用量</span>
                         <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                           {calculateBatchWeight(ingredient.unitContentMg, order.productionQuantity).display}
                         </span>
@@ -579,7 +579,7 @@ export default function OrderDetailPage() {
                           <h4 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 leading-tight flex-1">
                             {formatDateOnly(worklog.workDate)}
                           </h4>
-                          <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                          <div className="flex flex-col items-end gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55 flex-shrink-0">
                             <span className="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full">工時：{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
                             <span className="bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-2 py-1 rounded-full">人數：{worklog.headcount}</span>
                           </div>

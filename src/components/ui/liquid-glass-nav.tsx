@@ -70,7 +70,7 @@ export function LiquidGlassNav({
 
   return (
     <>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-full focus:bg-white/90 focus:text-neutral-900 focus:shadow-lg transition" aria-label="跳至主要內容">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-full focus:bg-white/90 focus:text-neutral-900 dark:text-white/95 focus:shadow-lg transition" aria-label="跳至主要內容">
         跳至主要內容
       </a>
       <nav
@@ -90,10 +90,10 @@ export function LiquidGlassNav({
               {logo}
             </Link>
             <div className="flex flex-col leading-tight min-w-0">
-              <h1 className="text-[11px] sm:text-sm md:text-base lg:text-lg font-bold text-neutral-900">
+              <h1 className="text-[11px] sm:text-sm md:text-base lg:text-lg font-bold text-neutral-900 dark:text-white/95">
                 Easy Health
               </h1>
-              <p className="hidden sm:block text-xs md:text-sm text-neutral-600">
+              <p className="hidden sm:block text-xs md:text-sm text-neutral-600 dark:text-white/75">
                 膠囊配方管理系統
               </p>
             </div>
@@ -157,7 +157,7 @@ export function LiquidGlassNav({
               <div key={link.href}>
                 {link.children ? (
                   <div className="space-y-1">
-                    <div className="px-4 py-3 text-sm font-semibold text-neutral-600 bg-neutral-50/50 border-b border-neutral-200/50">
+                    <div className="px-4 py-3 text-sm font-semibold text-neutral-600 dark:text-white/75 bg-neutral-50/50 border-b border-neutral-200/50">
                       {link.label}
                     </div>
                     {link.children.map((child) => {
@@ -170,7 +170,7 @@ export function LiquidGlassNav({
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {IconComponent && (
-                            <IconComponent className="h-4 w-4 mr-3 text-neutral-500" />
+                            <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-white/65" />
                           )}
                           <span>{child.label}</span>
                         </Link>

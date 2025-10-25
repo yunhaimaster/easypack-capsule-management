@@ -157,10 +157,10 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-primary-600" />
-            <h2 className="text-lg font-semibold text-neutral-800">AI 優化建議</h2>
+            <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 優化建議</h2>
             {/* 🆕 顯示分析時間 */}
             {analyzed && recipe.aiSuggestionsAt && (
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs text-neutral-500 dark:text-white/65">
                 ({formatDate(recipe.aiSuggestionsAt)})
               </span>
             )}
@@ -206,7 +206,7 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
 
         {!analyzed ? (
           <div className="space-y-3">
-            <p className="text-sm text-neutral-600">
+            <p className="text-sm text-neutral-600 dark:text-white/75">
               AI 分析配方並提供成本優化、功效提升、原料替代和製程改善建議
             </p>
             <Button
@@ -265,7 +265,7 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
                           ? 'bg-danger-100 text-danger-700'
                           : suggestion.priority === 'medium'
                           ? 'bg-warning-100 text-warning-700'
-                          : 'bg-neutral-100 text-neutral-600'
+                          : 'bg-neutral-100 text-neutral-600 dark:text-white/75'
                       }`}>
                         {suggestion.priority === 'high' ? '高' : suggestion.priority === 'medium' ? '中' : '低'}
                       </span>

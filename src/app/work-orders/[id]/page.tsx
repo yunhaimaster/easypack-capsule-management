@@ -62,9 +62,9 @@ export default function WorkOrderDetailPage() {
             返回列表
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900">工作單詳情</h1>
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white/95">工作單詳情</h1>
             {workOrder.jobNumber && (
-              <p className="text-neutral-600 mt-1">訂單編號: {workOrder.jobNumber}</p>
+              <p className="text-neutral-600 dark:text-white/75 mt-1">訂單編號: {workOrder.jobNumber}</p>
             )}
           </div>
         </div>
@@ -84,11 +84,11 @@ export default function WorkOrderDetailPage() {
         <CardContent className="pt-6">
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <span className="text-sm text-neutral-600 mr-2">狀態:</span>
+              <span className="text-sm text-neutral-600 dark:text-white/75 mr-2">狀態:</span>
               <Badge variant="info">{(WORK_ORDER_STATUS_LABELS as any)[workOrder.status]}</Badge>
             </div>
             <div>
-              <span className="text-sm text-neutral-600 mr-2">工作類型:</span>
+              <span className="text-sm text-neutral-600 dark:text-white/75 mr-2">工作類型:</span>
               <Badge variant="default">{(WORK_TYPE_LABELS as any)[workOrder.workType]}</Badge>
             </div>
             {workOrder.isCustomerServiceVip && (
@@ -118,22 +118,22 @@ export default function WorkOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-600">客戶名稱</label>
-              <p className="text-neutral-900 mt-1">{workOrder.customerName}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">客戶名稱</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{workOrder.customerName}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">負責人</label>
-              <p className="text-neutral-900 mt-1">
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">負責人</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">
                 {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">創建日期</label>
-              <p className="text-neutral-900 mt-1">{formatDate(workOrder.markedDate)}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">創建日期</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{formatDate(workOrder.markedDate)}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">工作描述</label>
-              <p className="text-neutral-900 mt-1 whitespace-pre-wrap">{workOrder.workDescription}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">工作描述</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1 whitespace-pre-wrap">{workOrder.workDescription}</p>
             </div>
           </CardContent>
         </Card>
@@ -145,21 +145,21 @@ export default function WorkOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-600">預計生產物料到齊日期</label>
-              <p className="text-neutral-900 mt-1">{formatDate(workOrder.expectedProductionMaterialsDate)}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">預計生產物料到齊日期</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{formatDate(workOrder.expectedProductionMaterialsDate)}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">預計包裝物料到齊日期</label>
-              <p className="text-neutral-900 mt-1">{formatDate(workOrder.expectedPackagingMaterialsDate)}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">預計包裝物料到齊日期</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{formatDate(workOrder.expectedPackagingMaterialsDate)}</p>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 {workOrder.productionMaterialsReady ? (
                   <CheckCircle className="h-5 w-5 text-success-600" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-neutral-400" />
+                  <XCircle className="h-5 w-5 text-neutral-400 dark:text-white/55" />
                 )}
-                <span className={workOrder.productionMaterialsReady ? 'text-success-700' : 'text-neutral-600'}>
+                <span className={workOrder.productionMaterialsReady ? 'text-success-700' : 'text-neutral-600 dark:text-white/75'}>
                   生產物料齊
                 </span>
               </div>
@@ -167,9 +167,9 @@ export default function WorkOrderDetailPage() {
                 {workOrder.packagingMaterialsReady ? (
                   <CheckCircle className="h-5 w-5 text-success-600" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-neutral-400" />
+                  <XCircle className="h-5 w-5 text-neutral-400 dark:text-white/55" />
                 )}
-                <span className={workOrder.packagingMaterialsReady ? 'text-success-700' : 'text-neutral-600'}>
+                <span className={workOrder.packagingMaterialsReady ? 'text-success-700' : 'text-neutral-600 dark:text-white/75'}>
                   包裝物料齊
                 </span>
               </div>
@@ -184,14 +184,14 @@ export default function WorkOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-600">生產數量</label>
-              <p className="text-neutral-900 mt-1">
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">生產數量</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">
                 {workOrder.productionQuantity ? workOrder.productionQuantity.toLocaleString() : '-'}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">包裝數量</label>
-              <p className="text-neutral-900 mt-1">
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">包裝數量</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">
                 {workOrder.packagingQuantity ? workOrder.packagingQuantity.toLocaleString() : '-'}
               </p>
             </div>
@@ -205,12 +205,12 @@ export default function WorkOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-neutral-600">要求交貨的日期</label>
-              <p className="text-neutral-900 mt-1">{formatDate(workOrder.requestedDeliveryDate)}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">要求交貨的日期</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{formatDate(workOrder.requestedDeliveryDate)}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-neutral-600">內部預計交貨期</label>
-              <p className="text-neutral-900 mt-1">{formatDate(workOrder.internalExpectedDate)}</p>
+              <label className="text-sm font-medium text-neutral-600 dark:text-white/75">內部預計交貨期</label>
+              <p className="text-neutral-900 dark:text-white/95 mt-1">{formatDate(workOrder.internalExpectedDate)}</p>
             </div>
           </CardContent>
         </Card>
@@ -225,41 +225,41 @@ export default function WorkOrderDetailPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-neutral-600">產品名稱</label>
-                <p className="text-neutral-900 mt-1">{workOrder.capsulationOrder.productName}</p>
+                <label className="text-sm font-medium text-neutral-600 dark:text-white/75">產品名稱</label>
+                <p className="text-neutral-900 dark:text-white/95 mt-1">{workOrder.capsulationOrder.productName}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-neutral-600">生產數量</label>
-                <p className="text-neutral-900 mt-1">
+                <label className="text-sm font-medium text-neutral-600 dark:text-white/75">生產數量</label>
+                <p className="text-neutral-900 dark:text-white/95 mt-1">
                   {workOrder.capsulationOrder.productionQuantity.toLocaleString()}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-neutral-600">膠囊顏色</label>
-                <p className="text-neutral-900 mt-1">{workOrder.capsulationOrder.capsuleColor || '-'}</p>
+                <label className="text-sm font-medium text-neutral-600 dark:text-white/75">膠囊顏色</label>
+                <p className="text-neutral-900 dark:text-white/95 mt-1">{workOrder.capsulationOrder.capsuleColor || '-'}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-neutral-600">膠囊尺寸</label>
-                <p className="text-neutral-900 mt-1">{workOrder.capsulationOrder.capsuleSize || '-'}</p>
+                <label className="text-sm font-medium text-neutral-600 dark:text-white/75">膠囊尺寸</label>
+                <p className="text-neutral-900 dark:text-white/95 mt-1">{workOrder.capsulationOrder.capsuleSize || '-'}</p>
               </div>
             </div>
 
             {workOrder.capsulationOrder.ingredients && workOrder.capsulationOrder.ingredients.length > 0 && (
               <div className="mt-6">
-                <h4 className="font-medium text-neutral-900 mb-3">配方成分</h4>
+                <h4 className="font-medium text-neutral-900 dark:text-white/95 mb-3">配方成分</h4>
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full">
                     <thead className="bg-neutral-50">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-neutral-700">原料名稱</th>
-                        <th className="px-4 py-2 text-right text-sm font-medium text-neutral-700">單位含量 (mg)</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-neutral-700 dark:text-white/85">原料名稱</th>
+                        <th className="px-4 py-2 text-right text-sm font-medium text-neutral-700 dark:text-white/85">單位含量 (mg)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {workOrder.capsulationOrder.ingredients.map((ing: any, index: number) => (
                         <tr key={index} className="border-t">
-                          <td className="px-4 py-2 text-neutral-900">{ing.materialName}</td>
-                          <td className="px-4 py-2 text-right text-neutral-900">{ing.unitContentMg}</td>
+                          <td className="px-4 py-2 text-neutral-900 dark:text-white/95">{ing.materialName}</td>
+                          <td className="px-4 py-2 text-right text-neutral-900 dark:text-white/95">{ing.unitContentMg}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -274,7 +274,7 @@ export default function WorkOrderDetailPage() {
       {/* Timestamps */}
       <Card className="mt-6">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-8 text-sm text-neutral-600">
+          <div className="flex items-center gap-8 text-sm text-neutral-600 dark:text-white/75">
             <div>
               <Clock className="h-4 w-4 inline mr-1" />
               創建時間: {formatDate(workOrder.createdAt)}

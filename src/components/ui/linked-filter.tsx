@@ -302,10 +302,10 @@ export function LinkedFilter({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h3 className="text-sm font-semibold text-neutral-700 tracking-wide uppercase">訂單篩選</h3>
-            <p className="text-xs text-neutral-500">支援客戶、產品、原料與膠囊規格的即時篩查</p>
+            <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、產品、原料與膠囊規格的即時篩查</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">每頁顯示</span>
+            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 dark:text-white/55">每頁顯示</span>
             <Select
               value={String(limit)}
               onValueChange={(value) => onLimitChange?.(Number(value))}
@@ -343,7 +343,7 @@ export function LinkedFilter({
             <button
               type="button"
               onClick={() => toggleDropdown('customer')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -372,7 +372,7 @@ export function LinkedFilter({
             <button
               type="button"
               onClick={() => toggleDropdown('product')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -401,7 +401,7 @@ export function LinkedFilter({
             <button
               type="button"
               onClick={() => toggleDropdown('ingredient')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -430,7 +430,7 @@ export function LinkedFilter({
             <button
               type="button"
               onClick={() => toggleDropdown('capsule')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>

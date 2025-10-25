@@ -32,7 +32,7 @@ export function LiquidGlassLoading({
             <h2 className="text-lg font-semibold text-[--brand-neutral] tracking-wide">
               {title}
             </h2>
-            <p className="text-sm text-neutral-600 max-w-sm mx-auto leading-relaxed">
+            <p className="text-sm text-neutral-600 dark:text-white/75 max-w-sm mx-auto leading-relaxed">
               {message}
             </p>
           </div>

@@ -237,7 +237,7 @@ export function ResponsiveWorklogsList() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500">載入中...</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500 dark:text-white/65">載入中...</td>
                 </tr>
               ) : error ? (
                 <tr>
@@ -245,35 +245,35 @@ export function ResponsiveWorklogsList() {
                 </tr>
               ) : worklogs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500">目前沒有工時紀錄</td>
+                  <td colSpan={6} className="py-8 text-center text-sm text-neutral-500 dark:text-white/65">目前沒有工時紀錄</td>
                 </tr>
               ) : (
                 worklogs.map((worklog) => (
                   <tr key={worklog.id} className="border-b border-neutral-100 hover:bg-white/80 transition-colors">
-                    <td className="py-4 px-4 align-top text-sm text-neutral-800 font-semibold text-neutral-900">
+                    <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95 font-semibold text-neutral-900">
                       {formatWorkDate(worklog.workDate)}
                     </td>
-                    <td className="py-4 px-4 align-top text-sm text-neutral-800">
+                    <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95">
                       <div className="flex flex-col gap-1">
-                        <span className="font-medium text-neutral-900">{worklog.order?.productName || '未指派訂單'}</span>
-                        <span className="text-xs text-neutral-500">客戶：{worklog.order?.customerName || '未填寫'}</span>
+                        <span className="font-medium text-neutral-900 dark:text-white/95">{worklog.order?.productName || '未指派訂單'}</span>
+                        <span className="text-xs text-neutral-500 dark:text-white/65">客戶：{worklog.order?.customerName || '未填寫'}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-4 align-top text-sm text-neutral-800">
+                    <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm text-neutral-900">
-                          <Clock3 className="h-4 w-4 text-neutral-500" />
+                        <div className="flex items-center gap-2 text-sm text-neutral-900 dark:text-white/95">
+                          <Clock3 className="h-4 w-4 text-neutral-500 dark:text-white/65" />
                           {worklog.startTime} - {worklog.endTime}
                         </div>
-                        <div className="text-xs text-neutral-500">人數：{worklog.headcount} 人</div>
+                        <div className="text-xs text-neutral-500 dark:text-white/65">人數：{worklog.headcount} 人</div>
                       </div>
                     </td>
-                    <td className="py-4 px-4 align-top text-sm text-neutral-800">
-                      <span className="font-semibold text-neutral-900">{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
+                    <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95">
+                      <span className="font-semibold text-neutral-900 dark:text-white/95">{worklog.calculatedWorkUnits.toFixed(1)} 工時</span>
                     </td>
-                    <td className="py-4 px-4 align-top text-sm text-neutral-800">
-                      <div className="max-w-xs text-sm text-neutral-600 leading-relaxed">
-                        {worklog.notes ? worklog.notes : <span className="text-neutral-400">無備註</span>}
+                    <td className="py-4 px-4 align-top text-sm text-neutral-800 dark:text-white/95">
+                      <div className="max-w-xs text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
+                        {worklog.notes ? worklog.notes : <span className="text-neutral-400 dark:text-white/55">無備註</span>}
                       </div>
                     </td>
                     <td className="py-4 px-4 align-top text-center">
@@ -302,7 +302,7 @@ export function ResponsiveWorklogsList() {
         </TableWrapper>
 
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 text-sm text-neutral-600">
+          <div className="flex items-center justify-between mt-4 text-sm text-neutral-600 dark:text-white/75">
             <span>
               第 {pagination.page} / {pagination.totalPages} 頁 · 共 {pagination.total} 筆工時紀錄
             </span>

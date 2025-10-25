@@ -317,7 +317,7 @@ export function LoginForm() {
                   setError('')
                   setBootstrapCode('')
                 }}
-                className="w-full text-neutral-600 hover:text-neutral-800"
+                className="w-full text-neutral-600 hover:text-neutral-800 dark:text-white/95"
               >
                 返回一般登入
               </Button>

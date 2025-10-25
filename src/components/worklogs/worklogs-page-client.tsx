@@ -10,7 +10,7 @@ import { AddWorklogDialog } from './add-worklog-dialog'
 
 const ResponsiveWorklogsList = dynamic(() => import('@/components/worklogs/responsive-worklogs-list').then((mod) => mod.ResponsiveWorklogsList), {
   ssr: false,
-  loading: () => <div className="text-center text-sm text-neutral-500 py-12" aria-live="polite">工時資料載入中…</div>,
+  loading: () => <div className="text-center text-sm text-neutral-500 dark:text-white/65 py-12" aria-live="polite">工時資料載入中…</div>,
 })
 
 export function WorklogsPageClient() {
@@ -40,7 +40,7 @@ export function WorklogsPageClient() {
               </div>
               <div>
                 <h1 className="text-lg md:text-lg font-semibold text-[--brand-neutral] tracking-tight">工時記錄</h1>
-                <p className="text-xs md:text-xs text-neutral-600">查看最新工時安排、快速篩選調整與匯出記錄</p>
+                <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">查看最新工時安排、快速篩選調整與匯出記錄</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">

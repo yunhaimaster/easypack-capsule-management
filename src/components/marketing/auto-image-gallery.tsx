@@ -530,8 +530,8 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
               <ImageIcon className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-neutral-800">AI 包裝設計圖像</h2>
-              <p className="text-sm text-neutral-500">
+              <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 包裝設計圖像</h2>
+              <p className="text-sm text-neutral-500 dark:text-white/65">
                 自動生成 5 種風格的產品包裝視覺 ({completedCount}/{totalCount} 已完成)
               </p>
             </div>
@@ -601,7 +601,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   <span className="text-xs text-success-600 flex items-center gap-1">
                     ✓ 完成
                     {image.generationTime && (
-                      <span className="text-neutral-400">({image.generationTime}s)</span>
+                      <span className="text-neutral-400 dark:text-white/55">({image.generationTime}s)</span>
                     )}
                   </span>
                 )}
@@ -616,7 +616,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
               )}>
                 {image.status === 'pending' && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-sm text-neutral-400">等待生成...</span>
+                    <span className="text-sm text-neutral-400 dark:text-white/55">等待生成...</span>
                   </div>
                 )}
                 {image.status === 'generating' && (
@@ -639,7 +639,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                   <div className="space-y-2">
                     <div>
                       <p className="text-sm text-danger-600 mb-1">生成失敗</p>
-                      <p className="text-xs text-neutral-500">{image.error}</p>
+                      <p className="text-xs text-neutral-500 dark:text-white/65">{image.error}</p>
                     </div>
                     <Button
                       type="button"
@@ -683,14 +683,14 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
               {image.status === 'success' && (
                 <div className="mt-3 space-y-2">
                   {image.seed && (
-                    <div className="text-xs text-neutral-400 flex items-center gap-1">
+                    <div className="text-xs text-neutral-400 dark:text-white/55 flex items-center gap-1">
                       <span>Seed: {image.seed}</span>
                     </div>
                   )}
                   {!image.isEditing ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-neutral-600">Prompt</span>
+                        <span className="text-xs font-medium text-neutral-600 dark:text-white/75">Prompt</span>
                         <Button
                           type="button"
                           variant="ghost"
@@ -701,14 +701,14 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                           編輯
                         </Button>
                       </div>
-                      <div className="text-xs text-neutral-500 bg-neutral-50 rounded-md p-2 max-h-20 overflow-y-auto">
+                      <div className="text-xs text-neutral-500 dark:text-white/65 bg-neutral-50 rounded-md p-2 max-h-20 overflow-y-auto">
                         {image.prompt}
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-neutral-600">編輯 Prompt</span>
+                        <span className="text-xs font-medium text-neutral-600 dark:text-white/75">編輯 Prompt</span>
                       </div>
                       <textarea
                         value={editingPrompts[index] || image.prompt}

@@ -58,9 +58,9 @@ export function IngredientsPopup({ ingredients, children, side = 'right' }: Ingr
               <table className="w-full text-xs">
                 <thead className="sticky top-0 liquid-glass-tooltip">
                   <tr className="border-b border-neutral-200/50 dark:border-neutral-700/50">
-                    <th className="text-left py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400 w-10">#</th>
-                    <th className="text-left py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400">原料名稱</th>
-                    <th className="text-right py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400 w-20">含量</th>
+                    <th className="text-left py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55 w-10">#</th>
+                    <th className="text-left py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55">原料名稱</th>
+                    <th className="text-right py-2 px-2 font-medium text-neutral-600 dark:text-neutral-400 dark:text-white/55 w-20">含量</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -69,13 +69,13 @@ export function IngredientsPopup({ ingredients, children, side = 'right' }: Ingr
                       key={index} 
                       className="border-b border-neutral-100/50 dark:border-neutral-800/50 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors"
                     >
-                      <td className="py-2 px-2 text-neutral-500 dark:text-neutral-400 text-center">
+                      <td className="py-2 px-2 text-neutral-500 dark:text-neutral-400 dark:text-white/55 text-center">
                         {index + 1}
                       </td>
                       <td className="py-2 px-2 text-neutral-800 dark:text-neutral-200">
                         {ingredient.materialName || '-'}
                       </td>
-                      <td className="py-2 px-2 text-right text-neutral-600 dark:text-neutral-400 font-mono">
+                      <td className="py-2 px-2 text-right text-neutral-600 dark:text-neutral-400 dark:text-white/55 font-mono">
                         {(ingredient.unitContentMg ?? 0).toLocaleString()} mg
                       </td>
                     </tr>

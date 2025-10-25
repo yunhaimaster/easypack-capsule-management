@@ -161,7 +161,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary-600" />
-        <span className="ml-2 text-sm text-neutral-600">載入訂單中...</span>
+        <span className="ml-2 text-sm text-neutral-600 dark:text-white/75">載入訂單中...</span>
       </div>
     )
   }
@@ -171,9 +171,9 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
       <Card className="liquid-glass-card liquid-glass-card-brand">
         <CardContent className="pt-6">
           <div className="text-center py-8">
-            <Calendar className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-neutral-900 mb-2">暫無未完成訂單</h3>
-            <p className="text-sm text-neutral-600 mb-6">目前沒有進行中或未完成的訂單可以添加工時記錄。</p>
+            <Calendar className="h-12 w-12 text-neutral-400 dark:text-white/55 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-white/95 mb-2">暫無未完成訂單</h3>
+            <p className="text-sm text-neutral-600 dark:text-white/75 mb-6">目前沒有進行中或未完成的訂單可以添加工時記錄。</p>
             <Button variant="outline" onClick={onCancel}>
               取消
             </Button>
@@ -197,7 +197,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
         <CardContent className="space-y-6">
           {/* 订单选择 */}
           <div className="space-y-2">
-            <Label htmlFor="orderId" className="text-sm font-medium text-neutral-700">
+            <Label htmlFor="orderId" className="text-sm font-medium text-neutral-700 dark:text-white/85">
               選擇訂單 *
             </Label>
             <Select onValueChange={(value) => setValue('orderId', value)}>
@@ -219,7 +219,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
 
           {/* 工作日期 */}
           <div className="space-y-2">
-            <Label htmlFor="workDate" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="workDate" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               工作日期 *
             </Label>
@@ -236,7 +236,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
 
           {/* 人数 */}
           <div className="space-y-2">
-            <Label htmlFor="headcount" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="headcount" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <Users className="w-4 h-4" />
               人數 *
             </Label>
@@ -255,7 +255,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
           {/* 时间范围 */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startTime" className="text-sm font-medium text-neutral-700">
+              <Label htmlFor="startTime" className="text-sm font-medium text-neutral-700 dark:text-white/85">
                 開始時間 *
               </Label>
               <Input
@@ -269,7 +269,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endTime" className="text-sm font-medium text-neutral-700">
+              <Label htmlFor="endTime" className="text-sm font-medium text-neutral-700 dark:text-white/85">
                 結束時間 *
               </Label>
               <Input
@@ -297,7 +297,7 @@ export function AddWorklogForm({ onSuccess, onCancel }: AddWorklogFormProps) {
 
           {/* 备注 */}
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-neutral-700 dark:text-white/85 flex items-center gap-2">
               <FileText className="w-4 h-4" />
               備註
             </Label>

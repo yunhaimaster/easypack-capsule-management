@@ -40,14 +40,14 @@ export function AIThinkingIndicator({ isThinking, enableReasoning = false }: AIT
       </div>
       <div className="flex-1">
         <div className="flex items-center space-x-2">
-          <h4 className="font-medium text-neutral-900">
+          <h4 className="font-medium text-neutral-900 dark:text-white/95">
             {enableReasoning ? 'AI 深度思考中' : 'AI 正在處理'}
           </h4>
-          <span className="text-neutral-600 text-sm">
+          <span className="text-neutral-600 dark:text-white/75 text-sm">
             {enableReasoning ? '深度推理模式' : '快速響應模式'}
           </span>
         </div>
-        <p className="text-sm text-neutral-700 mt-1">
+        <p className="text-sm text-neutral-700 dark:text-white/85 mt-1">
           {enableReasoning ? (
             <>
               AI 正在進行深度分析與推理
@@ -137,14 +137,14 @@ export function AIThinkingSteps({ isThinking, enableReasoning = false }: AIThink
                   ? 'bg-success-500 text-white'
                   : index === currentStep
                   ? 'bg-primary-500 text-white animate-pulse'
-                  : 'bg-neutral-300 text-neutral-600'
+                  : 'bg-neutral-300 text-neutral-600 dark:text-white/75'
               }`}
             >
               {index < currentStep ? '✓' : index + 1}
             </div>
             <span
               className={`text-sm transition-all duration-300 ${
-                index <= currentStep ? 'text-neutral-900 font-medium' : 'text-neutral-500'
+                index <= currentStep ? 'text-neutral-900 dark:text-white/95 font-medium' : 'text-neutral-500 dark:text-white/65'
               }`}
             >
               {step}

@@ -64,7 +64,7 @@ export function createLazyImage(src: string, alt: string, className?: string) {
       loading: () => (
         <div className={`bg-neutral-200 animate-pulse ${className}`}>
           <div className="flex items-center justify-center h-full">
-            <span className="text-neutral-400">載入中...</span>
+            <span className="text-neutral-400 dark:text-white/55">載入中...</span>
           </div>
         </div>
       ),
@@ -150,7 +150,7 @@ export function createRetryableImport(
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-            <p className="text-sm text-neutral-600">載入組件中...</p>
+            <p className="text-sm text-neutral-600 dark:text-white/75">載入組件中...</p>
           </div>
         </div>
       ),

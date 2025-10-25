@@ -139,8 +139,8 @@ export function BlueprintGenerator({ productName = '產品名稱', ingredients =
             <FileText className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-neutral-800">包裝設計圖紙</h2>
-            <p className="text-sm text-neutral-500">生成可編輯的 SVG 標籤設計藍圖（含出血與安全區）</p>
+            <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">包裝設計圖紙</h2>
+            <p className="text-sm text-neutral-500 dark:text-white/65">生成可編輯的 SVG 標籤設計藍圖（含出血與安全區）</p>
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export function BlueprintGenerator({ productName = '產品名稱', ingredients =
                 </Button>
               </div>
 
-              <div className="text-xs text-neutral-500 bg-neutral-50 p-3 rounded border border-neutral-100">
+              <div className="text-xs text-neutral-500 dark:text-white/65 bg-neutral-50 p-3 rounded border border-neutral-100">
                 <p className="font-medium mb-1">設計規格說明：</p>
                 <ul className="list-disc list-inside space-y-0.5">
                   <li>標籤尺寸：140mm × 60mm</li>

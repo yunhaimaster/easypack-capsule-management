@@ -43,8 +43,8 @@ export function AdvancedFilters({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4 text-neutral-600" />
-            <h3 className="font-semibold text-sm text-neutral-800">進階篩選</h3>
+            <SlidersHorizontal className="h-4 w-4 text-neutral-600 dark:text-white/75" />
+            <h3 className="font-semibold text-sm text-neutral-800 dark:text-white/95">進階篩選</h3>
           </div>
           {hasActiveFilters && (
             <Button
@@ -62,7 +62,7 @@ export function AdvancedFilters({
         {/* Ingredient Search */}
         {onIngredientFilterChange && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-neutral-700">原料搜索</label>
+            <label className="text-xs font-medium text-neutral-700 dark:text-white/85">原料搜索</label>
             <Input
               placeholder="搜索原料名稱（如：維生素C）"
               value={ingredientFilter}
@@ -74,7 +74,7 @@ export function AdvancedFilters({
 
         {/* Sort */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-neutral-700">排序方式</label>
+          <label className="text-xs font-medium text-neutral-700 dark:text-white/85">排序方式</label>
           <Select value={sortBy} onValueChange={(v: any) => onSortChange(v)}>
             <SelectTrigger className="h-9">
               <SelectValue />
@@ -91,7 +91,7 @@ export function AdvancedFilters({
 
         {/* Effect Categories - Grouped */}
         <div className="space-y-3">
-          <label className="text-xs font-medium text-neutral-700">
+          <label className="text-xs font-medium text-neutral-700 dark:text-white/85">
             功效類別 {selectedEffects.length > 0 && `(${selectedEffects.length})`}
           </label>
           
@@ -107,7 +107,7 @@ export function AdvancedFilters({
               
               return (
                 <div key={groupKey} className="space-y-1.5">
-                  <div className="text-[10px] uppercase tracking-wide text-neutral-500 font-semibold">
+                  <div className="text-[10px] uppercase tracking-wide text-neutral-500 dark:text-white/65 font-semibold">
                     {groupInfo.name}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -137,7 +137,7 @@ export function AdvancedFilters({
 
         {/* Active Filters Summary */}
         {hasActiveFilters && (
-          <div className="pt-2 border-t text-xs text-neutral-600">
+          <div className="pt-2 border-t text-xs text-neutral-600 dark:text-white/75">
             {selectedEffects.length > 0 && `已選擇 ${selectedEffects.length} 個類別`}
             {selectedEffects.length > 0 && ingredientFilter && ' · '}
             {ingredientFilter && `搜索原料: ${ingredientFilter}`}

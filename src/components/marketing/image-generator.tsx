@@ -100,14 +100,14 @@ export function ImageGenerator({ analysisContent }: ImageGeneratorProps) {
             <ImageIcon className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-neutral-800">AI 包裝圖像生成</h2>
-            <p className="text-sm text-neutral-500">使用 Gemini 2.5 Flash Image 模型生成產品包裝視覺</p>
+            <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 包裝圖像生成</h2>
+            <p className="text-sm text-neutral-500 dark:text-white/65">使用 Gemini 2.5 Flash Image 模型生成產品包裝視覺</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
               圖像生成 Prompt
             </label>
             <textarea

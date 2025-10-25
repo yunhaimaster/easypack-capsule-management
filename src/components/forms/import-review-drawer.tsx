@@ -108,7 +108,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
           <Checkbox checked={isChecked} onCheckedChange={() => toggle(row.id)} aria-label="選擇此項目" />
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-neutral-600 w-12">名稱</label>
+              <label className="text-xs text-neutral-600 dark:text-white/75 w-12">名稱</label>
               <Input
                 value={displayValue.name}
                 onChange={(e) => updateEdit(row.id, 'name', e.target.value)}
@@ -117,7 +117,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
               />
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-neutral-600 w-12">含量</label>
+              <label className="text-xs text-neutral-600 dark:text-white/75 w-12">含量</label>
               <Input
                 type="number"
                 value={displayValue.value}
@@ -126,7 +126,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
                 placeholder="0"
                 step="any"
               />
-              <span className="text-xs text-neutral-600">mg</span>
+              <span className="text-xs text-neutral-600 dark:text-white/75">mg</span>
             </div>
             <div className="flex gap-2 justify-end">
               <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-7 text-xs">取消</Button>
@@ -143,11 +143,11 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
           <Checkbox checked={isChecked} onCheckedChange={() => toggle(row.id)} aria-label="選擇此項目" />
           <IconContainer icon={isAdd ? Plus : isUpdate ? Check : Minus} variant={isAdd ? 'success' : isUpdate ? 'warning' : 'neutral'} size="sm" />
           <div className="flex-1">
-            <div className="text-sm font-medium text-neutral-800">
+            <div className="text-sm font-medium text-neutral-800 dark:text-white/95">
               {displayValue.name}
               {edits.has(row.id) && <Badge variant="outline" className="ml-2 text-xs">已編輯</Badge>}
             </div>
-            <div className="text-xs text-neutral-600">
+            <div className="text-xs text-neutral-600 dark:text-white/75">
               {isAdd && (<span>新增 → <span className="font-medium">{displayValue.value} mg</span></span>)}
               {row.type === 'unchanged' && (<span>不變：{displayValue.value} mg</span>)}
               {isUpdate && (
@@ -186,7 +186,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
               <Badge variant="outline">更新 {counts.update}</Badge>
               <Badge variant="outline">不變 {counts.unchanged}</Badge>
               <Badge variant="outline" className="text-danger-600">無效 {counts.invalid}</Badge>
-              <div className="ml-auto text-xs text-neutral-600">已選 {counts.selected}</div>
+              <div className="ml-auto text-xs text-neutral-600 dark:text-white/75">已選 {counts.selected}</div>
             </div>
           </Card>
 

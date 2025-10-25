@@ -111,7 +111,7 @@ export default function CreateWorkOrderPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             返回列表
           </Button>
-          <h1 className="text-2xl font-bold text-neutral-800">創建新工作單</h1>
+          <h1 className="text-2xl font-bold text-neutral-800 dark:text-white/95">創建新工作單</h1>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function CreateWorkOrderPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 訂單編號（如有） */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                   訂單編號（如有）
                 </label>
                 <Input
@@ -150,7 +150,7 @@ export default function CreateWorkOrderPage() {
 
               {/* 客戶名稱 */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                   客戶名稱 <span className="text-danger-600">*</span>
                 </label>
                 <Input
@@ -163,11 +163,11 @@ export default function CreateWorkOrderPage() {
 
               {/* 負責人 */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                   負責人 <span className="text-danger-600">*</span>
                 </label>
                 {usersLoading ? (
-                  <div className="text-sm text-neutral-500">載入用戶列表中...</div>
+                  <div className="text-sm text-neutral-500 dark:text-white/65">載入用戶列表中...</div>
                 ) : (
                   <select
                     required
@@ -187,7 +187,7 @@ export default function CreateWorkOrderPage() {
 
               {/* 工作類型 */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                   工作類型 <span className="text-danger-600">*</span>
                 </label>
                 <select
@@ -206,7 +206,7 @@ export default function CreateWorkOrderPage() {
 
             {/* VIP標記 */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 mb-4">VIP標記</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">VIP標記</h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -233,10 +233,10 @@ export default function CreateWorkOrderPage() {
 
             {/* 物料到齊狀態 */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 mb-4">物料到齊狀態</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">物料到齊狀態</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     預計生產物料到齊的日期
                   </label>
                   <Input
@@ -246,7 +246,7 @@ export default function CreateWorkOrderPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     預計包裝物料到齊的日期
                   </label>
                   <Input
@@ -282,10 +282,10 @@ export default function CreateWorkOrderPage() {
 
             {/* 數量 */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 mb-4">數量</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">數量</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     生產數量
                   </label>
                   <Input
@@ -296,7 +296,7 @@ export default function CreateWorkOrderPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     包裝數量
                   </label>
                   <Input
@@ -311,10 +311,10 @@ export default function CreateWorkOrderPage() {
 
             {/* 交貨期 */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 mb-4">交貨期</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">交貨期</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     要求交貨的日期
                   </label>
                   <Input
@@ -324,7 +324,7 @@ export default function CreateWorkOrderPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     內部預計交貨期
                   </label>
                   <Input
@@ -338,7 +338,7 @@ export default function CreateWorkOrderPage() {
 
             {/* 狀態標記 */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-neutral-800 mb-4">狀態標記</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white/95 mb-4">狀態標記</h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -375,7 +375,7 @@ export default function CreateWorkOrderPage() {
 
             {/* 工作描述 */}
             <div className="border-t pt-6">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 工作描述 <span className="text-danger-600">*</span>
               </label>
               <textarea
@@ -428,16 +428,16 @@ export default function CreateWorkOrderPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm">
-              <p className="text-neutral-700">
+              <p className="text-neutral-700 dark:text-white/85">
                 <strong>當前狀態:</strong> 完整表單（更新版）
               </p>
-              <p className="text-neutral-700">
+              <p className="text-neutral-700 dark:text-white/85">
                 <strong>已實現:</strong> 所有必填與可選欄位
               </p>
-              <p className="text-neutral-700">
+              <p className="text-neutral-700 dark:text-white/85">
                 <strong>待實現:</strong> 膠囊訂單關聯、高級驗證
               </p>
-              <p className="text-neutral-700">
+              <p className="text-neutral-700 dark:text-white/85">
                 <strong>API端點:</strong> POST /api/work-orders
               </p>
             </div>

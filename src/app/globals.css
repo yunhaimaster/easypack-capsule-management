@@ -3720,7 +3720,7 @@
 
 /* Liquid Glass Footer Styles */
 .liquid-glass-footer {
-  @apply bg-gradient-to-br from-gray-50 to-gray-100 border-t border-gray-200/50;
+  @apply bg-gradient-to-br from-gray-50 to-gray-100 dark:from-elevation-0 dark:to-elevation-1 border-t border-gray-200/50 dark:border-white/10;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   margin-top: auto;
@@ -3743,7 +3743,7 @@
 }
 
 .liquid-glass-footer-title {
-  @apply text-sm font-semibold text-gray-900 uppercase tracking-wider;
+  @apply text-sm font-semibold text-gray-900 dark:text-white/95 uppercase tracking-wider;
 }
 
 .liquid-glass-footer-list {
@@ -3751,11 +3751,11 @@
 }
 
 .liquid-glass-footer-link {
-  @apply text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200;
+  @apply text-sm text-gray-600 dark:text-white/75 hover:text-gray-900 dark:hover:text-white/95 transition-colors duration-200;
 }
 
 .liquid-glass-footer-resource-link {
-  @apply text-sm text-gray-600 hover:text-gray-900 transition-all duration-200 hover:scale-105;
+  @apply text-sm text-gray-600 dark:text-white/75 hover:text-gray-900 dark:hover:text-white/95 transition-all duration-200 hover:scale-105;
   display: inline-flex;
   align-items: center;
 }
@@ -3769,7 +3769,7 @@
 }
 
 .liquid-glass-footer-bottom {
-  @apply border-t border-gray-200/50 bg-white/50;
+  @apply border-t border-gray-200/50 dark:border-white/10 bg-white/50 dark:bg-elevation-1;
 }
 
 .liquid-glass-footer-bottom-content {

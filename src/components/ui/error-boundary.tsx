@@ -50,12 +50,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <CardTitle className="text-xl font-bold text-danger-600">
                 系統發生錯誤
               </CardTitle>
-              <CardDescription className="text-neutral-600">
+              <CardDescription className="text-neutral-600 dark:text-white/75">
                 抱歉，系統遇到了意外問題
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-neutral-600 dark:text-white/75">
                 {this.state.error?.message || '未知錯誤'}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -76,7 +76,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 </Button>
               </div>
               <div className="pt-4 border-t border-neutral-200">
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-white/65">
                   如問題持續，請聯繫系統管理員
                 </p>
               </div>

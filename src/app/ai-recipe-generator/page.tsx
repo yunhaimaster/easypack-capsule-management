@@ -50,7 +50,7 @@ const formatDuration = (startedAt?: number, finishedAt?: number) => {
 }
 
 const STATUS_BADGE_CLASS: Record<AnalysisStatus, string> = {
-  idle: 'bg-neutral-500/15 border border-neutral-300/40 text-neutral-600',
+  idle: 'bg-neutral-500/15 border border-neutral-300/40 text-neutral-600 dark:text-white/75',
   loading: 'bg-primary-500/15 border border-primary-300/40 text-primary-700',
   success: 'bg-success-500/15 border border-emerald-300/40 text-success-700',
   error: 'bg-danger-500/15 border border-red-300/40 text-danger-700'
@@ -432,10 +432,10 @@ export default function AIRecipeGeneratorPage() {
               <span className="h-2 w-2 rounded-full bg-primary-500" />
               AI 配方工具
             </div>
-            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800">
+            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800 dark:text-white/95">
               AI 配方生成器
             </h1>
-            <p className="text-sm md:text-sm text-neutral-600 max-w-3xl mx-auto">
+            <p className="text-sm md:text-sm text-neutral-600 dark:text-white/75 max-w-3xl mx-auto">
               輸入產品目標即可獲得原料建議、功效描述與製程提示，快速建立符合客戶需求的配方草稿。
             </p>
           </div>
@@ -447,12 +447,12 @@ export default function AIRecipeGeneratorPage() {
                 <div className="icon-container icon-container-violet">
                   <Sparkles className="h-5 w-5 text-white" />
                 </div>
-                <h2 className="text-lg font-semibold text-neutral-800">代工配方需求</h2>
+                <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">代工配方需求</h2>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     目標功效 *
                   </label>
                   <Input
@@ -465,7 +465,7 @@ export default function AIRecipeGeneratorPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                       目標受眾
                     </label>
                     <Select
@@ -488,10 +488,10 @@ export default function AIRecipeGeneratorPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                       劑型
                     </label>
-                    <div className="px-3 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-neutral-600">
+                    <div className="px-3 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-neutral-600 dark:text-white/75">
                       <span className="flex items-center">
                         <span className="mr-2">💊</span>
                         膠囊（固定）
@@ -501,7 +501,7 @@ export default function AIRecipeGeneratorPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                     特別要求（可選）
                   </label>
                   <Textarea
@@ -510,7 +510,7 @@ export default function AIRecipeGeneratorPage() {
                     placeholder="例如：需要素食膠囊、無麩質、有機認證、特定顏色、特殊包裝要求、生產工藝限制等"
                     rows={3}
                   />
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-white/65 mt-1">
                     請描述任何特殊要求或限制，AI 會據此調整配方建議
                   </p>
                 </div>
@@ -558,10 +558,10 @@ export default function AIRecipeGeneratorPage() {
                   <div className="icon-container icon-container-blue mx-auto mb-6">
                     <Loader2 className="h-8 w-8 text-white animate-spin" />
                   </div>
-                  <h3 className="text-xl font-semibold text-neutral-800 mb-4">
+                  <h3 className="text-xl font-semibold text-neutral-800 dark:text-white/95 mb-4">
                     🤖 AI 正在生成配方...
                   </h3>
-                  <div className="space-y-3 text-neutral-600">
+                  <div className="space-y-3 text-neutral-600 dark:text-white/75">
                     <p>正在分析您的需求...</p>
                     <div className="flex justify-center space-x-2">
                       <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
@@ -600,19 +600,19 @@ export default function AIRecipeGeneratorPage() {
                         <IconContainer icon={Sparkles} variant={model.config.iconVariant} size="md" />
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <h2 className="text-lg font-semibold text-neutral-800">{model.config.name}</h2>
+                            <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">{model.config.name}</h2>
                             <ModelBadge model={model.config.badgeType} />
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium min-w-[64px] justify-center ${STATUS_BADGE_CLASS[model.response.status]}`}>
                               {STATUS_LABEL[model.response.status]}
                             </span>
                           </div>
-                          <p className="text-sm text-neutral-600">{model.config.description}</p>
+                          <p className="text-sm text-neutral-600 dark:text-white/75">{model.config.description}</p>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                         {timeText && (
-                          <span className="inline-flex items-center gap-1 text-xs text-neutral-500 bg-white/60 rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/60 rounded-full px-2.5 py-1">
                             <Clock className="h-3.5 w-3.5" />
                             {timeText}
                           </span>
@@ -655,9 +655,9 @@ export default function AIRecipeGeneratorPage() {
                           {model.response.content ? (
                             <MarkdownRenderer content={model.response.content} />
                           ) : hasRequested ? (
-                            <p className="text-sm text-neutral-500">模型已排隊，等待開始輸出...</p>
+                            <p className="text-sm text-neutral-500 dark:text-white/65">模型已排隊，等待開始輸出...</p>
                           ) : (
-                            <p className="text-sm text-neutral-400">按「生成配方」後，此處會顯示 AI 回應。</p>
+                            <p className="text-sm text-neutral-400 dark:text-white/55">按「生成配方」後，此處會顯示 AI 回應。</p>
                           )}
                         </div>
                         {showCursor && (
@@ -683,7 +683,7 @@ export default function AIRecipeGeneratorPage() {
               <div className="liquid-glass-content p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <IconContainer icon={MessageCircle} variant="primary" size="md" />
-                  <h2 className="text-lg font-semibold text-neutral-800">AI 配方助手</h2>
+                  <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 配方助手</h2>
                 </div>
 
                 {/* 聊天消息 */}
@@ -697,7 +697,7 @@ export default function AIRecipeGeneratorPage() {
                         className={`max-w-3xl p-4 rounded-lg ${
                           message.role === 'user'
                             ? 'bg-primary-500 text-white'
-                            : 'bg-neutral-100 text-neutral-800'
+                            : 'bg-neutral-100 text-neutral-800 dark:text-white/95'
                         }`}
                       >
                         <div className="prose prose-sm max-w-none">
@@ -708,7 +708,7 @@ export default function AIRecipeGeneratorPage() {
                   ))}
                   {isChatLoading && (
                     <div className="flex justify-start">
-                      <div className="bg-neutral-100 text-neutral-800 p-4 rounded-lg">
+                      <div className="bg-neutral-100 text-neutral-800 dark:text-white/95 p-4 rounded-lg">
                         <div className="flex items-center space-x-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span>AI 正在思考...</span>
@@ -737,7 +737,7 @@ export default function AIRecipeGeneratorPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setIsChatMode(false)}
-                    className="text-neutral-600"
+                    className="text-neutral-600 dark:text-white/75"
                   >
                     關閉對話
                   </Button>

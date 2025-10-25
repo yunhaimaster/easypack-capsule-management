@@ -66,7 +66,7 @@ export default function EditOrderPage() {
   if (!order) {
     return (
       <div className="text-center py-8">
-        <p className="text-neutral-600 text-sm">找不到指定的訂單</p>
+        <p className="text-neutral-600 dark:text-white/75 text-sm">找不到指定的訂單</p>
       </div>
     )
   }

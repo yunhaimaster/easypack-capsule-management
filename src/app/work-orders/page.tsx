@@ -81,8 +81,8 @@ export default function WorkOrdersPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900">工作單管理</h1>
-            <p className="text-neutral-600 mt-1">
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white/95">工作單管理</h1>
+            <p className="text-neutral-600 dark:text-white/75 mt-1">
               統一工作單系統 - 包裝、生產、倉務
             </p>
           </div>
@@ -100,10 +100,10 @@ export default function WorkOrdersPage() {
           <div className="grid grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-neutral-900">
+                <div className="text-2xl font-bold text-neutral-900 dark:text-white/95">
                   {pagination.total}
                 </div>
-                <p className="text-sm text-neutral-600">總工作單數</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75">總工作單數</p>
               </CardContent>
             </Card>
             <Card>
@@ -111,7 +111,7 @@ export default function WorkOrdersPage() {
                 <div className="text-2xl font-bold text-success-600">
                   {usersData?.length || 0}
                 </div>
-                <p className="text-sm text-neutral-600">系統用戶數</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75">系統用戶數</p>
               </CardContent>
             </Card>
             <Card>
@@ -119,7 +119,7 @@ export default function WorkOrdersPage() {
                 <div className="text-2xl font-bold text-warning-600">
                   {selectedIds.length}
                 </div>
-                <p className="text-sm text-neutral-600">已選擇</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75">已選擇</p>
               </CardContent>
             </Card>
             <Card>
@@ -127,7 +127,7 @@ export default function WorkOrdersPage() {
                 <div className="text-2xl font-bold text-info-600">
                   {pagination.totalPages}
                 </div>
-                <p className="text-sm text-neutral-600">總頁數</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75">總頁數</p>
               </CardContent>
             </Card>
           </div>
@@ -175,7 +175,7 @@ export default function WorkOrdersPage() {
           {/* Active Filters */}
           {filters.keyword && (
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-neutral-600">搜尋關鍵字:</span>
+              <span className="text-sm text-neutral-600 dark:text-white/75">搜尋關鍵字:</span>
               <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm">
                 {filters.keyword}
                 <button
@@ -222,7 +222,7 @@ export default function WorkOrdersPage() {
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
             <div className="mt-6 flex items-center justify-between">
-              <div className="text-sm text-neutral-600">
+              <div className="text-sm text-neutral-600 dark:text-white/75">
                 顯示第 {((pagination.page - 1) * pagination.limit) + 1} 至{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} 項，
                 共 {pagination.total} 項
@@ -253,7 +253,7 @@ export default function WorkOrdersPage() {
                   })}
                   {pagination.totalPages > 5 && (
                     <>
-                      <span className="text-neutral-400">...</span>
+                      <span className="text-neutral-400 dark:text-white/55">...</span>
                       <Button
                         variant="outline"
                         size="sm"
@@ -288,32 +288,32 @@ export default function WorkOrdersPage() {
           <CardContent>
             <div className="space-y-2 text-sm font-mono">
               <div>
-                <span className="text-neutral-600">Loading:</span>{' '}
+                <span className="text-neutral-600 dark:text-white/75">Loading:</span>{' '}
                 <span className={isLoading ? 'text-warning-600' : 'text-success-600'}>
                   {isLoading ? 'Yes' : 'No'}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-600">Fetching:</span>{' '}
+                <span className="text-neutral-600 dark:text-white/75">Fetching:</span>{' '}
                 <span className={isFetching ? 'text-warning-600' : 'text-success-600'}>
                   {isFetching ? 'Yes' : 'No'}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-600">Work Orders:</span>{' '}
-                <span className="text-neutral-900">{workOrders.length}</span>
+                <span className="text-neutral-600 dark:text-white/75">Work Orders:</span>{' '}
+                <span className="text-neutral-900 dark:text-white/95">{workOrders.length}</span>
               </div>
               <div>
-                <span className="text-neutral-600">Users Available:</span>{' '}
-                <span className="text-neutral-900">{usersData?.length || 0}</span>
+                <span className="text-neutral-600 dark:text-white/75">Users Available:</span>{' '}
+                <span className="text-neutral-900 dark:text-white/95">{usersData?.length || 0}</span>
               </div>
               <div>
-                <span className="text-neutral-600">Selected:</span>{' '}
-                <span className="text-neutral-900">{selectedIds.length}</span>
+                <span className="text-neutral-600 dark:text-white/75">Selected:</span>{' '}
+                <span className="text-neutral-900 dark:text-white/95">{selectedIds.length}</span>
               </div>
               <div>
-                <span className="text-neutral-600">Current Page:</span>{' '}
-                <span className="text-neutral-900">{pagination.page} / {pagination.totalPages}</span>
+                <span className="text-neutral-600 dark:text-white/75">Current Page:</span>{' '}
+                <span className="text-neutral-900 dark:text-white/95">{pagination.page} / {pagination.totalPages}</span>
               </div>
             </div>
           </CardContent>

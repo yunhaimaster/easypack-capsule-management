@@ -138,8 +138,8 @@ export function EditRecipeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-neutral-800">編輯模板配方</DialogTitle>
-          <DialogDescription className="text-neutral-600">
+          <DialogTitle className="text-neutral-800 dark:text-white/95">編輯模板配方</DialogTitle>
+          <DialogDescription className="text-neutral-600 dark:text-white/75">
             修改配方的基本資訊。生產配方不可編輯以保持歷史真實性。
           </DialogDescription>
         </DialogHeader>
@@ -163,7 +163,7 @@ export function EditRecipeDialog({
         )} className="space-y-4">
           {/* 配方名稱 */}
           <div className="space-y-2">
-            <Label htmlFor="recipeName" className="text-neutral-700">
+            <Label htmlFor="recipeName" className="text-neutral-700 dark:text-white/85">
               配方名稱 *
             </Label>
             <Input
@@ -179,7 +179,7 @@ export function EditRecipeDialog({
 
           {/* 產品名稱 */}
           <div className="space-y-2">
-            <Label htmlFor="productName" className="text-neutral-700">
+            <Label htmlFor="productName" className="text-neutral-700 dark:text-white/85">
               產品名稱 *
             </Label>
             <Input
@@ -195,7 +195,7 @@ export function EditRecipeDialog({
 
           {/* 配方描述 */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-neutral-700">
+            <Label htmlFor="description" className="text-neutral-700 dark:text-white/85">
               配方描述
             </Label>
             <Textarea
@@ -214,7 +214,7 @@ export function EditRecipeDialog({
           <div className="grid grid-cols-3 gap-4">
             {/* 膠囊大小 */}
             <div className="space-y-2">
-              <Label htmlFor="capsuleSize" className="text-neutral-700">
+              <Label htmlFor="capsuleSize" className="text-neutral-700 dark:text-white/85">
                 膠囊大小
               </Label>
               <Select
@@ -235,7 +235,7 @@ export function EditRecipeDialog({
 
             {/* 膠囊顏色 */}
             <div className="space-y-2">
-              <Label htmlFor="capsuleColor" className="text-neutral-700">
+              <Label htmlFor="capsuleColor" className="text-neutral-700 dark:text-white/85">
                 膠囊顏色
               </Label>
               <Input
@@ -248,7 +248,7 @@ export function EditRecipeDialog({
 
             {/* 膠囊類型 */}
             <div className="space-y-2">
-              <Label htmlFor="capsuleType" className="text-neutral-700">
+              <Label htmlFor="capsuleType" className="text-neutral-700 dark:text-white/85">
                 膠囊類型
               </Label>
               <Select
@@ -272,7 +272,7 @@ export function EditRecipeDialog({
           {/* 🆕 原料清單編輯 */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-neutral-700 text-base font-semibold">
+              <Label className="text-neutral-700 dark:text-white/85 text-base font-semibold">
                 原料清單 *
               </Label>
               <Button
@@ -288,7 +288,7 @@ export function EditRecipeDialog({
             </div>
 
             {fields.length === 0 && (
-              <p className="text-sm text-neutral-500 text-center py-4 border border-dashed border-neutral-300 rounded-lg">
+              <p className="text-sm text-neutral-500 dark:text-white/65 text-center py-4 border border-dashed border-neutral-300 rounded-lg">
                 尚未添加任何原料，點擊上方「添加原料」按鈕開始
               </p>
             )}

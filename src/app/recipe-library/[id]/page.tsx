@@ -325,7 +325,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto text-info-600 mb-4" />
-            <p className="text-neutral-600">載入配方中...</p>
+            <p className="text-neutral-600 dark:text-white/75">載入配方中...</p>
           </div>
         </main>
         <LiquidGlassFooter />
@@ -410,7 +410,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <h1 className="text-xl sm:text-2xl font-bold text-neutral-800">
+                      <h1 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white/95">
                         {recipe.recipeName}
                       </h1>
                       {/* 🆕 编辑按钮（只显示在模板配方） */}
@@ -426,7 +426,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                         </Button>
                       )}
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-neutral-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-neutral-600 dark:text-white/75">
                       <span>客戶：{recipe.customerName}</span>
                       <span className="hidden sm:inline">•</span>
                       <span>產品：{recipe.productName}</span>
@@ -450,12 +450,12 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                       )}
                     </div>
                     {recipe.description && (
-                      <p className="mt-3 text-sm text-neutral-600">{recipe.description}</p>
+                      <p className="mt-3 text-sm text-neutral-600 dark:text-white/75">{recipe.description}</p>
                     )}
                     <div className="mt-3 pt-3 border-t border-neutral-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Brain className="h-4 w-4 text-primary-600" />
-                        <span className="text-sm font-medium text-neutral-700">
+                        <span className="text-sm font-medium text-neutral-700 dark:text-white/85">
                           AI 功效分析
                         </span>
                       </div>
@@ -465,13 +465,13 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                             {recipe.aiEffectsAnalysis}
                           </p>
                           {recipe.aiAnalyzedAt && (
-                            <p className="text-xs text-neutral-500 mt-1">
+                            <p className="text-xs text-neutral-500 dark:text-white/65 mt-1">
                               分析時間：{formatDate(recipe.aiAnalyzedAt)}
                             </p>
                           )}
                         </>
                       ) : (
-                        <p className="text-sm text-neutral-500 italic">
+                        <p className="text-sm text-neutral-500 dark:text-white/65 italic">
                           尚未進行功效分析
                         </p>
                       )}
@@ -519,8 +519,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                     size="md"
                   />
                   <div>
-                    <p className="text-xs text-neutral-600">生產次數</p>
-                    <p className="text-xl font-bold text-neutral-800">{recipe.productionCount}</p>
+                    <p className="text-xs text-neutral-600 dark:text-white/75">生產次數</p>
+                    <p className="text-xl font-bold text-neutral-800 dark:text-white/95">{recipe.productionCount}</p>
                   </div>
                 </div>
               </div>
@@ -535,8 +535,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                     size="md"
                   />
                   <div>
-                    <p className="text-xs text-neutral-600">最後生產</p>
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-xs text-neutral-600 dark:text-white/75">最後生產</p>
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-white/95">
                       {formatDate(recipe.lastProductionAt)}
                     </p>
                   </div>
@@ -553,8 +553,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                     size="md"
                   />
                   <div>
-                    <p className="text-xs text-neutral-600">最後使用</p>
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-xs text-neutral-600 dark:text-white/75">最後使用</p>
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-white/95">
                       {formatDate(recipe.lastUsedAt)}
                     </p>
                   </div>
@@ -569,13 +569,13 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             <div className="lg:col-span-2">
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
-                  <h2 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4 flex items-center gap-2">
                     <Beaker className="h-5 w-5 text-info-600" />
                     原料清單 ({recipe.ingredients.length} 項)
                   </h2>
                   <div className="space-y-2">
                     {/* Desktop Table Header */}
-                    <div className="hidden sm:grid grid-cols-12 gap-2 text-xs font-medium text-neutral-600 pb-2 border-b border-neutral-200">
+                    <div className="hidden sm:grid grid-cols-12 gap-2 text-xs font-medium text-neutral-600 dark:text-white/75 pb-2 border-b border-neutral-200">
                       <div className="col-span-6">原料名稱</div>
                       <div className="col-span-3 text-right">單粒含量</div>
                       <div className="col-span-3 text-center">標記</div>
@@ -584,10 +584,10 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                       <div key={index} className="border-b border-neutral-100 hover:bg-neutral-50/50 rounded transition-colors">
                         {/* Desktop Layout */}
                         <div className="hidden sm:grid grid-cols-12 gap-2 items-center py-2">
-                          <div className="col-span-6 text-sm text-neutral-800 font-medium">
+                          <div className="col-span-6 text-sm text-neutral-800 dark:text-white/95 font-medium">
                             {ingredient.materialName}
                           </div>
-                          <div className="col-span-3 text-right text-sm text-neutral-700">
+                          <div className="col-span-3 text-right text-sm text-neutral-700 dark:text-white/85">
                             {ingredient.unitContentMg} mg
                           </div>
                           <div className="col-span-3 flex justify-center gap-1">
@@ -606,10 +606,10 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                         {/* Mobile Layout */}
                         <div className="sm:hidden p-3 space-y-2">
                           <div className="flex justify-between items-start">
-                            <div className="text-sm text-neutral-800 font-medium flex-1 pr-2">
+                            <div className="text-sm text-neutral-800 dark:text-white/95 font-medium flex-1 pr-2">
                               {ingredient.materialName}
                             </div>
-                            <div className="text-sm text-neutral-700 font-semibold">
+                            <div className="text-sm text-neutral-700 dark:text-white/85 font-semibold">
                               {ingredient.unitContentMg} mg
                             </div>
                           </div>
@@ -633,8 +633,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                   <div className="mt-4 pt-4 border-t border-neutral-200">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-neutral-600">單粒總重量</span>
-                      <span className="text-lg font-bold text-neutral-800">{recipe.unitWeightMg} mg</span>
+                      <span className="text-sm font-medium text-neutral-600 dark:text-white/75">單粒總重量</span>
+                      <span className="text-lg font-bold text-neutral-800 dark:text-white/95">{recipe.unitWeightMg} mg</span>
                     </div>
                   </div>
                 </div>
@@ -646,28 +646,28 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
               {/* Capsule Specs */}
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
-                  <h2 className="text-lg font-semibold text-neutral-800 mb-4">膠囊規格</h2>
+                  <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">膠囊規格</h2>
                   <div className="space-y-3">
                     {recipe.capsuleSize && (
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-neutral-600">大小</span>
+                        <span className="text-sm text-neutral-600 dark:text-white/75">大小</span>
                         <Badge variant="outline">{recipe.capsuleSize}</Badge>
                       </div>
                     )}
                     {recipe.capsuleColor && (
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-neutral-600">顏色</span>
+                        <span className="text-sm text-neutral-600 dark:text-white/75">顏色</span>
                         <Badge variant="outline">{recipe.capsuleColor}</Badge>
                       </div>
                     )}
                     {recipe.capsuleType && (
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-neutral-600">類型</span>
+                        <span className="text-sm text-neutral-600 dark:text-white/75">類型</span>
                         <Badge variant="outline">{recipe.capsuleType}</Badge>
                       </div>
                     )}
                     {!recipe.capsuleSize && !recipe.capsuleColor && !recipe.capsuleType && (
-                      <p className="text-sm text-neutral-500">未指定膠囊規格</p>
+                      <p className="text-sm text-neutral-500 dark:text-white/65">未指定膠囊規格</p>
                     )}
                   </div>
                 </div>
@@ -677,17 +677,17 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
               {(recipe.category || (recipe.tags && recipe.tags.length > 0)) && (
                 <Card className="liquid-glass-card liquid-glass-card-elevated">
                   <div className="liquid-glass-content">
-                    <h2 className="text-lg font-semibold text-neutral-800 mb-4">分類與標籤</h2>
+                    <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">分類與標籤</h2>
                     <div className="space-y-3">
                       {recipe.category && (
                         <div>
-                          <span className="text-xs text-neutral-600 block mb-2">分類</span>
+                          <span className="text-xs text-neutral-600 dark:text-white/75 block mb-2">分類</span>
                           <Badge>{recipe.category}</Badge>
                         </div>
                       )}
                       {recipe.tags && recipe.tags.length > 0 && (
                         <div>
-                          <span className="text-xs text-neutral-600 block mb-2">標籤</span>
+                          <span className="text-xs text-neutral-600 dark:text-white/75 block mb-2">標籤</span>
                           <div className="flex flex-wrap gap-2">
                             {recipe.tags.map((tag, index) => (
                               <Badge key={index} variant="outline">{tag}</Badge>
@@ -703,7 +703,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
               {/* Source Orders */}
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
-                  <h2 className="text-lg font-semibold text-neutral-800 mb-4">
+                  <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">
                     來源訂單 ({recipe.sourceOrderIds.length})
                   </h2>
                   <div className="space-y-2">
@@ -711,12 +711,12 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                       <Link key={orderId} href={`/orders/${orderId}`}>
                         <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral-200 hover:border-violet-300 hover:bg-info-50/30 transition-all cursor-pointer group">
                           <div className="flex items-center gap-2">
-                            <Eye className="h-4 w-4 text-neutral-400 group-hover:text-info-600" />
-                            <span className="text-sm text-neutral-700 group-hover:text-info-700 font-medium">
+                            <Eye className="h-4 w-4 text-neutral-400 dark:text-white/55 group-hover:text-info-600" />
+                            <span className="text-sm text-neutral-700 dark:text-white/85 group-hover:text-info-700 font-medium">
                               訂單 #{index + 1}
                             </span>
                           </div>
-                          <ExternalLink className="h-4 w-4 text-neutral-400 group-hover:text-info-600" />
+                          <ExternalLink className="h-4 w-4 text-neutral-400 dark:text-white/55 group-hover:text-info-600" />
                         </div>
                       </Link>
                     ))}

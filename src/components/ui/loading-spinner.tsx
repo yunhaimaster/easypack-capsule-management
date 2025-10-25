@@ -28,7 +28,7 @@ export function LoadingSpinner({
         )}
       />
       {text && (
-        <p className="text-sm text-neutral-600 animate-pulse">
+        <p className="text-sm text-neutral-600 dark:text-white/75 animate-pulse">
           {text}
         </p>
       )}

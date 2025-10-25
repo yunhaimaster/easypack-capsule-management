@@ -37,7 +37,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-neutral-400 text-sm">
+          <div className="flex items-center justify-center h-full text-neutral-400 dark:text-white/55 text-sm">
             預覽載入失敗
           </div>
         )}
@@ -47,7 +47,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
       <div className="space-y-2">
         {/* Title & Score */}
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-neutral-900">{template.name}</h4>
+          <h4 className="font-semibold text-sm text-neutral-900 dark:text-white/95">{template.name}</h4>
           <Badge variant={score >= 80 ? 'default' : score >= 60 ? 'secondary' : 'destructive'}>
             {score} 分
           </Badge>
@@ -60,14 +60,14 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
           ) : (
             <AlertCircle className="h-4 w-4 text-amber-600" />
           )}
-          <span className="text-neutral-600">
+          <span className="text-neutral-600 dark:text-white/75">
             合規檢查：{passCount}/{totalCount}
           </span>
         </div>
 
         {/* Palette */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-neutral-600">色系：</span>
+          <span className="text-xs text-neutral-600 dark:text-white/75">色系：</span>
           <div className="flex gap-1">
             {palette.slice(0, 4).map((color, idx) => (
               <div
@@ -81,13 +81,13 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
         </div>
 
         {/* Typography */}
-        <div className="text-xs text-neutral-600">
+        <div className="text-xs text-neutral-600 dark:text-white/75">
           字體：{typography.primary.split(',')[0]}
         </div>
 
         {/* Metadata */}
         {template.metadata?.generatedBy && (
-          <div className="text-xs text-neutral-500">
+          <div className="text-xs text-neutral-500 dark:text-white/65">
             由 {template.metadata.generatedBy} 生成
           </div>
         )}
@@ -150,12 +150,12 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
       {/* Compliance Details (collapsible on hover) */}
       {!compliance.passed && (
         <div className="text-xs space-y-1 pt-2 border-t border-neutral-200">
-          <p className="font-medium text-neutral-700">需改進項目：</p>
+          <p className="font-medium text-neutral-700 dark:text-white/85">需改進項目：</p>
           {compliance.checklist
             .filter(c => c.status !== 'pass')
             .slice(0, 3)
             .map((item, idx) => (
-              <div key={idx} className="flex items-start gap-1 text-neutral-600">
+              <div key={idx} className="flex items-start gap-1 text-neutral-600 dark:text-white/75">
                 <AlertCircle className="h-3 w-3 mt-0.5 text-amber-500" />
                 <span>{item.item}</span>
               </div>

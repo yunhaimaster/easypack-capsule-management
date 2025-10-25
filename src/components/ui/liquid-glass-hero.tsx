@@ -47,7 +47,7 @@ export function LiquidGlassHero({
                     {title}
                   </h1>
                   {subtitle && (
-                    <p className="text-sm md:text-base text-neutral-600 max-w-2xl">
+                    <p className="text-sm md:text-base text-neutral-600 dark:text-white/75 max-w-2xl">
                       {subtitle}
                     </p>
                   )}
@@ -55,7 +55,7 @@ export function LiquidGlassHero({
               </div>
               
               {description && (
-                <p className="text-neutral-600 text-base md:text-lg leading-relaxed max-w-2xl">
+                <p className="text-neutral-600 dark:text-white/75 text-base md:text-lg leading-relaxed max-w-2xl">
                   {description}
                 </p>
               )}
@@ -91,7 +91,7 @@ export function OrdersHero({ orderCount }: { orderCount?: number }) {
       gradient="blue"
       actions={
         <>
-          <span className="text-sm text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">
+          <span className="text-sm text-neutral-500 dark:text-white/65 bg-neutral-100 px-3 py-1 rounded-full">
             {orderCount ? `${orderCount} 個訂單` : '載入中...'}
           </span>
         </>
@@ -146,7 +146,7 @@ export function ReportsHero({ stats }: { stats?: any }) {
       gradient="orange"
       actions={
         <>
-          <span className="text-sm text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">
+          <span className="text-sm text-neutral-500 dark:text-white/65 bg-neutral-100 px-3 py-1 rounded-full">
             數據分析
           </span>
         </>

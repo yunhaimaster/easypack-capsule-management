@@ -98,7 +98,7 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto" />
-        <p className="mt-4 text-neutral-600">載入中...</p>
+        <p className="mt-4 text-neutral-600 dark:text-white/75">載入中...</p>
       </div>
     )
   }
@@ -130,7 +130,7 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
       
       {/* Trusted Devices */}
       <div>
-        <h2 className="text-lg font-semibold text-neutral-800 mb-4">
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">
           受信任設備 ({devices.length})
         </h2>
         <div className="grid gap-4">
@@ -148,17 +148,17 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
                       size="md" 
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-neutral-800 mb-1">
+                      <div className="font-medium text-neutral-800 dark:text-white/95 mb-1">
                         {device.user.nickname ? (
                           <>
                             <span>{device.user.nickname}</span>
-                            <span className="text-sm text-neutral-500 ml-2">{device.user.phoneE164}</span>
+                            <span className="text-sm text-neutral-500 dark:text-white/65 ml-2">{device.user.phoneE164}</span>
                           </>
                         ) : (
                           device.user.phoneE164
                         )}
                       </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600">
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-white/75">
                         <div>{browser} · {deviceType}</div>
                         {device.ipFirstUsed && (
                           <div className="flex items-center gap-1">
@@ -171,7 +171,7 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
                           {expiresIn}天後過期
                         </div>
                       </div>
-                      <div className="text-xs text-neutral-500 mt-1">
+                      <div className="text-xs text-neutral-500 dark:text-white/65 mt-1">
                         創建: {new Date(device.createdAt).toLocaleString('zh-HK')} · 
                         最後使用: {new Date(device.lastSeenAt).toLocaleString('zh-HK')}
                       </div>
@@ -192,7 +192,7 @@ export function TrustedDeviceManagement({ selectedUserId, onClearFilter }: Trust
         {devices.length === 0 && (
           <Card className="p-8 text-center">
             <Smartphone className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-            <p className="text-neutral-600">暫無受信任設備</p>
+            <p className="text-neutral-600 dark:text-white/75">暫無受信任設備</p>
           </Card>
         )}
       </div>

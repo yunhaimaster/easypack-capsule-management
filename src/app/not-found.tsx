@@ -13,15 +13,15 @@ export default function NotFound() {
             <div className="mx-auto mb-4 p-3 bg-primary-500/10 rounded-full w-fit">
               <Logo size="lg" variant="icon" />
             </div>
-            <CardTitle className="text-6xl font-bold text-neutral-900 mb-2">
+            <CardTitle className="text-6xl font-bold text-neutral-900 dark:text-white/95 mb-2">
               404
             </CardTitle>
-            <CardDescription className="text-lg text-neutral-600">
+            <CardDescription className="text-lg text-neutral-600 dark:text-white/75">
               頁面未找到
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <p className="text-neutral-600">
+            <p className="text-neutral-600 dark:text-white/75">
               抱歉，您訪問的頁面不存在或已被移動。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -39,7 +39,7 @@ export default function NotFound() {
               </Button>
             </div>
             <div className="pt-4 border-t border-neutral-200">
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-white/65">
                 如有問題，請聯繫系統管理員
               </p>
             </div>

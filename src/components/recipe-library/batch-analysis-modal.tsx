@@ -147,10 +147,10 @@ export function BatchAnalysisModal({ isOpen, onClose, recipes, onComplete }: Bat
           {/* Progress Section */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-neutral-600">
+              <span className="text-neutral-600 dark:text-white/75">
                 進度：{completed} / {recipes.length}
               </span>
-              <span className="text-neutral-600">
+              <span className="text-neutral-600 dark:text-white/75">
                 {progress.toFixed(0)}%
               </span>
             </div>
@@ -166,8 +166,8 @@ export function BatchAnalysisModal({ isOpen, onClose, recipes, onComplete }: Bat
                 <span className="text-danger-700">失敗：{failed}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <AlertCircle className="h-4 w-4 text-neutral-500" />
-                <span className="text-neutral-600">待處理：{recipes.length - completed}</span>
+                <AlertCircle className="h-4 w-4 text-neutral-500 dark:text-white/65" />
+                <span className="text-neutral-600 dark:text-white/75">待處理：{recipes.length - completed}</span>
               </div>
             </div>
           </div>
@@ -196,7 +196,7 @@ export function BatchAnalysisModal({ isOpen, onClose, recipes, onComplete }: Bat
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-neutral-800 truncate">
+                    <p className="font-medium text-sm text-neutral-800 dark:text-white/95 truncate">
                       {result.recipeName}
                     </p>
                     {result.error && (
@@ -227,7 +227,7 @@ export function BatchAnalysisModal({ isOpen, onClose, recipes, onComplete }: Bat
 
           {/* Action Buttons */}
           <div className="flex items-center justify-between pt-4 border-t">
-            <div className="text-sm text-neutral-600">
+            <div className="text-sm text-neutral-600 dark:text-white/75">
               {isComplete && (
                 <span className="text-success-700 font-medium">
                   ✓ 分析完成！成功 {successful} 個，失敗 {failed} 個

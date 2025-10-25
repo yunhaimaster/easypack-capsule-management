@@ -50,7 +50,7 @@ export function AISettings({ enableReasoning, onToggleReasoning }: AISettingsPro
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-neutral-700 font-medium">深度分析模式</span>
+                    <span className="text-sm text-neutral-700 dark:text-white/85 font-medium">深度分析模式</span>
                     <AlertTriangle className="h-3 w-3 text-warning-500" />
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -78,7 +78,7 @@ export function AISettings({ enableReasoning, onToggleReasoning }: AISettingsPro
                 <div className="grid grid-cols-2 gap-2">
                   {/* Standard Mode */}
                   <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-2.5">
-                    <p className="text-xs font-semibold text-neutral-700 mb-1.5">⚡ 標準模式（預設）</p>
+                    <p className="text-xs font-semibold text-neutral-700 dark:text-white/85 mb-1.5">⚡ 標準模式（預設）</p>
                     <ul className="text-xs text-neutral-600 space-y-1">
                       <li>✓ 快速回應</li>
                       <li>✓ 適合一般問題</li>

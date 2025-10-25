@@ -20,7 +20,7 @@ interface MarketingAnalysisProps {
 }
 
 const STATUS_BADGE_CLASS: Record<AnalysisStatus, string> = {
-  idle: 'bg-neutral-500/10 border border-neutral-300/40 text-neutral-600',
+  idle: 'bg-neutral-500/10 border border-neutral-300/40 text-neutral-600 dark:text-white/75',
   loading: 'bg-primary-500/15 border border-primary-300/40 text-primary-700',
   success: 'bg-success-500/15 border border-emerald-300/40 text-success-700',
   error: 'bg-danger-500/15 border border-red-300/40 text-danger-700'
@@ -71,13 +71,13 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-neutral-800">行銷策略分析</h2>
-              <p className="text-sm text-neutral-500">DeepSeek V3.1 Terminus 專業行銷建議與包裝設計方案</p>
+              <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">行銷策略分析</h2>
+              <p className="text-sm text-neutral-500 dark:text-white/65">DeepSeek V3.1 Terminus 專業行銷建議與包裝設計方案</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             {duration && (
-              <span className="inline-flex items-center gap-1 text-xs text-neutral-500 bg-white/70 px-2.5 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-white/65 bg-white/70 px-2.5 py-1 rounded-full">
                 <Clock className="h-3.5 w-3.5" />
                 {duration}
               </span>
@@ -118,17 +118,17 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
         {tableOfContents.length > 0 && status === 'success' && (
           <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
             <div className="flex items-center gap-2 mb-3">
-              <List className="h-4 w-4 text-neutral-600" />
-              <h3 className="text-sm font-semibold text-neutral-800">目錄</h3>
+              <List className="h-4 w-4 text-neutral-600 dark:text-white/75" />
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-white/95">目錄</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {tableOfContents.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="text-left px-3 py-2 text-xs text-neutral-700 hover:bg-white hover:text-primary-600 rounded transition-colors border border-transparent hover:border-primary-200"
+                  className="text-left px-3 py-2 text-xs text-neutral-700 dark:text-white/85 hover:bg-white hover:text-primary-600 rounded transition-colors border border-transparent hover:border-primary-200"
                 >
-                  <span className="font-medium text-neutral-500 mr-2">{index}.</span>
+                  <span className="font-medium text-neutral-500 dark:text-white/65 mr-2">{index}.</span>
                   {item.title}
                 </button>
               ))}
@@ -182,7 +182,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-neutral-400">按「開始分析」後，此處會顯示詳細的行銷策略與包裝建議。</p>
+                <p className="text-sm text-neutral-400 dark:text-white/55">按「開始分析」後，此處會顯示詳細的行銷策略與包裝建議。</p>
               )}
             </div>
           )}

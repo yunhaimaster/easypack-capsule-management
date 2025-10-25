@@ -23,7 +23,7 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
         components={{
           // 自定義標題樣式
           h1: ({ children }) => (
-            <h1 className={`text-lg font-bold mb-2 mt-4 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
+            <h1 className={`text-lg font-bold mb-2 mt-4 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900 dark:text-white/95'}`}>
               {children}
             </h1>
           ),
@@ -32,20 +32,20 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
             return (
               <h2 
                 id={id}
-                className={`text-base font-semibold mb-3 mt-6 first:mt-0 pb-2 border-b border-neutral-200 scroll-mt-20 ${whiteText ? 'text-white border-white/20' : 'text-neutral-900'}`}
+                className={`text-base font-semibold mb-3 mt-6 first:mt-0 pb-2 border-b border-neutral-200 scroll-mt-20 ${whiteText ? 'text-white border-white/20' : 'text-neutral-900 dark:text-white/95'}`}
               >
                 {children}
               </h2>
             )
           },
           h3: ({ children }) => (
-            <h3 className={`text-sm font-medium mb-2 mt-4 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
+            <h3 className={`text-sm font-medium mb-2 mt-4 first:mt-0 ${whiteText ? 'text-white' : 'text-neutral-900 dark:text-white/95'}`}>
               {children}
             </h3>
           ),
           // 自定義段落樣式
           p: ({ children }) => (
-            <p className={`text-sm mb-2 leading-relaxed ${whiteText ? 'text-white' : 'text-neutral-700'}`}>
+            <p className={`text-sm mb-2 leading-relaxed ${whiteText ? 'text-white' : 'text-neutral-700 dark:text-white/85'}`}>
               {children}
             </p>
           ),
@@ -61,24 +61,24 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
             </ol>
           ),
           li: ({ children }) => (
-            <li className={`text-sm ${whiteText ? 'text-white' : 'text-neutral-700'}`}>
+            <li className={`text-sm ${whiteText ? 'text-white' : 'text-neutral-700 dark:text-white/85'}`}>
               {children}
             </li>
           ),
           // 自定義強調樣式
           strong: ({ children }) => (
-            <strong className={`font-semibold ${whiteText ? 'text-white' : 'text-neutral-900'}`}>
+            <strong className={`font-semibold ${whiteText ? 'text-white' : 'text-neutral-900 dark:text-white/95'}`}>
               {children}
             </strong>
           ),
           em: ({ children }) => (
-            <em className={`italic ${whiteText ? 'text-white' : 'text-neutral-800'}`}>
+            <em className={`italic ${whiteText ? 'text-white' : 'text-neutral-800 dark:text-white/95'}`}>
               {children}
             </em>
           ),
           // 自定義代碼樣式
           code: ({ children }) => (
-            <code className={`px-1 py-0.5 rounded text-xs font-mono ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-800'}`}>
+            <code className={`px-1 py-0.5 rounded text-xs font-mono ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-800 dark:text-white/95'}`}>
               {children}
             </code>
           ),
@@ -117,12 +117,12 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-700 dark:text-white/85 uppercase tracking-wider">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="px-4 py-3 text-sm text-neutral-900">
+            <td className="px-4 py-3 text-sm text-neutral-900 dark:text-white/95">
               {children}
             </td>
           ),

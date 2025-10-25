@@ -149,7 +149,7 @@ export function OrderLockDialog({
         type="button"
         variant="outline"
         onClick={() => onOpenChange(false)}
-        className="flex-1 bg-white hover:bg-neutral-100 text-neutral-700 border-neutral-300"
+        className="flex-1 bg-white hover:bg-neutral-100 text-neutral-700 dark:text-white/85 border-neutral-300"
         disabled={isLoading}
       >
         取消
@@ -183,12 +183,12 @@ export function OrderLockDialog({
           ) : (
             <Unlock className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           )}
-          <p className="text-sm text-neutral-700 leading-relaxed">{getDialogDescription()}</p>
+          <p className="text-sm text-neutral-700 dark:text-white/85 leading-relaxed">{getDialogDescription()}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-neutral-900 font-medium">密碼</Label>
+            <Label htmlFor="password" className="text-neutral-900 dark:text-white/95 font-medium">密碼</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -204,7 +204,7 @@ export function OrderLockDialog({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:text-white/85 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -213,12 +213,12 @@ export function OrderLockDialog({
                 )}
               </button>
             </div>
-            <p className="text-xs text-neutral-600">密碼必須是 4 位數字</p>
+            <p className="text-xs text-neutral-600 dark:text-white/75">密碼必須是 4 位數字</p>
           </div>
 
           {(mode === 'set' || mode === 'change') && (
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-neutral-900 font-medium">確認密碼</Label>
+              <Label htmlFor="confirmPassword" className="text-neutral-900 dark:text-white/95 font-medium">確認密碼</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -234,7 +234,7 @@ export function OrderLockDialog({
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:text-white/85 transition-colors"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />

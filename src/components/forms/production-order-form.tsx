@@ -587,7 +587,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
             <p>系統自動扣除 12:30-13:30 午餐時間，並以 0.5 工時為單位向上取整後乘以人數。</p>
           </div>
           {worklogFields.length === 0 ? (
-            <p className="text-sm text-neutral-500">暫未新增工時紀錄，點擊「新增工時」加入第一筆。</p>
+            <p className="text-sm text-neutral-500 dark:text-white/65">暫未新增工時紀錄，點擊「新增工時」加入第一筆。</p>
           ) : (
             <div className="space-y-4">
               <div className="hidden md:block overflow-x-auto">
@@ -693,7 +693,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                               )}
                             />
                           </TableCell>
-                          <TableCell className="text-right font-semibold text-neutral-800">
+                          <TableCell className="text-right font-semibold text-neutral-800 dark:text-white/95">
                             {summary != null && typeof summary === 'number' ? summary.toFixed(1) : '—'}
                           </TableCell>
                           <TableCell className="text-right">
@@ -722,7 +722,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                       </div>
                       <div className="grid grid-cols-1 gap-4 text-sm">
                         <div className="space-y-2">
-                          <Label className="text-xs text-neutral-500">日期</Label>
+                          <Label className="text-xs text-neutral-500 dark:text-white/65">日期</Label>
                           <Controller
                             control={control}
                             name={`worklogs.${index}.workDate` as const}
@@ -737,7 +737,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                           {errorPrefix?.workDate && <p className="text-xs text-destructive mt-1">{errorPrefix.workDate.message as string}</p>}
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-xs text-neutral-500">人數</Label>
+                          <Label className="text-xs text-neutral-500 dark:text-white/65">人數</Label>
                           <Controller
                             control={control}
                             name={`worklogs.${index}.headcount` as const}
@@ -758,7 +758,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-xs text-neutral-500">開始</Label>
+                            <Label className="text-xs text-neutral-500 dark:text-white/65">開始</Label>
                             <Controller
                               control={control}
                               name={`worklogs.${index}.startTime` as const}
@@ -773,7 +773,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                             {errorPrefix?.startTime && <p className="text-xs text-destructive mt-1">{errorPrefix.startTime.message as string}</p>}
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs text-neutral-500">結束</Label>
+                            <Label className="text-xs text-neutral-500 dark:text-white/65">結束</Label>
                             <Controller
                               control={control}
                               name={`worklogs.${index}.endTime` as const}
@@ -789,7 +789,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-xs text-neutral-500">備註</Label>
+                          <Label className="text-xs text-neutral-500 dark:text-white/65">備註</Label>
                           <Controller
                             control={control}
                             name={`worklogs.${index}.notes` as const}
@@ -1164,7 +1164,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
               <Card key={field.id} className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction border border-neutral-200">
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-base text-neutral-800">
+                    <h4 className="font-semibold text-base text-neutral-800 dark:text-white/95">
                       原料 #{index + 1}
                     </h4>
                     <Button

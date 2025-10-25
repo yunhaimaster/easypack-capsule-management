@@ -284,10 +284,10 @@ export default function MarketingAssistantPage() {
               <span className="h-2 w-2 rounded-full bg-info-500" />
               AI 行銷工具
             </div>
-            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800">
+            <h1 className="text-2xl md:text-xl font-semibold text-neutral-800 dark:text-white/95">
               行銷設計助手
             </h1>
-            <p className="text-sm md:text-sm text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-sm md:text-sm text-neutral-600 dark:text-white/75 max-w-2xl mx-auto">
               使用 DeepSeek V3.1 Terminus 分析配方，Doubao SeeDream 4.0 生成包裝圖像
             </p>
           </div>
@@ -297,7 +297,7 @@ export default function MarketingAssistantPage() {
             <div className="liquid-glass-content p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-3 sm:space-y-0 mb-6">
                 <IconContainer icon={Brain} variant="info" size="md" />
-                <h2 className="text-lg font-semibold text-neutral-800">配方輸入</h2>
+                <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">配方輸入</h2>
               </div>
 
               <div className="space-y-6">

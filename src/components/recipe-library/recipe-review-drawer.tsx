@@ -176,7 +176,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
               <Checkbox checked={isChecked} onCheckedChange={() => toggle(recipe.id)} aria-label="選擇此配方" />
               <div className="flex-1 space-y-3">
                 <div>
-                  <label className="text-xs text-neutral-600 block mb-1">配方名稱 *</label>
+                  <label className="text-xs text-neutral-600 dark:text-white/75 block mb-1">配方名稱 *</label>
                   <Input
                     value={displayValue.recipeName}
                     onChange={(e) => updateEdit(recipe.id, 'recipeName', e.target.value)}
@@ -185,7 +185,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-600 block mb-1">用途說明</label>
+                  <label className="text-xs text-neutral-600 dark:text-white/75 block mb-1">用途說明</label>
                   <Textarea
                     value={displayValue.description || ''}
                     onChange={(e) => updateEdit(recipe.id, 'description', e.target.value)}
@@ -195,7 +195,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="text-xs text-neutral-600 block mb-1">膠囊大小</label>
+                    <label className="text-xs text-neutral-600 dark:text-white/75 block mb-1">膠囊大小</label>
                     <Input
                       value={displayValue.capsuleSize || ''}
                       onChange={(e) => updateEdit(recipe.id, 'capsuleSize', e.target.value)}
@@ -204,7 +204,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-neutral-600 block mb-1">膠囊顏色</label>
+                    <label className="text-xs text-neutral-600 dark:text-white/75 block mb-1">膠囊顏色</label>
                     <Input
                       value={displayValue.capsuleColor || ''}
                       onChange={(e) => updateEdit(recipe.id, 'capsuleColor', e.target.value)}
@@ -213,7 +213,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-neutral-600 block mb-1">膠囊類型</label>
+                    <label className="text-xs text-neutral-600 dark:text-white/75 block mb-1">膠囊類型</label>
                     <Input
                       value={displayValue.capsuleType || ''}
                       onChange={(e) => updateEdit(recipe.id, 'capsuleType', e.target.value)}
@@ -247,7 +247,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-base font-medium text-neutral-800">
+                    <h3 className="text-base font-medium text-neutral-800 dark:text-white/95">
                       {displayValue.recipeName || '未命名配方'}
                     </h3>
                     {hasEdits && <Badge variant="outline" className="text-xs">已編輯</Badge>}
@@ -259,12 +259,12 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                     )}
                   </div>
                   {displayValue.description && (
-                    <p className="text-sm text-neutral-600 mt-1 line-clamp-2">{displayValue.description}</p>
+                    <p className="text-sm text-neutral-600 dark:text-white/75 mt-1 line-clamp-2">{displayValue.description}</p>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-neutral-600 flex-wrap">
+              <div className="flex items-center gap-3 text-xs text-neutral-600 dark:text-white/75 flex-wrap">
                 <div className="flex items-center gap-1">
                   <List className="h-3 w-3" />
                   <span>{displayValue.ingredients.length} 項原料</span>
@@ -323,7 +323,7 @@ export function RecipeReviewDrawer({ isOpen, onOpenChange, recipes, conflicts, o
                 {counts.duplicate > 0 && (
                   <Badge variant="outline" className="text-danger-600">重複 {counts.duplicate}</Badge>
                 )}
-                <div className="ml-auto text-xs text-neutral-600">已選 {counts.selected}</div>
+                <div className="ml-auto text-xs text-neutral-600 dark:text-white/75">已選 {counts.selected}</div>
               </div>
             </Card>
 

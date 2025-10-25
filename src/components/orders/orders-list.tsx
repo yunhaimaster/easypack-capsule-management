@@ -221,12 +221,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
 
   const getSortIcon = (column: string) => {
     if (filters.sortBy !== column) {
-      return <ArrowUpDown className="h-3 w-3 text-neutral-400" aria-hidden="true" />
+      return <ArrowUpDown className="h-3 w-3 text-neutral-400 dark:text-white/55" aria-hidden="true" />
     }
     
     return filters.sortOrder === 'asc' 
-      ? <ArrowUp className="h-3 w-3 text-neutral-600" aria-hidden="true" />
-      : <ArrowDown className="h-3 w-3 text-neutral-600" aria-hidden="true" />
+      ? <ArrowUp className="h-3 w-3 text-neutral-600 dark:text-white/75" aria-hidden="true" />
+      : <ArrowDown className="h-3 w-3 text-neutral-600 dark:text-white/75" aria-hidden="true" />
   }
 
   const requestDelete = (orderId: string) => {
@@ -336,7 +336,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                 </div>
                 <span style={{ color: '#2a588c' }}>訂單管理</span>
               </h2>
-              <p className="text-neutral-600 mt-2">管理所有膠囊生產訂單</p>
+              <p className="text-neutral-600 dark:text-white/75 mt-2">管理所有膠囊生產訂單</p>
             </div>
           </div>
           <div className="overflow-x-auto" aria-live="polite">
@@ -346,12 +346,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                 <tr className="border-b border-neutral-200 bg-neutral-50">
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'customerName' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('customerName')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       客戶名稱
                       {getSortIcon('customerName')}
@@ -362,12 +362,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   </th>
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'productName' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('productName')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       產品名稱
                       {getSortIcon('productName')}
@@ -378,12 +378,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   </th>
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'capsuleColor' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('capsuleColor')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       膠囊規格
                       {getSortIcon('capsuleColor')}
@@ -394,12 +394,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   </th>
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'ingredients' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('ingredients')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       原料成分
                       {getSortIcon('ingredients')}
@@ -410,12 +410,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   </th>
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'productionQuantity' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('productionQuantity')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       生產數量
                       {getSortIcon('productionQuantity')}
@@ -426,12 +426,12 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                   </th>
                   <th
                     scope="col"
-                    className="text-left py-3 px-4 font-medium text-neutral-900 text-sm"
+                    className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm"
                     aria-sort={filters.sortBy === 'completionDate' ? (filters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   >
                     <button
                       onClick={() => handleSort('completionDate')}
-                      className="flex items-center gap-1 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
+                      className="flex items-center gap-1 hover:text-neutral-700 dark:text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2"
                     >
                       完工日期
                       {getSortIcon('completionDate')}
@@ -440,7 +440,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                       </span>
                     </button>
                   </th>
-                  <th scope="col" className="text-left py-3 px-4 font-medium text-neutral-900 text-sm">
+                  <th scope="col" className="text-left py-3 px-4 font-medium text-neutral-900 dark:text-white/95 text-sm">
                     操作
                   </th>
                 </tr>
@@ -448,13 +448,13 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-neutral-500">
+                    <td colSpan={7} className="text-center py-8 text-neutral-500 dark:text-white/65">
                       載入中...
                     </td>
                   </tr>
                 ) : orders.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-neutral-500">
+                    <td colSpan={7} className="text-center py-8 text-neutral-500 dark:text-white/65">
                       沒有找到訂單
                     </td>
                   </tr>
@@ -465,13 +465,13 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                       className="border-b border-neutral-100 hover:bg-neutral-50 cursor-pointer transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         {order.customerName}
                       </td>
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         {order.productName}
                       </td>
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         <div className="flex items-center gap-2">
                           {order.capsuleColor && (
                             <div 
@@ -490,7 +490,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         <div className="text-sm max-w-xs">
                           {order.ingredients && order.ingredients.length > 0 ? (
                             <div className="space-y-1">
@@ -503,20 +503,20 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
                                 </div>
                               ))}
                               {order.ingredients.length > 2 && (
-                                <div className="text-neutral-500 text-sm">
+                                <div className="text-neutral-500 dark:text-white/65 text-sm">
                                   +{order.ingredients.length - 2} 更多...
                                 </div>
                               )}
                             </div>
                           ) : (
-                            <span className="text-neutral-500 text-sm">無原料資料</span>
+                            <span className="text-neutral-500 dark:text-white/65 text-sm">無原料資料</span>
                           )}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         {order.productionQuantity?.toLocaleString()}
                       </td>
-                      <td className="py-3 px-4 text-neutral-900 text-sm">
+                      <td className="py-3 px-4 text-neutral-900 dark:text-white/95 text-sm">
                         {order.completionDate ? formatDateOnly(order.completionDate) : '未完工'}
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
@@ -561,7 +561,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
               >
                 上一頁
               </Button>
-              <span className="flex items-center px-4 py-2 text-sm text-neutral-600 ">
+              <span className="flex items-center px-4 py-2 text-sm text-neutral-600 dark:text-white/75 ">
                 第 {pagination.page} 頁，共 {pagination.totalPages} 頁
               </span>
               <Button

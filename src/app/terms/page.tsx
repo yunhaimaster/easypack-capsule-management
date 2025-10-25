@@ -46,8 +46,8 @@ export default function TermsPage() {
             <FileSignature className="h-4 w-4" />
             Easy Health 服務條款
           </div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-800">專業、透明的合作協議</h1>
-          <p className="text-sm sm:text-base text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-800 dark:text-white/95">專業、透明的合作協議</h1>
+          <p className="text-sm sm:text-base text-neutral-600 dark:text-white/75 max-w-3xl mx-auto leading-relaxed">
             以下條款旨在確保 Easy Health 與所有使用者皆能於安全、專業與透明的框架下運作。如有任何疑問，歡迎與我們聯絡，我們會提供進一步協助。
           </p>
         </section>
@@ -59,10 +59,10 @@ export default function TermsPage() {
                 <div className="icon-container icon-container-purple">
                   <section.icon className="h-5 w-5 text-white" />
                 </div>
-                <CardTitle className="text-base text-neutral-800">{section.title}</CardTitle>
+                <CardTitle className="text-base text-neutral-800 dark:text-white/95">{section.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-neutral-600 leading-relaxed">{section.description}</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">{section.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -71,9 +71,9 @@ export default function TermsPage() {
         <section className="grid gap-6 md:grid-cols-2">
           <Card className="liquid-glass-card liquid-glass-card-elevated">
             <CardHeader>
-              <CardTitle className="text-lg text-neutral-800">使用者責任</CardTitle>
+              <CardTitle className="text-lg text-neutral-800 dark:text-white/95">使用者責任</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-neutral-600">
+            <CardContent className="space-y-3 text-sm text-neutral-600 dark:text-white/75">
               <ul className="space-y-2">
                 <li>• 僅於授權範圍內使用系統，不得從事非法或侵權行為。</li>
                 <li>• 應保障帳戶安全，如發現異常活動需即時通知 Easy Health。</li>
@@ -84,16 +84,16 @@ export default function TermsPage() {
 
           <Card className="liquid-glass-card liquid-glass-card-elevated">
             <CardHeader>
-              <CardTitle className="text-lg text-neutral-800">聯絡與協助</CardTitle>
+              <CardTitle className="text-lg text-neutral-800 dark:text-white/95">聯絡與協助</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-neutral-600">
+            <CardContent className="space-y-3 text-sm text-neutral-600 dark:text-white/75">
               <p>若您對條款內容有任何疑問，請聯絡 Easy Health 法務團隊：</p>
               <ul className="space-y-2">
                 <li>📧 電郵：legal@easyhealth.hk</li>
                 <li>📞 電話：+852 1234 5678</li>
                 <li>🏢 地址：香港九龍灣啟德數碼港 88 號</li>
               </ul>
-              <p className="text-xs text-neutral-500">我們將於 5 個工作天內回覆，並提供協助。</p>
+              <p className="text-xs text-neutral-500 dark:text-white/65">我們將於 5 個工作天內回覆，並提供協助。</p>
             </CardContent>
           </Card>
         </section>

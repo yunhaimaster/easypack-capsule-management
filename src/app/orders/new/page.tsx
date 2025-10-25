@@ -55,7 +55,7 @@ function NewOrderContent() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto text-info-600 mb-4" />
-            <p className="text-neutral-600">載入配方資料中...</p>
+            <p className="text-neutral-600 dark:text-white/75">載入配方資料中...</p>
           </div>
         </main>
       </div>
@@ -78,7 +78,7 @@ function NewOrderContent() {
             </div>
             <div>
               <h1 className="text-lg md:text-lg font-semibold text-[--brand-neutral]">建立新配方</h1>
-              <p className="text-xs md:text-xs text-neutral-600">輸入客戶、配方與原料資料以建立批次紀錄</p>
+              <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">輸入客戶、配方與原料資料以建立批次紀錄</p>
             </div>
           </div>
         </section>

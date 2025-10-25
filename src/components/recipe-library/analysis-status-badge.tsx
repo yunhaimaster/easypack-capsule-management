@@ -78,7 +78,7 @@ export function AnalysisStatusBadge({ status, onRetry, className }: AnalysisStat
     <Badge 
       variant="outline" 
       className={cn(
-        "flex items-center gap-1.5 bg-neutral-50 text-neutral-600 border-neutral-200",
+        "flex items-center gap-1.5 bg-neutral-50 text-neutral-600 dark:text-white/75 border-neutral-200",
         className
       )}
     >

@@ -46,8 +46,8 @@ export default function PrivacyPage() {
             <Shield className="h-4 w-4" />
             Easy Health 隱私政策
           </div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-800">保護您的資料，是我們的首要任務</h1>
-          <p className="text-sm sm:text-base text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-800 dark:text-white/95">保護您的資料，是我們的首要任務</h1>
+          <p className="text-sm sm:text-base text-neutral-600 dark:text-white/75 max-w-3xl mx-auto leading-relaxed">
             我們以最高標準保護您的個人與業務資料，並確保所有資料收集、使用與保存流程完全透明，符合香港相關法規及業界最佳實務。
           </p>
         </section>
@@ -59,10 +59,10 @@ export default function PrivacyPage() {
                 <div className="icon-container icon-container-blue">
                   <section.icon className="h-5 w-5 text-white" />
                 </div>
-                <CardTitle className="text-base text-neutral-800">{section.title}</CardTitle>
+                <CardTitle className="text-base text-neutral-800 dark:text-white/95">{section.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-neutral-600 leading-relaxed">{section.description}</p>
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">{section.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -71,24 +71,24 @@ export default function PrivacyPage() {
         <section className="grid gap-6 md:grid-cols-2">
           <Card className="liquid-glass-card liquid-glass-card-elevated">
             <CardHeader>
-              <CardTitle className="text-lg text-neutral-800">資料請求與聯絡方式</CardTitle>
+              <CardTitle className="text-lg text-neutral-800 dark:text-white/95">資料請求與聯絡方式</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-neutral-600">
+            <CardContent className="space-y-3 text-sm text-neutral-600 dark:text-white/75">
               <p>如需查詢、更新或刪除資料，請聯絡 Easy Health 資料保護負責人：</p>
               <ul className="space-y-2">
                 <li>📧 電郵：privacy@easyhealth.hk</li>
                 <li>📞 電話：+852 1234 5678</li>
                 <li>🏢 地址：香港九龍灣啟德數碼港 88 號</li>
               </ul>
-              <p className="text-xs text-neutral-500">我們會於 7 個工作天內回覆您的請求，並提供適當協助。</p>
+              <p className="text-xs text-neutral-500 dark:text-white/65">我們會於 7 個工作天內回覆您的請求，並提供適當協助。</p>
             </CardContent>
           </Card>
 
           <Card className="liquid-glass-card liquid-glass-card-elevated">
             <CardHeader>
-              <CardTitle className="text-lg text-neutral-800">政策更新</CardTitle>
+              <CardTitle className="text-lg text-neutral-800 dark:text-white/95">政策更新</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-neutral-600">
+            <CardContent className="space-y-3 text-sm text-neutral-600 dark:text-white/75">
               <p>隱私政策將因應法律與服務需求定期更新。所有更新會即時於本頁公布，並顯示最新生效日期。</p>
               <div className="rounded-xl bg-primary-500/10 border border-primary-300/40 p-3 text-primary-700 text-sm">
                 最新更新日期：2025年10月1日

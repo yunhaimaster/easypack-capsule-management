@@ -167,7 +167,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto" />
-        <p className="mt-4 text-neutral-600">載入中...</p>
+        <p className="mt-4 text-neutral-600 dark:text-white/75">載入中...</p>
       </div>
     )
   }
@@ -215,7 +215,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
           </select>
         </div>
         
-        <div className="text-sm text-neutral-600">
+        <div className="text-sm text-neutral-600 dark:text-white/75">
           共 {logs.length} 條記錄
         </div>
       </div>
@@ -236,15 +236,15 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-neutral-800">
+                    <span className="font-medium text-neutral-800 dark:text-white/95">
                       {actionNames[log.action] || log.action}
                     </span>
-                    <span className="text-neutral-400">·</span>
-                    <span className="text-sm text-neutral-600">
+                    <span className="text-neutral-400 dark:text-white/55">·</span>
+                    <span className="text-sm text-neutral-600 dark:text-white/75">
                       {log.user?.nickname ? (
                         <>
                           {log.user.nickname}
-                          <span className="text-neutral-400 ml-1">({log.user.phoneE164})</span>
+                          <span className="text-neutral-400 dark:text-white/55 ml-1">({log.user.phoneE164})</span>
                         </>
                       ) : (
                         log.user?.phoneE164 || log.phone || '未知用戶'
@@ -253,7 +253,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                   </div>
                   
                   <div className="space-y-1">
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500 dark:text-white/65">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {new Date(log.createdAt).toLocaleString('zh-HK')}
@@ -267,8 +267,8 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                         <div className="space-y-0.5">
                           {Object.entries(log.metadata as Record<string, any>).map(([key, value]) => (
                             <div key={key} className="flex gap-2">
-                              <span className="text-neutral-500 font-medium min-w-[80px]">{key}:</span>
-                              <span className="text-neutral-700">{String(value)}</span>
+                              <span className="text-neutral-500 dark:text-white/65 font-medium min-w-[80px]">{key}:</span>
+                              <span className="text-neutral-700 dark:text-white/85">{String(value)}</span>
                             </div>
                           ))}
                         </div>
@@ -285,7 +285,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
       {logs.length === 0 && (
         <Card className="p-12 text-center">
           <FileText className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-          <p className="text-neutral-600">暫無審計日誌</p>
+          <p className="text-neutral-600 dark:text-white/75">暫無審計日誌</p>
         </Card>
       )}
 
@@ -301,7 +301,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
             <ChevronLeft className="h-4 w-4" />
           </Button>
           
-          <span className="text-sm text-neutral-600">
+          <span className="text-sm text-neutral-600 dark:text-white/75">
             第 {page} / {totalPages} 頁
           </span>
           

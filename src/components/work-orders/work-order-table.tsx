@@ -124,13 +124,13 @@ function SortableHeader({
   
   return (
     <th 
-      className="px-4 py-3 text-left text-sm font-medium text-neutral-700 cursor-pointer hover:bg-surface-secondary/50 transition-colors"
+      className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85 cursor-pointer hover:bg-surface-secondary/50 transition-colors"
       onClick={() => onSort(field)}
     >
       <div className="flex items-center gap-2">
         <span>{label}</span>
         <ArrowUpDown 
-          className={`h-4 w-4 ${isActive ? 'text-primary-600' : 'text-neutral-400'}`}
+          className={`h-4 w-4 ${isActive ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'}`}
         />
         {isActive && (
           <span className="text-xs text-primary-600">
@@ -186,7 +186,7 @@ export function WorkOrderTable({
           <div className="bg-surface-primary rounded-lg p-4 shadow-lg">
             <div className="flex items-center gap-3">
               <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary-600 border-t-transparent" />
-              <span className="text-sm text-neutral-700">更新中...</span>
+              <span className="text-sm text-neutral-700 dark:text-white/85">更新中...</span>
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@ export function WorkOrderTable({
                 sortOrder={sortOrder}
                 onSort={onSort}
               />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 VIP標記
               </th>
               <SortableHeader
@@ -227,16 +227,16 @@ export function WorkOrderTable({
                 sortOrder={sortOrder}
                 onSort={onSort}
               />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 工作類型
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 負責人
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 物料狀態
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 狀態標記
               </th>
               <SortableHeader
@@ -246,7 +246,7 @@ export function WorkOrderTable({
                 sortOrder={sortOrder}
                 onSort={onSort}
               />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 操作
               </th>
             </tr>
@@ -264,7 +264,7 @@ export function WorkOrderTable({
             {/* Actual data rows */}
             {!isLoading && workOrders.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-4 py-12 text-center text-neutral-500">
+                <td colSpan={11} className="px-4 py-12 text-center text-neutral-500 dark:text-white/65">
                   沒有找到工作單
                 </td>
               </tr>
@@ -296,7 +296,7 @@ export function WorkOrderTable({
                     {workOrder.jobNumber || '-'}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-neutral-800">
+                <td className="px-4 py-3 text-neutral-800 dark:text-white/95">
                   {workOrder.customerName}
                 </td>
                 <td className="px-4 py-3">
@@ -314,7 +314,7 @@ export function WorkOrderTable({
                       </Badge>
                     )}
                     {!workOrder.isCustomerServiceVip && !workOrder.isBossVip && (
-                      <span className="text-neutral-400 text-xs">-</span>
+                      <span className="text-neutral-400 dark:text-white/55 text-xs">-</span>
                     )}
                   </div>
                 </td>
@@ -324,7 +324,7 @@ export function WorkOrderTable({
                 <td className="px-4 py-3">
                   <WorkTypeBadge workType={workOrder.workType} />
                 </td>
-                <td className="px-4 py-3 text-neutral-700">
+                <td className="px-4 py-3 text-neutral-700 dark:text-white/85">
                   {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
                 </td>
                 <td className="px-4 py-3">
@@ -335,7 +335,7 @@ export function WorkOrderTable({
                         <span>生產</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1 text-neutral-400" title="生產物料未齊">
+                      <div className="flex items-center gap-1 text-neutral-400 dark:text-white/55" title="生產物料未齊">
                         <XCircle className="h-4 w-4" />
                         <span>生產</span>
                       </div>
@@ -346,7 +346,7 @@ export function WorkOrderTable({
                         <span>包裝</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1 text-neutral-400" title="包裝物料未齊">
+                      <div className="flex items-center gap-1 text-neutral-400 dark:text-white/55" title="包裝物料未齊">
                         <XCircle className="h-4 w-4" />
                         <span>包裝</span>
                       </div>
@@ -373,11 +373,11 @@ export function WorkOrderTable({
                       </Badge>
                     )}
                     {!workOrder.isUrgent && !workOrder.productionStarted && !workOrder.isCompleted && (
-                      <span className="text-neutral-400 text-xs">-</span>
+                      <span className="text-neutral-400 dark:text-white/55 text-xs">-</span>
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-neutral-700 text-sm">
+                <td className="px-4 py-3 text-neutral-700 dark:text-white/85 text-sm">
                   {workOrder.markedDate 
                     ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK')
                     : '-'

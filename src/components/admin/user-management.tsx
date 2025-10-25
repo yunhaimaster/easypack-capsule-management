@@ -24,7 +24,7 @@ interface User {
 const roleColors = {
   ADMIN: 'text-danger-600 bg-danger-50 border-danger-200',
   MANAGER: 'text-warning-600 bg-warning-50 border-warning-200',
-  EMPLOYEE: 'text-neutral-600 bg-neutral-50 border-neutral-200',
+  EMPLOYEE: 'text-neutral-600 dark:text-white/75 bg-neutral-50 border-neutral-200',
 }
 
 const roleNames = {
@@ -201,7 +201,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto" />
-        <p className="mt-4 text-neutral-600">載入中...</p>
+        <p className="mt-4 text-neutral-600 dark:text-white/75">載入中...</p>
       </div>
     )
   }
@@ -211,8 +211,8 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       {/* Add User Button */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-800">用戶列表</h2>
-          <p className="text-sm text-neutral-600">共 {users.length} 位用戶</p>
+          <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">用戶列表</h2>
+          <p className="text-sm text-neutral-600 dark:text-white/75">共 {users.length} 位用戶</p>
         </div>
         <Button
           onClick={() => setShowAddForm(true)}
@@ -226,10 +226,10 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       {/* Add User Form */}
       {showAddForm && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-neutral-800 mb-4">添加新用戶</h3>
+          <h3 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">添加新用戶</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 電話號碼
               </label>
               <Input
@@ -238,11 +238,11 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                 onChange={(e) => setNewPhone(e.target.value)}
                 placeholder="輸入 8 位數字（自動加 +852）或完整號碼"
               />
-              <p className="mt-1 text-xs text-neutral-500">例如: 66244432 或 +85266244432</p>
+              <p className="mt-1 text-xs text-neutral-500 dark:text-white/65">例如: 66244432 或 +85266244432</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
                 角色
               </label>
               <select
@@ -284,7 +284,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
               <div className="flex-1">
                 {/* Nickname or Phone Display */}
                 <div className="flex items-center gap-3 mb-2">
-                  <Phone className="h-4 w-4 text-neutral-500" />
+                  <Phone className="h-4 w-4 text-neutral-500 dark:text-white/65" />
                   {editingNickname === user.id ? (
                     <div className="flex items-center gap-2 flex-1">
                       <Input
@@ -307,7 +307,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                           setEditingNickname(null)
                           setNicknameValue('')
                         }}
-                        className="p-1 text-neutral-600 hover:bg-neutral-50 rounded"
+                        className="p-1 text-neutral-600 dark:text-white/75 hover:bg-neutral-50 rounded"
                         title="取消"
                       >
                         <X className="h-4 w-4" />
@@ -318,11 +318,11 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                       <div className="flex flex-col">
                         {user.nickname ? (
                           <>
-                            <span className="font-medium text-neutral-800">{user.nickname}</span>
-                            <span className="text-sm text-neutral-500">{user.phoneE164}</span>
+                            <span className="font-medium text-neutral-800 dark:text-white/95">{user.nickname}</span>
+                            <span className="text-sm text-neutral-500 dark:text-white/65">{user.phoneE164}</span>
                           </>
                         ) : (
-                          <span className="font-medium text-neutral-800">{user.phoneE164}</span>
+                          <span className="font-medium text-neutral-800 dark:text-white/95">{user.phoneE164}</span>
                         )}
                       </div>
                       <button
@@ -330,7 +330,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                           setEditingNickname(user.id)
                           setNicknameValue(user.nickname || '')
                         }}
-                        className="p-1 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                        className="p-1 text-neutral-400 dark:text-white/55 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
                         title="編輯暱稱"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -356,7 +356,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                       </button>
                       <button
                         onClick={() => setEditingUser(null)}
-                        className="p-1 text-neutral-600 hover:bg-neutral-50 rounded"
+                        className="p-1 text-neutral-600 dark:text-white/75 hover:bg-neutral-50 rounded"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -368,7 +368,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-white/75">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
                     加入: {new Date(user.createdAt).toLocaleDateString('zh-HK')}
@@ -415,7 +415,7 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
       {users.length === 0 && (
         <Card className="p-12 text-center">
           <Shield className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-          <p className="text-neutral-600">暫無用戶</p>
+          <p className="text-neutral-600 dark:text-white/75">暫無用戶</p>
         </Card>
       )}
     </div>

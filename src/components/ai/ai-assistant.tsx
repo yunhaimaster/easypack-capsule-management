@@ -136,7 +136,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
         
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {messages.length === 0 ? (
-            <div className="text-center py-8 text-neutral-500">
+            <div className="text-center py-8 text-neutral-500 dark:text-white/65">
               <Bot className="h-12 w-12 mx-auto mb-4 opacity-50 text-blue-600" />
               <p className="text-lg font-medium mb-2">歡迎使用 AI 訂單助手！</p>
               <p className="text-sm mb-4">您可以詢問關於訂單的任何問題，例如：</p>
@@ -181,7 +181,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-neutral-100 text-neutral-900'
+                      : 'bg-neutral-100 text-neutral-900 dark:text-white/95'
                   }`}
                 >
                   <MarkdownRenderer content={message.content} />
@@ -195,7 +195,7 @@ export function AIAssistant({ orders }: AIAssistantProps) {
               <div className="bg-neutral-100 rounded-lg p-3">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                  <span className="text-sm text-neutral-600">AI 正在思考...</span>
+                  <span className="text-sm text-neutral-600 dark:text-white/75">AI 正在思考...</span>
                 </div>
               </div>
             </div>

@@ -241,7 +241,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
 
       {/* File Upload Area */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-neutral-700 mb-3">
+        <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-3">
           上傳文件
         </label>
         <div
@@ -257,14 +257,14 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
           }`}
         >
           <Upload className={`h-12 w-12 mx-auto mb-3 ${
-            isDragOver ? 'text-primary-600' : 'text-neutral-400'
+            isDragOver ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'
           }`} />
           <p className={`text-sm mb-1 ${
-            isDragOver ? 'text-primary-700 font-medium' : 'text-neutral-600'
+            isDragOver ? 'text-primary-700 font-medium' : 'text-neutral-600 dark:text-white/75'
           }`}>
             {isDragOver ? '放開文件以上傳' : '點擊選擇文件或拖放文件到此處'}
           </p>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-neutral-500 dark:text-white/65">
             支援 CSV、XLSX 格式
           </p>
           <input
@@ -282,8 +282,8 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
   const renderValidatingStep = () => (
     <div className="py-12 text-center">
       <Loader2 className="h-12 w-12 text-primary-600 animate-spin mx-auto mb-4" />
-      <p className="text-neutral-700 font-medium">正在驗證文件...</p>
-      <p className="text-sm text-neutral-500 mt-2">請稍候</p>
+      <p className="text-neutral-700 dark:text-white/85 font-medium">正在驗證文件...</p>
+      <p className="text-sm text-neutral-500 dark:text-white/65 mt-2">請稍候</p>
     </div>
   )
 
@@ -328,7 +328,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
         {/* Error Details */}
         {validationResult.errors.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-neutral-700 mb-3">錯誤詳情：</h3>
+            <h3 className="text-sm font-medium text-neutral-700 dark:text-white/85 mb-3">錯誤詳情：</h3>
             <div className="max-h-48 overflow-y-auto border border-neutral-200 rounded-lg">
               {validationResult.errors.slice(0, 10).map((err, idx) => (
                 <div key={idx} className="p-3 border-b border-neutral-100 last:border-b-0">
@@ -338,7 +338,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
                 </div>
               ))}
               {validationResult.errors.length > 10 && (
-                <div className="p-3 text-center text-xs text-neutral-500">
+                <div className="p-3 text-center text-xs text-neutral-500 dark:text-white/65">
                   還有 {validationResult.errors.length - 10} 個錯誤...
                 </div>
               )}
@@ -361,17 +361,17 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
   const renderImportingStep = () => (
     <div className="py-12 text-center">
       <Loader2 className="h-12 w-12 text-primary-600 animate-spin mx-auto mb-4" />
-      <p className="text-neutral-700 font-medium">正在匯入工作單...</p>
-      <p className="text-sm text-neutral-500 mt-2">請勿關閉此視窗</p>
+      <p className="text-neutral-700 dark:text-white/85 font-medium">正在匯入工作單...</p>
+      <p className="text-sm text-neutral-500 dark:text-white/65 mt-2">請勿關閉此視窗</p>
     </div>
   )
 
   const renderSuccessStep = () => (
     <div className="py-12 text-center">
       <CheckCircle className="h-16 w-16 text-success-600 mx-auto mb-4" />
-      <p className="text-xl font-bold text-neutral-900 mb-2">匯入成功！</p>
+      <p className="text-xl font-bold text-neutral-900 dark:text-white/95 mb-2">匯入成功！</p>
       {importResult && (
-        <div className="text-sm text-neutral-600 space-y-1">
+        <div className="text-sm text-neutral-600 dark:text-white/75 space-y-1">
           <p>成功創建 {importResult.created} 個工作單</p>
           {importResult.updated > 0 && <p>更新 {importResult.updated} 個工作單</p>}
         </div>
@@ -384,7 +384,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <Upload className="h-6 w-6 text-primary-600" />
-          <h2 className="text-2xl font-bold text-neutral-900">匯入工作單</h2>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white/95">匯入工作單</h2>
         </div>
 
         {/* Error Message */}

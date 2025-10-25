@@ -172,14 +172,14 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
         </div>
         
         {/* 第二行：產品名稱 + 元數據 */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400 ml-11">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400 dark:text-white/55 ml-11">
           {/* 產品名稱 */}
           <span className="font-medium truncate max-w-[200px]">
             {recipe.productName}
           </span>
           
           {/* 分隔符 */}
-          <span className="hidden sm:inline text-neutral-400">·</span>
+          <span className="hidden sm:inline text-neutral-400 dark:text-white/55">·</span>
           
           {/* 原料數量 */}
           <span className="flex items-center gap-1">
@@ -190,7 +190,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           {/* 使用次數（僅生產配方） */}
           {!isTemplate && recipe.productionCount > 0 && (
             <>
-              <span className="hidden sm:inline text-neutral-400">·</span>
+              <span className="hidden sm:inline text-neutral-400 dark:text-white/55">·</span>
               <span>使用 {recipe.productionCount} 次</span>
             </>
           )}
@@ -198,7 +198,7 @@ export function RecipeListItem({ recipe, onView, onEdit, onCreateOrder, onMarket
           {/* 效果標籤 - 視覺化分類顯示 */}
           {recipe.aiEffectsAnalysis && (
             <>
-              <span className="hidden sm:inline text-neutral-400">·</span>
+              <span className="hidden sm:inline text-neutral-400 dark:text-white/55">·</span>
               <EffectBadges 
                 effectsAnalysis={recipe.aiEffectsAnalysis}
                 maxBadges={3}

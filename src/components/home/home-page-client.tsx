@@ -119,10 +119,10 @@ export function HomePageClient() {
       <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
         {/* Page Title */}
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-neutral-900">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white/95">
             膠囊生產營運中樞
           </h1>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-white/75">
             訂單管理、配方庫與 AI 助手一次整合
           </p>
         </div>
@@ -131,7 +131,7 @@ export function HomePageClient() {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
-            <h2 className="text-sm font-semibold text-neutral-600 uppercase tracking-wider">核心功能</h2>
+            <h2 className="text-sm font-semibold text-neutral-600 dark:text-white/75 uppercase tracking-wider">核心功能</h2>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -144,7 +144,7 @@ export function HomePageClient() {
                     <p className="text-xs text-success-500/70">快速建立生產訂單</p>
                   </div>
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
                   建立新的膠囊生產訂單，設定原料比例、膠囊規格與生產數量。
                 </p>
                 <div className="mt-auto">
@@ -164,7 +164,7 @@ export function HomePageClient() {
                     <p className="text-xs text-primary-500/70">查看所有生產訂單</p>
                   </div>
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
                   瀏覽所有生產訂單，查看狀態、工時記錄與生產進度。
                 </p>
                 <div className="mt-auto">
@@ -184,7 +184,7 @@ export function HomePageClient() {
                     <p className="text-xs text-warning-500/70">記錄生產工時</p>
                   </div>
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
                   記錄生產工時，追蹤工作進度與效率分析。
                 </p>
                 <div className="mt-auto">
@@ -201,7 +201,7 @@ export function HomePageClient() {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
-            <h2 className="text-sm font-semibold text-neutral-600 uppercase tracking-wider">輔助工具</h2>
+            <h2 className="text-sm font-semibold text-neutral-600 dark:text-white/75 uppercase tracking-wider">輔助工具</h2>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -214,7 +214,7 @@ export function HomePageClient() {
                     <p className="text-xs text-info-500/70">歷史配方、備註、AI 功效一次到位</p>
                   </div>
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
                   瀏覽歷史膠囊配方，保留製程問題與品管備註，並可手動觸發 AI 功效分析。
                 </p>
                 <div className="mt-auto">
@@ -234,7 +234,7 @@ export function HomePageClient() {
                     <p className="text-xs text-secondary-500/70">智能助手加速行銷與生產分析</p>
                   </div>
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
                   多種 AI 工具協助配方生成、製粒分析與行銷設計。
                 </p>
                 <div className="mt-auto space-y-2">
@@ -262,8 +262,8 @@ export function HomePageClient() {
               <div className="flex items-center gap-3">
                 <IconContainer icon={CalendarDays} variant="primary" size="md" />
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-800">2025年10月23日 · 重大更新</h3>
-                  <p className="text-xs text-neutral-500">最新版本：v2.7.0</p>
+                  <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">2025年10月23日 · 重大更新</h3>
+                  <p className="text-xs text-neutral-500 dark:text-white/75">最新版本：v2.7.0</p>
                 </div>
               </div>
               <Link 
@@ -273,7 +273,7 @@ export function HomePageClient() {
                 查看完整歷史
               </Link>
             </div>
-            <ul className="space-y-2 text-xs sm:text-sm text-neutral-600">
+            <ul className="space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-white/75">
               <li className="flex items-start gap-2">
                 <span className="text-success-500 mt-0.5">🔐</span>
                 <span>全新 OTP 電話驗證系統上線，支援手機驗證碼登入、設備信任功能，30天免密登入更便利</span>
