@@ -22,9 +22,9 @@ interface User {
 }
 
 const roleColors = {
-  ADMIN: 'text-danger-600 bg-danger-50 border-danger-200',
-  MANAGER: 'text-warning-600 bg-warning-50 border-warning-200',
-  EMPLOYEE: 'text-neutral-600 dark:text-white/75 bg-neutral-50 border-neutral-200',
+  ADMIN: 'text-danger-600 bg-danger-50 dark:bg-danger-900/20 border-danger-200 dark:border-danger-800/30',
+  MANAGER: 'text-warning-600 bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800/30',
+  EMPLOYEE: 'text-neutral-600 dark:text-white/75 bg-neutral-50 dark:bg-neutral-800/30 border-neutral-200 dark:border-neutral-700/30',
 }
 
 const roleNames = {
