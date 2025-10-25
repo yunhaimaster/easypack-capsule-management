@@ -337,19 +337,44 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
         {validationResult.errors.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-medium text-neutral-700 dark:text-white/85 mb-3">錯誤詳情：</h3>
-            <div className="max-h-48 overflow-y-auto border border-neutral-200 rounded-lg">
-              {validationResult.errors.slice(0, 10).map((err, idx) => (
-                <div key={idx} className="p-3 border-b border-neutral-100 last:border-b-0">
-                  <p className="text-xs text-danger-700">
-                    <strong>第 {err.row} 行</strong> - {err.field}: {err.error}
-                  </p>
-                </div>
-              ))}
-              {validationResult.errors.length > 10 && (
-                <div className="p-3 text-center text-xs text-neutral-500 dark:text-white/65">
-                  還有 {validationResult.errors.length - 10} 個錯誤...
-                </div>
-              )}
+            <div className="max-h-64 overflow-y-auto border border-neutral-200 dark:border-neutral-700 rounded-lg">
+              {(() => {
+                // Group errors by row
+                const errorsByRow = validationResult.errors.reduce((acc, err) => {
+                  if (!acc[err.row]) {
+                    acc[err.row] = []
+                  }
+                  acc[err.row].push(err)
+                  return acc
+                }, {} as Record<number, Array<{ row: number; field: string; error: string }>>)
+
+                // Get first 20 rows with errors
+                const rowsWithErrors = Object.keys(errorsByRow).map(Number).sort((a, b) => a - b).slice(0, 20)
+
+                return (
+                  <>
+                    {rowsWithErrors.map((rowNum) => (
+                      <div key={rowNum} className="p-3 border-b border-neutral-100 dark:border-neutral-700 last:border-b-0 bg-white dark:bg-surface-primary">
+                        <p className="text-sm font-semibold text-danger-700 dark:text-danger-400 mb-2">
+                          第 {rowNum} 行 ({errorsByRow[rowNum].length} 個錯誤)
+                        </p>
+                        <div className="pl-3 space-y-1">
+                          {errorsByRow[rowNum].map((err, idx) => (
+                            <p key={idx} className="text-xs text-neutral-700 dark:text-white/75">
+                              • <span className="font-medium text-danger-600 dark:text-danger-400">{err.field}</span>: {err.error}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {Object.keys(errorsByRow).length > 20 && (
+                      <div className="p-3 text-center text-xs text-neutral-500 dark:text-white/65">
+                        還有 {Object.keys(errorsByRow).length - 20} 行有錯誤（總共 {validationResult.errors.length} 個錯誤）...
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           </div>
         )}
