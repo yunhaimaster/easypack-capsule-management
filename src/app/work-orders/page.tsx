@@ -148,6 +148,16 @@ export default function WorkOrdersPage() {
     return () => abortControllerRef.current?.abort()
   }, [fetchWorkOrders])
 
+  // Auto-refresh every 60 seconds (like React Query refetchInterval)
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log('[WorkOrders] Auto-refreshing (60s interval)...')
+      fetchWorkOrders()
+    }, 60_000) // 60 seconds
+
+    return () => clearInterval(intervalId)
+  }, [fetchWorkOrders])
+
   // Handle basic search
   const handleSearch = () => {
     const newFilters = {
