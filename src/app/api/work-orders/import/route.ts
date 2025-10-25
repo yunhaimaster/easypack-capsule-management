@@ -13,6 +13,8 @@ import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { validateImportData, mapRowToWorkOrder, ValidationLevel } from '@/lib/import/import-parser'
 import { matchUser } from '@/lib/import/user-matcher'
+import * as XLSX from 'xlsx'
+import Papa from 'papaparse'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // 60 seconds for large imports
@@ -63,9 +65,82 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse request body
-    const body = await request.json()
-    const { data, userMappings = {}, dryRun = true } = body
+    // Parse FormData (file upload)
+    const formData = await request.formData()
+    const file = formData.get('file') as File
+    const dryRun = formData.get('dryRun') === 'false' ? false : true
+
+    if (!file) {
+      return NextResponse.json(
+        { success: false, error: '請選擇要匯入的文件' },
+        { status: 400 }
+      )
+    }
+
+    // Parse file based on type
+    let data: { headers: string[], rows: Array<Record<string, unknown>> }
+    
+    try {
+      const fileBuffer = await file.arrayBuffer()
+      const fileName = file.name.toLowerCase()
+      
+      if (fileName.endsWith('.csv')) {
+        // Parse CSV
+        const csvText = new TextDecoder('utf-8').decode(fileBuffer)
+        const parseResult = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (header) => header.trim()
+        })
+        
+        if (parseResult.errors.length > 0) {
+          return NextResponse.json(
+            { success: false, error: `CSV解析錯誤: ${parseResult.errors[0].message}` },
+            { status: 400 }
+          )
+        }
+        
+        data = {
+          headers: parseResult.meta.fields || [],
+          rows: parseResult.data as Array<Record<string, unknown>>
+        }
+      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        // Parse Excel
+        const workbook = XLSX.read(fileBuffer, { type: 'buffer' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+        if (jsonData.length === 0) {
+          return NextResponse.json(
+            { success: false, error: 'Excel文件為空或格式不正確' },
+            { status: 400 }
+          )
+        }
+        
+        const headers = jsonData[0] as string[]
+        const rows = (jsonData.slice(1) as any[][]).map((row: any[]) => {
+          const obj: Record<string, unknown> = {}
+          headers.forEach((header, index) => {
+            obj[header] = row[index] || ''
+          })
+          return obj
+        })
+        
+        data = { headers, rows }
+      } else {
+        return NextResponse.json(
+          { success: false, error: '不支援的文件格式，請使用 CSV 或 XLSX' },
+          { status: 400 }
+        )
+      }
+    } catch (parseError) {
+      console.error('File parsing error:', parseError)
+      return NextResponse.json(
+        { success: false, error: '文件解析失敗，請檢查文件格式' },
+        { status: 400 }
+      )
+    }
 
     if (!data || !data.headers || !data.rows) {
       return NextResponse.json(
@@ -117,6 +192,18 @@ export async function POST(request: NextRequest) {
         phoneE164: true
       }
     })
+
+    // Generate user mappings automatically
+    const userMappings: Record<string, string> = {}
+    for (const row of data.rows) {
+      const personInCharge = row['負責人'] || row['personInCharge']
+      if (personInCharge && typeof personInCharge === 'string') {
+        const matchedUser = matchUser(personInCharge, users)
+        if (matchedUser && matchedUser.matchedUser) {
+          userMappings[personInCharge] = matchedUser.matchedUser.id
+        }
+      }
+    }
 
     // Process import in transaction
     const result: ImportResult = {
