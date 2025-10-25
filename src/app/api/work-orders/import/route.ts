@@ -179,8 +179,12 @@ export async function POST(request: NextRequest) {
         .filter((jn): jn is string => jn !== null)  // Filter out nulls and narrow type
     )
 
-    // Validate import data
-    const validationResult = await validateImportData(data, existingJobNumbers)
+    // Map rows to internal field names for validation (so validators can read customerName, workType, etc.)
+    const mappedRowsForValidation = data.rows.map((r) => mapRowToWorkOrder(r))
+    const mappedDataForValidation = { headers: data.headers, rows: mappedRowsForValidation }
+
+    // Validate import data using mapped rows
+    const validationResult = await validateImportData(mappedDataForValidation, existingJobNumbers)
 
     // If dry run, return validation results only
     if (dryRun) {
