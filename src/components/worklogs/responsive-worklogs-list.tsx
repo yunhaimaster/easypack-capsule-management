@@ -314,7 +314,7 @@ export function ResponsiveWorklogsList() {
                   className={`px-3 py-1 rounded-full border text-sm transition-colors ${
                     pageNumber === pagination.page
                       ? 'border-indigo-400 bg-indigo-500/10 text-indigo-700'
-                      : 'border-white/60 bg-white/50 text-neutral-600 hover:border-indigo-200 hover:text-indigo-600'
+                      : 'border-white/60 dark:border-white/20 bg-white/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-indigo-200 hover:text-indigo-600'
                   }`}
                 >
                   {pageNumber}
@@ -335,7 +335,7 @@ export function ResponsiveWorklogsList() {
             {error}
           </div>
         ) : worklogs.length === 0 ? (
-          <div className="rounded-2xl bg-white/70 border border-white/60 p-6 text-center text-sm text-neutral-500">
+          <div className="rounded-2xl bg-white/70 dark:bg-elevation-1 border border-white/60 dark:border-white/20 p-6 text-center text-sm text-neutral-500 dark:text-white/65">
             目前沒有工時紀錄
           </div>
         ) : (
@@ -344,14 +344,14 @@ export function ResponsiveWorklogsList() {
               <div className="liquid-glass-content p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.18em] text-neutral-400">工時日期</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 dark:text-white/55">工時日期</p>
                     <h3 className="text-base font-semibold text-neutral-900">
                       {formatWorkDate(worklog.workDate)}
                     </h3>
                   </div>
                   <button
                     onClick={handleSortToggle}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/60 border border-white/70 text-xs font-medium text-neutral-600"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/60 dark:bg-elevation-2 border border-white/70 dark:border-white/20 text-xs font-medium text-neutral-600 dark:text-white/75"
                   >
                     {sortIcon}
                     最新優先
@@ -360,10 +360,10 @@ export function ResponsiveWorklogsList() {
 
                 <div className="rounded-2xl bg-white/75 border border-white/60 p-3 space-y-2">
                   <div className="font-medium text-neutral-900">{worklog.order?.productName || '未指派訂單'}</div>
-                  <div className="text-xs text-neutral-500">客戶：{worklog.order?.customerName || '未填寫'}</div>
+                  <div className="text-xs text-neutral-500 dark:text-white/65">客戶：{worklog.order?.customerName || '未填寫'}</div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs text-neutral-500">
+                <div className="grid grid-cols-2 gap-2 text-xs text-neutral-500 dark:text-white/65">
                   <div className="rounded-xl bg-white/75 border border-white/60 px-3 py-2">
                     <p className="uppercase tracking-[0.12em] text-[11px] text-neutral-400 mb-1">工時範圍</p>
                     <p className="text-sm font-medium text-neutral-900">{worklog.startTime} - {worklog.endTime}</p>
@@ -412,7 +412,7 @@ export function ResponsiveWorklogsList() {
                 className={`px-3 py-1 rounded-full border text-sm transition-colors ${
                   pageNumber === pagination.page
                     ? 'border-indigo-400 bg-indigo-500/10 text-indigo-700'
-                    : 'border-white/60 bg-white/50 text-neutral-600 hover:border-indigo-200 hover:text-indigo-600'
+                    : 'border-white/60 dark:border-white/20 bg-white/50 dark:bg-elevation-1 text-neutral-600 dark:text-white/75 hover:border-indigo-200 hover:text-indigo-600'
                 }`}
               >
                 {pageNumber}

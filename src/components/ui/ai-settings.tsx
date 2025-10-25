@@ -79,7 +79,7 @@ export function AISettings({ enableReasoning, onToggleReasoning }: AISettingsPro
                   {/* Standard Mode */}
                   <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-2.5">
                     <p className="text-xs font-semibold text-neutral-700 dark:text-white/85 mb-1.5">⚡ 標準模式（預設）</p>
-                    <ul className="text-xs text-neutral-600 space-y-1">
+                    <ul className="text-xs text-neutral-600 dark:text-white/75 space-y-1">
                       <li>✓ 快速回應</li>
                       <li>✓ 適合一般問題</li>
                       <li>✓ 簡潔明瞭</li>

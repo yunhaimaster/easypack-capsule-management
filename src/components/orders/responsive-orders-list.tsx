@@ -352,7 +352,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   return (
                     <tr
                       key={order.id}
-                      className="border-b border-neutral-100 hover:bg-white/80 transition-colors"
+                      className="border-b border-neutral-100 dark:border-white/10 hover:bg-white/80 dark:hover:bg-elevation-1 transition-colors"
                       onClick={() => window.location.href = `/orders/${order.id}`}
                     >
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
@@ -405,19 +405,19 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                       <td className="py-4 px-4 text-sm text-neutral-700 dark:text-white/85 align-top">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
-                            <Package2 className="h-3.5 w-3.5 text-neutral-400" aria-hidden="true" />
+                            <Package2 className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55" aria-hidden="true" />
                             <span className="font-medium text-neutral-900">訂單數量：{order.productionQuantity?.toLocaleString()} 粒</span>
                           </div>
                           {order.actualProductionQuantity != null && (
-                            <div className="text-xs text-neutral-500">實際生產：{order.actualProductionQuantity.toLocaleString()} 粒</div>
+                            <div className="text-xs text-neutral-500 dark:text-white/65">實際生產：{order.actualProductionQuantity.toLocaleString()} 粒</div>
                           )}
                           {order.materialYieldQuantity != null && (
-                            <div className="text-xs text-neutral-500">材料可做：{order.materialYieldQuantity.toLocaleString()} 粒</div>
+                            <div className="text-xs text-neutral-500 dark:text-white/65">材料可做：{order.materialYieldQuantity.toLocaleString()} 粒</div>
                           )}
                         </div>
                       </td>
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
-                        <div className="text-sm max-w-xs text-neutral-600 leading-relaxed">
+                        <div className="text-sm max-w-xs text-neutral-600 dark:text-white/75 leading-relaxed">
                           {order.ingredients && order.ingredients.length > 0 ? (
                             <>
                               <div className="font-medium text-neutral-700 dark:text-white/85 mb-1">主要原料：</div>
@@ -426,17 +426,17 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                                   .sort((a, b) => (b.unitContentMg || 0) - (a.unitContentMg || 0))
                                   .slice(0, 3)
                                   .map((ingredient, index) => (
-                                    <span key={index} className="bg-white/80 border border-neutral-200 px-2 py-0.5 rounded-full">
+                                    <span key={index} className="bg-white/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
                                       {ingredient.materialName}
                                     </span>
                                   ))}
                                 {order.ingredients.length > 3 && (
-                                  <span className="text-neutral-400">+{order.ingredients.length - 3}</span>
+                                  <span className="text-neutral-400 dark:text-white/55">+{order.ingredients.length - 3}</span>
                                 )}
                               </div>
                             </>
                           ) : (
-                            <span className="text-neutral-400">無原料資料</span>
+                            <span className="text-neutral-400 dark:text-white/55">無原料資料</span>
                           )}
                         </div>
                       </td>
@@ -560,7 +560,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                   {order.ingredients && order.ingredients.length > 0 ? (
                     <div className="flex flex-wrap gap-2 text-xs">
                       {order.ingredients.slice(0, 3).map((ingredient, index) => (
-                        <span key={index} className="bg-white/80 border border-neutral-200 px-2 py-0.5 rounded-full">
+                        <span key={index} className="bg-white/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
                           {ingredient.materialName}
                         </span>
                       ))}

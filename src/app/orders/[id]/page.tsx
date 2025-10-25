@@ -349,7 +349,7 @@ export default function OrderDetailPage() {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-primary-500 text-[11px] font-semibold">客</span>
                     客戶資訊
                   </h4>
-                  <div className="grid grid-cols-1 gap-1 text-xs md:text-sm text-neutral-700">
+                  <div className="grid grid-cols-1 gap-1 text-xs md:text-sm text-neutral-700 dark:text-white/85">
                     <p><span className="font-medium text-neutral-900">客戶名稱：</span>{order.customerName}</p>
                     <p><span className="font-medium text-neutral-900">產品名字：</span>{order.productName}</p>
                     <p><span className="font-medium text-neutral-900">訂單數量：</span>{formatNumber(order.productionQuantity)} 粒</p>
@@ -364,7 +364,7 @@ export default function OrderDetailPage() {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success-100 text-success-500 text-[11px] font-semibold">狀</span>
                     生產狀態
                   </h4>
-                  <div className="grid grid-cols-1 gap-1 text-xs md:text-sm text-neutral-700">
+                  <div className="grid grid-cols-1 gap-1 text-xs md:text-sm text-neutral-700 dark:text-white/85">
                     <p><span className="font-medium text-neutral-900">完工日期：</span>{order.completionDate ? formatDateOnly(order.completionDate) : '未完工'}</p>
                     <p><span className="font-medium text-neutral-900">累積工時：</span>{order.worklogs && order.worklogs.length > 0 ? `${sumWorkUnits(order.worklogs as OrderWorklog[]).toFixed(1)} 工時` : '—'}</p>
                     <p><span className="font-medium text-neutral-900">工時狀態：</span>
@@ -385,7 +385,7 @@ export default function OrderDetailPage() {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-500 text-[11px] font-semibold">膠</span>
                     膠囊規格
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs md:text-sm text-neutral-700">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs md:text-sm text-neutral-700 dark:text-white/85">
                     {order.capsuleColor && (
                       <p><span className="font-medium text-neutral-900">顏色：</span>{order.capsuleColor}</p>
                     )}
@@ -405,7 +405,7 @@ export default function OrderDetailPage() {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-500 text-[11px] font-semibold">備</span>
                     備註資訊
                   </h4>
-                  <div className="space-y-3 text-xs md:text-sm text-neutral-700">
+                  <div className="space-y-3 text-xs md:text-sm text-neutral-700 dark:text-white/85">
                     {order.processIssues && (
                       <Card variant="glass" tone="negative" interactive={false} className="p-3">
                         <span className="font-medium text-danger-700 dark:text-danger-400 block mb-1">製程問題</span>
@@ -598,7 +598,7 @@ export default function OrderDetailPage() {
                   </div>
                 </>
               ) : (
-                <p className="text-sm text-neutral-500">暫無工時記錄。</p>
+                <p className="text-sm text-neutral-500 dark:text-white/65">暫無工時記錄。</p>
               )}
             </CardContent>
           </Card>

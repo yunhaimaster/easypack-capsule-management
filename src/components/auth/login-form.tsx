@@ -185,7 +185,7 @@ export function LoginForm() {
             <h2 className="text-xl sm:text-2xl font-semibold text-primary-600">Easy Health 系統登入</h2>
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="h-10 w-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-neutral-600">正在檢查登入狀態...</p>
+              <p className="text-sm text-neutral-600 dark:text-white/75">正在檢查登入狀態...</p>
             </div>
           </div>
         </CardContent>
@@ -246,7 +246,7 @@ export function LoginForm() {
                 <span className="w-full border-t border-neutral-200 dark:border-neutral-700" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface-primary px-2 text-neutral-500">或</span>
+                <span className="bg-surface-primary px-2 text-neutral-500 dark:text-white/65">或</span>
               </div>
             </div>
 
