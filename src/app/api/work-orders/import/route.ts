@@ -173,6 +173,12 @@ export async function POST(request: NextRequest) {
 
     // If dry run, return validation results only
     if (dryRun) {
+      // Add detailed column mapping debug
+      console.log('[Import] Column Mapping Debug:')
+      console.log('Headers found:', data.headers)
+      console.log('Sample row keys:', Object.keys(data.rows[0] || {}))
+      console.log('Sample row values:', Object.values(data.rows[0] || {}).slice(0, 5))
+      
       return NextResponse.json({
         success: true,
         dryRun: true,
@@ -180,7 +186,13 @@ export async function POST(request: NextRequest) {
         debug: {
           headersFound: data.headers,
           totalRows: data.rows.length,
-          sampleRow: data.rows[0] // First row for debugging
+          sampleRow: data.rows[0], // First row for debugging
+          sampleRowKeys: Object.keys(data.rows[0] || {}),
+          mappedFields: Object.entries(data.rows[0] || {}).slice(0, 5).map(([key, value]) => ({
+            header: key,
+            value: value,
+            type: typeof value
+          }))
         }
       })
     }
