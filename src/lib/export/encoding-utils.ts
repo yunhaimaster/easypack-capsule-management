@@ -53,7 +53,7 @@ export function prepareChineseForExcel(text: string): string {
  * Normalize column name for fuzzy matching
  * 
  * Used for auto-mapping spreadsheet columns to database fields.
- * Removes spaces, converts to lowercase, handles Chinese and English.
+ * Removes spaces, line breaks, converts to lowercase, handles Chinese and English.
  * 
  * @param name - Column name to normalize
  * @returns Normalized name
@@ -61,6 +61,7 @@ export function prepareChineseForExcel(text: string): string {
 export function normalizeColumnName(name: string): string {
   return name
     .trim()
+    .replace(/[\r\n]+/g, '')  // Remove line breaks (from multi-line Excel headers)
     .toLowerCase()
     .replace(/[\s_-]+/g, '')  // Remove spaces, underscores, hyphens
 }

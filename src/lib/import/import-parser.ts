@@ -69,6 +69,8 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   '老闆VIP': 'isBossVip',
   '智慧建議客戶VIP': 'isCustomerServiceVip', // Excel format
   '老闆建議客戶VIP': 'isBossVip', // Excel format
+  '客服重要客戶VIP': 'isCustomerServiceVip', // Multi-line Excel header (after removing \r\n)
+  '老板指定重要客戶VIP': 'isBossVip', // Multi-line Excel header (after removing \r\n)
   '新品VIP': 'isNewProductVip', // Legacy support
   '複雜度VIP': 'isComplexityVip', // Legacy support
   
