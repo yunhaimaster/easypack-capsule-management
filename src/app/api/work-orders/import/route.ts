@@ -176,8 +176,24 @@ export async function POST(request: NextRequest) {
       // Add detailed column mapping debug
       console.log('[Import] Column Mapping Debug:')
       console.log('Headers found:', data.headers)
-      console.log('Sample row keys:', Object.keys(data.rows[0] || {}))
-      console.log('Sample row values:', Object.values(data.rows[0] || {}).slice(0, 5))
+      console.log('Total rows:', data.rows.length)
+      
+      if (data.rows.length > 0) {
+        console.log('\n=== FIRST DATA ROW (ROW 2 IN EXCEL) ===')
+        console.log('Raw row object keys:', Object.keys(data.rows[0]))
+        console.log('Raw row object (first 10 fields):')
+        Object.entries(data.rows[0]).slice(0, 10).forEach(([key, value]) => {
+          console.log(`  "${key}": ${JSON.stringify(value)} (${typeof value})`)
+        })
+        
+        // Test the mapping function
+        console.log('\n=== AFTER APPLYING mapRowToWorkOrder ===')
+        const mappedRow = mapRowToWorkOrder(data.rows[0])
+        console.log('Mapped row (first 10 fields):')
+        Object.entries(mappedRow).slice(0, 10).forEach(([key, value]) => {
+          console.log(`  "${key}": ${JSON.stringify(value)} (${typeof value})`)
+        })
+      }
       
       return NextResponse.json({
         success: true,
@@ -186,13 +202,10 @@ export async function POST(request: NextRequest) {
         debug: {
           headersFound: data.headers,
           totalRows: data.rows.length,
-          sampleRow: data.rows[0], // First row for debugging
-          sampleRowKeys: Object.keys(data.rows[0] || {}),
-          mappedFields: Object.entries(data.rows[0] || {}).slice(0, 5).map(([key, value]) => ({
-            header: key,
-            value: value,
-            type: typeof value
-          }))
+          firstDataRow: data.rows[0], // Complete first row
+          firstDataRowKeys: Object.keys(data.rows[0] || {}),
+          // Show what the row looks like after mapping
+          afterMapping: data.rows[0] ? mapRowToWorkOrder(data.rows[0]) : null
         }
       })
     }
