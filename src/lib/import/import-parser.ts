@@ -63,6 +63,8 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   '工作類型': 'workType',
   '狀態': 'status',
   '生產/包裝/標籤': 'workType', // Excel format
+  '生產 / 包裝 / 倉務': 'workType', // Excel format (with spaces and 倉務)
+  '生產/包裝/倉務': 'workType', // Excel format (no spaces, with 倉務)
   
   // VIP Flags - Updated to match export
   '客服VIP': 'isCustomerServiceVip',
@@ -77,13 +79,19 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   // Material Ready Status - New
   '預計生產物料到齊日期': 'expectedProductionMaterialsDate',
   '預計包裝物料到齊日期': 'expectedPackagingMaterialsDate',
+  '預計齊料日期': 'expectedProductionMaterialsDate', // Excel format (general)
   '物料齊日期': 'expectedProductionMaterialsDate', // Excel format (simplified)
+  '齊料日期': 'expectedProductionMaterialsDate', // Excel format (even more simplified)
   '生產物料齊': 'productionMaterialsReady',
+  '生產物料已齊': 'productionMaterialsReady', // Excel format with 已
   '包裝物料齊': 'packagingMaterialsReady',
+  '包裝物料已齊': 'packagingMaterialsReady', // Excel format with 已
   
   // Quantities (will be parsed to extract number + unit)
   '生產數量': 'productionQuantity',
-  '生產數量（數粒）': 'productionQuantity', // Excel format with unit hint
+  '生產數量（數粒）': 'productionQuantity', // Excel format with unit hint (full-width parens)
+  '生產數量 (粒數)': 'productionQuantity', // Excel format with unit hint (half-width parens and space)
+  '生產數量(粒數)': 'productionQuantity', // Excel format with unit hint (half-width parens no space)
   '包裝數量': 'packagingQuantity',
   
   // Delivery Dates - New
@@ -96,6 +104,7 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   // Status Flags - New
   '客人要求加急': 'isUrgent',
   '已開生產線': 'productionStarted',
+  '已開生產綫': 'productionStarted', // Excel format with 綫 (traditional character)
   '已經完成': 'isCompleted',
   
   // Description
