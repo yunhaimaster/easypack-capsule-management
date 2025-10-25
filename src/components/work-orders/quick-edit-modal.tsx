@@ -84,10 +84,20 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
       console.log('[QuickEditModal] API Success:', result)
       return result
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workOrders'] })
+    onSuccess: async () => {
+      console.log('[QuickEditModal] Update successful, refreshing list...')
+      
+      // Invalidate and refetch to ensure UI updates
+      await queryClient.invalidateQueries({ queryKey: ['workOrders'] })
+      await queryClient.refetchQueries({ queryKey: ['workOrders'] })
+      
+      console.log('[QuickEditModal] List refreshed')
+      
       onSuccess?.()
       onClose()
+    },
+    onError: (error) => {
+      console.error('[QuickEditModal] Mutation error:', error)
     }
   })
 
