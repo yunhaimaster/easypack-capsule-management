@@ -188,7 +188,7 @@ export default function EditWorkOrderPage() {
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 pb-12 sm:pb-16 space-y-8 floating-combined">
         <div className="max-w-4xl mx-auto">{/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">

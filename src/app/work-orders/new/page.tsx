@@ -28,6 +28,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Text } from '@/components/ui/text'
+import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
+import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Save } from 'lucide-react'
 import type { CreateWorkOrderPayload, User } from '@/types/work-order'
 
@@ -123,7 +125,10 @@ export default function CreateWorkOrderPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 sm:py-8 lg:py-10 px-3 sm:px-4 lg:px-6 max-w-5xl">
+    <div className="min-h-screen logo-bg-animation flex flex-col">
+      <LiquidGlassNav />
+      <div className="pt-28 sm:pt-24 px-3 sm:px-4 lg:px-6 pb-12 sm:pb-16 floating-combined">
+        <div className="max-w-5xl mx-auto">
       {/* Header - Responsive but not cramped on either platform */}
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
@@ -582,6 +587,9 @@ export default function CreateWorkOrderPage() {
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
+      <LiquidGlassFooter />
     </div>
   )
 }
