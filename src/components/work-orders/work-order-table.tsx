@@ -196,62 +196,93 @@ export function WorkOrderTable({
       
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-surface-secondary border-b border-neutral-200">
+          <thead className="bg-surface-secondary border-b border-neutral-200 dark:border-neutral-700">
             <tr>
-              <th className="px-4 py-3 w-12">
+              {/* Checkbox - Always visible */}
+              <th className="px-2 sm:px-4 py-3 w-8 sm:w-12">
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={handleSelectAll}
                   aria-label="選擇全部"
                 />
               </th>
-              <SortableHeader
-                field="jobNumber"
-                label="訂單編號"
-                currentSort={sortBy}
-                sortOrder={sortOrder}
-                onSort={onSort}
-              />
-              <SortableHeader
-                field="customerName"
-                label="客戶名稱"
-                currentSort={sortBy}
-                sortOrder={sortOrder}
-                onSort={onSort}
-              />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
-                VIP標記
+              
+              {/* Customer Name - Always visible (MOST IMPORTANT) */}
+              <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-neutral-700 dark:text-white/85 min-w-[120px] sm:min-w-[160px]">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-surface-secondary/50 transition-colors" onClick={() => onSort('customerName')}>
+                  <span>客戶名稱</span>
+                  <ArrowUpDown className={`h-3 w-3 sm:h-4 sm:w-4 ${sortBy === 'customerName' ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'}`} />
+                  {sortBy === 'customerName' && (
+                    <span className="text-xs text-primary-600">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </div>
               </th>
-              <SortableHeader
-                field="status"
-                label="狀態"
-                currentSort={sortBy}
-                sortOrder={sortOrder}
-                onSort={onSort}
-              />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+              
+              {/* Status - Always visible (CRITICAL INFO) */}
+              <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-neutral-700 dark:text-white/85">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-surface-secondary/50 transition-colors" onClick={() => onSort('status')}>
+                  <span>狀態</span>
+                  <ArrowUpDown className={`h-3 w-3 sm:h-4 sm:w-4 ${sortBy === 'status' ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'}`} />
+                  {sortBy === 'status' && (
+                    <span className="text-xs text-primary-600">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </div>
+              </th>
+              
+              {/* Job Number - Hidden on mobile, visible md+ */}
+              <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-surface-secondary/50 transition-colors" onClick={() => onSort('jobNumber')}>
+                  <span>訂單編號</span>
+                  <ArrowUpDown className={`h-4 w-4 ${sortBy === 'jobNumber' ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'}`} />
+                  {sortBy === 'jobNumber' && (
+                    <span className="text-xs text-primary-600">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </div>
+              </th>
+              
+              {/* Work Type - Hidden on mobile, visible sm+ */}
+              <th className="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 工作類型
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
-                關聯訂單
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+              
+              {/* Person in Charge - Hidden on mobile/tablet, visible lg+ */}
+              <th className="hidden lg:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 負責人
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+              
+              {/* VIP Marks - Hidden on mobile/tablet, visible lg+ */}
+              <th className="hidden lg:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+                VIP標記
+              </th>
+              
+              {/* Linked Order - Hidden on mobile/tablet, visible lg+ */}
+              <th className="hidden lg:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+                關聯訂單
+              </th>
+              
+              {/* Material Status - Hidden on mobile/tablet, visible xl+ */}
+              <th className="hidden xl:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 物料狀態
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+              
+              {/* Status Marks - Hidden on mobile/tablet, visible xl+ */}
+              <th className="hidden xl:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 狀態標記
               </th>
-              <SortableHeader
-                field="markedDate"
-                label="創建日期"
-                currentSort={sortBy}
-                sortOrder={sortOrder}
-                onSort={onSort}
-              />
-              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+              
+              {/* Created Date - Hidden on mobile/tablet, visible lg+ */}
+              <th className="hidden lg:table-cell px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-surface-secondary/50 transition-colors" onClick={() => onSort('markedDate')}>
+                  <span>創建日期</span>
+                  <ArrowUpDown className={`h-4 w-4 ${sortBy === 'markedDate' ? 'text-primary-600' : 'text-neutral-400 dark:text-white/55'}`} />
+                  {sortBy === 'markedDate' && (
+                    <span className="text-xs text-primary-600">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </div>
+              </th>
+              
+              {/* Actions - Always visible (CRITICAL) */}
+              <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-neutral-700 dark:text-white/85 sticky right-0 bg-surface-secondary">
                 操作
               </th>
             </tr>
@@ -279,32 +310,59 @@ export function WorkOrderTable({
               <tr
                 key={workOrder.id}
                 className={`
-                  border-b border-neutral-200 transition-colors
-                  ${selectedIds.includes(workOrder.id) ? 'bg-primary-50' : 'hover:bg-surface-secondary/50'}
+                  border-b border-neutral-200 dark:border-neutral-700 transition-colors
+                  ${selectedIds.includes(workOrder.id) ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-surface-secondary/50'}
                   ${hoveredRow === workOrder.id ? 'shadow-sm' : ''}
                 `}
                 onMouseEnter={() => setHoveredRow(workOrder.id)}
                 onMouseLeave={() => setHoveredRow(null)}
               >
-                <td className="px-4 py-3">
+                {/* Checkbox - Always visible */}
+                <td className="px-2 sm:px-4 py-3">
                   <Checkbox
                     checked={selectedIds.includes(workOrder.id)}
                     onCheckedChange={(checked) => handleSelectRow(workOrder.id, checked as boolean)}
                     aria-label={`選擇 ${workOrder.jobNumber || workOrder.customerName}`}
                   />
                 </td>
-                <td className="px-4 py-3">
+                
+                {/* Customer Name - Always visible */}
+                <td className="px-2 sm:px-4 py-3">
                   <Link
                     href={`/work-orders/${workOrder.id}` as never}
-                    className="text-primary-600 hover:text-primary-700 hover:underline font-medium"
+                    className="text-neutral-800 dark:text-white/95 hover:text-primary-600 hover:underline font-medium text-sm sm:text-base"
+                  >
+                    {workOrder.customerName}
+                  </Link>
+                </td>
+                
+                {/* Status - Always visible */}
+                <td className="px-2 sm:px-4 py-3">
+                  <StatusBadge status={workOrder.status} />
+                </td>
+                
+                {/* Job Number - Hidden on mobile, visible md+ */}
+                <td className="hidden md:table-cell px-4 py-3">
+                  <Link
+                    href={`/work-orders/${workOrder.id}` as never}
+                    className="text-primary-600 hover:text-primary-700 hover:underline font-medium text-sm"
                   >
                     {workOrder.jobNumber || '-'}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-neutral-800 dark:text-white/95">
-                  {workOrder.customerName}
+                
+                {/* Work Type - Hidden on mobile, visible sm+ */}
+                <td className="hidden sm:table-cell px-4 py-3">
+                  <WorkTypeBadge workType={workOrder.workType} />
                 </td>
-                <td className="px-4 py-3">
+                
+                {/* Person in Charge - Hidden on mobile/tablet, visible lg+ */}
+                <td className="hidden lg:table-cell px-4 py-3 text-neutral-700 dark:text-white/85 text-sm">
+                  {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
+                </td>
+                
+                {/* VIP Marks - Hidden on mobile/tablet, visible lg+ */}
+                <td className="hidden lg:table-cell px-4 py-3">
                   <div className="flex items-center gap-1 flex-wrap">
                     {workOrder.isCustomerServiceVip && (
                       <Badge variant="warning" className="text-xs">
@@ -323,16 +381,12 @@ export function WorkOrderTable({
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={workOrder.status} />
-                </td>
-                <td className="px-4 py-3">
-                  <WorkTypeBadge workType={workOrder.workType} />
-                </td>
-                <td className="px-4 py-3">
+                
+                {/* Linked Order - Hidden on mobile/tablet, visible lg+ */}
+                <td className="hidden lg:table-cell px-4 py-3">
                   {workOrder.capsulationOrder ? (
                     <Link href={`/orders/${workOrder.capsulationOrder.id}`}>
-                      <Badge variant="info" className="cursor-pointer hover:bg-info-100 dark:hover:bg-info-900/40">
+                      <Badge variant="info" className="cursor-pointer hover:bg-info-100 dark:hover:bg-info-900/40 text-xs">
                         膠囊訂單
                       </Badge>
                     </Link>
@@ -340,10 +394,9 @@ export function WorkOrderTable({
                     <span className="text-neutral-400 dark:text-white/55 text-xs">-</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-neutral-700 dark:text-white/85">
-                  {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
-                </td>
-                <td className="px-4 py-3">
+                
+                {/* Material Status - Hidden on mobile/tablet, visible xl+ */}
+                <td className="hidden xl:table-cell px-4 py-3">
                   <div className="flex items-center gap-2 text-xs">
                     {workOrder.productionMaterialsReady ? (
                       <div className="flex items-center gap-1 text-success-600" title="生產物料齊">
@@ -369,7 +422,9 @@ export function WorkOrderTable({
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                
+                {/* Status Marks - Hidden on mobile/tablet, visible xl+ */}
+                <td className="hidden xl:table-cell px-4 py-3">
                   <div className="flex items-center gap-1 flex-wrap">
                     {workOrder.isUrgent && (
                       <Badge variant="danger" className="text-xs">
@@ -393,22 +448,26 @@ export function WorkOrderTable({
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-neutral-700 dark:text-white/85 text-sm">
+                
+                {/* Created Date - Hidden on mobile/tablet, visible lg+ */}
+                <td className="hidden lg:table-cell px-4 py-3 text-neutral-700 dark:text-white/85 text-sm">
                   {workOrder.markedDate 
                     ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK')
                     : '-'
                   }
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
+                
+                {/* Actions - Always visible, sticky on mobile */}
+                <td className="px-2 sm:px-4 py-3 sticky right-0 bg-surface-primary dark:bg-surface-primary">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       asChild
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                     >
                       <Link href={`/work-orders/${workOrder.id}`}>
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span className="sr-only">查看</span>
                       </Link>
                     </Button>
@@ -416,20 +475,20 @@ export function WorkOrderTable({
                       variant="ghost"
                       size="sm"
                       asChild
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                     >
                       <Link href={`/work-orders/${workOrder.id}/edit`}>
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span className="sr-only">編輯</span>
                       </Link>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20"
                       onClick={() => onDelete(workOrder.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="sr-only">刪除</span>
                     </Button>
                   </div>
