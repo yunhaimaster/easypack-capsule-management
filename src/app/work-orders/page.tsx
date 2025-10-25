@@ -1,21 +1,18 @@
 /**
  * Work Orders List Page
  * 
- * Production-ready list with:
- * - Advanced filtering (multiple criteria)
- * - Multi-column sorting
- * - Bulk actions (export, delete, status update)
- * - Order linking display
- * - Full responsive design
- * - Optimized for large datasets
- * - 100% Apple HIG compliant
+ * MOBILE-FIRST, PRODUCTION-READY
+ * - Proper responsive design (320px - 1920px+)
  * - Excel-like smooth interactions
+ * - 100% Apple HIG compliant
+ * - Actually tested mobile layout
  */
 
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import type { Route } from 'next'
 import { useWorkOrders, useUsers } from '@/lib/queries/work-orders'
 import { WorkOrderTable } from '@/components/work-orders/work-order-table'
 import { ExportDialog } from '@/components/work-orders/export-dialog'
@@ -230,11 +227,11 @@ export default function WorkOrdersPage() {
     (filters.hasLinkedCapsulation !== undefined ? 1 : 0)
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-4 sm:py-8 px-2 sm:px-4">
       {/* Notification */}
       {notification && (
         <div 
-          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-apple ${
+          className={`fixed top-4 right-2 sm:right-4 left-2 sm:left-auto sm:w-auto z-50 p-3 sm:p-4 rounded-lg shadow-lg transition-apple ${
             notification.type === 'success' 
               ? 'bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800'
               : 'bg-danger-50 dark:bg-danger-900/30 border border-danger-200 dark:border-danger-800'
@@ -261,19 +258,19 @@ export default function WorkOrdersPage() {
       />
 
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <div>
-            <Text.Primary as="h1" className="text-3xl font-bold">
+            <Text.Primary as="h1" className="text-2xl sm:text-3xl font-bold">
               工作單管理
             </Text.Primary>
-            <Text.Secondary className="mt-1">
+            <Text.Secondary className="mt-1 text-sm sm:text-base">
               統一工作單系統 - 包裝、生產、倉務
             </Text.Secondary>
           </div>
           <Button 
-            className="bg-primary-600 hover:bg-primary-700 transition-apple"
-            onClick={() => router.push('/work-orders/new' as any)}
+            className="bg-primary-600 hover:bg-primary-700 transition-apple w-full sm:w-auto"
+            onClick={() => router.push('/work-orders/new' as Route)}
           >
             <Plus className="h-4 w-4 mr-2" />
             新增工作單
@@ -282,37 +279,37 @@ export default function WorkOrdersPage() {
 
         {/* Stats */}
         {!isLoading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-6">
-                <Text.Primary as="div" className="text-2xl font-bold">
+              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
+                <Text.Primary as="div" className="text-xl sm:text-2xl font-bold">
                   {pagination.total}
                 </Text.Primary>
-                <Text.Secondary className="text-sm">總工作單數</Text.Secondary>
+                <Text.Secondary className="text-xs sm:text-sm">總工作單數</Text.Secondary>
               </CardContent>
             </Card>
             <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-6">
-                <Text.Success as="div" className="text-2xl font-bold">
+              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
+                <Text.Success as="div" className="text-xl sm:text-2xl font-bold">
                   {workOrders.filter((wo: WorkOrder) => wo.isCompleted).length}
                 </Text.Success>
-                <Text.Secondary className="text-sm">已完成</Text.Secondary>
+                <Text.Secondary className="text-xs sm:text-sm">已完成</Text.Secondary>
               </CardContent>
             </Card>
             <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-6">
-                <Text.Warning as="div" className="text-2xl font-bold">
+              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
+                <Text.Warning as="div" className="text-xl sm:text-2xl font-bold">
                   {selectedIds.length}
                 </Text.Warning>
-                <Text.Secondary className="text-sm">已選擇</Text.Secondary>
+                <Text.Secondary className="text-xs sm:text-sm">已選擇</Text.Secondary>
               </CardContent>
             </Card>
             <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-6">
-                <Text.Info as="div" className="text-2xl font-bold">
+              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
+                <Text.Info as="div" className="text-xl sm:text-2xl font-bold">
                   {workOrders.filter((wo: WorkOrder) => wo.capsulationOrder).length}
                 </Text.Info>
-                <Text.Secondary className="text-sm">已關聯訂單</Text.Secondary>
+                <Text.Secondary className="text-xs sm:text-sm">已關聯訂單</Text.Secondary>
               </CardContent>
             </Card>
           </div>
@@ -320,55 +317,57 @@ export default function WorkOrdersPage() {
       </div>
 
       {/* Search & Filters */}
-      <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>搜尋與篩選</CardTitle>
+      <Card className="mb-4 sm:mb-6">
+        <CardHeader className="px-3 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <CardTitle className="text-base sm:text-lg">搜尋與篩選</CardTitle>
             {activeFiltersCount > 0 && (
               <div className="flex items-center gap-2">
-                <Badge variant="info">{activeFiltersCount} 個篩選條件</Badge>
+                <Badge variant="info" className="text-xs sm:text-sm">{activeFiltersCount} 個篩選條件</Badge>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={handleClearAllFilters}
-                  className="transition-apple"
+                  className="transition-apple text-xs sm:text-sm h-8 sm:h-auto"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   清除全部
                 </Button>
               </div>
             )}
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
           {/* Basic Search */}
-          <div className="flex gap-4 flex-col sm:flex-row">
+          <div className="flex gap-2 flex-col sm:flex-row">
             <div className="flex-1 flex gap-2">
               <Input
-                placeholder="搜尋訂單編號、客戶名稱、工作描述..."
+                placeholder="搜尋訂單編號、客戶名稱..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="flex-1 transition-apple"
+                className="flex-1 transition-apple text-sm"
               />
-              <Button onClick={handleSearch} variant="default" className="transition-apple">
-                <Search className="h-4 w-4 mr-2" />
-                搜尋
+              <Button onClick={handleSearch} variant="default" className="transition-apple" size="sm">
+                <Search className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">搜尋</span>
               </Button>
             </div>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className={`transition-apple ${activeFiltersCount > 1 ? 'border-primary-500 text-primary-600' : ''}`}
+                className={`transition-apple flex-1 sm:flex-initial text-xs sm:text-sm ${activeFiltersCount > 1 ? 'border-primary-500 text-primary-600' : ''}`}
+                size="sm"
               >
-                <Filter className="h-4 w-4 mr-2" />
+                <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 進階篩選
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => setIsImportDialogOpen(true)}
-                className="transition-apple"
+                className="transition-apple hidden sm:flex"
+                size="sm"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 匯入
@@ -377,22 +376,23 @@ export default function WorkOrdersPage() {
                 variant="outline" 
                 onClick={() => setIsExportDialogOpen(true)}
                 className="transition-apple"
+                size="sm"
               >
-                <FileDown className="h-4 w-4 mr-2" />
-                匯出
+                <FileDown className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">匯出</span>
               </Button>
             </div>
           </div>
 
-          {/* Advanced Filters Panel */}
+          {/* Advanced Filters Panel - Simplified for mobile */}
           {showAdvancedFilters && (
-            <div className="mt-6 p-4 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-surface-secondary/50 space-y-4 transition-apple">
-              <Text.Primary as="h4" className="font-medium mb-3">進階篩選條件</Text.Primary>
+            <div className="mt-4 p-3 sm:p-4 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-surface-secondary/50 space-y-3 sm:space-y-4 transition-apple">
+              <Text.Primary as="h4" className="font-medium mb-2 sm:mb-3 text-sm sm:text-base">進階篩選條件</Text.Primary>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {/* Status Filter */}
                 <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     狀態
                   </Text.Primary>
                   <Select
@@ -407,12 +407,12 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedStatuses.length > 0 ? `已選 ${selectedStatuses.length} 個` : "選擇狀態"} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(WORK_ORDER_STATUS_LABELS).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
+                        <SelectItem key={key} value={key} className="text-xs sm:text-sm">
                           {label}
                         </SelectItem>
                       ))}
@@ -422,7 +422,7 @@ export default function WorkOrdersPage() {
 
                 {/* Work Type Filter */}
                 <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     工作類型
                   </Text.Primary>
                   <Select
@@ -437,12 +437,12 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedWorkTypes.length > 0 ? `已選 ${selectedWorkTypes.length} 個` : "選擇類型"} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(WORK_TYPE_LABELS).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
+                        <SelectItem key={key} value={key} className="text-xs sm:text-sm">
                           {label}
                         </SelectItem>
                       ))}
@@ -452,7 +452,7 @@ export default function WorkOrdersPage() {
 
                 {/* Person in Charge Filter */}
                 <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     負責人
                   </Text.Primary>
                   <Select
@@ -467,12 +467,12 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedPersons.length > 0 ? `已選 ${selectedPersons.length} 個` : "選擇負責人"} />
                     </SelectTrigger>
                     <SelectContent>
                       {usersData?.map((user: { id: string, nickname?: string | null, phoneE164: string }) => (
-                        <SelectItem key={user.id} value={user.id}>
+                        <SelectItem key={user.id} value={user.id} className="text-xs sm:text-sm">
                           {user.nickname || user.phoneE164}
                         </SelectItem>
                       ))}
@@ -480,35 +480,35 @@ export default function WorkOrdersPage() {
                   </Select>
                 </div>
 
-                {/* Date From */}
-                <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                {/* Date From - Hidden on mobile, shown on desktop */}
+                <div className="hidden sm:block">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     創建日期從
                   </Text.Primary>
                   <Input
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="transition-apple"
+                    className="transition-apple h-9 sm:h-10 text-xs sm:text-sm"
                   />
                 </div>
 
-                {/* Date To */}
-                <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                {/* Date To - Hidden on mobile, shown on desktop */}
+                <div className="hidden sm:block">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     創建日期至
                   </Text.Primary>
                   <Input
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="transition-apple"
+                    className="transition-apple h-9 sm:h-10 text-xs sm:text-sm"
                   />
                 </div>
 
                 {/* VIP Filter */}
                 <div>
-                  <Text.Primary as="label" className="block text-sm font-medium mb-2">
+                  <Text.Primary as="label" className="block text-xs sm:text-sm font-medium mb-2">
                     特殊標記
                   </Text.Primary>
                   <Select
@@ -529,14 +529,14 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇特殊標記" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">全部</SelectItem>
-                      <SelectItem value="vip">VIP 訂單</SelectItem>
-                      <SelectItem value="linked">已關聯訂單</SelectItem>
-                      <SelectItem value="unlinked">未關聯訂單</SelectItem>
+                      <SelectItem value="all" className="text-xs sm:text-sm">全部</SelectItem>
+                      <SelectItem value="vip" className="text-xs sm:text-sm">VIP 訂單</SelectItem>
+                      <SelectItem value="linked" className="text-xs sm:text-sm">已關聯訂單</SelectItem>
+                      <SelectItem value="unlinked" className="text-xs sm:text-sm">未關聯訂單</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -544,8 +544,8 @@ export default function WorkOrdersPage() {
 
               {/* Filter Actions */}
               <div className="flex gap-2 pt-2">
-                <Button onClick={handleApplyAdvancedFilters} variant="default" className="transition-apple">
-                  <Filter className="h-4 w-4 mr-2" />
+                <Button onClick={handleApplyAdvancedFilters} variant="default" className="transition-apple flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-auto" size="sm">
+                  <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   套用篩選
                 </Button>
                 <Button 
@@ -559,7 +559,8 @@ export default function WorkOrdersPage() {
                     setVipOnly(false)
                     setLinkedOnly(undefined)
                   }}
-                  className="transition-apple"
+                  className="transition-apple text-xs sm:text-sm h-9 sm:h-auto"
+                  size="sm"
                 >
                   重設
                 </Button>
@@ -569,11 +570,11 @@ export default function WorkOrdersPage() {
 
           {/* Active Filter Tags */}
           {activeFiltersCount > 0 && (
-            <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <Text.Secondary as="span" className="text-sm">已套用篩選:</Text.Secondary>
+            <div className="mt-3 sm:mt-4 flex items-center gap-2 flex-wrap">
+              <Text.Secondary as="span" className="text-xs sm:text-sm">已套用篩選:</Text.Secondary>
               
               {filters.keyword && (
-                <Badge variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
+                <Badge variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   關鍵字: {filters.keyword}
                   <button
                     onClick={() => {
@@ -589,7 +590,7 @@ export default function WorkOrdersPage() {
               )}
 
               {filters.status?.map(status => (
-                <Badge key={status} variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
+                <Badge key={status} variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {WORK_ORDER_STATUS_LABELS[status]}
                   <button
                     onClick={() => {
@@ -609,7 +610,7 @@ export default function WorkOrdersPage() {
               ))}
 
               {filters.workType?.map(type => (
-                <Badge key={type} variant="success" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
+                <Badge key={type} variant="success" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {WORK_TYPE_LABELS[type]}
                   <button
                     onClick={() => {
@@ -629,7 +630,7 @@ export default function WorkOrdersPage() {
               ))}
 
               {filters.isVip && (
-                <Badge variant="warning" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
+                <Badge variant="warning" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   VIP 訂單
                   <button
                     onClick={() => {
@@ -645,7 +646,7 @@ export default function WorkOrdersPage() {
               )}
 
               {filters.hasLinkedCapsulation !== undefined && (
-                <Badge variant="info" className="inline-flex items-center gap-2 transition-apple hover:scale-105">
+                <Badge variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {filters.hasLinkedCapsulation ? '已關聯訂單' : '未關聯訂單'}
                   <button
                     onClick={() => {
@@ -666,21 +667,21 @@ export default function WorkOrdersPage() {
 
       {/* Error Display */}
       {error && (
-        <Card className="mb-6 border-danger-200 bg-danger-50 dark:bg-danger-900/20 dark:border-danger-800">
-          <CardContent className="pt-6">
+        <Card className="mb-4 sm:mb-6 border-danger-200 bg-danger-50 dark:bg-danger-900/20 dark:border-danger-800">
+          <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
             <div className="flex items-center gap-2">
-              <Text.Danger as="span" className="font-semibold">錯誤:</Text.Danger>
-              <Text.Danger as="span">{error instanceof Error ? error.message : '載入失敗'}</Text.Danger>
+              <Text.Danger as="span" className="font-semibold text-sm sm:text-base">錯誤:</Text.Danger>
+              <Text.Danger as="span" className="text-sm sm:text-base">{error instanceof Error ? error.message : '載入失敗'}</Text.Danger>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Table */}
+      {/* Table - Mobile Optimized */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <div className="inline-block min-w-full align-middle">
+        <CardContent className="pt-4 sm:pt-6 px-0 sm:px-6 pb-4 sm:pb-6">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle px-2 sm:px-0">
               <WorkOrderTable
                 workOrders={workOrders}
                 isLoading={isLoading}
@@ -695,26 +696,26 @@ export default function WorkOrdersPage() {
             </div>
           </div>
 
-          {/* Pagination */}
+          {/* Pagination - Mobile Optimized */}
           {!isLoading && pagination.totalPages > 1 && (
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <Text.Secondary className="text-sm">
+            <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-2 sm:px-0">
+              <Text.Secondary className="text-xs sm:text-sm text-center sm:text-left">
                 顯示第 {((pagination.page - 1) * pagination.limit) + 1} 至{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} 項，
                 共 {pagination.total} 項
               </Text.Secondary>
-              <div className="flex gap-2 flex-wrap justify-center">
+              <div className="flex gap-1 sm:gap-2 flex-wrap justify-center">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
                   aria-label="上一頁"
-                  className="transition-apple"
+                  className="transition-apple h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
                 >
                   上一頁
                 </Button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                     const pageNum = i + 1
                     return (
@@ -723,7 +724,7 @@ export default function WorkOrdersPage() {
                         variant={pagination.page === pageNum ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
-                        className="min-w-[40px] transition-apple"
+                        className="min-w-[32px] sm:min-w-[40px] h-8 sm:h-9 transition-apple text-xs sm:text-sm"
                         aria-label={`前往第 ${pageNum} 頁`}
                         aria-current={pagination.page === pageNum ? 'page' : undefined}
                       >
@@ -733,12 +734,12 @@ export default function WorkOrdersPage() {
                   })}
                   {pagination.totalPages > 5 && (
                     <>
-                      <Text.Tertiary as="span">...</Text.Tertiary>
+                      <Text.Tertiary as="span" className="px-1">...</Text.Tertiary>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handlePageChange(pagination.totalPages)}
-                        className="min-w-[40px] transition-apple"
+                        className="min-w-[32px] sm:min-w-[40px] h-8 sm:h-9 transition-apple text-xs sm:text-sm"
                         aria-label={`前往第 ${pagination.totalPages} 頁`}
                       >
                         {pagination.totalPages}
@@ -752,7 +753,7 @@ export default function WorkOrdersPage() {
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                   aria-label="下一頁"
-                  className="transition-apple"
+                  className="transition-apple h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
                 >
                   下一頁
                 </Button>
@@ -768,47 +769,6 @@ export default function WorkOrdersPage() {
         {!isLoading && workOrders.length > 0 && `已載入 ${workOrders.length} 個工作單`}
         {!isLoading && workOrders.length === 0 && '沒有找到符合條件的工作單'}
       </div>
-
-      {/* Debug Info (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card className="mt-6 border-info-200 bg-info-50 dark:bg-info-900/20 dark:border-info-800">
-          <CardHeader>
-            <CardTitle className="text-info-700 dark:text-info-400">開發調試信息</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm font-mono">
-              <div>
-                <Text.Tertiary as="span">Loading:</Text.Tertiary>{' '}
-                <Text.Primary as="span" className={isLoading ? 'text-warning-600' : 'text-success-600'}>
-                  {isLoading ? 'Yes' : 'No'}
-                </Text.Primary>
-              </div>
-              <div>
-                <Text.Tertiary as="span">Fetching:</Text.Tertiary>{' '}
-                <Text.Primary as="span" className={isFetching ? 'text-warning-600' : 'text-success-600'}>
-                  {isFetching ? 'Yes' : 'No'}
-                </Text.Primary>
-              </div>
-              <div>
-                <Text.Tertiary as="span">Work Orders:</Text.Tertiary>{' '}
-                <Text.Primary as="span">{workOrders.length}</Text.Primary>
-              </div>
-              <div>
-                <Text.Tertiary as="span">Selected:</Text.Tertiary>{' '}
-                <Text.Primary as="span">{selectedIds.length}</Text.Primary>
-              </div>
-              <div>
-                <Text.Tertiary as="span">Active Filters:</Text.Tertiary>{' '}
-                <Text.Primary as="span">{activeFiltersCount}</Text.Primary>
-              </div>
-              <div>
-                <Text.Tertiary as="span">Current Page:</Text.Tertiary>{' '}
-                <Text.Primary as="span">{pagination.page} / {pagination.totalPages}</Text.Primary>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
       
       {/* Export Dialog */}
       <ExportDialog
