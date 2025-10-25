@@ -167,7 +167,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         dryRun: true,
-        validation: validationResult
+        validation: validationResult,
+        debug: {
+          headersFound: data.headers,
+          totalRows: data.rows.length,
+          sampleRow: data.rows[0] // First row for debugging
+        }
       })
     }
 

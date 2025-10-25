@@ -132,6 +132,13 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
         // Handle validation response structure
         const validation = result.validation || result.data
         
+        // Debug: Log what headers were found
+        if (result.debug) {
+          console.log('[Import] Headers found:', result.debug.headersFound)
+          console.log('[Import] Total rows:', result.debug.totalRows)
+          console.log('[Import] Sample row:', result.debug.sampleRow)
+        }
+        
         // Map validation details to error format expected by UI
         const mappedErrors = (validation.details || []).map((detail: any) => ({
           row: detail.row,
