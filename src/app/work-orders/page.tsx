@@ -26,7 +26,11 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/accessible-dialog'
 import { Text } from '@/components/ui/text'
-import { Plus, Search, FileDown, Upload, Filter, X } from 'lucide-react'
+import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
+import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
+import { IconContainer } from '@/components/ui/icon-container'
+import { SmartAIAssistant } from '@/components/ai/smart-ai-assistant'
+import { Plus, Search, FileDown, Upload, Filter, X, Briefcase } from 'lucide-react'
 import type { WorkOrderSearchFilters, SortField, WorkOrder } from '@/types/work-order'
 import { WorkOrderStatus, WorkType, WORK_ORDER_STATUS_LABELS, WORK_TYPE_LABELS } from '@/types/work-order'
 
@@ -227,7 +231,9 @@ export default function WorkOrdersPage() {
     (filters.hasLinkedCapsulation !== undefined ? 1 : 0)
 
   return (
-    <div className="container mx-auto py-4 sm:py-8 px-2 sm:px-4">
+    <div className="min-h-screen logo-bg-animation flex flex-col">
+      <LiquidGlassNav />
+      
       {/* Notification */}
       {notification && (
         <div 
@@ -247,35 +253,61 @@ export default function WorkOrdersPage() {
           </Text.Primary>
         </div>
       )}
-
-      {/* Bulk Action Bar - appears when items selected */}
-      <BulkActionBar
-        selectedCount={selectedIds.length}
-        onExport={() => setIsExportDialogOpen(true)}
-        onDelete={handleBulkDeleteClick}
-        onStatusChange={() => setIsBulkStatusDialogOpen(true)}
-        onClearSelection={() => setSelectedIds([])}
-      />
-
-      {/* Header */}
-      <div className="mb-4 sm:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-          <div>
-            <Text.Primary as="h1" className="text-2xl sm:text-3xl font-bold">
-              工作單管理
-            </Text.Primary>
-            <Text.Secondary className="mt-1 text-sm sm:text-base">
-              統一工作單系統 - 包裝、生產、倉務
-            </Text.Secondary>
+      
+      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+        {/* Hero Section */}
+        <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
+          <div className="liquid-glass-content flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <IconContainer 
+                icon={Briefcase} 
+                variant="primary" 
+                size="md" 
+                className="shadow-[0_12px_30px_rgba(59,130,246,0.25)]" 
+              />
+              <div>
+                <Text.Primary as="h1" className="text-lg md:text-lg font-semibold tracking-tight">
+                  工作單管理
+                </Text.Primary>
+                <Text.Secondary className="text-xs md:text-xs mt-0.5">
+                  統一工作單系統 - 包裝、生產、倉務全流程管理
+                </Text.Secondary>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 items-center">
+              <span className="px-3.5 py-1.5 rounded-full bg-success-500/15 border border-success-300/40 text-success-700 dark:text-success-400 text-sm font-medium leading-none">
+                即時更新
+              </span>
+              <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 dark:text-primary-400 text-sm font-medium leading-none">
+                完整追蹤
+              </span>
+              <span className="px-3.5 py-1.5 rounded-full bg-info-500/15 border border-info-300/40 text-info-700 dark:text-info-400 text-sm font-medium leading-none">
+                批量操作
+              </span>
+            </div>
           </div>
-          <Button 
-            className="bg-primary-600 hover:bg-primary-700 transition-apple w-full sm:w-auto"
-            onClick={() => router.push('/work-orders/new' as Route)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            新增工作單
-          </Button>
-        </div>
+        </section>
+
+        {/* Bulk Action Bar - appears when items selected */}
+        <BulkActionBar
+          selectedCount={selectedIds.length}
+          onExport={() => setIsExportDialogOpen(true)}
+          onDelete={handleBulkDeleteClick}
+          onStatusChange={() => setIsBulkStatusDialogOpen(true)}
+          onClearSelection={() => setSelectedIds([])}
+        />
+
+        {/* Header with Action Button */}
+        <div className="mb-4 sm:mb-8">
+          <div className="flex justify-end mb-4">
+            <Button 
+              className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/30 transition-all duration-300 touch-feedback w-full sm:w-auto"
+              onClick={() => router.push('/work-orders/new' as Route)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              新增工作單
+            </Button>
+          </div>
 
         {/* Stats */}
         {!isLoading && (
@@ -812,6 +844,34 @@ export default function WorkOrdersPage() {
         cancelLabel="取消"
         variant="destructive"
       />
+
+      {/* SmartAIAssistant - Floating AI Chat */}
+      <SmartAIAssistant
+        orders={workOrders.map((wo: WorkOrder) => ({
+          id: wo.id,
+          customerName: wo.customerName,
+          productName: wo.workDescription,
+          productionStatus: wo.status,
+          createdAt: wo.createdAt?.toString() || new Date().toISOString(),
+        }))}
+        pageData={{
+          currentPage: '/work-orders',
+          pageDescription: '工作單管理頁面 - 管理所有包裝、生產、倉務工作單',
+          timestamp: new Date().toISOString(),
+          ordersCount: pagination.total,
+          hasCurrentOrder: false,
+          currentOrder: null,
+          recentOrders: workOrders.slice(0, 5).map((wo: WorkOrder) => ({
+            id: wo.id,
+            customerName: wo.customerName,
+            productName: wo.workDescription,
+            productionStatus: wo.status,
+            createdAt: wo.createdAt?.toString() || new Date().toISOString(),
+          })),
+        }}
+      />
+      </div>
+      <LiquidGlassFooter />
     </div>
   )
 }
