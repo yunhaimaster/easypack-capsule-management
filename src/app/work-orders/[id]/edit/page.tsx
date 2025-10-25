@@ -60,6 +60,10 @@ export default function EditWorkOrderPage() {
   // Populate form when work order loads
   useEffect(() => {
     if (workOrder) {
+      console.log('[EditPage] Loading workOrder data:')
+      console.log('  - workOrder.personInChargeId:', workOrder.personInChargeId)
+      console.log('  - Will set to:', workOrder.personInChargeId || 'UNASSIGNED')
+      
       setFormData({
         jobNumber: workOrder.jobNumber || '',
         customerName: workOrder.customerName,
@@ -95,6 +99,8 @@ export default function EditWorkOrderPage() {
         productionStarted: workOrder.productionStarted,
         isCompleted: workOrder.isCompleted
       })
+      
+      console.log('[EditPage] Form data updated')
     }
   }, [workOrder])
 
@@ -154,7 +160,20 @@ export default function EditWorkOrderPage() {
       }, 1500)
     } catch (error: any) {
       console.error('[EditPage] Update failed:', error)
-      setErrorMessage(error?.message || '更新工作單失敗，請稍後重試')
+      
+      // Extract detailed error message
+      let errorMessage = '更新工作單失敗，請稍後重試'
+      
+      if (error?.message) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error
+      }
+      
+      console.error('[EditPage] Detailed error:', errorMessage)
+      setErrorMessage(errorMessage)
     }
   }
 
@@ -281,24 +300,33 @@ export default function EditWorkOrderPage() {
                     </Text.Tertiary>
                   </div>
                 ) : (
-                  <Select
-                    value={formData.personInChargeId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, personInChargeId: value }))}
-                  >
-                    <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
-                      <SelectValue placeholder="請選擇負責人" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
-                        未指定
-                      </SelectItem>
-                      {users?.map((user: any) => (
-                        <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
-                          {user.nickname || user.phoneE164}
+                  <>
+                    {console.log('[EditPage] Rendering Select with:')}
+                    {console.log('  - formData.personInChargeId:', formData.personInChargeId)}
+                    {console.log('  - users count:', users?.length)}
+                    {console.log('  - users IDs:', users?.map((u: any) => u.id))}
+                    <Select
+                      value={formData.personInChargeId}
+                      onValueChange={(value) => {
+                        console.log('[EditPage] Select value changed to:', value)
+                        setFormData(prev => ({ ...prev, personInChargeId: value }))
+                      }}
+                    >
+                      <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
+                        <SelectValue placeholder="請選擇負責人" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
+                          未指定
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        {users?.map((user: any) => (
+                          <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
+                            {user.nickname || user.phoneE164}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </>
                 )}
               </div>
 
