@@ -24,6 +24,7 @@ interface WorkOrderTableProps {
   onSort: (field: string) => void
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  onDelete: (id: string) => void
 }
 
 /**
@@ -153,7 +154,8 @@ export function WorkOrderTable({
   onSelectionChange,
   onSort,
   sortBy,
-  sortOrder
+  sortOrder,
+  onDelete
 }: WorkOrderTableProps) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null)
   
@@ -229,6 +231,9 @@ export function WorkOrderTable({
               />
               <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 工作類型
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
+                關聯訂單
               </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-neutral-700 dark:text-white/85">
                 負責人
@@ -324,6 +329,17 @@ export function WorkOrderTable({
                 <td className="px-4 py-3">
                   <WorkTypeBadge workType={workOrder.workType} />
                 </td>
+                <td className="px-4 py-3">
+                  {workOrder.capsulationOrder ? (
+                    <Link href={`/orders/${workOrder.capsulationOrder.id}`}>
+                      <Badge variant="info" className="cursor-pointer hover:bg-info-100 dark:hover:bg-info-900/40">
+                        膠囊訂單
+                      </Badge>
+                    </Link>
+                  ) : (
+                    <span className="text-neutral-400 dark:text-white/55 text-xs">-</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-neutral-700 dark:text-white/85">
                   {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '-'}
                 </td>
@@ -391,7 +407,7 @@ export function WorkOrderTable({
                       asChild
                       className="h-8 w-8 p-0"
                     >
-                      <Link href={`/work-orders/${workOrder.id}` as never}>
+                      <Link href={`/work-orders/${workOrder.id}`}>
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">查看</span>
                       </Link>
@@ -402,7 +418,7 @@ export function WorkOrderTable({
                       asChild
                       className="h-8 w-8 p-0"
                     >
-                      <Link href={`/work-orders/${workOrder.id}/edit` as never}>
+                      <Link href={`/work-orders/${workOrder.id}/edit`}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">編輯</span>
                       </Link>
@@ -410,11 +426,8 @@ export function WorkOrderTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50"
-                      onClick={() => {
-                        // Delete handler will be passed from parent
-                        console.log('Delete', workOrder.id)
-                      }}
+                      className="h-8 w-8 p-0 text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20"
+                      onClick={() => onDelete(workOrder.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">刪除</span>

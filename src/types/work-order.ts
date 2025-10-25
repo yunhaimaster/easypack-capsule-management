@@ -157,8 +157,8 @@ export interface CreateWorkOrderData {
   packagingMaterialsReady?: boolean
   
   // 數量
-  productionQuantity?: number
-  packagingQuantity?: number
+  productionQuantity?: number | null
+  packagingQuantity?: number | null
   
   // 交貨期
   requestedDeliveryDate?: Date | null
@@ -212,6 +212,36 @@ export interface UpdateWorkOrderData {
 
 // ===== Search & Filter Types =====
 
+export type SortField = 'jobNumber' | 'customerName' | 'status' | 'markedDate' | 'createdAt' | 'workType'
+
+export interface CreateWorkOrderPayload {
+  jobNumber?: string | null
+  customerName: string
+  personInChargeId: string
+  workType: WorkType
+  workDescription: string
+  isCustomerServiceVip: boolean
+  isBossVip: boolean
+  expectedProductionMaterialsDate?: Date | null
+  expectedPackagingMaterialsDate?: Date | null
+  productionMaterialsReady: boolean
+  packagingMaterialsReady: boolean
+  productionQuantity?: number | null
+  packagingQuantity?: number | null
+  requestedDeliveryDate?: Date | null
+  internalExpectedDate?: Date | null
+  isUrgent: boolean
+  productionStarted: boolean
+  isCompleted: boolean
+}
+
+export interface User {
+  id: string
+  phoneE164: string
+  nickname?: string | null
+  role: string
+}
+
 export interface WorkOrderSearchFilters {
   keyword?: string
   customerName?: string
@@ -224,7 +254,7 @@ export interface WorkOrderSearchFilters {
   isVip?: boolean
   page?: number
   limit?: number
-  sortBy?: 'createdAt' | 'expectedCompletionDate' | 'customerName' | 'jobNumber' | 'status'
+  sortBy?: SortField
   sortOrder?: 'asc' | 'desc'
 }
 
