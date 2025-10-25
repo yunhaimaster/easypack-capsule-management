@@ -11,7 +11,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LiquidGlassModal } from '@/components/ui/liquid-glass-modal'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -38,11 +38,23 @@ export function QuickEditModal({ workOrder, users, isOpen, onClose, onSuccess }:
     workDescription: workOrder.workDescription || ''
   })
 
-  // Debug: Log users prop
+  // Debug: Log users prop and current selection
   console.log('[QuickEditModal] Users prop:', users)
   console.log('[QuickEditModal] Users length:', users?.length)
+  console.log('[QuickEditModal] Current personInChargeId:', workOrder.personInChargeId)
+  console.log('[QuickEditModal] Form personInChargeId:', formData.personInChargeId)
+  console.log('[QuickEditModal] User IDs available:', users?.map(u => ({ id: u.id, nickname: u.nickname })))
 
   const queryClient = useQueryClient()
+
+  // Sync formData when workOrder changes (when modal opens with different work order)
+  useEffect(() => {
+    setFormData({
+      personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
+      workType: workOrder.workType,
+      workDescription: workOrder.workDescription || ''
+    })
+  }, [workOrder.id, workOrder.personInChargeId, workOrder.workType, workOrder.workDescription])
 
   // Update mutation
   const updateMutation = useMutation({
