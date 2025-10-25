@@ -59,16 +59,20 @@ export function ExportDialog({ isOpen, onClose, selectedIds, totalCount }: Expor
     setError(null)
 
     try {
-      const params = new URLSearchParams()
-      params.append('format', format)
-      selectedColumns.forEach(col => params.append('columns', col))
-      
-      if (selectedIds.length > 0) {
-        selectedIds.forEach(id => params.append('ids', id))
+      const requestBody = {
+        format,
+        columns: selectedColumns,
+        workOrderIds: selectedIds.length > 0 ? selectedIds : undefined,
+        includeLinkedOrders: false,
+        encoding: 'utf8-bom' as const
       }
 
-      const response = await fetch(`/api/work-orders/export?${params.toString()}`, {
-        method: 'POST'
+      const response = await fetch('/api/work-orders/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {
