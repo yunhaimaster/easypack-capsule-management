@@ -591,7 +591,7 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
+                    <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedStatuses.length > 0 ? `已選 ${selectedStatuses.length} 個` : "選擇狀態"} />
                     </SelectTrigger>
                     <SelectContent>
@@ -621,7 +621,7 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
+                    <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedWorkTypes.length > 0 ? `已選 ${selectedWorkTypes.length} 個` : "選擇類型"} />
                     </SelectTrigger>
                     <SelectContent>
@@ -651,7 +651,7 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
+                    <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder={selectedPersons.length > 0 ? `已選 ${selectedPersons.length} 個` : "選擇負責人"} />
                     </SelectTrigger>
                     <SelectContent>
@@ -673,7 +673,7 @@ export default function WorkOrdersPage() {
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="transition-apple h-9 sm:h-10 text-xs sm:text-sm"
+                    className="transition-apple h-10 sm:h-11 text-xs sm:text-sm"
                   />
                 </div>
 
@@ -686,7 +686,7 @@ export default function WorkOrdersPage() {
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="transition-apple h-9 sm:h-10 text-xs sm:text-sm"
+                    className="transition-apple h-10 sm:h-11 text-xs sm:text-sm"
                   />
                 </div>
 
@@ -713,7 +713,7 @@ export default function WorkOrdersPage() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm">
+                    <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇特殊標記" />
                     </SelectTrigger>
                     <SelectContent>
