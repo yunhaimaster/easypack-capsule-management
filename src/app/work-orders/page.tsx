@@ -869,6 +869,76 @@ export default function WorkOrdersPage() {
         </div>
       </div>
 
+      {/* Pagination */}
+      {!isLoading && pagination.totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 sm:px-0">
+          {/* Page info */}
+          <div className="text-sm text-neutral-600 dark:text-white/75">
+            顯示第 {((pagination.page - 1) * pagination.limit) + 1} 至 {Math.min(pagination.page * pagination.limit, pagination.total)} 項，共 {pagination.total} 項
+          </div>
+
+          {/* Page controls */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(1)}
+              disabled={pagination.page === 1}
+              className="hidden sm:flex"
+            >
+              第一頁
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 1}
+            >
+              上一頁
+            </Button>
+            <span className="flex items-center px-3 sm:px-4 text-sm text-neutral-900 dark:text-white/95 font-medium">
+              第 {pagination.page} / {pagination.totalPages} 頁
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page === pagination.totalPages}
+            >
+              下一頁
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.totalPages)}
+              disabled={pagination.page === pagination.totalPages}
+              className="hidden sm:flex"
+            >
+              最後頁
+            </Button>
+          </div>
+
+          {/* Items per page selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-neutral-600 dark:text-white/75 whitespace-nowrap">每頁顯示：</span>
+            <Select
+              value={pagination.limit.toString()}
+              onValueChange={(value) => handleLimitChange(parseInt(value))}
+            >
+              <SelectTrigger className="w-20 h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
       {/* Screen reader announcements */}
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {isFetching && '正在更新工作單列表'}
