@@ -328,8 +328,8 @@ export function WorkOrderTable({
             <tbody>
               {isLoading ? (
                 <>
-                  {[...Array(10)].map((_, i) => (
-                    <SkeletonRow key={`skeleton-${i}`} />
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <SkeletonRow key={`skeleton-${index}`} />
                   ))}
                 </>
               ) : workOrders.length === 0 ? (
