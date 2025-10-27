@@ -62,6 +62,7 @@ export default function EditWorkOrderPage() {
     if (workOrder) {
       console.log('[EditPage] Loading workOrder data:')
       console.log('  - workOrder.personInChargeId:', workOrder.personInChargeId)
+      console.log('  - workOrder.personInCharge:', workOrder.personInCharge)
       console.log('  - Will set to:', workOrder.personInChargeId || 'UNASSIGNED')
       
       setFormData({
@@ -304,7 +305,8 @@ export default function EditWorkOrderPage() {
                     {console.log('[EditPage] Rendering Select with:')}
                     {console.log('  - formData.personInChargeId:', formData.personInChargeId)}
                     {console.log('  - users count:', users?.length)}
-                    {console.log('  - users IDs:', users?.map((u: any) => u.id))}
+                    {console.log('  - users data:', users)}
+                    {console.log('  - workOrder.personInCharge:', workOrder?.personInCharge)}
                     <Select
                       value={formData.personInChargeId}
                       onValueChange={(value) => {
