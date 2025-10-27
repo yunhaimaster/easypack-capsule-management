@@ -14,25 +14,33 @@ const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
 
-const DialogPortal = DialogPrimitive.Portal
+const DialogPortal = ({ children, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>) => {
+  console.log('[DialogPortal] Rendering', { hasChildren: !!children })
+  return <DialogPrimitive.Portal {...props}>{children}</DialogPrimitive.Portal>
+}
 
 const DialogClose = DialogPrimitive.Close
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm',
-      'data-[state=open]:animate-fade-in',
-      'data-[state=closed]:animate-fade-out',
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  console.log('[DialogOverlay] Rendering')
+  return (
+    <DialogPrimitive.Overlay
+      ref={ref}
+      className={cn(
+        'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm',
+        'data-[state=open]:animate-fade-in',
+        'data-[state=closed]:animate-fade-out',
+        // Temporary debugging styles
+        'bg-red-300',
+        className
+      )}
+      {...props}
+    />
+  )
+})
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
@@ -55,40 +63,51 @@ interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof Dialo
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, closeLabel = '關閉對話框', showCloseButton = true, ariaDescribedBy, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      aria-describedby={ariaDescribedBy}
-      className={cn(
-        'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-        'liquid-glass-modal p-6',
-        'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-        className
-      )}
-      {...props}
-    >
-      {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close
-          className={cn(
-            'absolute right-4 top-4 rounded-lg p-2',
-            'opacity-70 ring-offset-background transition-opacity',
-            'hover:opacity-100 hover:bg-black/5',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-            'disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground'
-          )}
-          aria-label={closeLabel}
-        >
-          <X className="h-4 w-4" aria-hidden="true" />
-          <span className="sr-only">{closeLabel}</span>
-        </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
+>(({ className, children, closeLabel = '關閉對話框', showCloseButton = true, ariaDescribedBy, ...props }, ref) => {
+  console.log('[DialogContent] Rendering', { 
+    className, 
+    hasChildren: !!children,
+    ariaDescribedBy,
+    props: Object.keys(props)
+  })
+  
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        aria-describedby={ariaDescribedBy}
+        className={cn(
+          'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+          'liquid-glass-modal p-6',
+          'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+          // Temporary debugging styles
+          'bg-red-500 border-4 border-yellow-400',
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            className={cn(
+              'absolute right-4 top-4 rounded-lg p-2',
+              'opacity-70 ring-offset-background transition-opacity',
+              'hover:opacity-100 hover:bg-black/5',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+              'disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground'
+            )}
+            aria-label={closeLabel}
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+            <span className="sr-only">{closeLabel}</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({
