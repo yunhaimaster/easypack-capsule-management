@@ -332,61 +332,81 @@ export async function POST(request: NextRequest) {
           // Create work order - Clean data to match Prisma schema exactly
           const { personInCharge, ...workOrderDataForDb } = workOrderData as any
           
+          // Helper function to safely parse dates
+          const safeParseDate = (value: any): Date | null => {
+            if (!value) return null
+            try {
+              const date = new Date(value)
+              return isNaN(date.getTime()) ? null : date
+            } catch {
+              return null
+            }
+          }
+          
+          // Helper function to safely parse numbers
+          const safeParseNumber = (value: any): number | null => {
+            if (!value) return null
+            const num = Number(value)
+            return isNaN(num) ? null : num
+          }
+          
+          // Helper function to validate enum values
+          const validateWorkType = (value: any): string => {
+            const validTypes = ['PRODUCTION', 'PACKAGING', 'PRODUCTION_PACKAGING', 'WAREHOUSING']
+            return validTypes.includes(value) ? value : 'PRODUCTION'
+          }
+          
+          const validateStatus = (value: any): string => {
+            const validStatuses = ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
+            return validStatuses.includes(value) ? value : 'PENDING'
+          }
+          
           // Create clean data object with only valid Prisma fields and correct types
           const cleanData = {
-            // Required fields
+            // Required fields with validation
             customerName: String(workOrderDataForDb.customerName || '').trim().substring(0, 200),
-            workType: workOrderDataForDb.workType || 'PRODUCTION',
+            workType: validateWorkType(workOrderDataForDb.workType),
             workDescription: String(workOrderDataForDb.workDescription || '').trim() || '（匯入時無描述，請手動補充）',
             
-            // Optional fields with proper types
+            // Optional fields with proper types and validation
             jobNumber: workOrderDataForDb.jobNumber ? String(workOrderDataForDb.jobNumber).trim().substring(0, 50) : null,
-            markedDate: workOrderDataForDb.markedDate ? new Date(workOrderDataForDb.markedDate) : new Date(),
-            status: workOrderDataForDb.status || 'PENDING',
+            markedDate: safeParseDate(workOrderDataForDb.markedDate) || new Date(),
+            status: validateStatus(workOrderDataForDb.status),
             
-            // VIP flags
+            // VIP flags with safe boolean conversion
             isCustomerServiceVip: Boolean(workOrderDataForDb.isCustomerServiceVip),
             isBossVip: Boolean(workOrderDataForDb.isBossVip),
             isNewProductVip: Boolean(workOrderDataForDb.isNewProductVip),
             isComplexityVip: Boolean(workOrderDataForDb.isComplexityVip),
             
-            // Material dates
-            expectedProductionMaterialsDate: workOrderDataForDb.expectedProductionMaterialsDate ? 
-              new Date(workOrderDataForDb.expectedProductionMaterialsDate) : null,
-            expectedPackagingMaterialsDate: workOrderDataForDb.expectedPackagingMaterialsDate ? 
-              new Date(workOrderDataForDb.expectedPackagingMaterialsDate) : null,
+            // Material dates with safe parsing
+            expectedProductionMaterialsDate: safeParseDate(workOrderDataForDb.expectedProductionMaterialsDate),
+            expectedPackagingMaterialsDate: safeParseDate(workOrderDataForDb.expectedPackagingMaterialsDate),
             productionMaterialsReady: Boolean(workOrderDataForDb.productionMaterialsReady),
             packagingMaterialsReady: Boolean(workOrderDataForDb.packagingMaterialsReady),
             
-            // Quantities - ensure they're numbers or null
-            productionQuantity: workOrderDataForDb.productionQuantity ? Number(workOrderDataForDb.productionQuantity) : null,
-            packagingQuantity: workOrderDataForDb.packagingQuantity ? Number(workOrderDataForDb.packagingQuantity) : null,
+            // Quantities with safe number conversion
+            productionQuantity: safeParseNumber(workOrderDataForDb.productionQuantity),
+            packagingQuantity: safeParseNumber(workOrderDataForDb.packagingQuantity),
             productionQuantityStat: workOrderDataForDb.productionQuantityStat ? String(workOrderDataForDb.productionQuantityStat).substring(0, 20) : null,
             packagingQuantityStat: workOrderDataForDb.packagingQuantityStat ? String(workOrderDataForDb.packagingQuantityStat).substring(0, 20) : null,
             
-            // Delivery dates
-            requestedDeliveryDate: workOrderDataForDb.requestedDeliveryDate ? 
-              new Date(workOrderDataForDb.requestedDeliveryDate) : null,
-            internalExpectedDate: workOrderDataForDb.internalExpectedDate ? 
-              new Date(workOrderDataForDb.internalExpectedDate) : null,
+            // Delivery dates with safe parsing
+            requestedDeliveryDate: safeParseDate(workOrderDataForDb.requestedDeliveryDate),
+            internalExpectedDate: safeParseDate(workOrderDataForDb.internalExpectedDate),
             
-            // Status flags
+            // Status flags with safe boolean conversion
             isUrgent: Boolean(workOrderDataForDb.isUrgent),
             productionStarted: Boolean(workOrderDataForDb.productionStarted),
             isCompleted: Boolean(workOrderDataForDb.isCompleted),
             
-            // Legacy fields (deprecated but still in schema)
+            // Legacy fields (deprecated but still in schema) with safe parsing
             yearCategory: workOrderDataForDb.yearCategory ? String(workOrderDataForDb.yearCategory).substring(0, 50) : null,
-            expectedCompletionDate: workOrderDataForDb.expectedCompletionDate ? 
-              new Date(workOrderDataForDb.expectedCompletionDate) : null,
-            dataCompleteDate: workOrderDataForDb.dataCompleteDate ? 
-              new Date(workOrderDataForDb.dataCompleteDate) : null,
-            notifiedDate: workOrderDataForDb.notifiedDate ? 
-              new Date(workOrderDataForDb.notifiedDate) : null,
-            paymentReceivedDate: workOrderDataForDb.paymentReceivedDate ? 
-              new Date(workOrderDataForDb.paymentReceivedDate) : null,
-            shippedDate: workOrderDataForDb.shippedDate ? 
-              new Date(workOrderDataForDb.shippedDate) : null,
+            expectedCompletionDate: safeParseDate(workOrderDataForDb.expectedCompletionDate),
+            dataCompleteDate: safeParseDate(workOrderDataForDb.dataCompleteDate),
+            notifiedDate: safeParseDate(workOrderDataForDb.notifiedDate),
+            paymentReceivedDate: safeParseDate(workOrderDataForDb.paymentReceivedDate),
+            shippedDate: safeParseDate(workOrderDataForDb.shippedDate),
             internalDeliveryTime: workOrderDataForDb.internalDeliveryTime ? String(workOrderDataForDb.internalDeliveryTime).substring(0, 100) : null,
             customerRequestedTime: workOrderDataForDb.customerRequestedTime ? String(workOrderDataForDb.customerRequestedTime).substring(0, 100) : null,
             notes: workOrderDataForDb.notes ? String(workOrderDataForDb.notes).substring(0, 1000) : null,
@@ -403,6 +423,14 @@ export async function POST(request: NextRequest) {
           console.log('  - workDescription length:', cleanData.workDescription.length)
           console.log('  - personInChargeId:', cleanData.personInChargeId)
           console.log('  - Clean data keys:', Object.keys(cleanData))
+          
+          // Validate required fields before Prisma create
+          if (!cleanData.customerName || cleanData.customerName.length === 0) {
+            throw new Error('Customer name is required')
+          }
+          if (!cleanData.workDescription || cleanData.workDescription.length < 10) {
+            throw new Error('Work description must be at least 10 characters')
+          }
           
           await tx.unifiedWorkOrder.create({
             data: cleanData
