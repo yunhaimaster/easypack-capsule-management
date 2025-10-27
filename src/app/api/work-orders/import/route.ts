@@ -496,25 +496,40 @@ export async function POST(request: NextRequest) {
             throw new Error('Work description must be at least 10 characters')
           }
           
+          console.log(`[Import] ========== ABOUT TO CREATE ROW ${rowNum} ==========`)
+          console.log(`[Import] customerName: "${cleanData.customerName}"`)
+          console.log(`[Import] workType: "${cleanData.workType}"`)
+          console.log(`[Import] workDescription: "${cleanData.workDescription}" (length: ${cleanData.workDescription.length})`)
+          console.log(`[Import] markedDate: ${cleanData.markedDate?.toISOString()}`)
+          console.log(`[Import] personInChargeId: ${cleanData.personInChargeId}`)
+          console.log(`[Import] status: ${cleanData.status}`)
+          console.log(`[Import] All cleanData fields:`, Object.keys(cleanData))
+          console.log(`[Import] ====================================================`)
+          
           await tx.unifiedWorkOrder.create({
             data: cleanData
           })
 
           result.imported++
         } catch (error) {
-          console.error(`[Import] Error importing row ${rowNum}:`, error)
+          console.error(`[Import] ========== ERROR IN ROW ${rowNum} ==========`)
+          console.error(`[Import] Raw Excel row data:`, row)
           
           // Log detailed Prisma error information
           if (error instanceof Error) {
+            console.error(`[Import] Error name:`, error.name)
             console.error(`[Import] Error message:`, error.message)
-            console.error(`[Import] Error stack:`, error.stack)
+            console.error(`[Import] Full error:`, error)
             
-            // Check if it's a Prisma validation error
-            if (error.message.includes('Invalid') || error.message.includes('Unknown argument')) {
-              console.error(`[Import] Prisma validation error detected`)
-              console.error(`[Import] Row data that caused error:`, row)
+            // Check if it's a Prisma error
+            if ('code' in error) {
+              console.error(`[Import] Prisma error code:`, (error as any).code)
+            }
+            if ('meta' in error) {
+              console.error(`[Import] Prisma error meta:`, (error as any).meta)
             }
           }
+          console.error(`[Import] ==========================================`)
           
           result.errors.push({
             row: rowNum,
