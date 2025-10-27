@@ -843,7 +843,7 @@ export default function WorkOrdersPage() {
       )}
 
       {/* Results Summary */}
-      {!isLoading && (
+      {!(isLoading || isFetching) && (
         <div className="mb-4 px-2 sm:px-0">
           <Text.Secondary className="text-sm">
             {pagination.total > 0 ? (
@@ -875,7 +875,7 @@ export default function WorkOrdersPage() {
       </div>
 
       {/* Pagination */}
-      {!isLoading && pagination.totalPages > 1 && (
+      {!(isLoading || isFetching) && pagination.totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 sm:px-0">
           {/* Page info */}
           <div className="text-sm text-neutral-600 dark:text-white/75">

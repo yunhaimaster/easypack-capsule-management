@@ -326,7 +326,7 @@ export function WorkOrderTable({
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {(isLoading || isFetching) ? (
                 <>
                   {Array.from({ length: 5 }).map((_, index) => (
                     <SkeletonRow key={`skeleton-${index}`} />
@@ -510,7 +510,7 @@ export function WorkOrderTable({
       {/* Mobile/Tablet view - will be updated in next step */}
       <div className="lg:hidden">
         <div className="space-y-3">
-          {isLoading ? (
+          {(isLoading || isFetching) ? (
             <>
               {[...Array(5)].map((_, i) => (
                 <div key={`skeleton-${i}`} className="p-4 bg-surface-primary rounded-lg">
