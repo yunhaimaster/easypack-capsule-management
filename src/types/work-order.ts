@@ -232,7 +232,7 @@ export interface UpdateWorkOrderData {
 
 // ===== Search & Filter Types =====
 
-export type SortField = 'jobNumber' | 'customerName' | 'status' | 'markedDate' | 'createdAt' | 'workType' | 'personInCharge'
+export type SortField = 'jobNumber' | 'customerName' | 'status' | 'markedDate' | 'createdAt' | 'workType' | 'personInCharge' | 'requestedDeliveryDate'
 
 export interface CreateWorkOrderPayload {
   jobNumber?: string | null

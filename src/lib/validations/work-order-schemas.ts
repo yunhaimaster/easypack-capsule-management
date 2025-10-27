@@ -155,7 +155,7 @@ export const searchFiltersSchema = z.object({
   dateTo: z.string().datetime().optional(),
   page: z.number().int().positive().default(1),
   limit: z.number().int().positive().max(100).default(25),
-  sortBy: z.enum(['createdAt', 'markedDate', 'customerName', 'jobNumber', 'status', 'workType', 'personInCharge']).default('markedDate'),
+  sortBy: z.enum(['createdAt', 'markedDate', 'customerName', 'jobNumber', 'status', 'workType', 'personInCharge', 'requestedDeliveryDate']).default('markedDate'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   // Smart filter fields
   productionMaterialsReady: z.boolean().optional(),

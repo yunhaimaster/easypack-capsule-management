@@ -119,6 +119,75 @@ function WorkTypeBadge({ workType, productionStarted }: { workType: string; prod
 }
 
 /**
+ * Delivery date cell component with urgency color coding
+ */
+function DeliveryDateCell({ requestedDeliveryDate }: { requestedDeliveryDate: Date | null | undefined }) {
+  if (!requestedDeliveryDate) {
+    return <span className="text-xs text-neutral-400 dark:text-white/45">未設定</span>
+  }
+
+  const deliveryDate = new Date(requestedDeliveryDate)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  deliveryDate.setHours(0, 0, 0, 0)
+  
+  const daysUntil = Math.ceil((deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  
+  // Determine color based on urgency
+  let colorClass = 'text-neutral-700 dark:text-white/85'
+  let icon = null
+  
+  if (daysUntil < 0) {
+    // Overdue
+    colorClass = 'text-danger-700 dark:text-danger-400 font-medium'
+    icon = <AlertCircle className="h-3 w-3 text-danger-600 dark:text-danger-400" />
+  } else if (daysUntil === 0) {
+    // Today
+    colorClass = 'text-warning-700 dark:text-warning-400 font-medium'
+    icon = <AlertCircle className="h-3 w-3 text-warning-600 dark:text-warning-400" />
+  } else if (daysUntil <= 3) {
+    // Within 3 days
+    colorClass = 'text-warning-700 dark:text-warning-400'
+  } else if (daysUntil <= 7) {
+    // Within a week
+    colorClass = 'text-neutral-700 dark:text-white/85'
+  } else {
+    // More than a week away
+    colorClass = 'text-neutral-600 dark:text-white/75'
+  }
+
+  const formattedDate = deliveryDate.toLocaleDateString('zh-HK', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className={`flex items-center gap-1.5 text-xs ${colorClass}`}>
+        {icon}
+        <span>{formattedDate}</span>
+      </div>
+      {daysUntil < 0 && (
+        <span className="text-xs text-danger-600 dark:text-danger-400">
+          已逾期 {Math.abs(daysUntil)} 天
+        </span>
+      )}
+      {daysUntil === 0 && (
+        <span className="text-xs text-warning-600 dark:text-warning-400">
+          今天到期
+        </span>
+      )}
+      {daysUntil > 0 && daysUntil <= 3 && (
+        <span className="text-xs text-warning-600 dark:text-warning-400">
+          {daysUntil} 天內到期
+        </span>
+      )}
+    </div>
+  )
+}
+
+/**
  * Sortable column header
  */
 function SortableHeader({
@@ -297,6 +366,15 @@ export function WorkOrderTable({
                 </th>
                 <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
                   <SortableHeader
+                    label="要求交貨期"
+                    field="requestedDeliveryDate"
+                    currentSort={sortBy}
+                    currentOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </th>
+                <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
+                  <SortableHeader
                     label="負責人"
                     field="personInCharge"
                     currentSort={sortBy}
@@ -342,7 +420,7 @@ export function WorkOrderTable({
                 </>
               ) : workOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-8 text-neutral-500 dark:text-white/65">
+                  <td colSpan={9} className="text-center py-8 text-neutral-500 dark:text-white/65">
                     沒有找到工作單
                   </td>
                 </tr>
@@ -415,6 +493,11 @@ export function WorkOrderTable({
                           )}
                         </div>
                       </div>
+                    </td>
+
+                    {/* Requested Delivery Date */}
+                    <td className="py-3 px-3 text-sm align-top">
+                      <DeliveryDateCell requestedDeliveryDate={workOrder.requestedDeliveryDate} />
                     </td>
 
                     {/* Person in Charge */}
