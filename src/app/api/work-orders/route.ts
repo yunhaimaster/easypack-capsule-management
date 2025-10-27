@@ -133,9 +133,17 @@ export async function GET(request: NextRequest) {
     const take = validatedFilters.limit
 
     // Build order by
-    const orderBy: Prisma.UnifiedWorkOrderOrderByWithRelationInput = {
-      [validatedFilters.sortBy]: validatedFilters.sortOrder
-    }
+    // Handle personInCharge sorting specially (it's a relation)
+    const orderBy: Prisma.UnifiedWorkOrderOrderByWithRelationInput = 
+      validatedFilters.sortBy === 'personInCharge'
+        ? {
+            personInCharge: {
+              nickname: validatedFilters.sortOrder
+            }
+          }
+        : {
+            [validatedFilters.sortBy]: validatedFilters.sortOrder
+          }
 
     // Execute query with count
     const [workOrders, total] = await Promise.all([

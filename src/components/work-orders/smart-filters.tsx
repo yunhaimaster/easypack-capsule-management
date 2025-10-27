@@ -1,11 +1,10 @@
 /**
- * Smart Filter Presets for Work Orders
+ * Smart Filter Presets for Work Orders - REDESIGNED
  * 
- * Provides one-click filters for common workflows:
- * - All production work (生產 + 生產+包裝)
- * - Ready to start (materials ready but production not started)
- * - Awaiting materials (production started but materials not ready)
- * - etc.
+ * Provides one-click filters for common workflows, based on ACTUAL workflow logic:
+ * - Material ready status determined by CHECKBOX ONLY (not expected dates)
+ * - No payment filters (no payment tracking in database)
+ * - Production can't start without materials (removed illogical filter)
  */
 
 'use client'
@@ -18,7 +17,6 @@ import {
   Package, 
   CheckCircle, 
   Clock, 
-  AlertCircle,
   Truck,
   Zap,
   Star
@@ -47,9 +45,10 @@ export interface SmartFilterPreset {
 }
 
 /**
- * Predefined smart filter presets
+ * Predefined smart filter presets - REDESIGNED FOR ACTUAL WORKFLOW
  */
 export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
+  // 1. All production (updated: removed status filter)
   {
     id: 'all-production',
     label: '所有生產',
@@ -57,90 +56,131 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     icon: Factory,
     color: 'primary',
     filters: {
-      workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING'],
-      statuses: ['PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Active statuses only
+      workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING']
+      // Show all, regardless of completion
     }
   },
+  
+  // 2. Ready to start (updated: only check materials checkbox, not status)
   {
     id: 'ready-to-start',
     label: '可以開工',
-    description: '物料齊全，但未開始生產',
+    description: '生產物料齊全，尚未開工',
     icon: CheckCircle,
     color: 'success',
     filters: {
       productionMaterialsReady: true,
-      productionStarted: false,
-      statuses: ['DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Data ready, can start
+      productionStarted: false
+      // Status doesn't matter - if materials ready and not started, can start
     }
   },
-  {
-    id: 'in-progress-waiting',
-    label: '已開工但等物料',
-    description: '生產已開始，但物料未齊',
-    icon: AlertCircle,
-    color: 'warning',
-    filters: {
-      productionStarted: true,
-      productionMaterialsReady: false,
-      isCompleted: false
-    }
-  },
-  {
-    id: 'urgent-orders',
-    label: '加急訂單',
-    description: '客人要求加急處理',
-    icon: Zap,
-    color: 'danger',
-    filters: {
-      isUrgent: true,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Not completed yet
-    }
-  },
-  {
-    id: 'vip-customers',
-    label: 'VIP客戶',
-    description: '所有VIP標記的訂單',
-    icon: Star,
-    color: 'info',
-    filters: {
-      isVip: true,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID'] // Active VIP orders
-    }
-  },
+  
+  // 3. Packaging ready (updated: only check materials checkbox)
   {
     id: 'packaging-ready',
     label: '等待包裝',
-    description: '包裝物料齊，可以包裝',
+    description: '包裝物料齊全，可以包裝',
     icon: Package,
     color: 'success',
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
-      packagingMaterialsReady: true,
-      statuses: ['DATA_COMPLETE', 'NOTIFIED', 'PAID']
+      packagingMaterialsReady: true
+      // No status filter - materials ready means can package
     }
   },
+  
+  // 4. Urgent orders (updated: exclude completed)
   {
-    id: 'awaiting-materials',
-    label: '等待物料',
-    description: '所有物料未齊的訂單',
-    icon: Clock,
-    color: 'neutral',
+    id: 'urgent-orders',
+    label: '加急訂單',
+    description: '客人要求加急處理（未完成）',
+    icon: Zap,
+    color: 'danger',
     filters: {
-      productionMaterialsReady: false,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE'] // Early stages
+      isUrgent: true,
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID']
     }
   },
+  
+  // 5. VIP customers (updated: exclude completed)
   {
-    id: 'delivery-soon',
-    label: '即將交貨',
-    description: '已收數或已出貨',
-    icon: Truck,
+    id: 'vip-customers',
+    label: 'VIP客戶',
+    description: '所有VIP標記的訂單（未完成）',
+    icon: Star,
     color: 'info',
     filters: {
-      statuses: ['PAID', 'SHIPPED']
+      isVip: true,
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID']
+    }
+  },
+  
+  // 6. Awaiting production materials (NEW FILTER)
+  {
+    id: 'awaiting-production-materials',
+    label: '等待生產物料',
+    description: '生產物料未齊，不能開工',
+    icon: Clock,
+    color: 'warning',
+    filters: {
+      workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING'],
+      productionMaterialsReady: false,
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE']
+    }
+  },
+  
+  // 7. Awaiting packaging materials (NEW FILTER)
+  {
+    id: 'awaiting-packaging-materials',
+    label: '等待包裝物料',
+    description: '包裝物料未齊，不能包裝',
+    icon: Clock,
+    color: 'warning',
+    filters: {
+      workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
+      packagingMaterialsReady: false,
+      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE']
+    }
+  },
+  
+  // 8. In production (NEW FILTER)
+  {
+    id: 'in-production',
+    label: '生產中',
+    description: '已開始生產，未完成',
+    icon: Factory,
+    color: 'primary',
+    filters: {
+      productionStarted: true,
+      isCompleted: false
+    }
+  },
+  
+  // 9. Shipped (NEW FILTER - replaces "delivery soon")
+  {
+    id: 'shipped',
+    label: '已出貨',
+    description: '已發貨給客戶',
+    icon: Truck,
+    color: 'success',
+    filters: {
+      statuses: ['SHIPPED']
     }
   }
 ]
+
+/**
+ * REMOVED FILTERS (and why):
+ * 
+ * ❌ "已開工但等物料" (in-progress-waiting)
+ *    Reason: Illogical - production can't start without materials
+ * 
+ * ❌ "等待物料" (awaiting-materials) - generic version
+ *    Reason: Too vague - replaced with specific "等待生產物料" and "等待包裝物料"
+ * 
+ * ❌ "即將交貨" (delivery-soon) with PAID status
+ *    Reason: No payment tracking exists in database, "PAID" status not meaningful
+ */
 
 interface SmartFiltersProps {
   activePreset: string | null
@@ -171,7 +211,7 @@ export function SmartFilters({ activePreset, onPresetSelect, onClearPreset }: Sm
         一鍵快速篩選常用條件
       </Text.Tertiary>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
         {SMART_FILTER_PRESETS.map((preset) => {
           const Icon = preset.icon
           const isActive = activePreset === preset.id
@@ -214,4 +254,3 @@ export function SmartFilters({ activePreset, onPresetSelect, onClearPreset }: Sm
     </div>
   )
 }
-
