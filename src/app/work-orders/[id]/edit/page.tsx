@@ -354,6 +354,7 @@ export default function EditWorkOrderPage() {
                   工作類型 <Text.Danger as="span">*</Text.Danger>
                 </Text.Primary>
                 <Select
+                  key={`worktype-${formData.workType}`}
                   value={formData.workType}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, workType: value as any }))}
                 >
