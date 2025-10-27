@@ -153,16 +153,6 @@ export default function WorkOrdersPage() {
     return () => abortControllerRef.current?.abort()
   }, [fetchWorkOrders])
 
-  // Auto-refresh every 60 seconds (like React Query refetchInterval)
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      console.log('[WorkOrders] Auto-refreshing (60s interval)...')
-      fetchWorkOrders()
-    }, 60_000) // 60 seconds
-
-    return () => clearInterval(intervalId)
-  }, [fetchWorkOrders])
-
   // Handle basic search
   const handleSearch = () => {
     const newFilters = {
@@ -453,9 +443,6 @@ export default function WorkOrdersPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
-              <span className="px-3.5 py-1.5 rounded-full bg-success-500/15 border border-success-300/40 text-success-700 dark:text-success-400 text-sm font-medium leading-none">
-                即時更新
-              </span>
               <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 dark:text-primary-400 text-sm font-medium leading-none">
                 完整追蹤
               </span>
