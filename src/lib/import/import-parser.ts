@@ -149,9 +149,7 @@ const WORK_TYPE_MAPPINGS: Record<string, WorkType> = {
 const STATUS_MAPPINGS: Record<string, WorkOrderStatus> = {
   '草稿': WorkOrderStatus.DRAFT,
   '待處理': WorkOrderStatus.PENDING,
-  '資料齊全': WorkOrderStatus.DATA_COMPLETE,
   '已通知': WorkOrderStatus.NOTIFIED,
-  '已收數': WorkOrderStatus.PAID,
   '已出貨': WorkOrderStatus.SHIPPED,
   '已完成': WorkOrderStatus.COMPLETED,
   '暫停': WorkOrderStatus.ON_HOLD,

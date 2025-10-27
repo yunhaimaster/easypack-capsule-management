@@ -98,7 +98,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'danger',
     filters: {
       isUrgent: true,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID']
+      statuses: ['DRAFT', 'PENDING', 'NOTIFIED']
     }
   },
   
@@ -111,7 +111,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'info',
     filters: {
       isVip: true,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID']
+      statuses: ['DRAFT', 'PENDING', 'NOTIFIED']
     }
   },
   
@@ -125,7 +125,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING'],
       productionMaterialsReady: false,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE']
+      statuses: ['DRAFT', 'PENDING']
     }
   },
   
@@ -139,7 +139,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
       packagingMaterialsReady: false,
-      statuses: ['DRAFT', 'PENDING', 'DATA_COMPLETE']
+      statuses: ['DRAFT', 'PENDING']
     }
   },
   

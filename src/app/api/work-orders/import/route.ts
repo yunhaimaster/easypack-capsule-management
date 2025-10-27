@@ -415,8 +415,8 @@ export async function POST(request: NextRequest) {
             return validTypes.includes(value as any) ? value as any : 'PRODUCTION'
           }
           
-          const validateStatus = (value: any): 'DRAFT' | 'PENDING' | 'DATA_COMPLETE' | 'NOTIFIED' | 'PAID' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' => {
-            const validStatuses: ('DRAFT' | 'PENDING' | 'DATA_COMPLETE' | 'NOTIFIED' | 'PAID' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED')[] = ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
+          const validateStatus = (value: any): 'DRAFT' | 'PENDING' | 'NOTIFIED' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' => {
+            const validStatuses: ('DRAFT' | 'PENDING' | 'NOTIFIED' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED')[] = ['DRAFT', 'PENDING', 'NOTIFIED', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
             return validStatuses.includes(value as any) ? value as any : 'PENDING'
           }
           

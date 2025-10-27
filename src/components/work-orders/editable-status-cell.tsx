@@ -31,9 +31,7 @@ interface EditableStatusCellProps {
 const STATUS_VARIANTS: Record<WorkOrderStatus, 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'> = {
   DRAFT: 'secondary',
   PENDING: 'warning',
-  DATA_COMPLETE: 'info',
   NOTIFIED: 'info',
-  PAID: 'success',
   SHIPPED: 'success',
   COMPLETED: 'success',
   ON_HOLD: 'warning',

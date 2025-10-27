@@ -226,9 +226,7 @@ model OrderWorklog {
 enum WorkOrderStatus {
   DRAFT          // 草稿 - Initial creation
   PENDING        // 待處理 - Awaiting processing
-  DATA_COMPLETE  // 資料齊全 - All data received
   NOTIFIED       // 已通知 - Customer notified
-  PAID           // 已收數 - Payment received
   SHIPPED        // 已出貨 - Order shipped
   COMPLETED      // 已完成 - Fully completed
   ON_HOLD        // 暫停 - Temporarily paused

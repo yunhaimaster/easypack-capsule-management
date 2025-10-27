@@ -16,9 +16,7 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
 export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
   DRAFT: '草稿',
   PENDING: '待處理',
-  DATA_COMPLETE: '資料齊全',
   NOTIFIED: '已通知',
-  PAID: '已收數',
   SHIPPED: '已出貨',
   COMPLETED: '已完成',
   ON_HOLD: '暫停',
@@ -385,10 +383,8 @@ export interface UserMappingResult {
 
 export const VALID_STATUS_TRANSITIONS: Record<WorkOrderStatus, WorkOrderStatus[]> = {
   DRAFT: ['PENDING', 'CANCELLED'],
-  PENDING: ['DATA_COMPLETE', 'ON_HOLD', 'CANCELLED'],
-  DATA_COMPLETE: ['NOTIFIED', 'ON_HOLD', 'CANCELLED'],
-  NOTIFIED: ['PAID', 'ON_HOLD', 'CANCELLED'],
-  PAID: ['SHIPPED', 'ON_HOLD', 'CANCELLED'],
+  PENDING: ['NOTIFIED', 'ON_HOLD', 'CANCELLED'],
+  NOTIFIED: ['SHIPPED', 'ON_HOLD', 'CANCELLED'],
   SHIPPED: ['COMPLETED', 'CANCELLED'],
   COMPLETED: [],
   ON_HOLD: ['PENDING', 'CANCELLED'],
