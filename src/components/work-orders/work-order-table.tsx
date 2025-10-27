@@ -90,12 +90,22 @@ function StatusBadge({ status }: { status: string | null }) {
 }
 
 /**
- * Work type badge component
+ * Work type badge component with color coding
  */
 function WorkTypeBadge({ workType, productionStarted }: { workType: string; productionStarted: boolean }) {
+  // Color-code by work type
+  const variantMap: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
+    'PACKAGING': 'default',              // Blue - 包裝
+    'PRODUCTION': 'success',             // Green - 生產
+    'PRODUCTION_PACKAGING': 'warning',   // Orange - 生產+包裝
+    'WAREHOUSING': 'info'                // Purple - 倉務
+  }
+  
+  const variant = variantMap[workType] || 'info'
+  
   return (
     <div className="flex items-center gap-1.5">
-      <Badge variant="info" className="text-xs">
+      <Badge variant={variant} className="text-xs">
         {WORK_TYPE_LABELS[workType as keyof typeof WORK_TYPE_LABELS]}
       </Badge>
       {productionStarted && (

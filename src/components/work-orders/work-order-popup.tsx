@@ -114,7 +114,15 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                         {WORK_ORDER_STATUS_LABELS[workOrder.status]}
                       </Badge>
                     )}
-                    <Badge variant="outline" className="text-xs h-5 px-1.5">
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs h-5 px-1.5 ${
+                        workOrder.workType === 'PACKAGING' ? 'border-primary-300 text-primary-700 dark:text-primary-400' :
+                        workOrder.workType === 'PRODUCTION' ? 'border-success-300 text-success-700 dark:text-success-400' :
+                        workOrder.workType === 'PRODUCTION_PACKAGING' ? 'border-warning-300 text-warning-700 dark:text-warning-400' :
+                        'border-info-300 text-info-700 dark:text-info-400'
+                      }`}
+                    >
                       {WORK_TYPE_LABELS[workOrder.workType]}
                     </Badge>
                     {(workOrder.isCustomerServiceVip || workOrder.isBossVip) && (
