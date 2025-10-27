@@ -70,8 +70,9 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'success',
     filters: {
       productionMaterialsReady: true,
-      productionStarted: false
-      // Status doesn't matter - if materials ready and not started, can start
+      productionStarted: false,
+      statuses: ['PENDING']
+      // Only show PENDING orders - materials ready and not started
     }
   },
   
@@ -84,8 +85,9 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'success',
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
-      packagingMaterialsReady: true
-      // No status filter - materials ready means can package
+      packagingMaterialsReady: true,
+      statuses: ['PENDING']
+      // Only show PENDING orders - packaging materials ready
     }
   },
   
