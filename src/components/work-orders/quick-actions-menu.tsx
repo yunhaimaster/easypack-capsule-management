@@ -32,7 +32,9 @@ import {
   Link,
   Trash2,
   MoreVertical,
-  Loader2
+  Loader2,
+  Star,
+  AlertTriangle
 } from 'lucide-react'
 import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
@@ -62,15 +64,16 @@ export function QuickActionsMenu({
 
   const handleAction = async (
     action: string,
-    asyncFn: () => Promise<void>,
+    asyncFn: () => Promise<string | void>,  // Can return success message
     successMessage: string,
     skipRefresh = false
   ) => {
     setIsLoading(true)
     setLoadingAction(action)
     try {
-      await asyncFn()
-      showToast({ title: successMessage })
+      const result = await asyncFn()
+      const message = result || successMessage
+      showToast({ title: message })
       // Only refresh if not skipped (status changes handle their own refresh)
       if (!skipRefresh) {
         onRefresh?.()
@@ -88,7 +91,7 @@ export function QuickActionsMenu({
   }
 
   const handleToggle = async (
-    field: 'productionStarted' | 'productionMaterialsReady' | 'packagingMaterialsReady',
+    field: 'productionStarted' | 'productionMaterialsReady' | 'packagingMaterialsReady' | 'isCompleted' | 'isCustomerServiceVip' | 'isBossVip' | 'isUrgent',
     currentValue: boolean
   ) => {
     const response = await fetch(`/api/work-orders/${workOrder.id}/toggle`, {
@@ -100,6 +103,19 @@ export function QuickActionsMenu({
     if (!response.ok) {
       throw new Error('Toggle failed')
     }
+
+    // Return field-specific success message
+    const fieldLabels: Record<string, { on: string, off: string }> = {
+      productionMaterialsReady: { on: '生產物料已標記為齊全', off: '生產物料已標記為未齊' },
+      packagingMaterialsReady: { on: '包裝物料已標記為齊全', off: '包裝物料已標記為未齊' },
+      productionStarted: { on: '已標記為已開工', off: '已標記為未開工' },
+      isCompleted: { on: '已標記為已完成', off: '已標記為未完成' },
+      isCustomerServiceVip: { on: '已標記為客服VIP', off: '已取消客服VIP' },
+      isBossVip: { on: '已標記為老闆VIP', off: '已取消老闆VIP' },
+      isUrgent: { on: '已標記為加急', off: '已取消加急' }
+    }
+
+    return fieldLabels[field]?.[!currentValue ? 'on' : 'off'] || '更新成功'
   }
 
   return (
@@ -205,64 +221,138 @@ export function QuickActionsMenu({
           </DropdownMenuSub>
         )}
 
-        {onToggleProductionStarted && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              handleAction(
-                'toggle-production-started',
-                () => handleToggle('productionStarted', workOrder.productionStarted),
-                workOrder.productionStarted ? '已標記為未開工' : '已標記為已開工'
-              )
-            }}
-            disabled={isLoading}
-          >
-            <Factory className="mr-2 h-4 w-4" />
-            <span>{workOrder.productionStarted ? '取消已開工' : '標記已開工'}</span>
-            {loadingAction === 'toggle-production-started' && (
-              <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-            )}
-          </DropdownMenuItem>
-        )}
+        {/* Material Readiness Toggles */}
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-production-materials',
+              () => handleToggle('productionMaterialsReady', workOrder.productionMaterialsReady),
+              '' // Message returned from handleToggle
+            )
+          }}
+          disabled={isLoading}
+        >
+          <Package className="mr-2 h-4 w-4" />
+          <span>{workOrder.productionMaterialsReady ? '取消生產物料齊' : '標記生產物料齊'}</span>
+          {loadingAction === 'toggle-production-materials' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
 
-        {onToggleMaterialReady && (
-          <>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation()
-                handleAction(
-                  'toggle-production-materials',
-                  () => handleToggle('productionMaterialsReady', workOrder.productionMaterialsReady),
-                  workOrder.productionMaterialsReady ? '生產物料已標記為未齊' : '生產物料已標記為齊全'
-                )
-              }}
-              disabled={isLoading}
-            >
-              <Package className="mr-2 h-4 w-4" />
-              <span>{workOrder.productionMaterialsReady ? '取消生產物料齊' : '標記生產物料齊'}</span>
-              {loadingAction === 'toggle-production-materials' && (
-                <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation()
-                handleAction(
-                  'toggle-packaging-materials',
-                  () => handleToggle('packagingMaterialsReady', workOrder.packagingMaterialsReady),
-                  workOrder.packagingMaterialsReady ? '包裝物料已標記為未齊' : '包裝物料已標記為齊全'
-                )
-              }}
-              disabled={isLoading}
-            >
-              <Package2 className="mr-2 h-4 w-4" />
-              <span>{workOrder.packagingMaterialsReady ? '取消包裝物料齊' : '標記包裝物料齊'}</span>
-              {loadingAction === 'toggle-packaging-materials' && (
-                <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-              )}
-            </DropdownMenuItem>
-          </>
-        )}
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-packaging-materials',
+              () => handleToggle('packagingMaterialsReady', workOrder.packagingMaterialsReady),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <Package2 className="mr-2 h-4 w-4" />
+          <span>{workOrder.packagingMaterialsReady ? '取消包裝物料齊' : '標記包裝物料齊'}</span>
+          {loadingAction === 'toggle-packaging-materials' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        {/* Production Status Toggle */}
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-production-started',
+              () => handleToggle('productionStarted', workOrder.productionStarted),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <Factory className="mr-2 h-4 w-4" />
+          <span>{workOrder.productionStarted ? '取消已開工' : '標記已開工'}</span>
+          {loadingAction === 'toggle-production-started' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-completed',
+              () => handleToggle('isCompleted', workOrder.isCompleted),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <CheckCircle className="mr-2 h-4 w-4" />
+          <span>{workOrder.isCompleted ? '標記未完成' : '標記已完成'}</span>
+          {loadingAction === 'toggle-completed' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        {/* VIP & Priority Toggles */}
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-customer-vip',
+              () => handleToggle('isCustomerServiceVip', workOrder.isCustomerServiceVip),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <Star className="mr-2 h-4 w-4" />
+          <span>{workOrder.isCustomerServiceVip ? '取消客服VIP' : '標記客服VIP'}</span>
+          {loadingAction === 'toggle-customer-vip' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-boss-vip',
+              () => handleToggle('isBossVip', workOrder.isBossVip),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <Star className="mr-2 h-4 w-4" />
+          <span>{workOrder.isBossVip ? '取消老闆VIP' : '標記老闆VIP'}</span>
+          {loadingAction === 'toggle-boss-vip' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={async (e) => {
+            e.stopPropagation()
+            await handleAction(
+              'toggle-urgent',
+              () => handleToggle('isUrgent', workOrder.isUrgent),
+              ''
+            )
+          }}
+          disabled={isLoading}
+        >
+          <AlertTriangle className="mr-2 h-4 w-4" />
+          <span>{workOrder.isUrgent ? '取消加急' : '標記加急'}</span>
+          {loadingAction === 'toggle-urgent' && (
+            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+          )}
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 

@@ -15,7 +15,15 @@ import { AuditAction } from '@prisma/client'
 import { z } from 'zod'
 
 const toggleSchema = z.object({
-  field: z.enum(['productionStarted', 'productionMaterialsReady', 'packagingMaterialsReady', 'isCompleted']),
+  field: z.enum([
+    'productionStarted', 
+    'productionMaterialsReady', 
+    'packagingMaterialsReady', 
+    'isCompleted',
+    'isCustomerServiceVip',
+    'isBossVip',
+    'isUrgent'
+  ]),
   value: z.boolean()
 })
 

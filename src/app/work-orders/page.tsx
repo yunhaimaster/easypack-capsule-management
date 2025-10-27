@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/accessible-dialog'
 import { Text } from '@/components/ui/text'
@@ -44,7 +45,8 @@ export default function WorkOrdersPage() {
     page: 1,
     limit: 25,
     sortBy: 'markedDate',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    isCompleted: false  // Hide completed orders by default
   })
   
   const [searchKeyword, setSearchKeyword] = useState('')
@@ -59,6 +61,7 @@ export default function WorkOrdersPage() {
   const [dateTo, setDateTo] = useState('')
   const [vipOnly, setVipOnly] = useState(false)
   const [linkedOnly, setLinkedOnly] = useState<boolean | undefined>(undefined)
+  const [showCompleted, setShowCompleted] = useState(false)  // Hide completed orders by default
   
   // Dialog states
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
@@ -191,12 +194,14 @@ export default function WorkOrdersPage() {
     setDateTo('')
     setVipOnly(false)
     setLinkedOnly(undefined)
+    setShowCompleted(false)  // Reset to hide completed orders
     setActiveSmartFilter(null) // Clear smart filter
     const newFilters = {
       page: 1,
       limit: 25,
       sortBy: 'markedDate' as SortField,
-      sortOrder: 'desc' as 'asc' | 'desc'
+      sortOrder: 'desc' as 'asc' | 'desc',
+      isCompleted: false  // Reset to hide completed orders
     }
     setFilters(newFilters)
     fetchWorkOrders(newFilters)
@@ -255,6 +260,12 @@ export default function WorkOrdersPage() {
 
     if (preset.filters.isCompleted !== undefined) {
       newFilters.isCompleted = preset.filters.isCompleted
+      setShowCompleted(true)  // Auto-enable when smart filter needs completed orders
+    }
+
+    // Special handling for "已出貨" filter - override hide completed setting
+    if (preset.id === 'shipped') {
+      setShowCompleted(true)
     }
 
     setActiveSmartFilter(preset.id)
@@ -711,6 +722,34 @@ export default function WorkOrdersPage() {
                       <SelectItem value="unlinked" className="text-xs sm:text-sm">未關聯訂單</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Show Completed Orders Toggle */}
+                <div className="lg:col-span-3">
+                  <div className="flex items-center space-x-3 pt-2">
+                    <Checkbox
+                      id="showCompleted"
+                      checked={showCompleted}
+                      onCheckedChange={(checked) => {
+                        setShowCompleted(checked as boolean)
+                        // Auto-apply when toggled
+                        const newFilters = {
+                          ...filters,
+                          isCompleted: (checked as boolean) ? undefined : false,
+                          page: 1
+                        }
+                        setFilters(newFilters)
+                        fetchWorkOrders(newFilters)
+                      }}
+                      className="transition-apple"
+                    />
+                    <label 
+                      htmlFor="showCompleted" 
+                      className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-primary-600 text-neutral-800 dark:text-white/95"
+                    >
+                      顯示已完成訂單
+                    </label>
+                  </div>
                 </div>
               </div>
 
