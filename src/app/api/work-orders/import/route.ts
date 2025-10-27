@@ -336,25 +336,53 @@ export async function POST(request: NextRequest) {
           const safeParseDate = (value: any): Date | null => {
             if (!value) return null
             
+            console.log(`[Import] Processing date value: "${value}" (type: ${typeof value})`)
+            
             // Check if it's an Excel serial number (numeric value between 1 and 100000)
             const numValue = Number(value)
             if (!isNaN(numValue) && numValue >= 1 && numValue <= 100000) {
+              console.log(`[Import] Detected Excel serial number: ${numValue}`)
+              
               try {
-                // Excel serial number conversion
-                // Excel treats 1900 as a leap year (it wasn't), so we need to adjust
-                // Serial number 1 = January 1, 1900
-                // We subtract 2 to account for Excel's leap year bug
-                const excelEpoch = new Date(1900, 0, 1) // January 1, 1900
-                const daysSinceEpoch = numValue - 2 // Adjust for Excel's leap year bug
-                const resultDate = new Date(excelEpoch.getTime() + (daysSinceEpoch * 24 * 60 * 60 * 1000))
+                // Method 1: Standard Excel conversion (1900 epoch)
+                const excelEpoch1900 = new Date(1900, 0, 1) // January 1, 1900
+                const daysSinceEpoch1900 = numValue - 2 // Adjust for Excel's leap year bug
+                const resultDate1900 = new Date(excelEpoch1900.getTime() + (daysSinceEpoch1900 * 24 * 60 * 60 * 1000))
+                
+                // Method 2: Alternative Excel conversion (1904 epoch - used on Mac)
+                const excelEpoch1904 = new Date(1904, 0, 1) // January 1, 1904
+                const daysSinceEpoch1904 = numValue - 1
+                const resultDate1904 = new Date(excelEpoch1904.getTime() + (daysSinceEpoch1904 * 24 * 60 * 60 * 1000))
+                
+                console.log(`[Import] 1900 epoch conversion: ${resultDate1900.toISOString()}`)
+                console.log(`[Import] 1904 epoch conversion: ${resultDate1904.toISOString()}`)
+                
+                // Choose the more reasonable date (between 1900 and 2100)
+                const now = new Date()
+                const year1900 = new Date(1900, 0, 1)
+                const year2100 = new Date(2100, 0, 1)
+                
+                let resultDate = resultDate1900
+                if (resultDate1900 < year1900 || resultDate1900 > year2100) {
+                  console.log(`[Import] 1900 epoch result out of range, trying 1904 epoch`)
+                  resultDate = resultDate1904
+                }
+                
+                if (resultDate < year1900 || resultDate > year2100) {
+                  console.log(`[Import] Both conversions out of range, using current date`)
+                  resultDate = now
+                }
                 
                 // Validate the result
-                if (isNaN(resultDate.getTime())) return null
+                if (isNaN(resultDate.getTime())) {
+                  console.log(`[Import] Invalid date result, using current date`)
+                  resultDate = now
+                }
                 
-                // Debug: Log Excel serial number conversion
-                console.log(`[Import] Excel serial number ${numValue} converted to date: ${resultDate.toISOString()}`)
+                console.log(`[Import] Final Excel date conversion: ${resultDate.toISOString()}`)
                 return resultDate
-              } catch {
+              } catch (error) {
+                console.log(`[Import] Excel conversion error:`, error)
                 return null
               }
             }
@@ -362,8 +390,14 @@ export async function POST(request: NextRequest) {
             // Try regular date parsing for non-serial numbers
             try {
               const date = new Date(value)
-              return isNaN(date.getTime()) ? null : date
-            } catch {
+              if (isNaN(date.getTime())) {
+                console.log(`[Import] Invalid date string: "${value}"`)
+                return null
+              }
+              console.log(`[Import] Regular date parsing: ${date.toISOString()}`)
+              return date
+            } catch (error) {
+              console.log(`[Import] Date parsing error:`, error)
               return null
             }
           }
@@ -447,6 +481,11 @@ export async function POST(request: NextRequest) {
           console.log('  - workType:', cleanData.workType)
           console.log('  - workDescription length:', cleanData.workDescription.length)
           console.log('  - personInChargeId:', cleanData.personInChargeId)
+          console.log('  - markedDate:', cleanData.markedDate?.toISOString())
+          console.log('  - expectedProductionMaterialsDate:', cleanData.expectedProductionMaterialsDate?.toISOString())
+          console.log('  - expectedPackagingMaterialsDate:', cleanData.expectedPackagingMaterialsDate?.toISOString())
+          console.log('  - requestedDeliveryDate:', cleanData.requestedDeliveryDate?.toISOString())
+          console.log('  - internalExpectedDate:', cleanData.internalExpectedDate?.toISOString())
           console.log('  - Clean data keys:', Object.keys(cleanData))
           
           // Validate required fields before Prisma create
