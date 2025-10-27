@@ -34,6 +34,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 import { QuickActionsMenu } from './quick-actions-menu'
 import { useToast } from '@/components/ui/toast-provider'
+import { WorkOrderPopup } from './work-order-popup'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
@@ -295,11 +296,11 @@ export function WorkOrderTable({
                 </tr>
               ) : (
                 workOrders.map((workOrder) => (
-                  <tr
-                    key={workOrder.id}
-                    className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer"
-                    onClick={() => window.location.href = `/work-orders/${workOrder.id}`}
-                  >
+                  <WorkOrderPopup key={workOrder.id} workOrder={workOrder} side="top">
+                    <tr
+                      className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer"
+                      onClick={() => window.location.href = `/work-orders/${workOrder.id}`}
+                    >
                     {/* Checkbox */}
                     <td className="px-3 py-3">
                       <Checkbox
@@ -452,6 +453,7 @@ export function WorkOrderTable({
                       />
                     </td>
                   </tr>
+                  </WorkOrderPopup>
                 ))
               )}
             </tbody>
