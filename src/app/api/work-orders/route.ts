@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       customerName: searchParams.get('customerName') || undefined,
       personInCharge: searchParams.getAll('personInCharge'),
       workType: searchParams.getAll('workType'),
-      status: searchParams.getAll('status'),
+      status: searchParams.getAll('status').map(s => s === 'null' ? null : s), // Convert string "null" to actual null
       dateFrom: searchParams.get('dateFrom') || undefined,
       dateTo: searchParams.get('dateTo') || undefined,
       page: parseInt(searchParams.get('page') || '1'),
