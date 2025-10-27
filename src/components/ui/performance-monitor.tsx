@@ -18,7 +18,7 @@ export function PerformanceMonitor() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     loadTime: 0,
     renderTime: 0,
-    isOnline: navigator.onLine
+    isOnline: true // Default to true to avoid hydration mismatch
   })
 
   useEffect(() => {
@@ -73,6 +73,9 @@ export function PerformanceMonitor() {
     // 監控在線狀態
     const handleOnline = () => setMetrics(prev => ({ ...prev, isOnline: true }))
     const handleOffline = () => setMetrics(prev => ({ ...prev, isOnline: false }))
+
+    // Set initial online status
+    setMetrics(prev => ({ ...prev, isOnline: navigator.onLine }))
 
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)

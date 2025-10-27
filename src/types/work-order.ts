@@ -14,19 +14,14 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
 }
 
 export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
-  DRAFT: '草稿',
-  PENDING: '待處理',
-  NOTIFIED: '已通知',
-  SHIPPED: '已出貨',
   COMPLETED: '已完成',
-  ON_HOLD: '暫停',
   CANCELLED: '已取消',
 }
 
 export interface WorkOrder {
   id: string
   jobNumber?: string | null  // 訂單編號（如有）- 改為可選
-  status: WorkOrderStatus
+  status: WorkOrderStatus | null  // Nullable - NULL means ongoing work
   statusUpdatedAt?: Date | null
   statusUpdatedBy?: string | null
   markedDate: Date  // 記號日期（系統自動記錄創建時間）
@@ -193,7 +188,7 @@ export interface CreateCapsulationIngredientData {
 
 export interface UpdateWorkOrderData {
   jobNumber?: string | null
-  status?: WorkOrderStatus
+  status?: WorkOrderStatus | null  // Nullable - NULL means ongoing work
   customerName?: string
   personInChargeId?: string | null
   workType?: WorkType
@@ -270,7 +265,7 @@ export interface WorkOrderSearchFilters {
   customerName?: string
   personInCharge?: string[]  // Array of user IDs
   workType?: WorkType[]
-  status?: WorkOrderStatus[]
+  status?: (WorkOrderStatus | null)[]  // Include null for ongoing work
   dateFrom?: string  // ISO date string
   dateTo?: string    // ISO date string
   hasLinkedCapsulation?: boolean
@@ -382,13 +377,8 @@ export interface UserMappingResult {
 // ===== Status Transition Types =====
 
 export const VALID_STATUS_TRANSITIONS: Record<WorkOrderStatus, WorkOrderStatus[]> = {
-  DRAFT: ['PENDING', 'CANCELLED'],
-  PENDING: ['NOTIFIED', 'ON_HOLD', 'CANCELLED'],
-  NOTIFIED: ['SHIPPED', 'ON_HOLD', 'CANCELLED'],
-  SHIPPED: ['COMPLETED', 'CANCELLED'],
-  COMPLETED: [],
-  ON_HOLD: ['PENDING', 'CANCELLED'],
-  CANCELLED: []
+  COMPLETED: [],  // Cannot transition from COMPLETED
+  CANCELLED: []   // Cannot transition from CANCELLED
 }
 
 export function canTransitionStatus(from: WorkOrderStatus, to: WorkOrderStatus): boolean {

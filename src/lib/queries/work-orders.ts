@@ -28,7 +28,7 @@ async function fetchWorkOrders(filters: WorkOrderSearchFilters) {
   if (filters.customerName) params.append('customerName', filters.customerName)
   if (filters.personInCharge) filters.personInCharge.forEach(id => params.append('personInCharge', id))
   if (filters.workType) filters.workType.forEach(type => params.append('workType', type))
-  if (filters.status) filters.status.forEach(status => params.append('status', status))
+  if (filters.status) filters.status.forEach(status => params.append('status', status || 'null'))
   if (filters.dateFrom) params.append('dateFrom', filters.dateFrom)
   if (filters.dateTo) params.append('dateTo', filters.dateTo)
   params.append('page', String(filters.page || 1))

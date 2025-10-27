@@ -15,7 +15,7 @@ import { AuditAction } from '@prisma/client'
 import { z } from 'zod'
 
 const toggleSchema = z.object({
-  field: z.enum(['productionStarted', 'productionMaterialsReady', 'packagingMaterialsReady']),
+  field: z.enum(['productionStarted', 'productionMaterialsReady', 'packagingMaterialsReady', 'isCompleted']),
   value: z.boolean()
 })
 
@@ -48,12 +48,22 @@ export async function PATCH(
     const params = await context.params
     const workOrderId = params.id
 
+    // Prepare update data
+    const updateData: any = {
+      [field]: value
+    }
+
+    // Auto-trigger COMPLETED status when isCompleted is checked
+    if (field === 'isCompleted' && value === true) {
+      updateData.status = 'COMPLETED'
+      updateData.statusUpdatedAt = new Date()
+      updateData.statusUpdatedBy = session.userId
+    }
+
     // Update work order
     const updatedWorkOrder = await prisma.unifiedWorkOrder.update({
       where: { id: workOrderId },
-      data: {
-        [field]: value
-      },
+      data: updateData,
       include: {
         personInCharge: {
           select: {

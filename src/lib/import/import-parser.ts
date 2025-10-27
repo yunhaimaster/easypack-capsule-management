@@ -147,12 +147,7 @@ const WORK_TYPE_MAPPINGS: Record<string, WorkType> = {
  * Status mappings (Chinese to enum)
  */
 const STATUS_MAPPINGS: Record<string, WorkOrderStatus> = {
-  '草稿': WorkOrderStatus.DRAFT,
-  '待處理': WorkOrderStatus.PENDING,
-  '已通知': WorkOrderStatus.NOTIFIED,
-  '已出貨': WorkOrderStatus.SHIPPED,
   '已完成': WorkOrderStatus.COMPLETED,
-  '暫停': WorkOrderStatus.ON_HOLD,
   '已取消': WorkOrderStatus.CANCELLED
 }
 
@@ -495,7 +490,7 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     customerName: String(mappedRow.customerName || '').trim(),
     personInCharge: String(mappedRow.personInCharge || '').trim(), // Keep for validation, handled separately in API
     workType: WORK_TYPE_MAPPINGS[String(mappedRow.workType || '').trim()] || WorkType.PRODUCTION,
-    status: STATUS_MAPPINGS[String(mappedRow.status || '').trim()] || WorkOrderStatus.PENDING,
+    status: STATUS_MAPPINGS[String(mappedRow.status || '').trim()] || null,  // Default to null for ongoing work
     
     // VIP Flags - Updated to match export
     isCustomerServiceVip: String(mappedRow.isCustomerServiceVip || '').trim() === '是' || String(mappedRow.isCustomerServiceVip || '').toUpperCase() === 'TRUE',

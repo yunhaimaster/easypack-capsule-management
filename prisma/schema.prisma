@@ -222,15 +222,11 @@ model OrderWorklog {
 
 // ===== 統一工作單系統 (Unified Work Order System) =====
 
-// Status workflow enum
+// Simplified status workflow - only CANCELLED and COMPLETED
+// Default state is NULL (ongoing work, managed by checkboxes)
 enum WorkOrderStatus {
-  DRAFT          // 草稿 - Initial creation
-  PENDING        // 待處理 - Awaiting processing
-  NOTIFIED       // 已通知 - Customer notified
-  SHIPPED        // 已出貨 - Order shipped
-  COMPLETED      // 已完成 - Fully completed
-  ON_HOLD        // 暫停 - Temporarily paused
   CANCELLED      // 已取消 - Cancelled
+  COMPLETED      // 已完成 - Fully completed
 }
 
 enum WorkType {
@@ -245,7 +241,7 @@ model UnifiedWorkOrder {
   jobNumber             String?  @unique  // 訂單編號（如有） - 改為可選
   
   // Status Management with Audit
-  status                WorkOrderStatus @default(PENDING)
+  status                WorkOrderStatus?  // Nullable - NULL means ongoing work
   statusUpdatedAt       DateTime?
   statusUpdatedBy       String?
   

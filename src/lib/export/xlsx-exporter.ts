@@ -113,7 +113,7 @@ function workOrderToRow(
     customerName: () => workOrder.customerName,
     personInCharge: () => workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '',
     workType: () => WORK_TYPE_NAMES[workOrder.workType] || workOrder.workType,
-    status: () => STATUS_NAMES[workOrder.status] || workOrder.status,
+    status: () => workOrder.status ? (STATUS_NAMES[workOrder.status] || workOrder.status) : '進行中',
     
     // New VIP flags
     isCustomerServiceVip: () => workOrder.isCustomerServiceVip ? '是' : '否',

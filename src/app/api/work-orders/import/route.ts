@@ -415,9 +415,9 @@ export async function POST(request: NextRequest) {
             return validTypes.includes(value as any) ? value as any : 'PRODUCTION'
           }
           
-          const validateStatus = (value: any): 'DRAFT' | 'PENDING' | 'NOTIFIED' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' => {
-            const validStatuses: ('DRAFT' | 'PENDING' | 'NOTIFIED' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED')[] = ['DRAFT', 'PENDING', 'NOTIFIED', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
-            return validStatuses.includes(value as any) ? value as any : 'PENDING'
+          const validateStatus = (value: any): 'COMPLETED' | 'CANCELLED' | null => {
+            const validStatuses: ('COMPLETED' | 'CANCELLED')[] = ['COMPLETED', 'CANCELLED']
+            return validStatuses.includes(value as any) ? value as any : null
           }
           
           // Create clean data object with only valid Prisma fields and correct types

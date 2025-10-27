@@ -71,16 +71,14 @@ function SkeletonRow() {
 /**
  * Status badge component
  */
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: string | null }) {
+  // If no status (ongoing work), don't display anything
+  if (!status) {
+    return null
+  }
+
   const variants: Record<string, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
-    DRAFT: 'default',
-    PENDING: 'warning',
-    DATA_COMPLETE: 'info',
-    NOTIFIED: 'info',
-    PAID: 'success',
-    SHIPPED: 'success',
     COMPLETED: 'success',
-    ON_HOLD: 'warning',
     CANCELLED: 'danger'
   }
 

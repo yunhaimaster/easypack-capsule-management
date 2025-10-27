@@ -192,24 +192,27 @@ export async function PATCH(
     }
 
     // Validate status transition if status is being updated
-    if (validatedData.status && validatedData.status !== existingWorkOrder.status) {
+    if (validatedData.status !== undefined && validatedData.status !== existingWorkOrder.status) {
       const currentStatus = existingWorkOrder.status
       const newStatus = validatedData.status
 
-      const validTransitions = VALID_STATUS_TRANSITIONS[currentStatus]
-      if (!validTransitions.includes(newStatus)) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: '無效的狀態轉換',
-            details: {
-              currentStatus,
-              attemptedStatus: newStatus,
-              validTransitions
-            }
-          },
-          { status: 400 }
-        )
+      // If current status is null, allow any transition
+      if (currentStatus && newStatus) {
+        const validTransitions = VALID_STATUS_TRANSITIONS[currentStatus]
+        if (!validTransitions.includes(newStatus)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: '無效的狀態轉換',
+              details: {
+                currentStatus,
+                attemptedStatus: newStatus,
+                validTransitions
+              }
+            },
+            { status: 400 }
+          )
+        }
       }
     }
 

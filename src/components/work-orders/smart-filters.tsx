@@ -34,7 +34,7 @@ export interface SmartFilterPreset {
   color: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'
   filters: {
     workTypes?: WorkType[]
-    statuses?: WorkOrderStatus[]
+    statuses?: (WorkOrderStatus | null)[]  // Include null for ongoing work
     productionStarted?: boolean
     productionMaterialsReady?: boolean
     packagingMaterialsReady?: boolean
@@ -71,7 +71,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       productionMaterialsReady: true,
       productionStarted: false,
-      statuses: ['PENDING']
+      statuses: [null]  // Ongoing work (no status)
       // Only show PENDING orders - materials ready and not started
     }
   },
@@ -86,7 +86,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
       packagingMaterialsReady: true,
-      statuses: ['PENDING']
+      statuses: [null]  // Ongoing work (no status)
       // Only show PENDING orders - packaging materials ready
     }
   },
@@ -100,7 +100,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'danger',
     filters: {
       isUrgent: true,
-      statuses: ['DRAFT', 'PENDING', 'NOTIFIED']
+      statuses: [null]  // Ongoing work (not completed/cancelled)
     }
   },
   
@@ -113,7 +113,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     color: 'info',
     filters: {
       isVip: true,
-      statuses: ['DRAFT', 'PENDING', 'NOTIFIED']
+      statuses: [null]  // Ongoing work (not completed/cancelled)
     }
   },
   
@@ -127,7 +127,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PRODUCTION', 'PRODUCTION_PACKAGING'],
       productionMaterialsReady: false,
-      statuses: ['DRAFT', 'PENDING']
+      statuses: [null]  // Ongoing work (not completed/cancelled)
     }
   },
   
@@ -141,7 +141,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     filters: {
       workTypes: ['PACKAGING', 'PRODUCTION_PACKAGING'],
       packagingMaterialsReady: false,
-      statuses: ['DRAFT', 'PENDING']
+      statuses: [null]  // Ongoing work (not completed/cancelled)
     }
   },
   
@@ -166,7 +166,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     icon: Truck,
     color: 'success',
     filters: {
-      statuses: ['SHIPPED']
+      statuses: ['COMPLETED']  // Only completed orders
     }
   }
 ]

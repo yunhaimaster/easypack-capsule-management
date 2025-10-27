@@ -109,9 +109,11 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                     <span className="text-xs text-neutral-500 dark:text-white/65 font-mono">
                       {workOrder.jobNumber || '無編號'}
                     </span>
-                    <Badge variant="outline" className="text-xs h-5 px-1.5">
-                      {WORK_ORDER_STATUS_LABELS[workOrder.status]}
-                    </Badge>
+                    {workOrder.status && (
+                      <Badge variant="outline" className="text-xs h-5 px-1.5">
+                        {WORK_ORDER_STATUS_LABELS[workOrder.status]}
+                      </Badge>
+                    )}
                     <Badge variant="outline" className="text-xs h-5 px-1.5">
                       {WORK_TYPE_LABELS[workOrder.workType]}
                     </Badge>

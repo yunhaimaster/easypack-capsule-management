@@ -95,13 +95,16 @@ export async function POST(request: NextRequest) {
         const currentStatus = workOrder.status
         const newStatus = updates.status
 
-        const validTransitions = VALID_STATUS_TRANSITIONS[currentStatus]
-        if (!validTransitions.includes(newStatus)) {
-          invalidTransitions.push({
-            id: workOrder.id,
-            jobNumber: workOrder.jobNumber || 'N/A',
-            currentStatus
-          })
+        // If current status is null, allow any transition
+        if (currentStatus && newStatus) {
+          const validTransitions = VALID_STATUS_TRANSITIONS[currentStatus]
+          if (!validTransitions.includes(newStatus)) {
+            invalidTransitions.push({
+              id: workOrder.id,
+              jobNumber: workOrder.jobNumber || 'N/A',
+              currentStatus: currentStatus || 'null'
+            })
+          }
         }
       }
 

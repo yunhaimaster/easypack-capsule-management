@@ -31,7 +31,7 @@ export default function EditWorkOrderPage() {
     customerName: '',
     personInChargeId: 'UNASSIGNED',
     workType: 'PACKAGING' as WorkType,
-    status: 'PENDING' as WorkOrderStatus,
+    status: null as WorkOrderStatus | null,  // Default to null for ongoing work
     workDescription: '',
     
     isCustomerServiceVip: false,
@@ -66,7 +66,7 @@ export default function EditWorkOrderPage() {
         customerName: workOrder.customerName,
         personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
         workType: workOrder.workType,
-        status: workOrder.status,
+        status: workOrder.status || null,  // Keep null for ongoing work
         workDescription: workOrder.workDescription,
         
         isCustomerServiceVip: workOrder.isCustomerServiceVip,
@@ -334,7 +334,7 @@ export default function EditWorkOrderPage() {
                 </Text.Primary>
                 <Select
                   key={`status-${formData.status}`}
-                  value={formData.status}
+                  value={formData.status || ''}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as WorkOrderStatus }))}
                 >
                   <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">

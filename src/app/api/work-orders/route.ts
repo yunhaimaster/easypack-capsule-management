@@ -114,9 +114,21 @@ export async function GET(request: NextRequest) {
       where.workType = { in: validatedFilters.workType }
     }
 
-    // Status filter
+    // Status filter - handle null values for ongoing work
     if (validatedFilters.status && validatedFilters.status.length > 0) {
-      where.status = { in: validatedFilters.status }
+      const statuses = validatedFilters.status.filter(s => s !== null) as any[]
+      const hasNull = validatedFilters.status.includes(null)
+      
+      if (statuses.length > 0 && hasNull) {
+        // Include both specific statuses and null
+        where.status = { in: [...statuses, null] }
+      } else if (statuses.length > 0) {
+        // Only specific statuses
+        where.status = { in: statuses }
+      } else if (hasNull) {
+        // Only null (ongoing work)
+        where.status = null
+      }
     }
 
     // Date range filter (expectedCompletionDate)

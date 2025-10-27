@@ -63,14 +63,18 @@ export function QuickActionsMenu({
   const handleAction = async (
     action: string,
     asyncFn: () => Promise<void>,
-    successMessage: string
+    successMessage: string,
+    skipRefresh = false
   ) => {
     setIsLoading(true)
     setLoadingAction(action)
     try {
       await asyncFn()
       showToast({ title: successMessage })
-      onRefresh?.()
+      // Only refresh if not skipped (status changes handle their own refresh)
+      if (!skipRefresh) {
+        onRefresh?.()
+      }
     } catch (error) {
       showToast({ 
         title: '操作失敗', 
@@ -142,10 +146,41 @@ export function QuickActionsMenu({
               <span>更改狀態</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {Object.entries(WORK_ORDER_STATUS_LABELS)
+              {/* Only show CANCELLED option - COMPLETED is auto-triggered by checkbox */}
+              {workOrder.status !== 'CANCELLED' && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAction(
+                      'status-change',
+                      () => onStatusChange(workOrder.id, 'CANCELLED'),
+                      '狀態已更改為：已取消',
+                      true // Skip refresh - handleStatusChange handles it
+                    )
+                  }}
+                  disabled={isLoading}
+                >
+                  <span className="text-danger-600">已取消</span>
+                  {loadingAction === 'status-change' && (
+                    <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                  )}
+                </DropdownMenuItem>
+              )}
+              
+              {/* Show current status if it's COMPLETED or CANCELLED */}
+              {workOrder.status && (
+                <DropdownMenuItem disabled>
+                  <span className="text-neutral-500">
+                    目前狀態：{WORK_ORDER_STATUS_LABELS[workOrder.status]}
+                  </span>
+                </DropdownMenuItem>
+              )}
+              
+              {/* Legacy code for reference - remove after testing */}
+              {false && Object.entries(WORK_ORDER_STATUS_LABELS)
                 .filter(([status]) => {
                   // Only show valid transitions from current status
-                  const validTransitions = VALID_STATUS_TRANSITIONS[workOrder.status]
+                  const validTransitions = workOrder.status ? VALID_STATUS_TRANSITIONS[workOrder.status] : []
                   return validTransitions.includes(status as WorkOrderStatus)
                 })
                 .map(([status, label]) => (
@@ -155,8 +190,9 @@ export function QuickActionsMenu({
                       e.stopPropagation()
                       handleAction(
                         'status-change',
-                        () => onStatusChange(workOrder.id, status as WorkOrderStatus),
-                        `狀態已更改為：${label}`
+                        () => onStatusChange!(workOrder.id, status as WorkOrderStatus),
+                        `狀態已更改為：${label}`,
+                        true // Skip refresh - handleStatusChange handles it
                       )
                     }}
                     disabled={workOrder.status === status || isLoading}

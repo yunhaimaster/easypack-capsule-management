@@ -52,7 +52,7 @@ export default function WorkOrdersPage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   
   // Advanced filter states
-  const [selectedStatuses, setSelectedStatuses] = useState<WorkOrderStatus[]>([])
+  const [selectedStatuses, setSelectedStatuses] = useState<(WorkOrderStatus | null)[]>([])
   const [selectedWorkTypes, setSelectedWorkTypes] = useState<WorkType[]>([])
   const [selectedPersons, setSelectedPersons] = useState<string[]>([])
   const [dateFrom, setDateFrom] = useState('')
@@ -135,6 +135,9 @@ export default function WorkOrdersPage() {
       const errorMessage = err instanceof Error ? err.message : '載入工作單失敗'
       setError(new Error(errorMessage))
       setNotification({ type: 'error', message: errorMessage })
+      // Clear stale data when error occurs
+      setWorkOrders([])
+      setPagination({ page: 1, limit: 25, total: 0, totalPages: 0 })
     } finally {
       setIsLoading(false)
       setIsFetching(false)
@@ -755,8 +758,8 @@ export default function WorkOrdersPage() {
               )}
 
               {filters.status?.map(status => (
-                <Badge key={status} variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
-                  {WORK_ORDER_STATUS_LABELS[status]}
+                <Badge key={status || 'null'} variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
+                  {status ? WORK_ORDER_STATUS_LABELS[status] : '進行中'}
                   <button
                     onClick={() => {
                       setSelectedStatuses(prev => prev.filter(s => s !== status))
@@ -767,7 +770,7 @@ export default function WorkOrdersPage() {
                       }))
                     }}
                     className="hover:text-info-900 transition-apple"
-                    aria-label={`清除${WORK_ORDER_STATUS_LABELS[status]}篩選`}
+                    aria-label={`清除${status ? WORK_ORDER_STATUS_LABELS[status] : '進行中'}篩選`}
                   >
                     ×
                   </button>

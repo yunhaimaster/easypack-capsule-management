@@ -22,21 +22,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface EditableStatusCellProps {
   workOrderId: string
-  currentStatus: WorkOrderStatus
+  currentStatus: WorkOrderStatus | null
   onSuccess?: () => void
   onError?: (error: Error) => void
 }
 
 // Status to badge variant mapping
 const STATUS_VARIANTS: Record<WorkOrderStatus, 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'> = {
-  DRAFT: 'secondary',
-  PENDING: 'warning',
-  NOTIFIED: 'info',
-  SHIPPED: 'success',
   COMPLETED: 'success',
-  ON_HOLD: 'warning',
   CANCELLED: 'danger'
-}
+} as const
 
 export function EditableStatusCell({ 
   workOrderId, 
@@ -106,11 +101,16 @@ export function EditableStatusCell({
     }
   }
 
+  // If no status (ongoing work), don't display anything
+  if (!currentStatus) {
+    return null
+  }
+
   if (isEditing || updateMutation.isPending) {
     return (
       <div className="relative">
         <Select
-          value={tempStatus}
+          value={tempStatus || ''}
           onValueChange={handleStatusChange}
           disabled={updateMutation.isPending}
         >
