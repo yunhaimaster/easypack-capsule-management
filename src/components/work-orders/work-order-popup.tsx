@@ -175,12 +175,37 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                     : '-'
                   } 
                 />
-                {workOrder.capsulationOrder?.capsuleSize && (
-                  <InfoRow 
-                    icon={Box} 
-                    label="膠囊規格" 
-                    value={workOrder.capsulationOrder.capsuleSize} 
-                  />
+                {workOrder.capsulationOrder && (
+                  <>
+                    {workOrder.capsulationOrder.productName && (
+                      <InfoRow 
+                        icon={Box} 
+                        label="產品名稱" 
+                        value={workOrder.capsulationOrder.productName} 
+                      />
+                    )}
+                    {workOrder.capsulationOrder.capsuleSize && (
+                      <InfoRow 
+                        icon={Box} 
+                        label="膠囊規格" 
+                        value={workOrder.capsulationOrder.capsuleSize} 
+                      />
+                    )}
+                    {workOrder.capsulationOrder.capsuleColor && (
+                      <InfoRow 
+                        icon={Box} 
+                        label="膠囊顏色" 
+                        value={workOrder.capsulationOrder.capsuleColor} 
+                      />
+                    )}
+                    {workOrder.capsulationOrder.capsuleType && (
+                      <InfoRow 
+                        icon={Box} 
+                        label="膠囊類型" 
+                        value={workOrder.capsulationOrder.capsuleType} 
+                      />
+                    )}
+                  </>
                 )}
               </div>
 
@@ -212,7 +237,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
               </div>
 
               {/* Expected Dates Section */}
-              {(workOrder.expectedProductionMaterialsDate || workOrder.expectedPackagingMaterialsDate || workOrder.requestedDeliveryDate) && (
+              {(workOrder.expectedProductionMaterialsDate || workOrder.expectedPackagingMaterialsDate || workOrder.requestedDeliveryDate || workOrder.internalExpectedDate) && (
                 <>
                   <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
                   <div className="space-y-1">
@@ -240,6 +265,13 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                         value={formatDate(workOrder.requestedDeliveryDate)} 
                       />
                     )}
+                    {workOrder.internalExpectedDate && (
+                      <InfoRow 
+                        icon={Clock} 
+                        label="內部預計交貨期" 
+                        value={formatDate(workOrder.internalExpectedDate)} 
+                      />
+                    )}
                   </div>
                 </>
               )}
@@ -257,6 +289,39 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                 </>
               )}
 
+              {/* Legacy Dates (if exists) */}
+              {(workOrder.notifiedDate || workOrder.paymentReceivedDate || workOrder.shippedDate) && (
+                <>
+                  <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
+                  <div className="space-y-1">
+                    <div className="text-[10px] text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                      其他日期
+                    </div>
+                    {workOrder.notifiedDate && (
+                      <InfoRow 
+                        icon={Calendar} 
+                        label="通知日期" 
+                        value={formatDate(workOrder.notifiedDate)} 
+                      />
+                    )}
+                    {workOrder.paymentReceivedDate && (
+                      <InfoRow 
+                        icon={DollarSign} 
+                        label="付款日期" 
+                        value={formatDate(workOrder.paymentReceivedDate)} 
+                      />
+                    )}
+                    {workOrder.shippedDate && (
+                      <InfoRow 
+                        icon={Truck} 
+                        label="出貨日期" 
+                        value={formatDate(workOrder.shippedDate)} 
+                      />
+                    )}
+                  </div>
+                </>
+              )}
+
               {/* Linked Order */}
               {workOrder.capsulationOrder && (
                 <>
@@ -269,14 +334,6 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                   </div>
                 </>
               )}
-            </div>
-
-            {/* Footer */}
-            <div className="px-4 py-3 border-t border-neutral-200/50 dark:border-neutral-700/50 bg-neutral-50/50 dark:bg-neutral-900/30">
-              <div className="flex justify-between items-center text-[10px] text-neutral-500 dark:text-white/65">
-                <span>系統創建於 {formatDate(workOrder.createdAt)}</span>
-                <span>最後更新 {formatDate(workOrder.updatedAt)}</span>
-              </div>
             </div>
           </div>
         </div>
