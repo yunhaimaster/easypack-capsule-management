@@ -330,9 +330,10 @@ export async function POST(request: NextRequest) {
           }
 
           // Create work order
+          const { personInCharge, ...workOrderDataForDb } = workOrderData as any
           await tx.unifiedWorkOrder.create({
             data: {
-              ...workOrderData,
+              ...workOrderDataForDb,
               personInChargeId,
               createdBy: session.userId
             } as never // Type assertion needed due to dynamic data
