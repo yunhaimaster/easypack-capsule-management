@@ -74,7 +74,11 @@ export async function POST(
       contextParts.push(`製程備註：${recipe.notes}`)
     }
     if (recipe.lastProductionAt) {
-      contextParts.push(`最後生產日期：${new Date(recipe.lastProductionAt).toLocaleDateString('zh-HK')}`)
+      contextParts.push(`最後生產日期：${new Date(recipe.lastProductionAt).toLocaleDateString('zh-HK', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })}`)
     }
 
   const fallbackMessage = '資料不足，無法分析功效'

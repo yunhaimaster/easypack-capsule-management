@@ -494,8 +494,16 @@ export default function RecipeLibraryPage() {
     csvContent += `客戶名稱,${recipe.customerName || ''}\n`
     csvContent += `配方類型,${recipe.recipeType === 'template' ? '模板配方' : '生產配方'}\n`
     csvContent += `使用次數,${recipe.productionCount || 0}\n`
-    csvContent += `創建日期,${new Date(recipe.createdAt || '').toLocaleDateString('zh-TW')}\n`
-    csvContent += `導出日期,${new Date().toLocaleDateString('zh-TW')}\n`
+    csvContent += `創建日期,${new Date(recipe.createdAt || '').toLocaleDateString('zh-HK', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })}\n`
+    csvContent += `導出日期,${new Date().toLocaleDateString('zh-HK', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })}\n`
     csvContent += '\n'
     
     // Ingredients table

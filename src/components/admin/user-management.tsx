@@ -371,7 +371,11 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-white/75">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
-                    加入: {new Date(user.createdAt).toLocaleDateString('zh-HK')}
+                    加入: {new Date(user.createdAt).toLocaleDateString('zh-HK', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    })}
                   </div>
                   <div>會話: {user._count.sessions}</div>
                   <div>設備: {user._count.devices}</div>

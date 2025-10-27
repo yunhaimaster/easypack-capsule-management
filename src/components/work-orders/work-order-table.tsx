@@ -709,7 +709,11 @@ export function WorkOrderTable({
                       {/* Created date */}
                       <div className="text-xs text-neutral-500 dark:text-white/65">
                         {workOrder.markedDate
-                          ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK')
+                          ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit'
+                            })
                           : '-'}
                       </div>
                     </div>
