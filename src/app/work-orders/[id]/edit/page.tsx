@@ -105,6 +105,17 @@ export default function EditWorkOrderPage() {
     }
   }, [workOrder])
 
+  // Debug: Log when both workOrder and users are ready
+  useEffect(() => {
+    if (workOrder && users) {
+      console.log('[EditPage] Both data sources ready:')
+      console.log('  - workOrder.personInChargeId:', workOrder.personInChargeId)
+      console.log('  - formData.personInChargeId:', formData.personInChargeId)
+      console.log('  - users array length:', users.length)
+      console.log('  - Eva in users array:', users.find((u: any) => u.id === workOrder.personInChargeId))
+    }
+  }, [workOrder, users, formData.personInChargeId])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccessMessage(null)
@@ -307,7 +318,10 @@ export default function EditWorkOrderPage() {
                     {console.log('  - users count:', users?.length)}
                     {console.log('  - users data:', users)}
                     {console.log('  - workOrder.personInCharge:', workOrder?.personInCharge)}
+                    {console.log('  - Looking for user with ID:', formData.personInChargeId)}
+                    {console.log('  - Found user in array:', users?.find((u: any) => u.id === formData.personInChargeId))}
                     <Select
+                      key={`select-${formData.personInChargeId}`} // Force re-render when value changes
                       value={formData.personInChargeId}
                       onValueChange={(value) => {
                         console.log('[EditPage] Select value changed to:', value)
@@ -321,11 +335,14 @@ export default function EditWorkOrderPage() {
                         <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
                           未指定
                         </SelectItem>
-                        {users?.map((user: any) => (
-                          <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
-                            {user.nickname || user.phoneE164}
-                          </SelectItem>
-                        ))}
+                        {users?.map((user: any) => {
+                          console.log(`[EditPage] Rendering user option:`, { id: user.id, nickname: user.nickname, phoneE164: user.phoneE164 })
+                          return (
+                            <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
+                              {user.nickname || user.phoneE164}
+                            </SelectItem>
+                          )
+                        })}
                       </SelectContent>
                     </Select>
                   </>
