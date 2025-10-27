@@ -66,7 +66,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
     <div className="flex items-start gap-2 py-1.5">
       <Icon className="h-3.5 w-3.5 text-neutral-500 dark:text-white/65 mt-0.5 shrink-0" />
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] text-neutral-500 dark:text-white/65 uppercase tracking-wide mb-0.5">
+        <div className="text-xs text-neutral-500 dark:text-white/65 uppercase tracking-wide mb-0.5 font-medium">
           {label}
         </div>
         <div className={valueClassName || "text-xs text-neutral-800 dark:text-white/95 break-words"}>
@@ -102,26 +102,26 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
               <div className="flex items-start gap-3">
                 <FileText className="h-5 w-5 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-neutral-800 dark:text-white/95 text-sm mb-1">
+                  <h4 className="font-semibold text-neutral-800 dark:text-white/95 text-base mb-1">
                     {workOrder.customerName}
                   </h4>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] text-neutral-500 dark:text-white/65 font-mono">
+                    <span className="text-xs text-neutral-500 dark:text-white/65 font-mono">
                       {workOrder.jobNumber || '無編號'}
                     </span>
-                    <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                    <Badge variant="outline" className="text-xs h-5 px-1.5">
                       {WORK_ORDER_STATUS_LABELS[workOrder.status]}
                     </Badge>
-                    <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                    <Badge variant="outline" className="text-xs h-5 px-1.5">
                       {WORK_TYPE_LABELS[workOrder.workType]}
                     </Badge>
                     {(workOrder.isCustomerServiceVip || workOrder.isBossVip) && (
-                      <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-primary-300 text-primary-700 dark:text-primary-400">
+                      <Badge variant="outline" className="text-xs h-5 px-1.5 border-primary-300 text-primary-700 dark:text-primary-400">
                         VIP
                       </Badge>
                     )}
                     {workOrder.isUrgent && (
-                      <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-danger-300 text-danger-700 dark:text-danger-400">
+                      <Badge variant="outline" className="text-xs h-5 px-1.5 border-danger-300 text-danger-700 dark:text-danger-400">
                         加急
                       </Badge>
                     )}
@@ -156,7 +156,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
 
               {/* Quantities Section */}
               <div className="space-y-1">
-                <div className="text-[10px] text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
                   數量信息
                 </div>
                 <InfoRow 
@@ -213,7 +213,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
 
               {/* Material Status Section */}
               <div className="space-y-1">
-                <div className="text-[10px] text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
                   物料狀態
                 </div>
                 <div className="flex items-center gap-2 py-1.5">
@@ -241,7 +241,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                 <>
                   <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
                   <div className="space-y-1">
-                    <div className="text-[10px] text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                    <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
                       預期日期
                     </div>
                     {workOrder.expectedProductionMaterialsDate && (
@@ -294,7 +294,7 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                 <>
                   <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
                   <div className="space-y-1">
-                    <div className="text-[10px] text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                    <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
                       其他日期
                     </div>
                     {workOrder.notifiedDate && (
