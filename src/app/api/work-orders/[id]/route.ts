@@ -289,7 +289,9 @@ export async function PATCH(
       
       // 數量
       if (validatedData.productionQuantity !== undefined) workOrderUpdateData.productionQuantity = validatedData.productionQuantity
+      if (validatedData.productionQuantityStat !== undefined) workOrderUpdateData.productionQuantityStat = validatedData.productionQuantityStat
       if (validatedData.packagingQuantity !== undefined) workOrderUpdateData.packagingQuantity = validatedData.packagingQuantity
+      if (validatedData.packagingQuantityStat !== undefined) workOrderUpdateData.packagingQuantityStat = validatedData.packagingQuantityStat
       
       // 交貨期
       if (validatedData.requestedDeliveryDate !== undefined) {
