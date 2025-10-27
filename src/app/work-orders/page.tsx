@@ -294,6 +294,13 @@ export default function WorkOrdersPage() {
     fetchWorkOrders(newFilters)
   }
 
+  // Handle limit change
+  const handleLimitChange = (newLimit: number) => {
+    const newFilters = { ...filters, limit: newLimit, page: 1 }
+    setFilters(newFilters)
+    fetchWorkOrders(newFilters)
+  }
+
   // Handle single delete
   const handleDeleteClick = (id: string) => {
     console.log('[WorkOrders] Delete clicked for ID:', id)
@@ -452,9 +459,6 @@ export default function WorkOrdersPage() {
               <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 dark:text-primary-400 text-sm font-medium leading-none">
                 完整追蹤
               </span>
-              <span className="px-3.5 py-1.5 rounded-full bg-info-500/15 border border-info-300/40 text-info-700 dark:text-info-400 text-sm font-medium leading-none">
-                批量操作
-              </span>
             </div>
           </div>
         </section>
@@ -479,65 +483,34 @@ export default function WorkOrdersPage() {
               新增工作單
             </Button>
           </div>
-
-        {/* Stats */}
-        {!isLoading && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-            <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
-                <Text.Primary as="div" className="text-xl sm:text-2xl font-bold">
-                  {pagination.total}
-                </Text.Primary>
-                <Text.Secondary className="text-xs sm:text-sm">總工作單數</Text.Secondary>
-              </CardContent>
-            </Card>
-            <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
-                <Text.Success as="div" className="text-xl sm:text-2xl font-bold">
-                  {workOrders.filter((wo: WorkOrder) => wo.isCompleted).length}
-                </Text.Success>
-                <Text.Secondary className="text-xs sm:text-sm">已完成</Text.Secondary>
-              </CardContent>
-            </Card>
-            <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
-                <Text.Warning as="div" className="text-xl sm:text-2xl font-bold">
-                  {selectedIds.length}
-                </Text.Warning>
-                <Text.Secondary className="text-xs sm:text-sm">已選擇</Text.Secondary>
-              </CardContent>
-            </Card>
-            <Card className="card-interactive-apple transition-apple">
-              <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6 pb-4 sm:pb-6">
-                <Text.Info as="div" className="text-xl sm:text-2xl font-bold">
-                  {workOrders.filter((wo: WorkOrder) => wo.capsulationOrder).length}
-                </Text.Info>
-                <Text.Secondary className="text-xs sm:text-sm">已關聯訂單</Text.Secondary>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
+        </div>
 
       {/* Search & Filters */}
       <Card className="mb-4 sm:mb-6">
         <CardHeader className="px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <CardTitle className="text-base sm:text-lg">搜尋與篩選</CardTitle>
-            {activeFiltersCount > 0 && (
-              <div className="flex items-center gap-2">
-                <Badge variant="info" className="text-xs sm:text-sm">{activeFiltersCount} 個篩選條件</Badge>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={handleClearAllFilters}
-                  className="transition-apple text-xs sm:text-sm h-8 sm:h-auto"
-                >
-                  <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                  清除全部
-                </Button>
-              </div>
-            )}
+            <div>
+              <Text.Primary as="h2" className="text-sm font-semibold text-neutral-700 dark:text-white/85 tracking-wide uppercase">工作單篩選</Text.Primary>
+              <Text.Secondary className="text-xs text-neutral-500 dark:text-white/65">支援客戶、狀態、工作類型與負責人的即時篩查</Text.Secondary>
+            </div>
+            <div className="flex items-center gap-2 sm:self-auto self-start">
+              <span className="text-xs font-semibold text-neutral-600 dark:text-white/75">每頁顯示</span>
+              <Select
+                value={String(filters.limit)}
+                onValueChange={(value) => handleLimitChange(Number(value))}
+              >
+                <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none">
+                  <SelectValue placeholder="筆數" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[25, 50, 100].map((option) => (
+                    <SelectItem key={option} value={option.toString()} className="text-sm">
+                      {option} 筆
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
@@ -891,92 +864,23 @@ export default function WorkOrdersPage() {
       )}
 
       {/* Table - Mobile Optimized */}
-      <Card>
-        <CardContent className="pt-4 sm:pt-6 px-0 sm:px-6 pb-4 sm:pb-6">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle px-2 sm:px-0">
-              <WorkOrderTable
-                workOrders={workOrders}
-                users={users}
-                isLoading={isLoading}
-                isFetching={isFetching}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onSort={handleSort}
-                sortBy={filters.sortBy}
-                sortOrder={filters.sortOrder}
-                onDelete={handleDeleteClick}
-                onRefresh={fetchWorkOrders}
-              />
-            </div>
-          </div>
-
-          {/* Pagination - Mobile Optimized */}
-          {!isLoading && pagination.totalPages > 1 && (
-            <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-2 sm:px-0">
-              <Text.Secondary className="text-xs sm:text-sm text-center sm:text-left">
-                顯示第 {((pagination.page - 1) * pagination.limit) + 1} 至{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} 項，
-                共 {pagination.total} 項
-              </Text.Secondary>
-              <div className="flex gap-1 sm:gap-2 flex-wrap justify-center">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page === 1}
-                  aria-label="上一頁"
-                  className="transition-apple h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
-                >
-                  上一頁
-                </Button>
-                <div className="flex items-center gap-1">
-                  {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
-                    const pageNum = i + 1
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={pagination.page === pageNum ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handlePageChange(pageNum)}
-                        className="min-w-[32px] sm:min-w-[40px] h-8 sm:h-9 transition-apple text-xs sm:text-sm"
-                        aria-label={`前往第 ${pageNum} 頁`}
-                        aria-current={pagination.page === pageNum ? 'page' : undefined}
-                      >
-                        {pageNum}
-                      </Button>
-                    )
-                  })}
-                  {pagination.totalPages > 5 && (
-                    <>
-                      <Text.Tertiary as="span" className="px-1">...</Text.Tertiary>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePageChange(pagination.totalPages)}
-                        className="min-w-[32px] sm:min-w-[40px] h-8 sm:h-9 transition-apple text-xs sm:text-sm"
-                        aria-label={`前往第 ${pagination.totalPages} 頁`}
-                      >
-                        {pagination.totalPages}
-                      </Button>
-                    </>
-                  )}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page === pagination.totalPages}
-                  aria-label="下一頁"
-                  className="transition-apple h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
-                >
-                  下一頁
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="overflow-x-auto">
+        <div className="inline-block min-w-full align-middle px-2 sm:px-0">
+          <WorkOrderTable
+            workOrders={workOrders}
+            users={users}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            onSort={handleSort}
+            sortBy={filters.sortBy}
+            sortOrder={filters.sortOrder}
+            onDelete={handleDeleteClick}
+            onRefresh={fetchWorkOrders}
+          />
+        </div>
+      </div>
 
       {/* Screen reader announcements */}
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
