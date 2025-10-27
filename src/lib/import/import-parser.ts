@@ -441,7 +441,7 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     jobNumber: String(mappedRow.jobNumber || '').trim(),
     markedDate: mappedRow.markedDate ? new Date(String(mappedRow.markedDate)).toISOString() : null,
     customerName: String(mappedRow.customerName || '').trim(),
-    personInCharge: String(mappedRow.personInCharge || '').trim(),
+    // Note: personInCharge is handled separately in import API, not stored directly
     workType: WORK_TYPE_MAPPINGS[String(mappedRow.workType || '').trim()] || WorkType.PRODUCTION,
     status: STATUS_MAPPINGS[String(mappedRow.status || '').trim()] || WorkOrderStatus.PENDING,
     

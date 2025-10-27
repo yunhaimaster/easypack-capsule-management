@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
           const workOrderData = mapRowToWorkOrder(row)
 
           // Match person in charge
-          const personInChargeName = row.personInCharge as string
+          const personInChargeName = row['負責人'] as string || row.personInCharge as string
           let personInChargeId: string | null = null
 
           if (personInChargeName && String(personInChargeName).trim() !== '') {
