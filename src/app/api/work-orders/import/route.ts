@@ -332,9 +332,34 @@ export async function POST(request: NextRequest) {
           // Create work order - Clean data to match Prisma schema exactly
           const { personInCharge, ...workOrderDataForDb } = workOrderData as any
           
-          // Helper function to safely parse dates
+          // Helper function to safely parse dates (including Excel serial numbers)
           const safeParseDate = (value: any): Date | null => {
             if (!value) return null
+            
+            // Check if it's an Excel serial number (numeric value between 1 and 100000)
+            const numValue = Number(value)
+            if (!isNaN(numValue) && numValue >= 1 && numValue <= 100000) {
+              try {
+                // Excel serial number conversion
+                // Excel treats 1900 as a leap year (it wasn't), so we need to adjust
+                // Serial number 1 = January 1, 1900
+                // We subtract 2 to account for Excel's leap year bug
+                const excelEpoch = new Date(1900, 0, 1) // January 1, 1900
+                const daysSinceEpoch = numValue - 2 // Adjust for Excel's leap year bug
+                const resultDate = new Date(excelEpoch.getTime() + (daysSinceEpoch * 24 * 60 * 60 * 1000))
+                
+                // Validate the result
+                if (isNaN(resultDate.getTime())) return null
+                
+                // Debug: Log Excel serial number conversion
+                console.log(`[Import] Excel serial number ${numValue} converted to date: ${resultDate.toISOString()}`)
+                return resultDate
+              } catch {
+                return null
+              }
+            }
+            
+            // Try regular date parsing for non-serial numbers
             try {
               const date = new Date(value)
               return isNaN(date.getTime()) ? null : date
@@ -351,14 +376,14 @@ export async function POST(request: NextRequest) {
           }
           
           // Helper function to validate enum values
-          const validateWorkType = (value: any): string => {
-            const validTypes = ['PRODUCTION', 'PACKAGING', 'PRODUCTION_PACKAGING', 'WAREHOUSING']
-            return validTypes.includes(value) ? value : 'PRODUCTION'
+          const validateWorkType = (value: any): 'PRODUCTION' | 'PACKAGING' | 'PRODUCTION_PACKAGING' | 'WAREHOUSING' => {
+            const validTypes: ('PRODUCTION' | 'PACKAGING' | 'PRODUCTION_PACKAGING' | 'WAREHOUSING')[] = ['PRODUCTION', 'PACKAGING', 'PRODUCTION_PACKAGING', 'WAREHOUSING']
+            return validTypes.includes(value as any) ? value as any : 'PRODUCTION'
           }
           
-          const validateStatus = (value: any): string => {
-            const validStatuses = ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
-            return validStatuses.includes(value) ? value : 'PENDING'
+          const validateStatus = (value: any): 'DRAFT' | 'PENDING' | 'DATA_COMPLETE' | 'NOTIFIED' | 'PAID' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' => {
+            const validStatuses: ('DRAFT' | 'PENDING' | 'DATA_COMPLETE' | 'NOTIFIED' | 'PAID' | 'SHIPPED' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED')[] = ['DRAFT', 'PENDING', 'DATA_COMPLETE', 'NOTIFIED', 'PAID', 'SHIPPED', 'COMPLETED', 'ON_HOLD', 'CANCELLED']
+            return validStatuses.includes(value as any) ? value as any : 'PENDING'
           }
           
           // Create clean data object with only valid Prisma fields and correct types
