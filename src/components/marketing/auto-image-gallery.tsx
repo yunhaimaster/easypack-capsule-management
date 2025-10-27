@@ -712,7 +712,7 @@ export function AutoImageGallery({ analysisContent, isAnalysisComplete }: AutoIm
                       <textarea
                         value={editingPrompts[index] || image.prompt}
                         onChange={(e) => handlePromptChange(index, e.target.value)}
-                        className="w-full text-xs border border-neutral-300 dark:border-neutral-600 rounded-md p-2 min-h-[100px] resize-y focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95"
+                        className="w-full text-xs border border-neutral-300 dark:border-neutral-600 rounded-md p-2 min-h-[100px] resize-y focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-primary dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95"
                         placeholder="修改圖像生成 prompt..."
                       />
                       <div className="flex gap-2">

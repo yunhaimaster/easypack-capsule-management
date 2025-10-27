@@ -78,12 +78,12 @@ export function MarkdownRenderer({ content, className = '', whiteText = false }:
           ),
           // 自定義代碼樣式
           code: ({ children }) => (
-            <code className={`px-1 py-0.5 rounded text-xs font-mono ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-800 dark:text-white/95'}`}>
+            <code className={`px-1 py-0.5 rounded text-xs font-mono ${whiteText ? 'bg-white/20 text-white' : 'bg-surface-primary text-neutral-800 dark:text-white/95'}`}>
               {children}
             </code>
           ),
           pre: ({ children }) => (
-            <pre className={`p-2 rounded text-xs font-mono overflow-x-auto mb-2 ${whiteText ? 'bg-white/20 text-white' : 'bg-neutral-100 dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95'}`}>
+            <pre className={`p-2 rounded text-xs font-mono overflow-x-auto mb-2 ${whiteText ? 'bg-white/20 text-white' : 'bg-surface-primary dark:bg-neutral-800/30 text-neutral-900 dark:text-white/95'}`}>
               {children}
             </pre>
           ),

@@ -12,6 +12,7 @@
 
 import { useState, useRef } from 'react'
 import { LiquidGlassModal } from '@/components/ui/liquid-glass-modal'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Upload, Download, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { WORK_ORDER_COLUMNS } from '@/lib/export/xlsx-exporter'
@@ -373,7 +374,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
                 return (
                   <>
                     {rowsWithErrors.map((rowNum) => (
-                      <div key={rowNum} className="p-3 border-b border-neutral-100 dark:border-neutral-700 last:border-b-0 bg-white dark:bg-surface-primary">
+                      <Card key={rowNum} className="p-3 border-b border-neutral-100 dark:border-neutral-700 last:border-b-0 bg-surface-primary dark:bg-surface-primary">
                         <p className="text-sm font-semibold text-danger-700 dark:text-danger-400 mb-2">
                           第 {rowNum} 行 ({errorsByRow[rowNum].length} 個錯誤)
                         </p>
@@ -384,7 +385,7 @@ export function ImportDialog({ isOpen, onClose, onImportSuccess }: ImportDialogP
                             </p>
                           ))}
                         </div>
-                      </div>
+                      </Card>
                     ))}
                     {Object.keys(errorsByRow).length > 20 && (
                       <div className="p-3 text-center text-xs text-neutral-500 dark:text-white/65">

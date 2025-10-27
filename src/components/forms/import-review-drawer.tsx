@@ -87,7 +87,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
     
     if (row.type === 'invalid') {
       return (
-        <div key={row.id} className="flex items-center justify-between p-3 rounded-lg border border-danger-200 bg-danger-50">
+        <Card key={row.id} className="flex items-center justify-between p-3 border-danger-200 bg-danger-50">
           <div className="flex items-center gap-3">
             <IconContainer icon={AlertTriangle} variant="danger" size="sm" />
             <div>
@@ -95,7 +95,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
               <div className="text-xs text-danger-600">無效數值，將被略過</div>
             </div>
           </div>
-        </div>
+        </Card>
       )
     }
 
@@ -105,7 +105,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
 
     if (isEditing) {
       return (
-        <div key={row.id} className="flex items-center gap-3 p-3 rounded-lg border-2 border-primary-400 bg-primary-50">
+        <Card key={row.id} className="flex items-center gap-3 p-3 border-2 border-primary-400 bg-primary-50">
           <Checkbox checked={isChecked} onCheckedChange={() => toggle(row.id)} aria-label="選擇此項目" />
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
@@ -134,12 +134,12 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
               <Button size="sm" onClick={saveEdit} className="h-7 text-xs">完成</Button>
             </div>
           </div>
-        </div>
+        </Card>
       )
     }
 
     return (
-      <div key={row.id} className="flex items-center justify-between p-3 rounded-lg border border-neutral-200 bg-white hover:border-neutral-300 transition-colors">
+      <Card key={row.id} className="flex items-center justify-between p-3 border-neutral-200 bg-surface-primary hover:border-neutral-300 transition-colors">
         <div className="flex items-center gap-3 flex-1">
           <Checkbox checked={isChecked} onCheckedChange={() => toggle(row.id)} aria-label="選擇此項目" />
           <IconContainer icon={isAdd ? Plus : isUpdate ? Check : Minus} variant={isAdd ? 'success' : isUpdate ? 'warning' : 'neutral'} size="sm" />
@@ -169,7 +169,7 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
         >
           <Edit2 className="h-4 w-4" />
         </Button>
-      </div>
+      </Card>
     )
   }
 

@@ -286,7 +286,7 @@ ${index + 1}. ${w.ingredient1} + ${w.ingredient2} [${w.severity === 'high' ? 'é«
           {warnings.map((warning, index) => (
             <div
               key={index}
-              className="p-3 bg-white dark:bg-neutral-800/30 border border-neutral-200 dark:border-neutral-700 rounded-lg"
+              className="p-3 bg-surface-primary dark:bg-neutral-800/30 border border-neutral-200 dark:border-neutral-700 rounded-lg"
             >
               <div className="flex items-start gap-2 mb-2">
                 <Badge
