@@ -58,6 +58,7 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   '創建日期': 'markedDate',
   '標記日期': 'markedDate', // Legacy support
   '編碼/日期': 'markedDate', // Excel format
+  '填表日期': 'markedDate', // Form date
   '客戶名稱': 'customerName',
   '負責人': 'personInCharge',
   '工作類型': 'workType',
@@ -436,10 +437,61 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
   const productionResult = parseQuantityWithUnit(mappedRow.productionQuantity)
   const packagingResult = parseQuantityWithUnit(mappedRow.packagingQuantity)
 
+  // Helper function to safely parse dates (including Excel serial numbers)
+  const safeParseDate = (value: any): Date | null => {
+    if (!value) return null
+    
+    // Check if it's an Excel serial number (numeric value between 1 and 100000)
+    const numValue = Number(value)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 100000) {
+      try {
+        // Method 1: Standard Excel conversion (1900 epoch)
+        const excelEpoch1900 = new Date(1900, 0, 1) // January 1, 1900
+        const daysSinceEpoch1900 = numValue - 2 // Adjust for Excel's leap year bug
+        const resultDate1900 = new Date(excelEpoch1900.getTime() + (daysSinceEpoch1900 * 24 * 60 * 60 * 1000))
+        
+        // Method 2: Alternative Excel conversion (1904 epoch - used on Mac)
+        const excelEpoch1904 = new Date(1904, 0, 1) // January 1, 1904
+        const daysSinceEpoch1904 = numValue - 1
+        const resultDate1904 = new Date(excelEpoch1904.getTime() + (daysSinceEpoch1904 * 24 * 60 * 60 * 1000))
+        
+        // Choose the more reasonable date (between 1900 and 2100)
+        const year1900 = new Date(1900, 0, 1)
+        const year2100 = new Date(2100, 0, 1)
+        
+        let resultDate = resultDate1900
+        if (resultDate1900 < year1900 || resultDate1900 > year2100) {
+          resultDate = resultDate1904
+        }
+        
+        if (resultDate < year1900 || resultDate > year2100) {
+          resultDate = new Date() // Use current date as fallback
+        }
+        
+        // Validate the result
+        if (isNaN(resultDate.getTime())) {
+          resultDate = new Date()
+        }
+        
+        return resultDate
+      } catch {
+        return null
+      }
+    }
+    
+    // Try regular date parsing for non-serial numbers
+    try {
+      const date = new Date(value)
+      return isNaN(date.getTime()) ? null : date
+    } catch {
+      return null
+    }
+  }
+
   return {
     // Basic Info
     jobNumber: String(mappedRow.jobNumber || '').trim(),
-    markedDate: mappedRow.markedDate ? new Date(String(mappedRow.markedDate)).toISOString() : null,
+    markedDate: safeParseDate(mappedRow.markedDate)?.toISOString() || null,
     customerName: String(mappedRow.customerName || '').trim(),
     personInCharge: String(mappedRow.personInCharge || '').trim(), // Keep for validation, handled separately in API
     workType: WORK_TYPE_MAPPINGS[String(mappedRow.workType || '').trim()] || WorkType.PRODUCTION,
@@ -453,8 +505,8 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     isComplexityVip: String(mappedRow.isComplexityVip || '').trim() === '是',
     
     // Material Ready Status - New
-    expectedProductionMaterialsDate: mappedRow.expectedProductionMaterialsDate ? new Date(String(mappedRow.expectedProductionMaterialsDate)).toISOString() : null,
-    expectedPackagingMaterialsDate: mappedRow.expectedPackagingMaterialsDate ? new Date(String(mappedRow.expectedPackagingMaterialsDate)).toISOString() : null,
+    expectedProductionMaterialsDate: safeParseDate(mappedRow.expectedProductionMaterialsDate)?.toISOString() || null,
+    expectedPackagingMaterialsDate: safeParseDate(mappedRow.expectedPackagingMaterialsDate)?.toISOString() || null,
     productionMaterialsReady: String(mappedRow.productionMaterialsReady || '').trim() === '是',
     packagingMaterialsReady: String(mappedRow.packagingMaterialsReady || '').trim() === '是',
     
@@ -465,8 +517,8 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     packagingQuantityStat: packagingResult.unit,
     
     // Delivery Dates - New
-    requestedDeliveryDate: mappedRow.requestedDeliveryDate ? new Date(String(mappedRow.requestedDeliveryDate)).toISOString() : null,
-    internalExpectedDate: mappedRow.internalExpectedDate ? new Date(String(mappedRow.internalExpectedDate)).toISOString() : null,
+    requestedDeliveryDate: safeParseDate(mappedRow.requestedDeliveryDate)?.toISOString() || null,
+    internalExpectedDate: safeParseDate(mappedRow.internalExpectedDate)?.toISOString() || null,
     
     // Status Flags - New
     isUrgent: String(mappedRow.isUrgent || '').trim() === '是',
@@ -478,11 +530,11 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     
     // Legacy fields (deprecated but kept for compatibility)
     yearCategory: String(mappedRow.yearCategory || '').trim() || null,
-    expectedCompletionDate: mappedRow.expectedCompletionDate ? new Date(String(mappedRow.expectedCompletionDate)).toISOString() : null,
-    dataCompleteDate: mappedRow.dataCompleteDate ? new Date(String(mappedRow.dataCompleteDate)).toISOString() : null,
-    notifiedDate: mappedRow.notifiedDate ? new Date(String(mappedRow.notifiedDate)).toISOString() : null,
-    paymentReceivedDate: mappedRow.paymentReceivedDate ? new Date(String(mappedRow.paymentReceivedDate)).toISOString() : null,
-    shippedDate: mappedRow.shippedDate ? new Date(String(mappedRow.shippedDate)).toISOString() : null,
+    expectedCompletionDate: safeParseDate(mappedRow.expectedCompletionDate)?.toISOString() || null,
+    dataCompleteDate: safeParseDate(mappedRow.dataCompleteDate)?.toISOString() || null,
+    notifiedDate: safeParseDate(mappedRow.notifiedDate)?.toISOString() || null,
+    paymentReceivedDate: safeParseDate(mappedRow.paymentReceivedDate)?.toISOString() || null,
+    shippedDate: safeParseDate(mappedRow.shippedDate)?.toISOString() || null,
     internalDeliveryTime: String(mappedRow.internalDeliveryTime || '').trim() || null,
     customerRequestedTime: String(mappedRow.customerRequestedTime || '').trim() || null,
     notes: String(mappedRow.notes || '').trim() || null
