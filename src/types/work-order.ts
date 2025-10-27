@@ -206,7 +206,9 @@ export interface UpdateWorkOrderData {
   
   // 數量
   productionQuantity?: number | null
+  productionQuantityStat?: string | null  // Unit for production quantity (粒/瓶/盒/個)
   packagingQuantity?: number | null
+  packagingQuantityStat?: string | null   // Unit for packaging quantity (粒/瓶/盒/個)
   
   // 交貨期
   requestedDeliveryDate?: string | null

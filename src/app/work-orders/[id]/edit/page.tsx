@@ -127,7 +127,9 @@ export default function EditWorkOrderPage() {
         packagingMaterialsReady: formData.packagingMaterialsReady,
         
         productionQuantity: formData.productionQuantity ? parseInt(formData.productionQuantity) : null,
+        productionQuantityStat: formData.productionQuantityStat.trim() || null,
         packagingQuantity: formData.packagingQuantity ? parseInt(formData.packagingQuantity) : null,
+        packagingQuantityStat: formData.packagingQuantityStat.trim() || null,
         
         requestedDeliveryDate: formData.requestedDeliveryDate
           ? new Date(formData.requestedDeliveryDate).toISOString()

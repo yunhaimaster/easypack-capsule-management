@@ -56,7 +56,9 @@ export const createWorkOrderSchema = z.object({
   
   // 數量
   productionQuantity: z.number().int().positive().optional().nullable(),
+  productionQuantityStat: z.string().max(20).trim().optional().nullable(),  // Unit (粒/瓶/盒/個)
   packagingQuantity: z.number().int().positive().optional().nullable(),
+  packagingQuantityStat: z.string().max(20).trim().optional().nullable(),   // Unit (粒/瓶/盒/個)
   
   // 交貨期
   requestedDeliveryDate: z.string().datetime().optional().nullable(),  // 要求交貨的日期
@@ -93,7 +95,9 @@ export const updateWorkOrderSchema = z.object({
   
   // 數量
   productionQuantity: z.number().int().positive().optional().nullable(),
+  productionQuantityStat: z.string().max(20).trim().optional().nullable(),  // Unit (粒/瓶/盒/個)
   packagingQuantity: z.number().int().positive().optional().nullable(),
+  packagingQuantityStat: z.string().max(20).trim().optional().nullable(),   // Unit (粒/瓶/盒/個)
   
   // 交貨期
   requestedDeliveryDate: z.string().datetime().optional().nullable(),
