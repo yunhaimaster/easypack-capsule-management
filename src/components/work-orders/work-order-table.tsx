@@ -380,22 +380,14 @@ export function WorkOrderTable({
                     {/* Quantity */}
                     <td className="py-3 px-3 text-sm align-top">
                       <div className="flex flex-col gap-0.5">
-                        {workOrder.productionQuantity && workOrder.productionQuantityStat ? (
+                        {workOrder.productionQuantity ? (
                           <div className="text-neutral-900 dark:text-white/95">
-                            生產: {workOrder.productionQuantity} {workOrder.productionQuantityStat}
-                          </div>
-                        ) : workOrder.productionQuantity ? (
-                          <div className="text-neutral-900 dark:text-white/95">
-                            生產: {workOrder.productionQuantity}
+                            生產: {workOrder.productionQuantity}{workOrder.productionQuantityStat || '個'}
                           </div>
                         ) : null}
-                        {workOrder.packagingQuantity && workOrder.packagingQuantityStat ? (
+                        {workOrder.packagingQuantity ? (
                           <div className="text-neutral-700 dark:text-white/85 text-xs">
-                            包裝: {workOrder.packagingQuantity} {workOrder.packagingQuantityStat}
-                          </div>
-                        ) : workOrder.packagingQuantity ? (
-                          <div className="text-neutral-700 dark:text-white/85 text-xs">
-                            包裝: {workOrder.packagingQuantity}
+                            包裝: {workOrder.packagingQuantity}{workOrder.packagingQuantityStat || '個'}
                           </div>
                         ) : null}
                         {!workOrder.productionQuantity && !workOrder.packagingQuantity && (
@@ -547,9 +539,9 @@ export function WorkOrderTable({
                       {/* Quantity */}
                       <div className="text-sm text-neutral-700 dark:text-white/85">
                         <span className="font-medium">數量: </span>
-                        {workOrder.productionQuantity && `生產 ${workOrder.productionQuantity}${workOrder.productionQuantityStat || ''}`}
+                        {workOrder.productionQuantity && `生產 ${workOrder.productionQuantity}${workOrder.productionQuantityStat || '個'}`}
                         {workOrder.productionQuantity && workOrder.packagingQuantity && ' / '}
-                        {workOrder.packagingQuantity && `包裝 ${workOrder.packagingQuantity}${workOrder.packagingQuantityStat || ''}`}
+                        {workOrder.packagingQuantity && `包裝 ${workOrder.packagingQuantity}${workOrder.packagingQuantityStat || '個'}`}
                         {!workOrder.productionQuantity && !workOrder.packagingQuantity && '-'}
                       </div>
                       
