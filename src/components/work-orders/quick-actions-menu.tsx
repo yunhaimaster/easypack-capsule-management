@@ -34,7 +34,7 @@ import {
   MoreVertical,
   Loader2
 } from 'lucide-react'
-import { WorkOrder, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
+import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
 import { useToast } from '@/components/ui/toast-provider'
 
@@ -142,23 +142,29 @@ export function QuickActionsMenu({
               <span>更改狀態</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {Object.entries(WORK_ORDER_STATUS_LABELS).map(([status, label]) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleAction(
-                      'status-change',
-                      () => onStatusChange(workOrder.id, status as WorkOrderStatus),
-                      `狀態已更改為：${label}`
-                    )
-                  }}
-                  disabled={workOrder.status === status || isLoading}
-                >
-                  {label}
-                  {workOrder.status === status && ' (目前)'}
-                </DropdownMenuItem>
-              ))}
+              {Object.entries(WORK_ORDER_STATUS_LABELS)
+                .filter(([status]) => {
+                  // Only show valid transitions from current status
+                  const validTransitions = VALID_STATUS_TRANSITIONS[workOrder.status]
+                  return validTransitions.includes(status as WorkOrderStatus)
+                })
+                .map(([status, label]) => (
+                  <DropdownMenuItem
+                    key={status}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleAction(
+                        'status-change',
+                        () => onStatusChange(workOrder.id, status as WorkOrderStatus),
+                        `狀態已更改為：${label}`
+                      )
+                    }}
+                    disabled={workOrder.status === status || isLoading}
+                  >
+                    {label}
+                    {workOrder.status === status && ' (目前)'}
+                  </DropdownMenuItem>
+                ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         )}
