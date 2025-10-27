@@ -15,7 +15,6 @@ const Dialog = DialogPrimitive.Root
 const DialogTrigger = DialogPrimitive.Trigger
 
 const DialogPortal = ({ children, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>) => {
-  console.log('[DialogPortal] Rendering', { hasChildren: !!children })
   return <DialogPrimitive.Portal {...props}>{children}</DialogPrimitive.Portal>
 }
 
@@ -25,16 +24,13 @@ const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => {
-  console.log('[DialogOverlay] Rendering')
   return (
     <DialogPrimitive.Overlay
       ref={ref}
       className={cn(
-        'fixed inset-0 z-[99998] bg-black/50 backdrop-blur-sm',
+        'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm',
         'data-[state=open]:animate-fade-in',
         'data-[state=closed]:animate-fade-out',
-        // Temporary debugging styles - make it impossible to miss
-        'bg-red-300 !opacity-100 !visible',
         className
       )}
       {...props}
@@ -64,35 +60,6 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
 >(({ className, children, closeLabel = '關閉對話框', showCloseButton = true, ariaDescribedBy, ...props }, ref) => {
-  console.log('[DialogContent] Rendering', { 
-    className, 
-    hasChildren: !!children,
-    ariaDescribedBy,
-    props: Object.keys(props)
-  })
-  
-  // Add DOM debugging
-  React.useEffect(() => {
-    console.log('[DialogContent] useEffect - checking DOM element')
-    const element = document.querySelector('[data-radix-dialog-content]')
-    if (element) {
-      console.log('[DialogContent] Found DOM element:', element)
-      console.log('[DialogContent] Computed styles:', {
-        display: window.getComputedStyle(element).display,
-        visibility: window.getComputedStyle(element).visibility,
-        opacity: window.getComputedStyle(element).opacity,
-        zIndex: window.getComputedStyle(element).zIndex,
-        position: window.getComputedStyle(element).position,
-        top: window.getComputedStyle(element).top,
-        left: window.getComputedStyle(element).left,
-        transform: window.getComputedStyle(element).transform
-      })
-      console.log('[DialogContent] Element rect:', element.getBoundingClientRect())
-    } else {
-      console.log('[DialogContent] No DOM element found!')
-    }
-  }, [])
-  
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -100,13 +67,10 @@ const DialogContent = React.forwardRef<
         ref={ref}
         aria-describedby={ariaDescribedBy}
         className={cn(
-          'fixed left-[50%] top-[50%] z-[99999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-          'p-6',
+          'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+          'bg-white dark:bg-elevation-1 p-6 shadow-lg rounded-lg border border-neutral-200 dark:border-white/12',
           'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-          // Temporary debugging styles - make it impossible to miss
-          'bg-red-500 border-8 border-yellow-400 !opacity-100 !visible',
-          'min-h-[400px] min-w-[600px]',
           className
         )}
         {...props}

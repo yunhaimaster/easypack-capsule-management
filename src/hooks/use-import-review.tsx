@@ -10,32 +10,14 @@ export function useImportReview() {
   const [context, setContext] = useState<{ current: IngredientItem[]; imported: IngredientItem[]; onApply: (merged: IngredientItem[]) => void } | null>(null)
 
   const openReview = useCallback((imported: IngredientItem[], current: IngredientItem[], onApply: (merged: IngredientItem[]) => void) => {
-    console.log('[ImportReview] openReview called', { 
-      importedCount: imported.length, 
-      currentCount: current.length 
-    })
-    
     const d = dryRunMerge(current, imported)
-    console.log('[ImportReview] dryRunMerge result:', d)
-    
     setDiff(d)
     setContext({ current, imported, onApply })
     setIsOpen(true)
-    
-    console.log('[ImportReview] Drawer should now open, isOpen set to true')
   }, [])
 
   const handleApply = useCallback((selectedIds: Set<string>, edits: Map<string, { name: string; value: number }>) => {
-    console.log('[ImportReview] handleApply called', { 
-      selectedCount: selectedIds.size, 
-      editsCount: edits.size,
-      hasContext: !!context 
-    })
-    
-    if (!context) {
-      console.error('[ImportReview] No context available in handleApply!')
-      return
-    }
+    if (!context) return
     
     // Apply edits to imported items before merging
     const editedImported = context.imported.map(item => {
@@ -55,26 +37,15 @@ export function useImportReview() {
       return item
     })
     
-    console.log('[ImportReview] Calling mergeIngredientsSmart...')
     const merged = mergeIngredientsSmart(context.current, editedImported, selectedIds, edits)
-    console.log('[ImportReview] Merged result:', merged)
-    
-    console.log('[ImportReview] Calling onApply callback...')
     context.onApply(merged)
     
     setIsOpen(false)
     setDiff(null)
     setContext(null)
-    console.log('[ImportReview] handleApply complete, drawer closed')
   }, [context])
 
   const drawer = useMemo(() => {
-    console.log('[ImportReview] Creating drawer component', { 
-      hasDiff: !!diff, 
-      isOpen,
-      diffType: diff ? typeof diff : 'null'
-    })
-    
     return diff ? (
       <ImportReviewDrawer isOpen={isOpen} onOpenChange={setIsOpen} diff={diff} onApply={handleApply} />
     ) : null
