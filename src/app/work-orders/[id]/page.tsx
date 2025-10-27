@@ -11,7 +11,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react'
-import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
+import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS, CapsulationIngredient } from '@/types/work-order'
 
 export default function WorkOrderDetailPage() {
   const params = useParams()
@@ -360,7 +360,7 @@ export default function WorkOrderDetailPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {workOrder.capsulationOrder.ingredients.map((ing: any, index: number) => (
+                      {workOrder.capsulationOrder.ingredients.map((ing: CapsulationIngredient, index: number) => (
                         <TableRow key={index}>
                           <TableCell className="text-xs sm:text-sm">
                             {ing.materialName}

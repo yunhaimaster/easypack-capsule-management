@@ -14,23 +14,24 @@ import { Text } from '@/components/ui/text'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Save } from 'lucide-react'
+import { WorkOrder, UpdateWorkOrderData, User, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
+import { WorkOrderStatus, WorkType } from '@prisma/client'
 
 export default function EditWorkOrderPage() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
 
-  const { data: workOrderData, isLoading } = useWorkOrder(id)
+  const { data: workOrder, isLoading } = useWorkOrder(id)
   const updateMutation = useUpdateWorkOrder()
   const { data: users, isLoading: usersLoading } = useUsers()
-
-  const workOrder = workOrderData as any
 
   const [formData, setFormData] = useState({
     jobNumber: '',
     customerName: '',
     personInChargeId: 'UNASSIGNED',
-    workType: 'PACKAGING' as const,
+    workType: 'PACKAGING' as WorkType,
+    status: 'PENDING' as WorkOrderStatus,
     workDescription: '',
     
     isCustomerServiceVip: false,
@@ -60,16 +61,12 @@ export default function EditWorkOrderPage() {
   // Populate form when work order loads
   useEffect(() => {
     if (workOrder) {
-      console.log('[EditPage] Loading workOrder data:')
-      console.log('  - workOrder.personInChargeId:', workOrder.personInChargeId)
-      console.log('  - workOrder.personInCharge:', workOrder.personInCharge)
-      console.log('  - Will set to:', workOrder.personInChargeId || 'UNASSIGNED')
-      
       setFormData({
         jobNumber: workOrder.jobNumber || '',
         customerName: workOrder.customerName,
         personInChargeId: workOrder.personInChargeId || 'UNASSIGNED',
         workType: workOrder.workType,
+        status: workOrder.status,
         workDescription: workOrder.workDescription,
         
         isCustomerServiceVip: workOrder.isCustomerServiceVip,
@@ -100,21 +97,8 @@ export default function EditWorkOrderPage() {
         productionStarted: workOrder.productionStarted,
         isCompleted: workOrder.isCompleted
       })
-      
-      console.log('[EditPage] Form data updated')
     }
   }, [workOrder])
-
-  // Debug: Log when both workOrder and users are ready
-  useEffect(() => {
-    if (workOrder && users) {
-      console.log('[EditPage] Both data sources ready:')
-      console.log('  - workOrder.personInChargeId:', workOrder.personInChargeId)
-      console.log('  - formData.personInChargeId:', formData.personInChargeId)
-      console.log('  - users array length:', users.length)
-      console.log('  - Eva in users array:', users.find((u: any) => u.id === workOrder.personInChargeId))
-    }
-  }, [workOrder, users, formData.personInChargeId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,11 +106,12 @@ export default function EditWorkOrderPage() {
     setErrorMessage(null)
 
     try {
-      const payload: any = {
+      const payload: UpdateWorkOrderData = {
         jobNumber: formData.jobNumber.trim() || null,
         customerName: formData.customerName.trim(),
         personInChargeId: formData.personInChargeId === 'UNASSIGNED' ? null : formData.personInChargeId,
         workType: formData.workType,
+        status: formData.status,
         workDescription: formData.workDescription.trim(),
         
         isCustomerServiceVip: formData.isCustomerServiceVip,
@@ -142,9 +127,7 @@ export default function EditWorkOrderPage() {
         packagingMaterialsReady: formData.packagingMaterialsReady,
         
         productionQuantity: formData.productionQuantity ? parseInt(formData.productionQuantity) : null,
-        productionQuantityStat: formData.productionQuantityStat || null,
         packagingQuantity: formData.packagingQuantity ? parseInt(formData.packagingQuantity) : null,
-        packagingQuantityStat: formData.packagingQuantityStat || null,
         
         requestedDeliveryDate: formData.requestedDeliveryDate
           ? new Date(formData.requestedDeliveryDate).toISOString()
@@ -158,34 +141,24 @@ export default function EditWorkOrderPage() {
         isCompleted: formData.isCompleted
       }
 
-      // Debug: Log what we're sending
-      console.log('[EditPage] Sending payload:', payload)
-      console.log('[EditPage] personInChargeId:', payload.personInChargeId)
-
       await updateMutation.mutateAsync({ id, data: payload })
       
-      console.log('[EditPage] Update successful')
       setSuccessMessage('工作單更新成功！')
       
       setTimeout(() => {
         router.push(`/work-orders/${id}` as never)
       }, 1500)
-    } catch (error: any) {
-      console.error('[EditPage] Update failed:', error)
-      
+    } catch (error) {
       // Extract detailed error message
-      let errorMessage = '更新工作單失敗，請稍後重試'
+      let errorMsg = '更新工作單失敗，請稍後重試'
       
-      if (error?.message) {
-        errorMessage = error.message
+      if (error instanceof Error) {
+        errorMsg = error.message
       } else if (typeof error === 'string') {
-        errorMessage = error
-      } else if (error?.response?.data?.error) {
-        errorMessage = error.response.data.error
+        errorMsg = error
       }
       
-      console.error('[EditPage] Detailed error:', errorMessage)
-      setErrorMessage(errorMessage)
+      setErrorMessage(errorMsg)
     }
   }
 
@@ -312,40 +285,25 @@ export default function EditWorkOrderPage() {
                     </Text.Tertiary>
                   </div>
                 ) : (
-                  <>
-                    {console.log('[EditPage] Rendering Select with:')}
-                    {console.log('  - formData.personInChargeId:', formData.personInChargeId)}
-                    {console.log('  - users count:', users?.length)}
-                    {console.log('  - users data:', users)}
-                    {console.log('  - workOrder.personInCharge:', workOrder?.personInCharge)}
-                    {console.log('  - Looking for user with ID:', formData.personInChargeId)}
-                    {console.log('  - Found user in array:', users?.find((u: any) => u.id === formData.personInChargeId))}
-                    <Select
-                      key={`select-${formData.personInChargeId}`} // Force re-render when value changes
-                      value={formData.personInChargeId}
-                      onValueChange={(value) => {
-                        console.log('[EditPage] Select value changed to:', value)
-                        setFormData(prev => ({ ...prev, personInChargeId: value }))
-                      }}
-                    >
-                      <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
-                        <SelectValue placeholder="請選擇負責人" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
-                          未指定
+                  <Select
+                    key={`select-${formData.personInChargeId}`}
+                    value={formData.personInChargeId}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, personInChargeId: value }))}
+                  >
+                    <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
+                      <SelectValue placeholder="請選擇負責人" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UNASSIGNED" className="text-sm sm:text-base">
+                        未指定
+                      </SelectItem>
+                      {users?.map((user: User) => (
+                        <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
+                          {user.nickname || user.phoneE164}
                         </SelectItem>
-                        {users?.map((user: any) => {
-                          console.log(`[EditPage] Rendering user option:`, { id: user.id, nickname: user.nickname, phoneE164: user.phoneE164 })
-                          return (
-                            <SelectItem key={user.id} value={user.id} className="text-sm sm:text-base">
-                              {user.nickname || user.phoneE164}
-                            </SelectItem>
-                          )
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
 
@@ -356,7 +314,7 @@ export default function EditWorkOrderPage() {
                 <Select
                   key={`worktype-${formData.workType}`}
                   value={formData.workType}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, workType: value as any }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, workType: value as WorkType }))}
                 >
                   <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
                     <SelectValue placeholder="請選擇工作類型" />
@@ -366,6 +324,28 @@ export default function EditWorkOrderPage() {
                     <SelectItem value="PRODUCTION" className="text-sm sm:text-base">生產</SelectItem>
                     <SelectItem value="PRODUCTION_PACKAGING" className="text-sm sm:text-base">生產+包裝</SelectItem>
                     <SelectItem value="WAREHOUSING" className="text-sm sm:text-base">倉務</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                  狀態 <Text.Danger as="span">*</Text.Danger>
+                </Text.Primary>
+                <Select
+                  key={`status-${formData.status}`}
+                  value={formData.status}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as WorkOrderStatus }))}
+                >
+                  <SelectTrigger className="transition-apple h-10 sm:h-11 text-sm sm:text-base">
+                    <SelectValue placeholder="請選擇狀態" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(WORK_ORDER_STATUS_LABELS).map(([status, label]) => (
+                      <SelectItem key={status} value={status} className="text-sm sm:text-base">
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

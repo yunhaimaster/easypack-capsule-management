@@ -171,12 +171,56 @@ export function WorkOrderTable({
     }
   }
 
-  const handleToggle = async (
-    workOrderId: string,
-    field: 'productionStarted' | 'productionMaterialsReady' | 'packagingMaterialsReady',
-    value: boolean
-  ) => {
-    // Handled by QuickActionsMenu
+  const handleToggleProductionStarted = async (workOrderId: string, value: boolean) => {
+    try {
+      const response = await fetch(`/api/work-orders/${workOrderId}/toggle`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field: 'productionStarted', value })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Toggle failed')
+      }
+
+      showToast({ title: value ? '已標記為已開工' : '已標記為未開工' })
+      await onRefresh?.()
+    } catch (error) {
+      showToast({ 
+        title: '更新失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive' 
+      })
+      throw error
+    }
+  }
+
+  const handleToggleMaterialReady = async (workOrderId: string, field: 'production' | 'packaging', value: boolean) => {
+    try {
+      const apiField = field === 'production' ? 'productionMaterialsReady' : 'packagingMaterialsReady'
+      const response = await fetch(`/api/work-orders/${workOrderId}/toggle`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field: apiField, value })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Toggle failed')
+      }
+
+      const label = field === 'production' ? '生產物料' : '包裝物料'
+      showToast({ title: `${label}已標記為${value ? '齊全' : '未齊'}` })
+      await onRefresh?.()
+    } catch (error) {
+      showToast({ 
+        title: '更新失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive' 
+      })
+      throw error
+    }
   }
 
   const handleStatusChange = async (workOrderId: string, newStatus: WorkOrderStatus) => {
@@ -449,6 +493,8 @@ export function WorkOrderTable({
                         workOrder={workOrder}
                         onDelete={onDelete}
                         onStatusChange={handleStatusChange}
+                        onToggleMaterialReady={handleToggleMaterialReady}
+                        onToggleProductionStarted={handleToggleProductionStarted}
                         onRefresh={onRefresh}
                       />
                     </td>
@@ -579,6 +625,8 @@ export function WorkOrderTable({
                       workOrder={workOrder}
                       onDelete={onDelete}
                       onStatusChange={handleStatusChange}
+                      onToggleMaterialReady={handleToggleMaterialReady}
+                      onToggleProductionStarted={handleToggleProductionStarted}
                       onRefresh={onRefresh}
                     />
                   </div>

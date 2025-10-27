@@ -194,11 +194,37 @@ export interface CreateCapsulationIngredientData {
 }
 
 export interface UpdateWorkOrderData {
-  jobNumber?: string
+  jobNumber?: string | null
   status?: WorkOrderStatus
   customerName?: string
-  personInChargeId?: string
+  personInChargeId?: string | null
   workType?: WorkType
+  workDescription?: string
+  
+  // VIP標記
+  isCustomerServiceVip?: boolean
+  isBossVip?: boolean
+  
+  // 物料到齊狀態
+  expectedProductionMaterialsDate?: string | null
+  expectedPackagingMaterialsDate?: string | null
+  productionMaterialsReady?: boolean
+  packagingMaterialsReady?: boolean
+  
+  // 數量
+  productionQuantity?: number | null
+  packagingQuantity?: number | null
+  
+  // 交貨期
+  requestedDeliveryDate?: string | null
+  internalExpectedDate?: string | null
+  
+  // 狀態標記
+  isUrgent?: boolean
+  productionStarted?: boolean
+  isCompleted?: boolean
+  
+  // Legacy fields (deprecated but still accepted)
   isNewProductVip?: boolean
   isComplexityVip?: boolean
   expectedCompletionDate?: Date | null
@@ -206,7 +232,6 @@ export interface UpdateWorkOrderData {
   notifiedDate?: Date | null
   paymentReceivedDate?: Date | null
   shippedDate?: Date | null
-  workDescription?: string
   notes?: string
 }
 
