@@ -850,6 +850,19 @@ export default function WorkOrdersPage() {
         </Card>
       )}
 
+      {/* Results Summary */}
+      {!isLoading && (
+        <div className="mb-4 px-2 sm:px-0">
+          <Text.Secondary className="text-sm">
+            {pagination.total > 0 ? (
+              <>共找到 <span className="font-semibold text-primary-600 dark:text-primary-400">{pagination.total}</span> 個工作單</>
+            ) : (
+              '沒有找到符合條件的工作單'
+            )}
+          </Text.Secondary>
+        </div>
+      )}
+
       {/* Table - Mobile Optimized */}
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle px-2 sm:px-0">
