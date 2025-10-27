@@ -253,6 +253,10 @@ export default function WorkOrdersPage() {
       newFilters.isVip = true
     }
 
+    if (preset.filters.isCompleted !== undefined) {
+      newFilters.isCompleted = preset.filters.isCompleted
+    }
+
     setActiveSmartFilter(preset.id)
     setFilters(newFilters)
     fetchWorkOrders(newFilters)

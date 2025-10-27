@@ -280,6 +280,7 @@ export interface WorkOrderSearchFilters {
   packagingMaterialsReady?: boolean
   productionStarted?: boolean
   isUrgent?: boolean
+  isCompleted?: boolean
 }
 
 // ===== Bulk Operations =====

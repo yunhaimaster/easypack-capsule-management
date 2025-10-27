@@ -166,7 +166,7 @@ export const SMART_FILTER_PRESETS: SmartFilterPreset[] = [
     icon: Truck,
     color: 'success',
     filters: {
-      statuses: ['COMPLETED']  // Only completed orders
+      isCompleted: true  // Only orders marked as completed (已經完成)
     }
   }
 ]
