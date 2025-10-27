@@ -273,8 +273,9 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
 
             {/* Footer */}
             <div className="px-4 py-3 border-t border-neutral-200/50 dark:border-neutral-700/50 bg-neutral-50/50 dark:bg-neutral-900/30">
-              <div className="text-[10px] text-neutral-500 dark:text-white/65">
-                創建於 {formatDate(workOrder.createdAt)}
+              <div className="flex justify-between items-center text-[10px] text-neutral-500 dark:text-white/65">
+                <span>系統創建於 {formatDate(workOrder.createdAt)}</span>
+                <span>最後更新 {formatDate(workOrder.updatedAt)}</span>
               </div>
             </div>
           </div>
