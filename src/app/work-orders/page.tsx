@@ -43,7 +43,7 @@ export default function WorkOrdersPage() {
   const [filters, setFilters] = useState<WorkOrderSearchFilters>({
     page: 1,
     limit: 25,
-    sortBy: 'createdAt',
+    sortBy: 'markedDate',
     sortOrder: 'desc'
   })
   
@@ -196,7 +196,7 @@ export default function WorkOrdersPage() {
     const newFilters = {
       page: 1,
       limit: 25,
-      sortBy: 'createdAt' as SortField,
+      sortBy: 'markedDate' as SortField,
       sortOrder: 'desc' as 'asc' | 'desc'
     }
     setFilters(newFilters)
@@ -219,7 +219,7 @@ export default function WorkOrdersPage() {
     const newFilters: WorkOrderSearchFilters = {
       page: 1,
       limit: 25,
-      sortBy: 'createdAt',
+      sortBy: 'markedDate',
       sortOrder: 'desc'
     }
 
