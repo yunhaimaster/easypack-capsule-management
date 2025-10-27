@@ -30,11 +30,11 @@ const DialogOverlay = React.forwardRef<
     <DialogPrimitive.Overlay
       ref={ref}
       className={cn(
-        'fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm',
+        'fixed inset-0 z-[99998] bg-black/50 backdrop-blur-sm',
         'data-[state=open]:animate-fade-in',
         'data-[state=closed]:animate-fade-out',
-        // Temporary debugging styles
-        'bg-red-300',
+        // Temporary debugging styles - make it impossible to miss
+        'bg-red-300 !opacity-100 !visible',
         className
       )}
       {...props}
@@ -78,12 +78,13 @@ const DialogContent = React.forwardRef<
         ref={ref}
         aria-describedby={ariaDescribedBy}
         className={cn(
-          'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+          'fixed left-[50%] top-[50%] z-[99999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
           'liquid-glass-modal p-6',
           'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-          // Temporary debugging styles
-          'bg-red-500 border-4 border-yellow-400',
+          // Temporary debugging styles - make it impossible to miss
+          'bg-red-500 border-8 border-yellow-400 !opacity-100 !visible',
+          'min-h-[400px] min-w-[600px]',
           className
         )}
         {...props}

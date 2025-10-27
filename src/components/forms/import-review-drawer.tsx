@@ -30,6 +30,13 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
     diffKeys: diff ? Object.keys(diff) : null
   })
   
+  // Add debugging for Dialog state
+  console.log('[ImportReviewDrawer] Dialog props:', {
+    open: isOpen,
+    onOpenChange: typeof onOpenChange,
+    hasOnApply: typeof onApply
+  })
+  
   const [selected, setSelected] = useState<Set<string>>(() => new Set(diff.add.concat(diff.update).map(r => r.id)))
   const [editing, setEditing] = useState<string | null>(null)
   const [edits, setEdits] = useState<Map<string, { name: string; value: number }>>(new Map())
