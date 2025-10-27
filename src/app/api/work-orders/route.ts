@@ -227,7 +227,9 @@ export async function GET(request: NextRequest) {
           
           // Quantities
           productionQuantity: true,
+          productionQuantityStat: true,  // Unit for production (粒/瓶/盒/個)
           packagingQuantity: true,
+          packagingQuantityStat: true,   // Unit for packaging (粒/瓶/盒/個)
           
           // New delivery dates
           requestedDeliveryDate: true,
