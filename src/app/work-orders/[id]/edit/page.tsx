@@ -476,6 +476,7 @@ export default function EditWorkOrderPage() {
                       className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                     />
                     <Select
+                      key={`production-unit-${formData.productionQuantityStat}`}
                       value={formData.productionQuantityStat || ''}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, productionQuantityStat: value }))}
                     >
@@ -513,6 +514,7 @@ export default function EditWorkOrderPage() {
                       className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
                     />
                     <Select
+                      key={`packaging-unit-${formData.packagingQuantityStat}`}
                       value={formData.packagingQuantityStat || ''}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, packagingQuantityStat: value }))}
                     >
