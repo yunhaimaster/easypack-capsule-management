@@ -61,7 +61,7 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   '填表日期': 'markedDate', // Form date
   '客戶名稱': 'customerName',
   '負責人': 'personInCharge',
-  '工作類型': 'workType',
+  '工作類型': 'workDescription', // In some Excel files, this contains the description, not the type enum
   '狀態': 'status',
   '生產/包裝/標籤': 'workType', // Excel format
   '生產 / 包裝 / 倉務': 'workType', // Excel format (with spaces and 倉務)
@@ -138,6 +138,8 @@ const WORK_TYPE_MAPPINGS: Record<string, WorkType> = {
   '生產': WorkType.PRODUCTION,
   '生產+包裝': WorkType.PRODUCTION_PACKAGING,
   '生產＋包裝': WorkType.PRODUCTION_PACKAGING,
+  '生產 + 包裝': WorkType.PRODUCTION_PACKAGING, // With spaces
+  '生產 ＋ 包裝': WorkType.PRODUCTION_PACKAGING, // With spaces and full-width plus
   '倉務': WorkType.WAREHOUSING
 }
 
