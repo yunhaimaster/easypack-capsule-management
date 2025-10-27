@@ -543,6 +543,9 @@ export async function POST(request: NextRequest) {
       if (result.errors.length > data.rows.length * 0.5) {
         throw new Error('匯入失敗率超過50%，交易已回滾')
       }
+    }, {
+      maxWait: 60000, // 60 seconds max wait
+      timeout: 120000, // 120 seconds timeout (2 minutes for large imports)
     })
 
     // Get audit context
