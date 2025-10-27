@@ -474,7 +474,7 @@ export function mapRowToWorkOrder(row: Record<string, unknown>): Record<string, 
     isCompleted: String(mappedRow.isCompleted || '').trim() === '是',
     
     // Description
-    workDescription: String(mappedRow.workDescription || '').trim() || '（匯入時無描述）',
+    workDescription: String(mappedRow.workDescription || '').trim() || '（匯入時無描述，請手動補充）',
     
     // Legacy fields (deprecated but kept for compatibility)
     yearCategory: String(mappedRow.yearCategory || '').trim() || null,

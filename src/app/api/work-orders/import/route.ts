@@ -331,6 +331,15 @@ export async function POST(request: NextRequest) {
 
           // Create work order
           const { personInCharge, ...workOrderDataForDb } = workOrderData as any
+          
+          // Debug: Log the data being sent to Prisma
+          console.log(`[Import] Creating work order for row ${rowNum}:`)
+          console.log('  - customerName:', workOrderDataForDb.customerName)
+          console.log('  - workType:', workOrderDataForDb.workType)
+          console.log('  - workDescription length:', workOrderDataForDb.workDescription?.length)
+          console.log('  - personInChargeId:', personInChargeId)
+          console.log('  - Full data keys:', Object.keys(workOrderDataForDb))
+          
           await tx.unifiedWorkOrder.create({
             data: {
               ...workOrderDataForDb,
@@ -342,6 +351,19 @@ export async function POST(request: NextRequest) {
           result.imported++
         } catch (error) {
           console.error(`[Import] Error importing row ${rowNum}:`, error)
+          
+          // Log detailed Prisma error information
+          if (error instanceof Error) {
+            console.error(`[Import] Error message:`, error.message)
+            console.error(`[Import] Error stack:`, error.stack)
+            
+            // Check if it's a Prisma validation error
+            if (error.message.includes('Invalid') || error.message.includes('Unknown argument')) {
+              console.error(`[Import] Prisma validation error detected`)
+              console.error(`[Import] Row data that caused error:`, row)
+            }
+          }
+          
           result.errors.push({
             row: rowNum,
             error: error instanceof Error ? error.message : '未知錯誤'
