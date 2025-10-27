@@ -68,11 +68,17 @@ export function useImportReview() {
     console.log('[ImportReview] handleApply complete, drawer closed')
   }, [context])
 
-  const drawer = useMemo(() => (
-    diff ? (
+  const drawer = useMemo(() => {
+    console.log('[ImportReview] Creating drawer component', { 
+      hasDiff: !!diff, 
+      isOpen,
+      diffType: diff ? typeof diff : 'null'
+    })
+    
+    return diff ? (
       <ImportReviewDrawer isOpen={isOpen} onOpenChange={setIsOpen} diff={diff} onApply={handleApply} />
     ) : null
-  ), [diff, isOpen, handleApply])
+  }, [diff, isOpen, handleApply])
 
   return { openReview, drawer }
 }

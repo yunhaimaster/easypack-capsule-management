@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/accessible-dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/accessible-dialog'
 import type { DiffResult, DiffRow } from '@/lib/import/merge'
 import { AlertTriangle, Check, Plus, Minus, Edit2 } from 'lucide-react'
 
@@ -24,6 +24,12 @@ interface ImportReviewDrawerProps {
 }
 
 export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: ImportReviewDrawerProps) {
+  console.log('[ImportReviewDrawer] Component rendered', { 
+    isOpen, 
+    hasDiff: !!diff,
+    diffKeys: diff ? Object.keys(diff) : null
+  })
+  
   const [selected, setSelected] = useState<Set<string>>(() => new Set(diff.add.concat(diff.update).map(r => r.id)))
   const [editing, setEditing] = useState<string | null>(null)
   const [edits, setEdits] = useState<Map<string, { name: string; value: number }>>(new Map())
@@ -174,9 +180,15 @@ export function ImportReviewDrawer({ isOpen, onOpenChange, diff, onApply }: Impo
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        ariaDescribedBy="import-review-description"
+      >
         <DialogHeader>
           <DialogTitle>導入審核與合併</DialogTitle>
+          <DialogDescription id="import-review-description">
+            請檢查導入的原料並選擇要套用到表單的項目
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
