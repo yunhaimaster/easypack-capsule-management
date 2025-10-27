@@ -329,23 +329,83 @@ export async function POST(request: NextRequest) {
             continue
           }
 
-          // Create work order
+          // Create work order - Clean data to match Prisma schema exactly
           const { personInCharge, ...workOrderDataForDb } = workOrderData as any
           
-          // Debug: Log the data being sent to Prisma
+          // Create clean data object with only valid Prisma fields and correct types
+          const cleanData = {
+            // Required fields
+            customerName: String(workOrderDataForDb.customerName || '').trim().substring(0, 200),
+            workType: workOrderDataForDb.workType || 'PRODUCTION',
+            workDescription: String(workOrderDataForDb.workDescription || '').trim() || '（匯入時無描述，請手動補充）',
+            
+            // Optional fields with proper types
+            jobNumber: workOrderDataForDb.jobNumber ? String(workOrderDataForDb.jobNumber).trim().substring(0, 50) : null,
+            markedDate: workOrderDataForDb.markedDate ? new Date(workOrderDataForDb.markedDate) : new Date(),
+            status: workOrderDataForDb.status || 'PENDING',
+            
+            // VIP flags
+            isCustomerServiceVip: Boolean(workOrderDataForDb.isCustomerServiceVip),
+            isBossVip: Boolean(workOrderDataForDb.isBossVip),
+            isNewProductVip: Boolean(workOrderDataForDb.isNewProductVip),
+            isComplexityVip: Boolean(workOrderDataForDb.isComplexityVip),
+            
+            // Material dates
+            expectedProductionMaterialsDate: workOrderDataForDb.expectedProductionMaterialsDate ? 
+              new Date(workOrderDataForDb.expectedProductionMaterialsDate) : null,
+            expectedPackagingMaterialsDate: workOrderDataForDb.expectedPackagingMaterialsDate ? 
+              new Date(workOrderDataForDb.expectedPackagingMaterialsDate) : null,
+            productionMaterialsReady: Boolean(workOrderDataForDb.productionMaterialsReady),
+            packagingMaterialsReady: Boolean(workOrderDataForDb.packagingMaterialsReady),
+            
+            // Quantities - ensure they're numbers or null
+            productionQuantity: workOrderDataForDb.productionQuantity ? Number(workOrderDataForDb.productionQuantity) : null,
+            packagingQuantity: workOrderDataForDb.packagingQuantity ? Number(workOrderDataForDb.packagingQuantity) : null,
+            productionQuantityStat: workOrderDataForDb.productionQuantityStat ? String(workOrderDataForDb.productionQuantityStat).substring(0, 20) : null,
+            packagingQuantityStat: workOrderDataForDb.packagingQuantityStat ? String(workOrderDataForDb.packagingQuantityStat).substring(0, 20) : null,
+            
+            // Delivery dates
+            requestedDeliveryDate: workOrderDataForDb.requestedDeliveryDate ? 
+              new Date(workOrderDataForDb.requestedDeliveryDate) : null,
+            internalExpectedDate: workOrderDataForDb.internalExpectedDate ? 
+              new Date(workOrderDataForDb.internalExpectedDate) : null,
+            
+            // Status flags
+            isUrgent: Boolean(workOrderDataForDb.isUrgent),
+            productionStarted: Boolean(workOrderDataForDb.productionStarted),
+            isCompleted: Boolean(workOrderDataForDb.isCompleted),
+            
+            // Legacy fields (deprecated but still in schema)
+            yearCategory: workOrderDataForDb.yearCategory ? String(workOrderDataForDb.yearCategory).substring(0, 50) : null,
+            expectedCompletionDate: workOrderDataForDb.expectedCompletionDate ? 
+              new Date(workOrderDataForDb.expectedCompletionDate) : null,
+            dataCompleteDate: workOrderDataForDb.dataCompleteDate ? 
+              new Date(workOrderDataForDb.dataCompleteDate) : null,
+            notifiedDate: workOrderDataForDb.notifiedDate ? 
+              new Date(workOrderDataForDb.notifiedDate) : null,
+            paymentReceivedDate: workOrderDataForDb.paymentReceivedDate ? 
+              new Date(workOrderDataForDb.paymentReceivedDate) : null,
+            shippedDate: workOrderDataForDb.shippedDate ? 
+              new Date(workOrderDataForDb.shippedDate) : null,
+            internalDeliveryTime: workOrderDataForDb.internalDeliveryTime ? String(workOrderDataForDb.internalDeliveryTime).substring(0, 100) : null,
+            customerRequestedTime: workOrderDataForDb.customerRequestedTime ? String(workOrderDataForDb.customerRequestedTime).substring(0, 100) : null,
+            notes: workOrderDataForDb.notes ? String(workOrderDataForDb.notes).substring(0, 1000) : null,
+            
+            // Additional fields
+            personInChargeId,
+            createdBy: session.userId
+          }
+          
+          // Debug: Log the clean data being sent to Prisma
           console.log(`[Import] Creating work order for row ${rowNum}:`)
-          console.log('  - customerName:', workOrderDataForDb.customerName)
-          console.log('  - workType:', workOrderDataForDb.workType)
-          console.log('  - workDescription length:', workOrderDataForDb.workDescription?.length)
-          console.log('  - personInChargeId:', personInChargeId)
-          console.log('  - Full data keys:', Object.keys(workOrderDataForDb))
+          console.log('  - customerName:', cleanData.customerName, '(length:', cleanData.customerName.length, ')')
+          console.log('  - workType:', cleanData.workType)
+          console.log('  - workDescription length:', cleanData.workDescription.length)
+          console.log('  - personInChargeId:', cleanData.personInChargeId)
+          console.log('  - Clean data keys:', Object.keys(cleanData))
           
           await tx.unifiedWorkOrder.create({
-            data: {
-              ...workOrderDataForDb,
-              personInChargeId,
-              createdBy: session.userId
-            } as never // Type assertion needed due to dynamic data
+            data: cleanData
           })
 
           result.imported++
