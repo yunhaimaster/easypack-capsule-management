@@ -398,6 +398,11 @@ export function WorkOrderTable({
                               ⚡ 加急
                             </span>
                           )}
+                          {workOrder.isCompleted && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-400">
+                              ✓ 已經完成
+                            </span>
+                          )}
                         </div>
                       </div>
                     </td>

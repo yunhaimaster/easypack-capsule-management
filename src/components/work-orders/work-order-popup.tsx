@@ -127,6 +127,11 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
                         加急
                       </Badge>
                     )}
+                    {workOrder.isCompleted && (
+                      <Badge variant="outline" className="text-xs h-5 px-1.5 border-success-300 text-success-700 dark:text-success-400">
+                        已經完成
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>
