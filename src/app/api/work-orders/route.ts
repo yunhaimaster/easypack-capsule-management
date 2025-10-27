@@ -67,7 +67,14 @@ export async function GET(request: NextRequest) {
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '25'),
       sortBy: (searchParams.get('sortBy') || 'createdAt') as any,
-      sortOrder: (searchParams.get('sortOrder') || 'desc') as any
+      sortOrder: (searchParams.get('sortOrder') || 'desc') as any,
+      // Smart filter fields
+      productionMaterialsReady: searchParams.get('productionMaterialsReady') === 'true' ? true : searchParams.get('productionMaterialsReady') === 'false' ? false : undefined,
+      packagingMaterialsReady: searchParams.get('packagingMaterialsReady') === 'true' ? true : searchParams.get('packagingMaterialsReady') === 'false' ? false : undefined,
+      productionStarted: searchParams.get('productionStarted') === 'true' ? true : searchParams.get('productionStarted') === 'false' ? false : undefined,
+      isUrgent: searchParams.get('isUrgent') === 'true' ? true : searchParams.get('isUrgent') === 'false' ? false : undefined,
+      isVip: searchParams.get('isVip') === 'true' ? true : searchParams.get('isVip') === 'false' ? false : undefined,
+      isCompleted: searchParams.get('isCompleted') === 'true' ? true : searchParams.get('isCompleted') === 'false' ? false : undefined
     }
 
     const validatedFilters = searchFiltersSchema.parse(filters)
@@ -121,6 +128,34 @@ export async function GET(request: NextRequest) {
       if (validatedFilters.dateTo) {
         where.expectedCompletionDate.lte = new Date(validatedFilters.dateTo)
       }
+    }
+
+    // Smart filter fields
+    if (validatedFilters.productionMaterialsReady !== undefined) {
+      where.productionMaterialsReady = validatedFilters.productionMaterialsReady
+    }
+
+    if (validatedFilters.packagingMaterialsReady !== undefined) {
+      where.packagingMaterialsReady = validatedFilters.packagingMaterialsReady
+    }
+
+    if (validatedFilters.productionStarted !== undefined) {
+      where.productionStarted = validatedFilters.productionStarted
+    }
+
+    if (validatedFilters.isUrgent !== undefined) {
+      where.isUrgent = validatedFilters.isUrgent
+    }
+
+    if (validatedFilters.isVip !== undefined) {
+      where.OR = [
+        { isCustomerServiceVip: validatedFilters.isVip },
+        { isBossVip: validatedFilters.isVip }
+      ]
+    }
+
+    if (validatedFilters.isCompleted !== undefined) {
+      where.isCompleted = validatedFilters.isCompleted
     }
 
     // Combine search conditions

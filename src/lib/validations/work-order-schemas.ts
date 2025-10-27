@@ -152,7 +152,14 @@ export const searchFiltersSchema = z.object({
   page: z.number().int().positive().default(1),
   limit: z.number().int().positive().max(100).default(25),
   sortBy: z.enum(['createdAt', 'markedDate', 'customerName', 'jobNumber', 'status', 'workType', 'personInCharge']).default('createdAt'),
-  sortOrder: z.enum(['asc', 'desc']).default('desc')
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  // Smart filter fields
+  productionMaterialsReady: z.boolean().optional(),
+  packagingMaterialsReady: z.boolean().optional(),
+  productionStarted: z.boolean().optional(),
+  isUrgent: z.boolean().optional(),
+  isVip: z.boolean().optional(),
+  isCompleted: z.boolean().optional()
 })
 
 // ===== Export Options Schema =====
