@@ -909,12 +909,15 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
               name="completionDate"
               control={control}
               render={({ field }) => (
-                <Input
-                  id="completionDate"
-                  type="date"
-                  value={field.value || ''}
-                  onChange={(e) => field.onChange(e.target.value || '')}
-                />
+                <div className="w-full">
+                  <Input
+                    id="completionDate"
+                    type="date"
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(e.target.value || '')}
+                    className="w-full"
+                  />
+                </div>
               )}
             />
           </div>
@@ -964,17 +967,25 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                 <SmartRecipeImport 
                   onImport={(imported) => {
                     try {
+                      console.log('[SmartImport] Received imported ingredients:', imported)
+                      
                       const importedList = (imported || []).map((ing: any) => ({
                         materialName: String(ing.materialName || '').trim(),
                         unitContentMg: Number(ing.unitContentMg) || 0
                       })).filter((i: any) => i.materialName)
+
+                      console.log('[SmartImport] Normalized imported list:', importedList)
 
                       const currentList = (watch('ingredients') || []).map((ing: any) => ({
                         materialName: String(ing.materialName || '').trim(),
                         unitContentMg: Number(ing.unitContentMg) || 0
                       }))
 
+                      console.log('[SmartImport] Current ingredients:', currentList)
+
                       openReview(importedList, currentList, (merged) => {
+                        console.log('[SmartImport] Review completed, merged result:', merged)
+                        
                         import('@/lib/import/merge').then(({ normalizeIngredientName }) => {
                           const flagsByName = new Map<string, { isCustomerProvided: boolean; isCustomerSupplied: boolean }>()
                           ;(watch('ingredients') || []).forEach((ing: any) => {
@@ -988,13 +999,17 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
                             const flags = flagsByName.get(key) || { isCustomerProvided: true, isCustomerSupplied: false }
                             return { ...m, ...flags }
                           })
+                          
+                          console.log('[SmartImport] Setting form ingredients:', mergedWithFlags)
                           setValue('ingredients', mergedWithFlags, { shouldValidate: true, shouldDirty: true })
                           showToast({ title: '已套用導入', description: `已更新 ${merged.length} 項原料。` })
-                        }).catch(() => {
+                        }).catch((error) => {
+                          console.error('[SmartImport] Merge normalization failed:', error)
                           setValue('ingredients', merged as any, { shouldValidate: true, shouldDirty: true })
                         })
                       })
                     } catch (e) {
+                      console.error('[SmartImport] Error in onImport handler:', e)
                       handleSmartImport(imported)
                     }
                   }}
