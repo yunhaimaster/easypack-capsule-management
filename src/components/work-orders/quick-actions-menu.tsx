@@ -46,7 +46,7 @@ interface QuickActionsMenuProps {
   onStatusChange?: (id: string, newStatus: WorkOrderStatus) => Promise<void>
   onToggleMaterialReady?: (id: string, field: 'production' | 'packaging', value: boolean) => Promise<void>
   onToggleProductionStarted?: (id: string, value: boolean) => Promise<void>
-  onRefresh?: () => void
+  onRefresh?: () => Promise<void>  // Fixed: should be async
 }
 
 export function QuickActionsMenu({
@@ -75,8 +75,8 @@ export function QuickActionsMenu({
       const message = result || successMessage
       showToast({ title: message })
       // Only refresh if not skipped (status changes handle their own refresh)
-      if (!skipRefresh) {
-        onRefresh?.()
+      if (!skipRefresh && onRefresh) {
+        await onRefresh()  // Fixed: await the refresh to complete before finishing
       }
     } catch (error) {
       showToast({ 
@@ -97,7 +97,8 @@ export function QuickActionsMenu({
     const response = await fetch(`/api/work-orders/${workOrder.id}/toggle`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ field, value: !currentValue })
+      body: JSON.stringify({ field, value: !currentValue }),
+      cache: 'no-store'  // Prevent caching
     })
 
     if (!response.ok) {

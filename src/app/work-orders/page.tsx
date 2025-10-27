@@ -115,7 +115,8 @@ export default function WorkOrdersPage() {
       })
 
       const response = await fetchWithTimeout(`/api/work-orders?${params.toString()}`, {
-        signal: controller.signal
+        signal: controller.signal,
+        cache: 'no-store'  // Prevent caching to always get fresh data
       })
 
       if (!response.ok) {
