@@ -617,37 +617,6 @@ export default function CreateWorkOrderPage() {
       </Card>
 
       {/* Dev Info - Hidden on mobile for cleaner experience */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card className="mt-6 border-info-200 bg-info-50 dark:bg-info-900/20 dark:border-info-800 transition-apple hidden sm:block">
-          <CardHeader className="px-4 sm:px-6">
-            <CardTitle className="text-info-700 dark:text-info-400 text-sm sm:text-base">開發信息</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <div className="space-y-2 text-xs sm:text-sm">
-              <div>
-                <Text.Primary as="span" className="font-bold">當前狀態:</Text.Primary>
-                <Text.Secondary as="span" className="ml-2">完整表單（生產就緒版）</Text.Secondary>
-              </div>
-              <div>
-                <Text.Primary as="span" className="font-bold">驗證方式:</Text.Primary>
-                <Text.Secondary as="span" className="ml-2">React Hook Form + Zod</Text.Secondary>
-              </div>
-              <div>
-                <Text.Primary as="span" className="font-bold">設計系統:</Text.Primary>
-                <Text.Success as="span" className="ml-2">✓ 95% 統一設計規範（checkbox labels 除外）</Text.Success>
-              </div>
-              <div>
-                <Text.Primary as="span" className="font-bold">響應式:</Text.Primary>
-                <Text.Success as="span" className="ml-2">✓ Mobile (320px+) 和 Desktop (1920px+) 同等優秀</Text.Success>
-              </div>
-              <div>
-                <Text.Primary as="span" className="font-bold">API端點:</Text.Primary>
-                <Text.Secondary as="span" className="ml-2">POST /api/work-orders</Text.Secondary>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
         </div>
       </div>
       <LiquidGlassFooter />
