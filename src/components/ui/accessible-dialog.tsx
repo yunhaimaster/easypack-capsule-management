@@ -68,7 +68,7 @@ const DialogContent = React.forwardRef<
         aria-describedby={ariaDescribedBy}
         className={cn(
           'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-          'bg-surface-primary dark:bg-elevation-1 p-6 shadow-lg rounded-lg border border-neutral-200 dark:border-white/12',
+          'bg-white dark:bg-surface-primary p-6 shadow-lg rounded-lg border border-neutral-200 dark:border-white/12',
           'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
           className
@@ -140,7 +140,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
+      'text-lg font-semibold leading-none tracking-tight text-neutral-900 dark:text-white',
       visuallyHidden && 'sr-only',
       className
     )}
@@ -155,7 +155,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn('text-sm text-neutral-700 dark:text-neutral-300', className)}
     {...props}
   />
 ))
