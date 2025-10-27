@@ -71,6 +71,28 @@ const DialogContent = React.forwardRef<
     props: Object.keys(props)
   })
   
+  // Add DOM debugging
+  React.useEffect(() => {
+    console.log('[DialogContent] useEffect - checking DOM element')
+    const element = document.querySelector('[data-radix-dialog-content]')
+    if (element) {
+      console.log('[DialogContent] Found DOM element:', element)
+      console.log('[DialogContent] Computed styles:', {
+        display: window.getComputedStyle(element).display,
+        visibility: window.getComputedStyle(element).visibility,
+        opacity: window.getComputedStyle(element).opacity,
+        zIndex: window.getComputedStyle(element).zIndex,
+        position: window.getComputedStyle(element).position,
+        top: window.getComputedStyle(element).top,
+        left: window.getComputedStyle(element).left,
+        transform: window.getComputedStyle(element).transform
+      })
+      console.log('[DialogContent] Element rect:', element.getBoundingClientRect())
+    } else {
+      console.log('[DialogContent] No DOM element found!')
+    }
+  }, [])
+  
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -79,7 +101,7 @@ const DialogContent = React.forwardRef<
         aria-describedby={ariaDescribedBy}
         className={cn(
           'fixed left-[50%] top-[50%] z-[99999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-          'liquid-glass-modal p-6',
+          'p-6',
           'duration-200 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
           // Temporary debugging styles - make it impossible to miss
