@@ -14,6 +14,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { WorkOrder, User } from '@/types/work-order'
+import { WorkOrderStatus } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Text } from '@/components/ui/text'
@@ -177,7 +178,7 @@ export function WorkOrderTable({
     // Handled by QuickActionsMenu
   }
 
-  const handleStatusChange = async (workOrderId: string, newStatus: string) => {
+  const handleStatusChange = async (workOrderId: string, newStatus: WorkOrderStatus) => {
     try {
       const response = await fetch(`/api/work-orders/${workOrderId}`, {
         method: 'PATCH',
@@ -186,13 +187,18 @@ export function WorkOrderTable({
       })
 
       if (!response.ok) {
-        throw new Error('Status update failed')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Status update failed')
       }
 
       showToast({ title: '狀態已更新' })
       await onRefresh?.()
     } catch (error) {
-      showToast({ title: '更新失敗', variant: 'destructive' })
+      showToast({ 
+        title: '更新失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive' 
+      })
       throw error
     }
   }

@@ -18,7 +18,7 @@ import { logAudit } from '@/lib/audit'
 import { AuditAction } from '@prisma/client'
 
 const bulkDeleteSchema = z.object({
-  ids: z.array(z.string().uuid('Invalid work order ID')).min(1, 'Must provide at least one ID')
+  ids: z.array(z.string().cuid('Invalid work order ID')).min(1, 'Must provide at least one ID')
 })
 
 export async function DELETE(request: NextRequest) {
