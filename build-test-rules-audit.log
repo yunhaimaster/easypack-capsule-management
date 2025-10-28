@@ -1,0 +1,165 @@
+
+> easypack-capsule-management-v1@1.0.0 build
+> prisma migrate deploy && prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "db.prisma.io:5432"
+
+11 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.17.1 -> 6.18.0                      │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+✔ Generated Prisma Client (v6.17.1) to ./node_modules/@prisma/client in 86ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local, .env.production, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+     ✓ webpackMemoryOptimizations
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.7s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/35) ...
+   Generating static pages (8/35) 
+   Generating static pages (17/35) 
+   Generating static pages (26/35) 
+ ✓ Generating static pages (35/35)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    5.23 kB         282 kB
+├ ○ /_not-found                            328 B         102 kB
+├ ○ /admin                               8.73 kB         259 kB
+├ ○ /ai-recipe-generator                 10.1 kB         337 kB
+├ ƒ /api/admin/audit-logs                  328 B         102 kB
+├ ƒ /api/admin/devices                     328 B         102 kB
+├ ƒ /api/admin/devices/[id]                328 B         102 kB
+├ ƒ /api/admin/users                       328 B         102 kB
+├ ƒ /api/admin/users/[id]                  328 B         102 kB
+├ ƒ /api/ai/assess-risk                    328 B         102 kB
+├ ƒ /api/ai/chat                           328 B         102 kB
+├ ƒ /api/ai/extract-product-info           328 B         102 kB
+├ ƒ /api/ai/granulation-analyze            328 B         102 kB
+├ ƒ /api/ai/granulation-consensus          328 B         102 kB
+├ ƒ /api/ai/ingredient-analysis            328 B         102 kB
+├ ƒ /api/ai/label/generate                 328 B         102 kB
+├ ƒ /api/ai/marketing-analyze              328 B         102 kB
+├ ƒ /api/ai/packaging-image                328 B         102 kB
+├ ƒ /api/ai/parse-recipe                   328 B         102 kB
+├ ƒ /api/ai/parse-templates                328 B         102 kB
+├ ƒ /api/ai/price-analysis                 328 B         102 kB
+├ ƒ /api/ai/recipe-chat                    328 B         102 kB
+├ ƒ /api/ai/recipe-generate                328 B         102 kB
+├ ƒ /api/ai/recipes                        328 B         102 kB
+├ ƒ /api/ai/recipes/[id]                   328 B         102 kB
+├ ƒ /api/ai/translate                      328 B         102 kB
+├ ƒ /api/ai/web-search-price               328 B         102 kB
+├ ƒ /api/auth/admin-bootstrap              328 B         102 kB
+├ ƒ /api/auth/admin-direct-login           328 B         102 kB
+├ ƒ /api/auth/devices/revoke               328 B         102 kB
+├ ƒ /api/auth/login                        328 B         102 kB
+├ ƒ /api/auth/logout                       328 B         102 kB
+├ ƒ /api/auth/me                           328 B         102 kB
+├ ƒ /api/auth/otp/start                    328 B         102 kB
+├ ƒ /api/auth/otp/verify                   328 B         102 kB
+├ ƒ /api/auth/roles/update                 328 B         102 kB
+├ ƒ /api/auth/silent-login                 328 B         102 kB
+├ ƒ /api/check-env                         328 B         102 kB
+├ ƒ /api/create-v2-tables                  328 B         102 kB
+├ ƒ /api/database/recipes                  328 B         102 kB
+├ ƒ /api/database/recipes/[id]             328 B         102 kB
+├ ƒ /api/fix-migration                     328 B         102 kB
+├ ƒ /api/ingredients/from-orders           328 B         102 kB
+├ ƒ /api/ingredients/stats                 328 B         102 kB
+├ ƒ /api/migrate                           328 B         102 kB
+├ ƒ /api/migrate-prisma                    328 B         102 kB
+├ ƒ /api/migrate-simple                    328 B         102 kB
+├ ƒ /api/migrate-status                    328 B         102 kB
+├ ƒ /api/migrate-v2                        328 B         102 kB
+├ ƒ /api/orders                            328 B         102 kB
+├ ƒ /api/orders/[id]                       328 B         102 kB
+├ ƒ /api/orders/[id]/lock                  328 B         102 kB
+├ ƒ /api/orders/[id]/verify-password       328 B         102 kB
+├ ƒ /api/orders/export                     328 B         102 kB
+├ ƒ /api/orders/incomplete                 328 B         102 kB
+├ ƒ /api/orders/options                    328 B         102 kB
+├ ƒ /api/recipes                           328 B         102 kB
+├ ƒ /api/recipes/[id]                      328 B         102 kB
+├ ƒ /api/recipes/[id]/analyze-effects      328 B         102 kB
+├ ƒ /api/recipes/[id]/sync-notes           328 B         102 kB
+├ ƒ /api/recipes/[id]/use                  328 B         102 kB
+├ ƒ /api/recipes/analyze-interactions      328 B         102 kB
+├ ƒ /api/recipes/batch-analyze-effects     328 B         102 kB
+├ ƒ /api/recipes/batch-import              328 B         102 kB
+├ ƒ /api/recipes/batch-import-templates    328 B         102 kB
+├ ƒ /api/recipes/check-duplicates          328 B         102 kB
+├ ƒ /api/recipes/debug                     328 B         102 kB
+├ ƒ /api/recipes/export-pdf                328 B         102 kB
+├ ƒ /api/recipes/from-order/[orderId]      328 B         102 kB
+├ ƒ /api/recipes/suggest-alternatives      328 B         102 kB
+├ ƒ /api/revalidate                        328 B         102 kB
+├ ƒ /api/test-db                           328 B         102 kB
+├ ƒ /api/users/list                        328 B         102 kB
+├ ƒ /api/work-orders                       328 B         102 kB
+├ ƒ /api/work-orders/[id]                  328 B         102 kB
+├ ƒ /api/work-orders/[id]/toggle           328 B         102 kB
+├ ƒ /api/work-orders/bulk                  328 B         102 kB
+├ ƒ /api/work-orders/bulk-delete           328 B         102 kB
+├ ƒ /api/work-orders/bulk-status           328 B         102 kB
+├ ƒ /api/work-orders/export                328 B         102 kB
+├ ƒ /api/work-orders/import                328 B         102 kB
+├ ƒ /api/worklogs                          328 B         102 kB
+├ ƒ /api/worklogs/[id]                     328 B         102 kB
+├ ○ /granulation-analyzer                10.5 kB         335 kB
+├ ○ /history                             5.94 kB         262 kB
+├ ○ /login                               2.17 kB         246 kB
+├ ○ /marketing-assistant                 12.8 kB         338 kB
+├ ○ /orders                              9.79 kB         361 kB
+├ ƒ /orders/[id]                         13.2 kB         365 kB
+├ ƒ /orders/[id]/edit                    4.79 kB         367 kB
+├ ○ /orders/new                          2.21 kB         364 kB
+├ ○ /privacy                             1.15 kB         257 kB
+├ ○ /recipe-library                      25.3 kB         339 kB
+├ ƒ /recipe-library/[id]                 13.8 kB         341 kB
+├ ○ /setup                                2.6 kB         253 kB
+├ ○ /terms                               1.15 kB         257 kB
+├ ○ /unified-demo                        4.96 kB         244 kB
+├ ○ /work-orders                           30 kB         398 kB
+├ ƒ /work-orders/[id]                    3.95 kB         271 kB
+├ ƒ /work-orders/[id]/edit               7.83 kB         303 kB
+├ ○ /work-orders/new                     24.9 kB         343 kB
+└ ○ /worklogs                            9.68 kB         342 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1255-26f05d8bf86e016d.js      45.6 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          2.07 kB
+
+
+ƒ Middleware                             34.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> easypack-capsule-management-v1@1.0.0 postbuild
+> bash scripts/postbuild.sh || true
+
+✅ Post-build script completed (migrations already run in main build)

@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { IconContainer } from '@/components/ui/icon-container'
 import { Image as ImageIcon, Loader2, Download, AlertCircle, Sparkles } from 'lucide-react'
 import { useToast } from '@/components/ui/toast-provider'
 
@@ -96,9 +97,7 @@ export function ImageGenerator({ analysisContent }: ImageGeneratorProps) {
     <Card className="liquid-glass-card liquid-glass-card-elevated" interactive={false}>
       <div className="liquid-glass-content">
         <div className="flex items-center gap-3 mb-6">
-          <div className="icon-container icon-container-emerald">
-            <ImageIcon className="h-5 w-5 text-white" />
-          </div>
+          <IconContainer icon={ImageIcon} variant="success" size="md" />
           <div>
             <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">AI 包裝圖像生成</h2>
             <p className="text-sm text-neutral-500 dark:text-white/65">使用 Gemini 2.5 Flash Image 模型生成產品包裝視覺</p>

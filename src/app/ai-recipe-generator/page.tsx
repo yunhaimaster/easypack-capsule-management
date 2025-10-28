@@ -444,9 +444,7 @@ export default function AIRecipeGeneratorPage() {
           <Card className="liquid-glass-card liquid-glass-card-elevated mb-8">
             <div className="liquid-glass-content">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="icon-container icon-container-violet">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
+                <IconContainer icon={Sparkles} variant="info" size="md" />
                 <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">代工配方需求</h2>
               </div>
 
@@ -541,10 +539,8 @@ export default function AIRecipeGeneratorPage() {
             <Card className="liquid-glass-card liquid-glass-card-warning mb-8">
               <div className="liquid-glass-content">
                 <div className="flex items-center space-x-3">
-                  <div className="icon-container icon-container-red">
-                    <span className="text-white font-bold">!</span>
-                  </div>
-                  <p className="text-danger-700">{error}</p>
+                  <IconContainer icon={AlertCircle} variant="danger" size="md" />
+                  <p className="text-danger-700 dark:text-danger-400">{error}</p>
                 </div>
               </div>
             </Card>
@@ -555,8 +551,8 @@ export default function AIRecipeGeneratorPage() {
             <Card className="liquid-glass-card liquid-glass-card-elevated">
               <div className="liquid-glass-content">
                 <div className="text-center py-12">
-                  <div className="icon-container icon-container-blue mx-auto mb-6">
-                    <Loader2 className="h-8 w-8 text-white animate-spin" />
+                  <div className="mx-auto mb-6 flex justify-center">
+                    <IconContainer icon={Loader2} variant="primary" size="lg" className="animate-spin" />
                   </div>
                   <h3 className="text-xl font-semibold text-neutral-800 dark:text-white/95 mb-4">
                     🤖 AI 正在生成配方...

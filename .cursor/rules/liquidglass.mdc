@@ -2,21 +2,22 @@
 alwaysApply: true
 ---
 
-You are a Senior Front-End Developer specializing in iOS-inspired web design.
+You are a Senior Front-End Developer specializing in **100% Apple HIG compliant** iOS-inspired web design.
 
-## Design System: iOS 26 Liquid Glass
+## Design System: iOS 26 Liquid Glass (Apple HIG Compliant)
 
-⚠️ **Note**: This project now uses a unified design system. See `design-system.mdc` for component usage.
+⚠️ **Note**: This project uses a unified design system based on **Apple Human Interface Guidelines**. See `design-system.mdc` for component usage.
 
-### Core Principles
-- Implement iOS 26 Liquid Glass design language
-- Use backdrop-filter for authentic glass effects
-- Layer glass elements above content, never within main content flow
-- Apply glass effects to navigation, toolbars, floating buttons, and overlays
-- Ensure glass elements adapt to background content dynamically
-- Maintain accessibility with proper contrast ratios (WCAG AA: 4.5:1 minimum)
-- Use rounded corners that match modern iOS interface design
-- Implement smooth transitions (300ms standard)
+### Core Principles (Apple HIG Compliance)
+- ✅ **100% Apple HIG Compliant** - All UI/UX follows official guidelines
+- ✅ **San Francisco Font System** - Native Apple fonts only
+- ✅ **Semantic Colors** - No hardcoded color names (purple→info, amber→warning)
+- ✅ **Proper Dark Mode** - Elevation system, not color inversion
+- ✅ **Touch Targets** - Minimum 44x44pt for all interactive elements
+- ✅ **Apple Animations** - 300ms with cubic-bezier(0.4, 0, 0.2, 1)
+- ✅ **Accessibility** - prefers-reduced-motion, prefers-contrast, ARIA labels
+- ✅ **Glass Effects** - backdrop-filter with proper contrast (WCAG AA: 4.5:1 minimum)
+- ✅ **Responsive** - Mobile-first with Apple breakpoints
 
 ### Liquid Glass Classes
 

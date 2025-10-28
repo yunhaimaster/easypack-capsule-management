@@ -768,9 +768,7 @@ export default function GranulationAnalyzerPage() {
               <div className="liquid-glass-content">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="icon-container icon-container-emerald">
-                      <Brain className="h-5 w-5 text-white" />
-                    </div>
+                    <IconContainer icon={Brain} variant="success" size="md" />
                     <div>
                       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">多模型分析結果</h2>
                       <p className="text-sm text-neutral-500 dark:text-white/65">對照三個模型的分析輸出，擷取最合適的建議。</p>
@@ -795,7 +793,7 @@ export default function GranulationAnalyzerPage() {
                           controllerRef.current = null
                           setIsAnalyzing(false)
                         }}
-                        className="flex items-center gap-2 text-amber-600 border-amber-300 hover:bg-amber-50"
+                        className="flex items-center gap-2 text-warning-600 dark:text-warning-400 border-warning-300 dark:border-warning-700 hover:bg-warning-50 dark:hover:bg-warning-900/20"
                       >
                         <PauseCircle className="w-4 h-4" />
                         停止等待

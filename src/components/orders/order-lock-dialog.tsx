@@ -179,7 +179,7 @@ export function OrderLockDialog({
       <div className="space-y-4">
         <div className="flex items-start gap-3 mb-4 p-3 rounded-lg bg-primary-50/80 border border-primary-200/50">
           {mode === 'verify' ? (
-            <Lock className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <Lock className="h-5 w-5 text-warning-600 dark:text-warning-400 mt-0.5 flex-shrink-0" />
           ) : (
             <Unlock className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
           )}
@@ -198,7 +198,7 @@ export function OrderLockDialog({
                 placeholder="請輸入 4 位數字"
                 maxLength={4}
                 pattern="[0-9]{4}"
-                className="pr-10 text-center text-lg tracking-widest bg-white border-neutral-300 focus:border-primary-500 focus:ring-primary-500"
+                className="pr-10 text-center text-lg tracking-widest bg-white dark:bg-elevation-1 border-neutral-300 dark:border-white/12 focus:border-primary-500 focus:ring-primary-500"
                 required
               />
               <button
@@ -228,7 +228,7 @@ export function OrderLockDialog({
                   placeholder="請再次輸入密碼"
                   maxLength={4}
                   pattern="[0-9]{4}"
-                  className="pr-10 text-center text-lg tracking-widest bg-white border-neutral-300 focus:border-primary-500 focus:ring-primary-500"
+                  className="pr-10 text-center text-lg tracking-widest bg-white dark:bg-elevation-1 border-neutral-300 dark:border-white/12 focus:border-primary-500 focus:ring-primary-500"
                   required
                 />
                 <button

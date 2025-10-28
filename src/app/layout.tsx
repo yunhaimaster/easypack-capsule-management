@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { ProtectedLayout } from '@/components/auth/protected-layout'
@@ -9,8 +8,6 @@ import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { OfflineIndicator } from '@/hooks/use-offline'
 import { AppClientProviders } from '@/components/app-client-providers'
 import { ThemeProvider } from '@/components/theme/theme-provider'
-
-const inter = Inter({ subsets: ['latin'] })
 
 const appTitle = 'Easy Health 膠囊配方管理系統'
 const appDescription = 'Easy Health 內部生產管理系統'
@@ -99,7 +96,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={`${inter.className} antialiased`} style={{ WebkitTextSizeAdjust: '100%', textSizeAdjust: '100%', MozTextSizeAdjust: '100%', fontSize: '16px' }}>
+      <body className="antialiased" style={{ WebkitTextSizeAdjust: '100%', textSizeAdjust: '100%', MozTextSizeAdjust: '100%', fontSize: '16px' }}>
         <ThemeProvider defaultTheme="system" storageKey="easy-health-theme">
           <AppClientProviders>
             <ErrorBoundary>

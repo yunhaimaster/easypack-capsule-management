@@ -163,9 +163,9 @@
     --ring: 204 88% 45%;
     --radius: 0.75rem;
     
-    /* Brand Fonts & Effects */
-    --font-brand-display: "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    --font-brand-text: "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    /* Apple HIG Compliant Fonts */
+    --font-brand-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+    --font-brand-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
     --brand-blur-strong: 28px;
     --brand-blur-medium: 18px;
     --brand-blur-soft: 12px;
@@ -265,6 +265,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -4166,17 +4170,47 @@
   }
 }
 
-/* High Contrast Mode Support */
+/* High Contrast Mode Support - Apple HIG Compliant */
 @media (prefers-contrast: high) {
+  :root {
+    /* Increase contrast ratios for all colors */
+    --text-primary: rgba(0, 0, 0, 1);
+    --text-secondary: rgba(0, 0, 0, 0.85);
+    --text-tertiary: rgba(0, 0, 0, 0.70);
+  }
+  
+  .dark {
+    --text-primary: rgba(255, 255, 255, 1);
+    --text-secondary: rgba(255, 255, 255, 0.90);
+    --text-tertiary: rgba(255, 255, 255, 0.75);
+  }
+  
   .liquid-glass-card {
     border-width: 2px;
     border-color: currentColor;
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  .dark .liquid-glass-card {
+    background: rgba(0, 0, 0, 0.90);
+    border-color: rgba(255, 255, 255, 0.3);
   }
   
   .focus-apple:focus-visible,
   *:focus-visible {
     outline-width: 3px;
     outline-color: currentColor;
+    outline-offset: 3px;
+  }
+  
+  /* Ensure all interactive elements have strong borders */
+  button,
+  a,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    border-width: 2px !important;
   }
 }
 

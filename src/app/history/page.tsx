@@ -4,11 +4,26 @@ import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { IconContainer } from '@/components/ui/icon-container'
 import { ArrowLeft, Calendar, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 export default function HistoryPage() {
   const versionHistory = [
+    {
+      version: 'v2.8.0',
+      date: '2025年10月28日',
+      type: '架構重組',
+      typeColor: 'bg-primary-100 text-primary-800 border-primary-200',
+      features: [
+        '🏢 統一工作單系統上線 — 全新工作單架構支援生產、包裝、倉務等多類型工作管理，膠囊訂單整合為工作單子系統，為未來擴展奠定基礎。系統定位從單一膠囊生產升級為全方位工作管理平台',
+        '🎯 導航架構全面重組 — 「訂單管理」升級為「工作單管理」主選單，清晰展示「工作單列表」、「膠囊訂單」、「新增膠囊訂單」等入口，資訊層級更分明，使用者更容易找到目標功能',
+        '📊 首頁營運中樞改版 — 從「膠囊生產營運中樞」轉型為「工作單營運中樞」，核心功能卡片重新排序：工作單總覽優先、膠囊訂單次之、工時記錄輔助，反映新的業務優先級',
+        '🔄 向下相容 100% 保證 — 所有現有膠囊訂單功能完全保留，URL 路徑維持不變（/orders、/orders/new、/orders/[id]），資料庫架構零變動，業務流程零中斷，使用者無感升級',
+        '✨ iOS App Store 風格更新日誌 — 版本歷史頁面採用 Apple 官方設計語言，粗體標題、破折號間隔、詳細說明，讓每次更新的價值一目了然，提升閱讀體驗',
+        '🎨 介面文案全面更新 — 所有頁面標題、按鈕、導航列文字統一調整為「膠囊訂單」用語，與新架構保持一致，避免混淆，提升系統專業度'
+      ]
+    },
     {
       version: 'v2.7.0',
       date: '2025年10月23日',
@@ -167,7 +182,7 @@ export default function HistoryPage() {
       version: 'v1.0.6',
       date: '2025年9月25日',
       type: '功能更新',
-      typeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+      typeColor: 'bg-info-100 dark:bg-info-900/30 text-info-800 dark:text-info-300 border-info-200 dark:border-info-800',
       features: [
         '新增訂單搜尋和篩選功能',
         '優化數據庫查詢性能',
@@ -178,7 +193,7 @@ export default function HistoryPage() {
       version: 'v1.0.5',
       date: '2025年9月22日',
       type: '功能更新',
-      typeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+      typeColor: 'bg-info-100 dark:bg-info-900/30 text-info-800 dark:text-info-300 border-info-200 dark:border-info-800',
       features: [
         '新增膠囊顏色選擇功能',
         '優化配方計算邏輯',
@@ -231,9 +246,7 @@ export default function HistoryPage() {
               <div className="liquid-glass-content">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="icon-container icon-container-blue">
-                      <Tag className="h-5 w-5 text-white" />
-                    </div>
+                    <IconContainer icon={Tag} variant="primary" size="md" />
                     <div>
                       <h3 className="text-lg font-semibold text-neutral-800 dark:text-white/95">
                         {version.version}

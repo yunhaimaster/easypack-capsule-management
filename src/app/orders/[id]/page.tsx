@@ -267,7 +267,7 @@ export default function OrderDetailPage() {
             )}
             <Button
               onClick={() => setShowExportDialog(true)}
-              className="ripple-effect btn-micro-hover bg-purple-600 hover:bg-purple-700 touch-target text-sm sm:text-base px-3 sm:px-4"
+              className="ripple-effect btn-micro-hover bg-info-600 hover:bg-info-700 touch-target text-sm sm:text-base px-3 sm:px-4"
             >
               <Brain className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">製粒分析</span>
@@ -385,7 +385,7 @@ export default function OrderDetailPage() {
               {(order.capsuleColor || order.capsuleSize || order.capsuleType) && (
                 <div className="liquid-glass-card liquid-glass-card-subtle p-4 rounded-2xl space-y-3">
                   <h4 className="font-medium text-[--brand-neutral] flex items-center gap-2 text-xs md-text-sm">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-500 text-[11px] font-semibold">膠</span>
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-info-100 dark:bg-info-900/30 text-info-600 dark:text-info-400 text-[11px] font-semibold">膠</span>
                     膠囊規格
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs md:text-sm text-neutral-700 dark:text-white/85">
@@ -405,7 +405,7 @@ export default function OrderDetailPage() {
               {(order.processIssues || order.qualityNotes) && (
                 <div className="liquid-glass-card liquid-glass-card-subtle p-4 rounded-2xl space-y-3">
                   <h4 className="font-medium text-[--brand-neutral] flex items-center gap-2 text-xs md-text-sm">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-500 text-[11px] font-semibold">備</span>
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/30 text-warning-600 dark:text-warning-400 text-[11px] font-semibold">備</span>
                     備註資訊
                   </h4>
                   <div className="space-y-3 text-xs md:text-sm text-neutral-700 dark:text-white/85">
@@ -590,9 +590,9 @@ export default function OrderDetailPage() {
                         <div className="text-sm text-neutral-700 dark:text-white/75 space-y-2 leading-relaxed">
                           <p><span className="font-medium text-neutral-900 dark:text-white/95">時間：</span>{worklog.startTime} - {worklog.endTime}</p>
                           {worklog.notes && (
-                            <p className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-lg p-2">
-                              <span className="font-medium text-amber-900 dark:text-amber-300">備註：</span>
-                              <span className="text-amber-800 dark:text-amber-200">{worklog.notes}</span>
+                            <p className="bg-warning-50 dark:bg-warning-900/20 border border-warning-100 dark:border-warning-800 rounded-lg p-2">
+                              <span className="font-medium text-warning-900 dark:text-warning-300">備註：</span>
+                              <span className="text-warning-800 dark:text-warning-200">{worklog.notes}</span>
                             </p>
                           )}
                         </div>

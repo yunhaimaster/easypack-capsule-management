@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
+import { IconContainer } from '@/components/ui/icon-container'
 import { Sparkles, Copy, RefreshCw, Clock, CheckCircle, AlertCircle, Loader2, List } from 'lucide-react'
 
 type AnalysisStatus = 'idle' | 'loading' | 'success' | 'error'
@@ -67,9 +68,7 @@ export function MarketingAnalysis({ content, status, error, duration, loadingEla
       <div className="liquid-glass-content">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <div className="icon-container icon-container-violet">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
+            <IconContainer icon={Sparkles} variant="info" size="md" />
             <div>
               <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">行銷策略分析</h2>
               <p className="text-sm text-neutral-500 dark:text-white/65">DeepSeek V3.1 Terminus 專業行銷建議與包裝設計方案</p>

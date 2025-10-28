@@ -41,8 +41,17 @@ Start here: `.cursorrules` - Quick Decision Guide (top of file)
 
 ### Feature Guides
 
+#### Development Rules
+📖 [guides/DEVELOPMENT_RULES.md](guides/DEVELOPMENT_RULES.md)
+- Architecture standards
+- Design system rules
+- Development workflow
+- AI integration
+- Security standards
+- Quality assurance
+
 #### AI Integration
-📖 [AI_LABEL_DESIGNER_GUIDE.md](AI_LABEL_DESIGNER_GUIDE.md)
+📖 [ai/AI_LABEL_DESIGNER_GUIDE.md](ai/AI_LABEL_DESIGNER_GUIDE.md)
 - AI-powered label design
 - Brand compliance
 - Template management
@@ -54,6 +63,7 @@ Start here: `.cursorrules` - Quick Decision Guide (top of file)
 - Semantic color system
 - Animation standards
 - Accessibility guidelines
+- **NEW**: 100% Apple HIG compliance
 
 #### Migration Guide
 📖 [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
@@ -69,14 +79,40 @@ Start here: `.cursorrules` - Quick Decision Guide (top of file)
 - BrightData web scraping
 - Tool combination strategies
 
+## Recent Updates (2025-01-28)
+
+### Apple HIG Compliance ✅ NEW
+📖 [reports/APPLE_HIG_COMPLIANCE_2025-01-28.md](reports/APPLE_HIG_COMPLIANCE_2025-01-28.md)
+- Complete Apple HIG compliance audit
+- Typography (San Francisco fonts)
+- Color system (semantic tokens)
+- Dark mode (proper elevation)
+- Accessibility (reduced motion, high contrast)
+- Build test results
+
+### Design System Audit ✅ NEW
+📖 [reports/DESIGN_SYSTEM_AUDIT_2025.md](reports/DESIGN_SYSTEM_AUDIT_2025.md)
+- 52 violations found and fixed
+- Icon container migrations
+- Dark mode support additions
+- Non-semantic color fixes
+
+### Rules Enhancement ✅ NEW
+📖 [reports/RULES_UPDATE_APPLE_HIG_2025-01-28.md](reports/RULES_UPDATE_APPLE_HIG_2025-01-28.md)
+- Updated 3 rule files for Apple HIG
+- Added enforcement mechanisms
+- Pre-commit checklists
+- Automated violation checks
+
 ## Quick Navigation
 
 ### For Developers
 1. **Start with**: `.cursorrules` (Quick Decision Guide)
-2. **Need flexibility?**: [FLEXIBILITY_GUIDE.md](FLEXIBILITY_GUIDE.md)
-3. **Rules conflict?**: [CONFLICT_RESOLUTION.md](CONFLICT_RESOLUTION.md)
-4. **Want to monitor?**: [MONITORING_GUIDE.md](MONITORING_GUIDE.md)
-5. **Need to document?**: [DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md)
+2. **Development rules**: [guides/DEVELOPMENT_RULES.md](guides/DEVELOPMENT_RULES.md)
+3. **Need flexibility?**: [FLEXIBILITY_GUIDE.md](FLEXIBILITY_GUIDE.md)
+4. **Rules conflict?**: [CONFLICT_RESOLUTION.md](CONFLICT_RESOLUTION.md)
+5. **Want to monitor?**: [MONITORING_GUIDE.md](MONITORING_GUIDE.md)
+6. **Need to document?**: [DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md)
 
 ### For AI Assistants
 1. **Quick decisions**: `.cursorrules` (top section)
@@ -174,9 +210,17 @@ docs/
 
 ---
 
-**Last Updated**: 2025-01-17
-**Version**: 2.0 (Enhanced with flexibility and conflict resolution)
-**Next Review**: 2025-04-17
+**Last Updated**: 2025-01-28
+**Version**: 3.0 (Apple HIG 100% Compliance)
+**Next Review**: 2025-04-28
+
+### What's New in v3.0
+- ✅ 100% Apple Human Interface Guidelines compliance
+- ✅ San Francisco font system implementation
+- ✅ Enhanced high contrast mode support
+- ✅ Complete design system audit (52 violations fixed)
+- ✅ Updated all project rules for future compliance
+- ✅ Comprehensive documentation in reports/
 
 
 

@@ -123,7 +123,7 @@ export function ExportBar({ template, disabled }: ExportBarProps) {
         </div>
       )}
 
-      <div className="mt-3 text-xs text-neutral-500 dark:text-white/65 bg-amber-50 border border-amber-200 rounded-lg p-2">
+      <div className="mt-3 text-xs text-neutral-500 dark:text-white/65 bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg p-2">
         💡 SVG 檔案可在 Adobe Illustrator 中開啟，所有文字和圖形均為可編輯的向量格式
       </div>
     </div>

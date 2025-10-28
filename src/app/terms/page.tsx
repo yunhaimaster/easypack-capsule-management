@@ -1,6 +1,8 @@
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { IconContainer } from '@/components/ui/icon-container'
+import { Badge } from '@/components/ui/badge'
 import { Scale, FileSignature, Users, ShieldCheck, Zap, Clock } from 'lucide-react'
 
 const sections = [
@@ -42,9 +44,11 @@ export default function TermsPage() {
       <LiquidGlassNav />
       <main className="flex-1 pt-28 sm:pt-24 px-4 sm:px-6 md:px-12 lg:px-20 space-y-10 floating-combined pb-16">
         <section className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/15 border border-purple-300/40 text-xs text-purple-700">
-            <FileSignature className="h-4 w-4" />
-            Easy Health 服務條款
+          <div className="flex justify-center">
+            <Badge variant="secondary" className="inline-flex items-center gap-2">
+              <FileSignature className="h-4 w-4" />
+              Easy Health 服務條款
+            </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-800 dark:text-white/95">專業、透明的合作協議</h1>
           <p className="text-sm sm:text-base text-neutral-600 dark:text-white/75 max-w-3xl mx-auto leading-relaxed">
@@ -56,9 +60,7 @@ export default function TermsPage() {
           {sections.map((section) => (
             <Card key={section.title} className="liquid-glass-card liquid-glass-card-elevated">
               <CardHeader className="flex items-center gap-3">
-                <div className="icon-container icon-container-purple">
-                  <section.icon className="h-5 w-5 text-white" />
-                </div>
+                <IconContainer icon={section.icon} variant="info" size="md" />
                 <CardTitle className="text-base text-neutral-800 dark:text-white/95">{section.title}</CardTitle>
               </CardHeader>
               <CardContent>

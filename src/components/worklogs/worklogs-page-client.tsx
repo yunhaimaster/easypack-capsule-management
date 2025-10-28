@@ -5,7 +5,8 @@ import dynamic from 'next/dynamic'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { IconContainer } from '@/components/ui/icon-container'
+import { Plus, Clock } from 'lucide-react'
 import { AddWorklogDialog } from './add-worklog-dialog'
 
 const ResponsiveWorklogsList = dynamic(() => import('@/components/worklogs/responsive-worklogs-list').then((mod) => mod.ResponsiveWorklogsList), {
@@ -33,11 +34,7 @@ export function WorklogsPageClient() {
         <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
           <div className="liquid-glass-content flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="icon-container icon-container-gradient-indigo shadow-[0_12px_30px_rgba(79,70,229,0.25)]">
-                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6l4 2" />
-                </svg>
-              </div>
+              <IconContainer icon={Clock} variant="info" size="md" />
               <div>
                 <h1 className="text-lg md:text-lg font-semibold text-[--brand-neutral] tracking-tight">工時記錄</h1>
                 <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">查看最新工時安排、快速篩選調整與匯出記錄</p>

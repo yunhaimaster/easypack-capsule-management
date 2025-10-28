@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { IconContainer } from '@/components/ui/icon-container'
 import { CheckCircle, XCircle, Loader2, Database, Settings } from 'lucide-react'
 import Link from 'next/link'
 
@@ -61,9 +62,7 @@ export default function SetupPage() {
           <Card className="liquid-glass-card liquid-glass-card-elevated mb-8">
             <div className="liquid-glass-content">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="icon-container icon-container-blue">
-                  <Settings className="h-5 w-5 text-white" />
-                </div>
+                <IconContainer icon={Settings} variant="primary" size="md" />
                 <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95">設置說明</h2>
               </div>
 
@@ -86,9 +85,9 @@ export default function SetupPage() {
                   </ul>
                 </div>
 
-                <div className="bg-amber-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-amber-800 mb-2">注意事項</h3>
-                  <p className="text-amber-700 text-sm">
+                <div className="bg-warning-50 dark:bg-warning-900/20 p-4 rounded-lg">
+                  <h3 className="font-semibold text-warning-800 dark:text-warning-200 mb-2">注意事項</h3>
+                  <p className="text-warning-700 dark:text-warning-300 text-sm">
                     此操作將在您的數據庫中創建新的表。請確保您有數據庫的管理權限。
                     如果表已存在，操作將安全地跳過。
                   </p>
@@ -101,9 +100,7 @@ export default function SetupPage() {
           <Card className="liquid-glass-card liquid-glass-card-elevated mb-8">
             <div className="liquid-glass-content">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="icon-container icon-container-green">
-                  <Database className="h-5 w-5 text-white" />
-                </div>
+                <IconContainer icon={Database} variant="success" size="md" />
                 <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95">創建數據庫表</h2>
               </div>
 

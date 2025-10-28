@@ -45,29 +45,29 @@ export function AIDisclaimer({ type = 'recipe', className = '' }: AIDisclaimerPr
   const { title, content } = getDisclaimerContent()
 
   return (
-    <Card className={`bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30 ${className}`}>
+    <Card className={`bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800/30 ${className}`}>
       <CardContent className="p-4">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-amber-100 dark:bg-amber-800/30 rounded-full flex items-center justify-center">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <div className="w-8 h-8 bg-warning-100 dark:bg-warning-800/30 rounded-full flex items-center justify-center">
+              <AlertTriangle className="h-4 w-4 text-warning-600 dark:text-warning-400" />
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2 flex items-center">
+            <h4 className="text-sm font-semibold text-warning-800 dark:text-warning-200 mb-2 flex items-center">
               <Shield className="h-4 w-4 mr-1" />
               {title}
             </h4>
-            <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
+            <ul className="text-xs text-warning-700 dark:text-warning-300 space-y-1">
               {content.map((item, index) => (
                 <li key={index} className="flex items-start">
-                  <span className="text-amber-500 dark:text-amber-400 mr-2 mt-0.5">•</span>
+                  <span className="text-warning-500 dark:text-warning-400 mr-2 mt-0.5">•</span>
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-800/30">
-              <div className="flex items-center text-xs text-amber-600 dark:text-amber-400">
+            <div className="mt-3 pt-3 border-t border-warning-200 dark:border-warning-800/30">
+              <div className="flex items-center text-xs text-warning-600 dark:text-warning-400">
                 <FileText className="h-3 w-3 mr-1" />
                 <span>使用本系統即表示您已閱讀並同意上述免責聲明</span>
               </div>
@@ -82,11 +82,11 @@ export function AIDisclaimer({ type = 'recipe', className = '' }: AIDisclaimerPr
 // 緊湊版免責條款
 export function AIDisclaimerCompact({ className = '' }: { className?: string }) {
   return (
-    <Card className={`bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30 ${className}`}>
+    <Card className={`bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800/30 ${className}`}>
       <CardContent className="p-3">
         <div className="flex items-center space-x-2">
-          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-          <span className="text-xs text-amber-700 dark:text-amber-300">
+          <AlertTriangle className="h-4 w-4 text-warning-600 dark:text-warning-400 flex-shrink-0" />
+          <span className="text-xs text-warning-700 dark:text-warning-300">
             <strong>免責聲明：</strong>本內容由 AI 生成，僅供參考。請諮詢專業人士。
           </span>
         </div>

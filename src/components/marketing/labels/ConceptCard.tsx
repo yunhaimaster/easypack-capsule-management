@@ -58,7 +58,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
           {compliance.passed ? (
             <CheckCircle2 className="h-4 w-4 text-success-600" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertCircle className="h-4 w-4 text-warning-600 dark:text-warning-400" />
           )}
           <span className="text-neutral-600 dark:text-white/75">
             合規檢查：{passCount}/{totalCount}
@@ -156,7 +156,7 @@ export function ConceptCard({ concept, onSelect, onExport, onImprove, isSelected
             .slice(0, 3)
             .map((item, idx) => (
               <div key={idx} className="flex items-start gap-1 text-neutral-600 dark:text-white/75">
-                <AlertCircle className="h-3 w-3 mt-0.5 text-amber-500" />
+                <AlertCircle className="h-3 w-3 mt-0.5 text-warning-500 dark:text-warning-400" />
                 <span>{item.item}</span>
               </div>
             ))}

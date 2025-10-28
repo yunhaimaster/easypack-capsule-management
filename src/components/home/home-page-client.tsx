@@ -120,10 +120,10 @@ export function HomePageClient() {
         {/* Page Title */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white/95">
-            膠囊生產營運中樞
+            Easy Health 工作單營運中樞
           </h1>
           <p className="text-sm text-neutral-600 dark:text-white/75">
-            訂單管理、配方庫與 AI 助手一次整合
+            工作單管理、膠囊生產與 AI 助手一站式平台
           </p>
         </div>
 
@@ -138,9 +138,29 @@ export function HomePageClient() {
             <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
+                  <IconContainer icon={ClipboardList} variant="primary" size="md" />
+                  <div className="text-right space-y-1">
+                    <h3 className="text-sm font-semibold text-primary-600">工作單總覽</h3>
+                    <p className="text-xs text-primary-500/70">查看所有工作單</p>
+                  </div>
+                </div>
+                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
+                  查看所有工作單，包含生產、包裝、倉務等各類工作任務。
+                </p>
+                <div className="mt-auto">
+                  <Button asChild size="sm" className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300">
+                    <Link href="/work-orders">查看工作單</Link>
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
+              <div className="liquid-glass-content flex flex-col gap-4 p-6">
+                <div className="flex items-center justify-between">
                   <IconContainer icon={Plus} variant="success" size="md" />
                   <div className="text-right space-y-1">
-                    <h3 className="text-sm font-semibold text-success-600">新增訂單</h3>
+                    <h3 className="text-sm font-semibold text-success-600">新增膠囊訂單</h3>
                     <p className="text-xs text-success-500/70">快速建立生產訂單</p>
                   </div>
                 </div>
@@ -150,26 +170,6 @@ export function HomePageClient() {
                 <div className="mt-auto">
                   <Button asChild size="sm" className="w-full bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 transition-all duration-300">
                     <Link href="/orders/new">新增訂單</Link>
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
-              <div className="liquid-glass-content flex flex-col gap-4 p-6">
-                <div className="flex items-center justify-between">
-                  <IconContainer icon={ClipboardList} variant="primary" size="md" />
-                  <div className="text-right space-y-1">
-                    <h3 className="text-sm font-semibold text-primary-600">訂單列表</h3>
-                    <p className="text-xs text-primary-500/70">查看所有生產訂單</p>
-                  </div>
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
-                  瀏覽所有生產訂單，查看狀態、工時記錄與生產進度。
-                </p>
-                <div className="mt-auto">
-                  <Button asChild size="sm" className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300">
-                    <Link href="/orders">查看訂單</Link>
                   </Button>
                 </div>
               </div>
@@ -262,8 +262,8 @@ export function HomePageClient() {
               <div className="flex items-center gap-3">
                 <IconContainer icon={CalendarDays} variant="primary" size="md" />
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">2025年10月23日 · 重大更新</h3>
-                  <p className="text-xs text-neutral-500 dark:text-white/75">最新版本：v2.7.0</p>
+                  <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">2025年10月28日 · 架構重組</h3>
+                  <p className="text-xs text-neutral-500 dark:text-white/75">最新版本：v2.8.0</p>
                 </div>
               </div>
               <Link 
@@ -275,24 +275,20 @@ export function HomePageClient() {
             </div>
             <ul className="space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-white/75">
               <li className="flex items-start gap-2">
-                <span className="text-success-500 mt-0.5">🔐</span>
-                <span>全新 OTP 電話驗證系統上線，支援手機驗證碼登入、設備信任功能，30天免密登入更便利</span>
+                <span className="text-primary-500 mt-0.5">🏢</span>
+                <span><strong>統一工作單系統上線</strong> — 全新工作單架構支援生產、包裝、倉務等多類型工作管理，膠囊訂單整合為工作單子系統，為未來擴展奠定基礎</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-info-500 mt-0.5">🎨</span>
-                <span>豆包 AI 圖片生成引擎整合，全新產品包裝設計、標籤設計、2K高清海報，支援香港製造風格</span>
+                <span className="text-info-500 mt-0.5">🎯</span>
+                <span><strong>導航架構重組</strong> — 「訂單管理」升級為「工作單管理」，清晰展示工作單列表、膠囊訂單等入口，系統定位更明確</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary-500 mt-0.5">⚡</span>
-                <span>升級至 Next.js 15 與 React 19，效能大幅提升，支援流式渲染與樂觀更新，頁面載入更快</span>
+                <span className="text-success-500 mt-0.5">📊</span>
+                <span><strong>首頁全面改版</strong> — 營運中樞轉型為工作單為中心的管理介面，快速存取各類工作任務，提升日常操作效率</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">📋</span>
-                <span>智能導入審核系統，配方圖片批量上傳支援多圖解析，AI 自動識別配方並可審核編輯</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-secondary-500 mt-0.5">🔍</span>
-                <span>配方庫原料搜尋功能，可按原料名稱快速篩選配方，支援進階多條件組合篩選</span>
+                <span className="text-warning-500 mt-0.5">🔄</span>
+                <span><strong>向下相容保證</strong> — 所有現有膠囊訂單功能完全保留，URL 路徑不變，零業務中斷，平穩過渡到新架構</span>
               </li>
             </ul>
           </div>

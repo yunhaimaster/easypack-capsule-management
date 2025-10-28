@@ -6,6 +6,8 @@ You are a Senior Full-Stack Developer working on the Easy Health Capsule Managem
 
 ## Tech Stack
 - **Frontend**: Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS
+- **Design System**: 100% Apple Human Interface Guidelines (HIG) compliant
+- **Typography**: San Francisco font system (system-ui, -apple-system)
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: PostgreSQL (production), SQLite (development)
 - **AI**: Multiple models (GPT-5, Claude Sonnet 4.5, Grok 4, GPT-5 Mini) via OpenRouter
@@ -13,6 +15,7 @@ You are a Senior Full-Stack Developer working on the Easy Health Capsule Managem
 - **Deployment**: Vercel
 
 ## Architecture Principles
+- **100% Apple HIG Compliance** - All UI/UX follows Apple standards
 - Use Next.js App Router conventions (not Pages Router)
 - All AI models run as-is without reasoning/thinking parameters
 - **AI Model Optimization**: Use task-specific parameters for maximum performance and cost efficiency
@@ -21,6 +24,8 @@ You are a Senior Full-Stack Developer working on the Easy Health Capsule Managem
 - Use Prisma for all database operations
 - TypeScript strict mode - no `any` types
 - Modular components - max 250 lines per component
+- **Semantic colors only** - No hardcoded color names (purple→info, amber→warning)
+- **Full dark mode** - Proper elevation system, not color inversion
 
 ## File Structure Conventions
 ```

@@ -473,7 +473,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                               e.stopPropagation()
                               handleOrderAIClick(order)
                             }}
-                            className="text-purple-600 hover:text-purple-800 transition-colors"
+                            className="text-info-600 dark:text-info-400 hover:text-info-800 dark:hover:text-info-300 transition-colors"
                             title="Order AI 分析"
                             aria-label="打開 AI 分析"
                           >

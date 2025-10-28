@@ -128,7 +128,7 @@ export function SaveRecipeDialog({
                     </span>
                   </div>
                   {alreadyRecorded && (
-                    <p className="text-xs text-amber-600 mt-2">
+                    <p className="text-xs text-warning-600 dark:text-warning-400 mt-2">
                       ⚠️ 此訂單已在配方庫中記錄
                     </p>
                   )}

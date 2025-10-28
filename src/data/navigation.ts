@@ -14,11 +14,12 @@ interface NavigationOptions {
 const BASE_NAVIGATION_LINKS: NavigationLink[] = [
   { href: '/', label: '首頁' },
   {
-    href: '/orders',
-    label: '訂單管理',
+    href: '/work-orders',
+    label: '工作單管理',
     children: [
-      { href: '/orders', label: '訂單列表' },
-      { href: '/orders/new', label: '新建訂單' },
+      { href: '/work-orders', label: '工作單列表' },
+      { href: '/orders', label: '膠囊訂單' },
+      { href: '/orders/new', label: '新增膠囊訂單' },
     ],
   },
   {
@@ -73,10 +74,11 @@ export interface FooterLink {
 export function getFooterSections(): FooterSection[] {
   return [
     {
-      title: '訂單管理',
+      title: '工作單管理',
       links: [
-        { href: '/orders', label: '訂單列表' },
-        { href: '/orders/new', label: '新建訂單' }
+        { href: '/work-orders', label: '工作單列表' },
+        { href: '/orders', label: '膠囊訂單' },
+        { href: '/orders/new', label: '新增膠囊訂單' }
       ]
     },
     {

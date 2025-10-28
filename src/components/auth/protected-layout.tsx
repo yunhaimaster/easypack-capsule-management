@@ -17,7 +17,7 @@ export function ProtectedLayout({ children }: ProtectedLayoutProps) {
         <main className="relative min-h-screen flex items-center justify-center px-6 md:px-10 py-16">
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-8 md:gap-12 items-center">
             <section className="space-y-6 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-gray-800/60 border border-white/70 dark:border-gray-700/70 text-xs text-[--brand-neutral] shadow-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-elevation-1/60 border border-white/70 dark:border-white/12 text-xs text-[--brand-neutral] shadow-sm">
                 <span className="font-medium tracking-wide">品牌登入</span>
                 <span className="text-[11px] text-neutral-500 dark:text-white/65">Easy Health Capsule Management</span>
               </div>

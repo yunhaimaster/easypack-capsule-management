@@ -576,13 +576,13 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
               </div>
               <span style={{ color: '#2a588c' }}>工時紀錄</span>
             </h2>
-            <Button type="button" onClick={addWorklog} className="ripple-effect btn-micro-hover bg-amber-500 hover:bg-amber-600">
+            <Button type="button" onClick={addWorklog} className="ripple-effect btn-micro-hover bg-warning-500 hover:bg-warning-600">
               <Plus className="mr-2 h-4 w-4" aria-hidden="true" /> 新增工時
             </Button>
           </div>
         </div>
         <CardContent className="space-y-6">
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-600 bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-warning-600 dark:text-warning-400 bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-xl px-3 py-2">
             <Info className="h-4 w-4" aria-hidden="true" />
             <p>系統自動扣除 12:30-13:30 午餐時間，並以 0.5 工時為單位向上取整後乘以人數。</p>
           </div>

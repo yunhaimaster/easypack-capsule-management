@@ -157,10 +157,10 @@ export function AIAssistant({ orders }: AIAssistantProps) {
                 </button>
                 <button
                   onClick={() => setInput('維生素C相關的訂單有哪些？')}
-                  className="bg-purple-50 hover:bg-purple-100 p-3 rounded-lg text-left transition-colors cursor-pointer"
+                  className="bg-info-50 dark:bg-info-900/20 hover:bg-info-100 dark:hover:bg-info-900/30 p-3 rounded-lg text-left transition-colors cursor-pointer"
                 >
-                  <p className="font-medium text-purple-800 mb-1">原料查詢</p>
-                  <p className="text-purple-600">&ldquo;維生素C相關的訂單有哪些？&rdquo;</p>
+                  <p className="font-medium text-info-800 dark:text-info-300 mb-1">原料查詢</p>
+                  <p className="text-info-600 dark:text-info-400">&ldquo;維生素C相關的訂單有哪些？&rdquo;</p>
                 </button>
                 <button
                   onClick={() => setInput('最近一週的生產情況如何？')}

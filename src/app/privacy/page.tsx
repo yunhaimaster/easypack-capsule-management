@@ -1,6 +1,7 @@
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { IconContainer } from '@/components/ui/icon-container'
 import { Shield, Lock, FileText, Eye, Database, Globe } from 'lucide-react'
 
 const sections = [
@@ -56,9 +57,7 @@ export default function PrivacyPage() {
           {sections.map((section) => (
             <Card key={section.title} className="liquid-glass-card liquid-glass-card-elevated">
               <CardHeader className="flex items-center gap-3">
-                <div className="icon-container icon-container-blue">
-                  <section.icon className="h-5 w-5 text-white" />
-                </div>
+                <IconContainer icon={section.icon} variant="primary" size="md" />
                 <CardTitle className="text-base text-neutral-800 dark:text-white/95">{section.title}</CardTitle>
               </CardHeader>
               <CardContent>

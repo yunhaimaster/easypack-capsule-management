@@ -554,8 +554,8 @@ export function SmartTemplateImport({ onImport, disabled }: SmartTemplateImportP
                         key={index}
                         className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
                           selectedRecipeIndex === index
-                            ? 'border-primary-500 bg-primary-50'
-                            : 'border-neutral-200 hover:border-neutral-300 bg-white'
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                            : 'border-neutral-200 dark:border-white/12 hover:border-neutral-300 dark:hover:border-white/20 bg-white dark:bg-elevation-1'
                         }`}
                         onClick={() => setSelectedRecipeIndex(index)}
                       >

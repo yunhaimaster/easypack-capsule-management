@@ -141,7 +141,7 @@ export function RecipeActionsMenu({
               e.stopPropagation()
               onGranulationAnalysis(recipe.id)
             }}
-            className="cursor-pointer text-purple-600 focus:text-purple-700"
+            className="cursor-pointer text-info-600 dark:text-info-400 focus:text-info-700 dark:focus:text-info-300"
           >
             <FlaskConical className="h-4 w-4 mr-2" />
             製粒分析

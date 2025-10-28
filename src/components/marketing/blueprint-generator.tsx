@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { IconContainer } from '@/components/ui/icon-container'
 import { FileText, Download, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/components/ui/toast-provider'
 
@@ -135,9 +136,7 @@ export function BlueprintGenerator({ productName = '產品名稱', ingredients =
     <Card className="liquid-glass-card liquid-glass-card-elevated" interactive={false}>
       <div className="liquid-glass-content">
         <div className="flex items-center gap-3 mb-6">
-          <div className="icon-container icon-container-blue">
-            <FileText className="h-5 w-5 text-white" />
-          </div>
+          <IconContainer icon={FileText} variant="primary" size="md" />
           <div>
             <h2 className="text-lg font-semibold text-neutral-800 dark:text-white/95">包裝設計圖紙</h2>
             <p className="text-sm text-neutral-500 dark:text-white/65">生成可編輯的 SVG 標籤設計藍圖（含出血與安全區）</p>
