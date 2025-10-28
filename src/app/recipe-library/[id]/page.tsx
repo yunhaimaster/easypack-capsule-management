@@ -183,29 +183,100 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     if (!recipe) return
     
     try {
-      const response = await fetch('/api/recipes/export-pdf', {
+      // Dynamic import for client-side only
+      const { jsPDF } = await import('jspdf')
+      require('jspdf-autotable')
+      
+      const doc = new jsPDF()
+      
+      // Set font (using Helvetica for now, which supports basic Latin)
+      doc.setFont('helvetica')
+      
+      // Title
+      doc.setFontSize(18)
+      doc.text(recipe.recipeName, 15, 20)
+      
+      // Metadata section
+      doc.setFontSize(11)
+      let yPos = 35
+      doc.text(`Customer: ${recipe.customerName}`, 15, yPos)
+      yPos += 7
+      doc.text(`Product: ${recipe.productName}`, 15, yPos)
+      yPos += 7
+      doc.text(`Recipe Type: ${recipe.recipeType === 'production' ? 'Production Recipe' : 'Template Recipe'}`, 15, yPos)
+      yPos += 10
+      
+      // Ingredients table
+      doc.setFontSize(14)
+      doc.text('Ingredient List', 15, yPos)
+      yPos += 5
+      
+      const ingredients = typeof recipe.ingredients === 'string' 
+        ? JSON.parse(recipe.ingredients)
+        : recipe.ingredients
+      const tableData = ingredients.map((ing: any) => [
+        ing.materialName,
+        `${ing.unitContentMg} mg`
+      ])
+      
+      ;(doc as any).autoTable({
+        startY: yPos,
+        head: [['Ingredient Name', 'Content per Unit (mg)']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [37, 99, 235] },
+        styles: { font: 'helvetica', fontSize: 10 }
+      })
+      
+      yPos = (doc as any).lastAutoTable.finalY + 10
+      
+      // Total weight
+      doc.setFontSize(11)
+      doc.text(`Total Weight per Unit: ${recipe.unitWeightMg} mg`, 15, yPos)
+      
+      // AI Effects Analysis (if available)
+      if (recipe.aiEffectsAnalysis) {
+        yPos += 15
+        doc.setFontSize(14)
+        doc.text('AI Effects Analysis', 15, yPos)
+        yPos += 7
+        
+        doc.setFontSize(10)
+        const splitText = doc.splitTextToSize(recipe.aiEffectsAnalysis, 180)
+        doc.text(splitText, 15, yPos)
+      }
+      
+      // Footer with timestamp
+      const pageCount = (doc as any).internal.getNumberOfPages()
+      doc.setFontSize(9)
+      doc.setTextColor(150)
+      doc.text(
+        `Generated: ${new Date().toLocaleString('en-HK')}`,
+        15,
+        doc.internal.pageSize.height - 10
+      )
+      
+      // Save the PDF
+      doc.save(`Recipe_${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.pdf`)
+      
+      // Log audit
+      await fetch('/api/recipes/export-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ recipeId: recipe.id })
       })
       
-      if (!response.ok) throw new Error('PDF 生成失敗')
-      
-      const blob = await response.blob()
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = `配方_${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.html`
-      link.click()
-      
       showToast({
-        title: '導出成功',
-        description: '配方已導出為 PDF 格式',
+        title: 'Export Successful',
+        description: 'Recipe exported as PDF',
         variant: 'default'
       })
     } catch (error) {
+      console.error('PDF export error:', error)
       showToast({
-        title: '導出失敗',
-        description: '無法生成 PDF 文件',
+        title: 'Export Failed',
+        description: 'Unable to generate PDF file',
         variant: 'destructive'
       })
     }
