@@ -11,11 +11,11 @@ export default function LoginPage() {
           <section className="space-y-6 text-center md:text-left">
             <Badge variant="outline" className="inline-flex items-center gap-2 text-xs shadow-sm">
               <span className="font-medium tracking-wide">品牌登入</span>
-              <span className="text-[11px] text-neutral-500 dark:text-white/65">Easy Health Capsule Management</span>
+              <span className="text-[11px] text-neutral-500 dark:text-white/65">Easy Health Management System</span>
             </Badge>
             <div className="space-y-3">
               <h1 className="text-2xl sm:text-2xl font-semibold tracking-tight text-[--brand-neutral]">
-                登入膠囊配方管理系統
+                登入生產管理系統
               </h1>
               <p className="text-sm sm:text-sm text-neutral-600 dark:text-white/75 leading-relaxed max-w-md md:pr-10">
                 使用一次性驗證碼存取控制台。
