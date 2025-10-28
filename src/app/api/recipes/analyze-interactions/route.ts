@@ -115,10 +115,20 @@ ${ingredientList}
       throw new Error('AI 回應為空')
     }
     
-    // Parse JSON response
+    // Parse JSON response - extract from markdown if needed
     let result
     try {
-      result = JSON.parse(content)
+      // Try to extract JSON from markdown code block
+      let jsonString = content
+      
+      // Check if response is wrapped in markdown code block
+      const markdownMatch = content.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/)
+      if (markdownMatch) {
+        jsonString = markdownMatch[1].trim()
+        console.log('[analyze-interactions] Extracted JSON from markdown code block')
+      }
+      
+      result = JSON.parse(jsonString)
       console.log('[analyze-interactions] Parsed result:', {
         hasWarnings: !!result.warnings,
         warningCount: result.warnings?.length || 0
