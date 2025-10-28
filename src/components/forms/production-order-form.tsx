@@ -296,8 +296,25 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         const errorData = await response.json().catch(() => ({}))
         console.error('[Order Form] API Error:', errorData)
         
+        // Extract error message from nested structure
+        // API returns: { success: false, error: { code: "...", message: "..." } }
+        let errorMessage = '未知錯誤'
+        if (errorData.error) {
+          if (typeof errorData.error === 'string') {
+            errorMessage = errorData.error
+          } else if (errorData.error.message) {
+            errorMessage = errorData.error.message
+          } else if (errorData.error.code) {
+            errorMessage = errorData.error.code
+          }
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+        
+        console.log('[Order Form] Extracted error message:', errorMessage)
+        
         // 處理密碼驗證錯誤
-        if (errorData.error === '密碼錯誤' || errorData.error === '需要密碼驗證') {
+        if (errorMessage.includes('密碼錯誤') || errorMessage.includes('需要密碼驗證')) {
           showToast({
             title: '驗證失敗',
             description: '密碼已過期，請重新驗證',
@@ -307,7 +324,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
           return
         }
         
-        throw new Error(`儲存失敗: ${errorData.error || errorData.message || '未知錯誤'}`)
+        throw new Error(`儲存失敗: ${errorMessage}`)
       }
 
       const result = await response.json()
