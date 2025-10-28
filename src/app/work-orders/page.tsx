@@ -217,7 +217,7 @@ export default function WorkOrdersPage() {
     }
     setFilters(newFilters)
     fetchWorkOrders(newFilters)
-    setShowAdvancedFilters(false)
+    // Keep filter panel open so users can see their selections and adjust easily
   }
 
   // Clear all filters
