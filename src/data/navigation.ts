@@ -18,6 +18,7 @@ const BASE_NAVIGATION_LINKS: NavigationLink[] = [
     label: '工作單管理',
     children: [
       { href: '/work-orders', label: '工作單列表' },
+      { href: '/work-orders/new', label: '新增工作單' },
       { href: '/orders', label: '膠囊訂單' },
       { href: '/orders/new', label: '新增膠囊訂單' },
     ],
@@ -78,6 +79,7 @@ export function getFooterSections(): FooterSection[] {
       title: '工作單管理',
       links: [
         { href: '/work-orders', label: '工作單列表' },
+        { href: '/work-orders/new', label: '新增工作單' },
         { href: '/orders', label: '膠囊訂單' },
         { href: '/orders/new', label: '新增膠囊訂單' }
       ]
