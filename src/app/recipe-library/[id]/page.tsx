@@ -207,28 +207,28 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
           <div style="font-size: 28px; font-weight: bold; color: #2563eb; margin-bottom: 20px; border-bottom: 3px solid #2563eb; padding-bottom: 10px;">
             ${recipe.recipeName}
           </div>
-          <div style="font-size: 16px; line-height: 2;">
-            <div><strong>客戶：</strong>${recipe.customerName}</div>
-            <div><strong>產品：</strong>${recipe.productName}</div>
-            <div><strong>配方類型：</strong>${recipe.recipeType === 'production' ? '生產配方' : '模板配方'}</div>
-            <div><strong>單粒總重量：</strong>${recipe.unitWeightMg} mg</div>
+          <div style="font-size: 16px; line-height: 2; color: #374151;">
+            <div><strong style="color: #1f2937;">客戶：</strong>${recipe.customerName}</div>
+            <div><strong style="color: #1f2937;">產品：</strong>${recipe.productName}</div>
+            <div><strong style="color: #1f2937;">配方類型：</strong>${recipe.recipeType === 'production' ? '生產配方' : '模板配方'}</div>
+            <div><strong style="color: #1f2937;">單粒總重量：</strong>${recipe.unitWeightMg} mg</div>
           </div>
         </div>
         
         <div>
-          <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">原料清單</div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #1f2937;">原料清單</div>
           <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
             <thead>
-              <tr style="background-color: #2563eb; color: white;">
-                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">原料名稱</th>
-                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">單粒含量 (mg)</th>
+              <tr style="background-color: #2563eb; color: #ffffff;">
+                <th style="border: 1px solid #d1d5db; padding: 12px; text-align: left; color: #ffffff;">原料名稱</th>
+                <th style="border: 1px solid #d1d5db; padding: 12px; text-align: left; color: #ffffff;">單粒含量 (mg)</th>
               </tr>
             </thead>
             <tbody>
               ${ingredients.map((ing: any) => `
-                <tr>
-                  <td style="border: 1px solid #ddd; padding: 10px;">${ing.materialName}</td>
-                  <td style="border: 1px solid #ddd; padding: 10px;">${ing.unitContentMg}</td>
+                <tr style="background-color: #ffffff;">
+                  <td style="border: 1px solid #d1d5db; padding: 10px; color: #1f2937;">${ing.materialName}</td>
+                  <td style="border: 1px solid #d1d5db; padding: 10px; color: #1f2937;">${ing.unitContentMg}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -237,14 +237,14 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         
         ${recipe.aiEffectsAnalysis ? `
           <div style="margin-top: 30px;">
-            <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">AI 功效分析</div>
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #1f2937;">AI 功效分析</div>
             <div style="font-size: 14px; line-height: 1.8; color: #374151; padding: 15px; background-color: #f3f4f6; border-radius: 8px;">
               ${recipe.aiEffectsAnalysis}
             </div>
           </div>
         ` : ''}
         
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #6b7280;">
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #d1d5db; font-size: 12px; color: #6b7280;">
           生成時間：${new Date().toLocaleString('zh-HK')}
         </div>
       `
