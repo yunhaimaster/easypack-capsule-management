@@ -86,23 +86,42 @@ function emit(level: LogLevel, message: string, metadata?: LogMetadata) {
   }
 
   const output = JSON.stringify(logEntry)
+  
+  // Check if we're in a browser environment (client-side)
+  const isBrowser = typeof window !== 'undefined'
 
   switch (level) {
     case 'debug':
     case 'info':
       if (process.env.NODE_ENV !== 'production') {
-        process.stdout.write(`${output}\n`)
+        if (isBrowser) {
+          console.log(output)
+        } else {
+          process.stdout.write(`${output}\n`)
+        }
       }
       break
     case 'warn':
-      process.stderr.write(`${output}\n`)
+      if (isBrowser) {
+        console.warn(output)
+      } else {
+        process.stderr.write(`${output}\n`)
+      }
       break
     case 'error':
-      process.stderr.write(`${output}\n`)
+      if (isBrowser) {
+        console.error(output)
+      } else {
+        process.stderr.write(`${output}\n`)
+      }
       break
     default:
       if (process.env.NODE_ENV !== 'production') {
-        process.stdout.write(`${output}\n`)
+        if (isBrowser) {
+          console.log(output)
+        } else {
+          process.stdout.write(`${output}\n`)
+        }
       }
   }
 }

@@ -74,11 +74,22 @@ export function LinkedFilter({
 
       const response = await fetch(`/api/orders/options?${params}`)
       if (response.ok) {
-        const data = await response.json()
-        setLinkedCustomerOptions(data.customers.map((item: string) => ({ value: item, label: item })))
-        setLinkedProductOptions(data.products.map((item: string) => ({ value: item, label: item })))
-        setLinkedIngredientOptions(data.ingredients.map((item: string) => ({ value: item, label: item })))
-        setLinkedCapsuleOptions(data.capsuleTypes.map((item: string) => ({ value: item, label: item })))
+        const result = await response.json()
+        const data = result.data || result
+        
+        // Add null checks before calling .map()
+        if (data.customers && Array.isArray(data.customers)) {
+          setLinkedCustomerOptions(data.customers.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.products && Array.isArray(data.products)) {
+          setLinkedProductOptions(data.products.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.ingredients && Array.isArray(data.ingredients)) {
+          setLinkedIngredientOptions(data.ingredients.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.capsuleTypes && Array.isArray(data.capsuleTypes)) {
+          setLinkedCapsuleOptions(data.capsuleTypes.map((item: string) => ({ value: item, label: item })))
+        }
       }
     } catch (error) {
       console.error('Error fetching linked options:', error)
@@ -191,11 +202,22 @@ export function LinkedFilter({
 
       const response = await fetch(`/api/orders/options?${params}`)
       if (response.ok) {
-        const data = await response.json()
-        setLinkedCustomerOptions(data.customers.map((item: string) => ({ value: item, label: item })))
-        setLinkedProductOptions(data.products.map((item: string) => ({ value: item, label: item })))
-        setLinkedIngredientOptions(data.ingredients.map((item: string) => ({ value: item, label: item })))
-        setLinkedCapsuleOptions(data.capsuleTypes.map((item: string) => ({ value: item, label: item })))
+        const result = await response.json()
+        const data = result.data || result
+        
+        // Add null checks before calling .map()
+        if (data.customers && Array.isArray(data.customers)) {
+          setLinkedCustomerOptions(data.customers.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.products && Array.isArray(data.products)) {
+          setLinkedProductOptions(data.products.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.ingredients && Array.isArray(data.ingredients)) {
+          setLinkedIngredientOptions(data.ingredients.map((item: string) => ({ value: item, label: item })))
+        }
+        if (data.capsuleTypes && Array.isArray(data.capsuleTypes)) {
+          setLinkedCapsuleOptions(data.capsuleTypes.map((item: string) => ({ value: item, label: item })))
+        }
       }
     } catch (error) {
       console.error('Error fetching linked options:', error)
