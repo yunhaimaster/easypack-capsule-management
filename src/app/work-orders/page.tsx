@@ -617,19 +617,18 @@ export default function WorkOrdersPage() {
                   <Select
                     value={selectedStatuses[0] || ''}
                     onValueChange={(value) => {
-                      if (value) {
-                        setSelectedStatuses(prev => 
-                          prev.includes(value as WorkOrderStatus) 
-                            ? prev.filter(s => s !== value)
-                            : [...prev, value as WorkOrderStatus]
-                        )
+                      if (value === '' || value === 'all') {
+                        setSelectedStatuses([])
+                      } else {
+                        setSelectedStatuses([value as WorkOrderStatus])
                       }
                     }}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
-                      <SelectValue placeholder={selectedStatuses.length > 0 ? `已選 ${selectedStatuses.length} 個` : "選擇狀態"} />
+                      <SelectValue placeholder="選擇狀態" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all" className="text-xs sm:text-sm">全部狀態</SelectItem>
                       {Object.entries(WORK_ORDER_STATUS_LABELS).map(([key, label]) => (
                         <SelectItem key={key} value={key} className="text-xs sm:text-sm">
                           {label}
@@ -647,19 +646,18 @@ export default function WorkOrdersPage() {
                   <Select
                     value={selectedWorkTypes[0] || ''}
                     onValueChange={(value) => {
-                      if (value) {
-                        setSelectedWorkTypes(prev => 
-                          prev.includes(value as WorkType) 
-                            ? prev.filter(t => t !== value)
-                            : [...prev, value as WorkType]
-                        )
+                      if (value === '' || value === 'all') {
+                        setSelectedWorkTypes([])
+                      } else {
+                        setSelectedWorkTypes([value as WorkType])
                       }
                     }}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
-                      <SelectValue placeholder={selectedWorkTypes.length > 0 ? `已選 ${selectedWorkTypes.length} 個` : "選擇類型"} />
+                      <SelectValue placeholder="選擇類型" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all" className="text-xs sm:text-sm">全部類型</SelectItem>
                       {Object.entries(WORK_TYPE_LABELS).map(([key, label]) => (
                         <SelectItem key={key} value={key} className="text-xs sm:text-sm">
                           {label}
@@ -677,19 +675,18 @@ export default function WorkOrdersPage() {
                   <Select
                     value={selectedPersons[0] || ''}
                     onValueChange={(value) => {
-                      if (value) {
-                        setSelectedPersons(prev => 
-                          prev.includes(value) 
-                            ? prev.filter(p => p !== value)
-                            : [...prev, value]
-                        )
+                      if (value === '' || value === 'all') {
+                        setSelectedPersons([])
+                      } else {
+                        setSelectedPersons([value])
                       }
                     }}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
-                      <SelectValue placeholder={selectedPersons.length > 0 ? `已選 ${selectedPersons.length} 個` : "選擇負責人"} />
+                      <SelectValue placeholder="選擇負責人" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all" className="text-xs sm:text-sm">全部負責人</SelectItem>
                       {usersData?.map((user: { id: string, nickname?: string | null, phoneE164: string }) => (
                         <SelectItem key={user.id} value={user.id} className="text-xs sm:text-sm">
                           {user.nickname || user.phoneE164}
