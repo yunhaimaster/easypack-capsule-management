@@ -68,6 +68,7 @@ export interface FooterLink {
   href: string
   label: string
   isExternal?: boolean
+  showBadge?: boolean // For NEW badge on update-sensitive links
 }
 
 // Footer sections data
@@ -95,7 +96,7 @@ export function getFooterSections(): FooterSection[] {
       links: [
         { href: '/pdf/膠囊生產培訓手冊（香港版-修訂版）.pdf', label: '膠囊生產培訓手冊', isExternal: true },
         { href: '/pdf/保健品行業常見生產風險原料清單.pdf', label: '風險原料清單', isExternal: true },
-        { href: '/history', label: '版本歷史' }
+        { href: '/history', label: '版本歷史', showBadge: true }
       ]
     },
     {

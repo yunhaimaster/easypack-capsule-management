@@ -7,6 +7,8 @@ import { Route } from 'next'
 import { useAuth } from '@/components/auth/auth-provider'
 import { getFooterSections, type FooterSection } from '@/data/navigation'
 import { Download } from 'lucide-react'
+import { CURRENT_VERSION } from '@/data/version-history'
+import { useUpdateNotification } from '@/hooks/use-update-notification'
 
 interface FooterLink {
   href: string
@@ -20,6 +22,7 @@ interface LiquidGlassFooterProps {
 
 export function LiquidGlassFooter({ className = '' }: LiquidGlassFooterProps) {
   const { isAuthenticated } = useAuth()
+  const { shouldShowBadge } = useUpdateNotification()
 
   // Use centralized footer sections data
   const footerSections = getFooterSections()
@@ -72,9 +75,17 @@ export function LiquidGlassFooter({ className = '' }: LiquidGlassFooterProps) {
                     ) : (
                       <Link 
                         href={link.href as Route}
-                        className="liquid-glass-footer-link"
+                        className="liquid-glass-footer-link inline-flex items-center gap-2"
                       >
                         {link.label}
+                        {link.showBadge && shouldShowBadge && (
+                          <span 
+                            className="px-2 py-0.5 bg-danger-500 text-white text-xs rounded-full font-semibold animate-pulse-subtle"
+                            aria-label="有新更新"
+                          >
+                            NEW
+                          </span>
+                        )}
                       </Link>
                     )}
                   </li>
@@ -91,6 +102,14 @@ export function LiquidGlassFooter({ className = '' }: LiquidGlassFooterProps) {
           <p className="text-sm text-neutral-600 dark:text-white/75">
             © 2025 Easy Health. 保留所有權利。
           </p>
+          <Link 
+            href="/history" 
+            className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            aria-label={`當前版本 ${CURRENT_VERSION.version}`}
+            title={`當前版本：${CURRENT_VERSION.version} - ${CURRENT_VERSION.type}`}
+          >
+            {CURRENT_VERSION.version}
+          </Link>
         </div>
       </div>
     </footer>

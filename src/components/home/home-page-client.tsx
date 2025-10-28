@@ -14,6 +14,8 @@ import { sumWorkUnits } from '@/lib/worklog'
 import type { ProductionOrder, OrderWorklog, WorklogWithOrder } from '@/types'
 import { Plus, FileText, ArrowRight, Calendar, Timer, ClipboardList, Clock3, Wand2, FlaskConical, Sparkles, CalendarDays, Download, Library, Clock } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
+import { SafeUpdateCard } from '@/components/home/update-card-safe'
+import { UpdateToastNotifier } from '@/components/home/update-toast'
 
 const QUICK_CARD_PADDING = 'px-4 py-4 sm:px-6 sm:py-6'
 const MINI_CARD_PADDING = 'px-3 sm:px-3.5 py-3'
@@ -113,19 +115,24 @@ export function HomePageClient() {
   // Auth check removed - handled by middleware
 
   return (
-    <div className="min-h-screen logo-bg-animation flex flex-col">
-      <LiquidGlassNav />
+    <>
+      <UpdateToastNotifier />
+      <div className="min-h-screen logo-bg-animation flex flex-col">
+        <LiquidGlassNav />
 
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
-        {/* Page Title */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white/95">
-            Easy Health 工作單營運中樞
-          </h1>
-          <p className="text-sm text-neutral-600 dark:text-white/75">
-            工作單管理、膠囊生產與 AI 助手一站式平台
-          </p>
-        </div>
+        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
+          {/* Page Title */}
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white/95">
+              Easy Health 工作單營運中樞
+            </h1>
+            <p className="text-sm text-neutral-600 dark:text-white/75">
+              工作單管理、膠囊生產與 AI 助手一站式平台
+            </p>
+          </div>
+
+          {/* Update Card at Top (dismissible) */}
+          <SafeUpdateCard position="top" compact={true} dismissible={true} />
 
         {/* Core Functions Section */}
         <div className="space-y-4">
@@ -255,47 +262,12 @@ export function HomePageClient() {
           </div>
         </div>
 
+          {/* Fallback: Update Card at Bottom (if dismissed from top) */}
+          <SafeUpdateCard position="bottom" compact={false} dismissible={false} />
+        </div>
 
-        <Card className="liquid-glass-card liquid-glass-card-elevated">
-          <div className="liquid-glass-content p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
-                <IconContainer icon={CalendarDays} variant="primary" size="md" />
-                <div>
-                  <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">2025年10月28日 · 架構重組</h3>
-                  <p className="text-xs text-neutral-500 dark:text-white/75">最新版本：v2.8.0</p>
-                </div>
-              </div>
-              <Link 
-                href="/history" 
-                className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors duration-300 hover:underline"
-              >
-                查看完整歷史
-              </Link>
-            </div>
-            <ul className="space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-white/75">
-              <li className="flex items-start gap-2">
-                <span className="text-primary-500 mt-0.5">🏢</span>
-                <span><strong>統一工作單系統上線</strong> — 全新工作單架構支援生產、包裝、倉務等多類型工作管理，膠囊訂單整合為工作單子系統，為未來擴展奠定基礎</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-info-500 mt-0.5">🎯</span>
-                <span><strong>導航架構重組</strong> — 「訂單管理」升級為「工作單管理」，清晰展示工作單列表、膠囊訂單等入口，系統定位更明確</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-success-500 mt-0.5">📊</span>
-                <span><strong>首頁全面改版</strong> — 營運中樞轉型為工作單為中心的管理介面，快速存取各類工作任務，提升日常操作效率</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-warning-500 mt-0.5">🔄</span>
-                <span><strong>向下相容保證</strong> — 所有現有膠囊訂單功能完全保留，URL 路徑不變，零業務中斷，平穩過渡到新架構</span>
-              </li>
-            </ul>
-          </div>
-        </Card>
+        <LiquidGlassFooter />
       </div>
-
-      <LiquidGlassFooter />
-    </div>
+    </>
   )
 }
