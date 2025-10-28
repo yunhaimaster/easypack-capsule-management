@@ -60,12 +60,6 @@ export function UpdateCard({
   const { isDismissed, dismissUpdate } = useUpdateNotification()
   const cardRef = useRef<HTMLDivElement>(null)
   
-  // Don't render top card if already dismissed
-  // Bottom card always renders as fallback
-  if (isDismissed && position === 'top') {
-    return null
-  }
-  
   // Select features based on mode
   const features = compact 
     ? CURRENT_VERSION.features.slice(0, 3) // Top 3 for compact
@@ -113,6 +107,13 @@ export function UpdateCard({
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [dismissible, position, isDismissed])
+  
+  // Don't render top card if already dismissed
+  // Bottom card always renders as fallback
+  // ✅ MOVED AFTER ALL HOOKS - Follows Rules of Hooks
+  if (isDismissed && position === 'top') {
+    return null
+  }
   
   return (
     <Card 
