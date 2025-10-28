@@ -104,7 +104,23 @@ export function IngredientWarnings({ recipe }: IngredientWarningsProps) {
       })
 
       clearTimeout(timeoutId)
+      
+      // Log response for debugging
+      if (!response.ok) {
+        console.error('[Ingredient Warnings] API error:', {
+          status: response.status,
+          statusText: response.statusText
+        })
+      }
+      
       const result = await response.json()
+      
+      // Log result for debugging
+      console.log('[Ingredient Warnings] API result:', {
+        success: result.success,
+        error: result.error,
+        hasData: !!result.data
+      })
       
       if (result.success) {
         setWarnings(result.data.warnings || [])
