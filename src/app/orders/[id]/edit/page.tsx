@@ -7,12 +7,14 @@ import { ProductionOrder } from '@/types'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { OrderLockDialog } from '@/components/orders/order-lock-dialog'
 import { useAuth } from '@/components/auth/auth-provider'
+import { useToast } from '@/components/ui/toast-provider'
 
 export default function EditOrderPage() {
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
   const { isAdmin } = useAuth()
+  const { showToast } = useToast()
   const [order, setOrder] = useState<ProductionOrder | null>(null)
   const [loading, setLoading] = useState(true)
   const [showPasswordVerifyDialog, setShowPasswordVerifyDialog] = useState(false)
@@ -20,13 +22,50 @@ export default function EditOrderPage() {
 
   useEffect(() => {
     const fetchOrder = async () => {
+      console.log('[Edit Page] Fetching order:', params.id)
+      
+      // Timeout for order loading (15 seconds)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => {
+        controller.abort()
+        console.error('[Edit Page] Order fetch timeout')
+        showToast({
+          title: '載入超時',
+          description: '訂單載入超時，請檢查網絡連接',
+          variant: 'destructive'
+        })
+      }, 15000)
+      
       try {
-        const response = await fetch(`/api/orders/${params.id}`)
-        if (!response.ok) throw new Error('Failed to fetch order')
+        const response = await fetch(`/api/orders/${params.id}`, {
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          console.error('[Edit Page] Failed to fetch order:', errorData)
+          throw new Error(errorData.error || '載入訂單失敗')
+        }
+        
         const data = await response.json()
+        console.log('[Edit Page] Order loaded successfully')
         setOrder(data)
       } catch (error) {
-        console.error('Error fetching order:', error)
+        clearTimeout(timeoutId)
+        console.error('[Edit Page] Error fetching order:', error)
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          // Timeout already handled above
+          return
+        }
+        
+        showToast({
+          title: '載入失敗',
+          description: error instanceof Error ? error.message : '無法載入訂單資料',
+          variant: 'destructive'
+        })
       } finally {
         setLoading(false)
       }
@@ -35,7 +74,7 @@ export default function EditOrderPage() {
     if (params.id) {
       fetchOrder()
     }
-  }, [params.id])
+  }, [params.id, showToast])
 
   const handlePasswordVerifySuccess = (password?: string) => {
     if (password) {
