@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation'
 import { WorkOrder, User } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Text } from '@/components/ui/text'
 import { TableWrapper } from '@/components/ui/table-wrapper'
 import {
@@ -42,8 +41,6 @@ interface WorkOrderTableProps {
   users: User[]
   isLoading: boolean
   isFetching: boolean
-  selectedIds: string[]
-  onSelectionChange: (ids: string[]) => void
   onSort: (field: string) => void
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
@@ -177,8 +174,6 @@ export function WorkOrderTable({
   users,
   isLoading,
   isFetching,
-  selectedIds,
-  onSelectionChange,
   onSort,
   sortBy,
   sortOrder,
@@ -187,22 +182,6 @@ export function WorkOrderTable({
 }: WorkOrderTableProps) {
   const router = useRouter()
   const { showToast } = useToast()
-
-  const handleSelectAll = () => {
-    if (allSelected) {
-      onSelectionChange([])
-    } else {
-      onSelectionChange(workOrders.map(wo => wo.id))
-    }
-  }
-
-  const handleSelectRow = (id: string, checked: boolean) => {
-    if (checked) {
-      onSelectionChange([...selectedIds, id])
-    } else {
-      onSelectionChange(selectedIds.filter(selectedId => selectedId !== id))
-    }
-  }
 
   const handleToggleProductionStarted = async (workOrderId: string, value: boolean) => {
     try {
@@ -281,9 +260,6 @@ export function WorkOrderTable({
     }
   }
 
-  const allSelected = workOrders.length > 0 && selectedIds.length === workOrders.length
-  const someSelected = selectedIds.length > 0 && selectedIds.length < workOrders.length
-
   return (
     <div className="relative">
       {/* Loading overlay for refetch */}
@@ -304,13 +280,6 @@ export function WorkOrderTable({
           <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
             <thead className="bg-surface-primary/80 dark:bg-elevation-0/80">
               <tr>
-                <th className="px-3 py-3 w-8">
-                  <Checkbox
-                    checked={allSelected}
-                    onCheckedChange={handleSelectAll}
-                    aria-label="選擇全部"
-                  />
-                </th>
                 <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
                   <SortableHeader
                     label="客戶 / 工作"
@@ -384,28 +353,9 @@ export function WorkOrderTable({
                 workOrders.map((workOrder) => (
                     <tr
                       key={workOrder.id}
-                      className={`border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer ${
-                        selectedIds.includes(workOrder.id) 
-                          ? 'bg-primary-50 dark:bg-primary-900/20' 
-                          : ''
-                      }`}
-                      style={{
-                        boxShadow: selectedIds.includes(workOrder.id) 
-                          ? 'inset 4px 0 0 0 rgb(59 130 246)' 
-                          : undefined
-                      }}
+                      className={`border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer`}
                       onClick={() => router.push(`/work-orders/${workOrder.id}`)}
                     >
-                    {/* Checkbox */}
-                    <td className="px-3 py-3">
-                      <Checkbox
-                        checked={selectedIds.includes(workOrder.id)}
-                        onCheckedChange={(checked) => handleSelectRow(workOrder.id, checked as boolean)}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`選擇 ${workOrder.jobNumber || workOrder.customerName}`}
-                      />
-                    </td>
-
                     {/* Customer / Job / Status / Description / VIP / Urgent */}
                     <td className="py-3 px-3 text-sm align-top max-w-md">
                       <div className="flex flex-col gap-1">
@@ -611,13 +561,6 @@ export function WorkOrderTable({
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-start gap-3 flex-1">
-                    <Checkbox
-                      checked={selectedIds.includes(workOrder.id)}
-                      onCheckedChange={(checked) => handleSelectRow(workOrder.id, checked as boolean)}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={`選擇 ${workOrder.jobNumber || workOrder.customerName}`}
-                      className="mt-1"
-                    />
                     <div className="flex-1 min-w-0">
                       {/* Customer Name - LARGE */}
                       <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95 mb-1 truncate">

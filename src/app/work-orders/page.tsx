@@ -18,8 +18,6 @@ import { WorkOrderTable } from '@/components/work-orders/work-order-table'
 import { fetchWithTimeout } from '@/lib/api-client'
 import { ExportDialog } from '@/components/work-orders/export-dialog'
 import { ImportDialog } from '@/components/work-orders/import-dialog'
-import { BulkActionBar } from '@/components/work-orders/bulk-action-bar'
-import { BulkStatusDialog } from '@/components/work-orders/bulk-status-dialog'
 import { SmartFilters, SmartFilterPreset } from '@/components/work-orders/smart-filters'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -94,7 +92,6 @@ function WorkOrdersContent() {
   })
   
   const [searchKeyword, setSearchKeyword] = useState(searchParams.get('keyword') || '')
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(
     searchParams.has('status') || 
     searchParams.has('workType') || 
@@ -126,7 +123,6 @@ function WorkOrdersContent() {
   // Dialog states
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
-  const [isBulkStatusDialogOpen, setIsBulkStatusDialogOpen] = useState(false)
   const [deleteConfirmation, setDeleteConfirmation] = useState<{ isOpen: boolean, ids: string[] }>({ 
     isOpen: false, 
     ids: [] 
@@ -261,27 +257,11 @@ function WorkOrdersContent() {
       }
       
       // Ctrl/Cmd + A: Select all visible rows
-      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
-        e.preventDefault()
-        if (workOrders.length > 0) {
-          setSelectedIds(workOrders.map(wo => wo.id))
-        }
-      }
-      
-      // Escape: Clear selection
-      if (e.key === 'Escape' && selectedIds.length > 0) {
-        setSelectedIds([])
-      }
-      
-      // Delete key: Trigger bulk delete (only if items selected)
-      if (e.key === 'Delete' && selectedIds.length > 0) {
-        handleBulkDeleteClick()
-      }
     }
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedIds, workOrders])
+  }, [workOrders])
 
   // Handle basic search
   const handleSearch = () => {
@@ -459,85 +439,38 @@ function WorkOrdersContent() {
     setDeleteConfirmation({ isOpen: true, ids: [id] })
   }
 
-  // Handle bulk delete
-  const handleBulkDeleteClick = () => {
-    setDeleteConfirmation({ isOpen: true, ids: selectedIds })
-  }
-
-  // Confirm delete
+  // Confirm delete (for single item)
   const handleDeleteConfirm = async () => {
     const { ids } = deleteConfirmation
     
+    if (ids.length === 0) return
+    
     try {
-      // Call delete API
-      const response = await fetch('/api/work-orders/bulk-delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids })
+      // Delete single item
+      const response = await fetch(`/api/work-orders/${ids[0]}`, {
+        method: 'DELETE'
       })
 
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error || '刪除失敗')
       }
-
-      const result = await response.json()
       
       setNotification({
         type: 'success',
-        message: `成功刪除 ${result.deleted || ids.length} 個工作單`
+        message: '成功刪除工作單'
       })
 
-      // Clear selection and close dialog
-      setSelectedIds([])
+      // Close dialog
       setDeleteConfirmation({ isOpen: false, ids: [] })
 
-      // Refetch list immediately (worklog pattern)
+      // Refetch list immediately
       await fetchWorkOrders()
 
       // Auto-hide notification after 3 seconds
       setTimeout(() => setNotification(null), 3000)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : '刪除失敗，請稍後重試'
-      setNotification({
-        type: 'error',
-        message
-      })
-      setTimeout(() => setNotification(null), 5000)
-    }
-  }
-
-  // Handle bulk status change
-  const handleBulkStatusChange = async (newStatus: WorkOrderStatus | null) => {
-    try {
-      const response = await fetch('/api/work-orders/bulk-status', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIds, status: newStatus })
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || '狀態更新失敗')
-      }
-
-      const result = await response.json()
-
-      setNotification({
-        type: 'success',
-        message: `成功更新 ${result.updated || selectedIds.length} 個工作單的狀態`
-      })
-
-      // Clear selection and close dialog
-      setSelectedIds([])
-      setIsBulkStatusDialogOpen(false)
-
-      // Refetch list immediately (worklog pattern)
-      await fetchWorkOrders()
-
-      setTimeout(() => setNotification(null), 3000)
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : '狀態更新失敗，請稍後重試'
       setNotification({
         type: 'error',
         message
@@ -608,15 +541,6 @@ function WorkOrdersContent() {
             </div>
           </div>
         </section>
-
-        {/* Bulk Action Bar - appears when items selected */}
-        <BulkActionBar
-          selectedCount={selectedIds.length}
-          onExport={() => setIsExportDialogOpen(true)}
-          onDelete={handleBulkDeleteClick}
-          onStatusChange={() => setIsBulkStatusDialogOpen(true)}
-          onClearSelection={() => setSelectedIds([])}
-        />
 
         {/* Header with Action Button */}
         <div className="mb-4 sm:mb-8">
@@ -1048,8 +972,6 @@ function WorkOrdersContent() {
             users={users}
             isLoading={isLoading}
             isFetching={isFetching}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
             onSort={handleSort}
             sortBy={filters.sortBy}
             sortOrder={filters.sortOrder}
@@ -1140,7 +1062,7 @@ function WorkOrdersContent() {
       <ExportDialog
         isOpen={isExportDialogOpen}
         onClose={() => setIsExportDialogOpen(false)}
-        selectedIds={selectedIds}
+        selectedIds={[]}
         totalCount={pagination.total}
       />
       
@@ -1151,16 +1073,7 @@ function WorkOrdersContent() {
         onImportSuccess={() => {
           // Refetch data after successful import
           setFilters(prev => ({ ...prev }))
-          setSelectedIds([])
         }}
-      />
-
-      {/* Bulk Status Change Dialog */}
-      <BulkStatusDialog
-        isOpen={isBulkStatusDialogOpen}
-        onClose={() => setIsBulkStatusDialogOpen(false)}
-        selectedCount={selectedIds.length}
-        onConfirm={handleBulkStatusChange}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -1170,11 +1083,7 @@ function WorkOrdersContent() {
           !open && setDeleteConfirmation({ isOpen: false, ids: [] })
         }}
         title="確認刪除"
-        description={
-          deleteConfirmation.ids.length === 1
-            ? "確定要刪除此工作單嗎？此操作無法撤銷。"
-            : `確定要刪除選中的 ${deleteConfirmation.ids.length} 個工作單嗎？此操作無法撤銷。`
-        }
+        description="確定要刪除此工作單嗎？此操作無法撤銷。"
         onConfirm={handleDeleteConfirm}
         confirmLabel="刪除"
         cancelLabel="取消"
