@@ -383,7 +383,16 @@ export function WorkOrderTable({
                 workOrders.map((workOrder) => (
                     <tr
                       key={workOrder.id}
-                      className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer"
+                      className={`border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer ${
+                        selectedIds.includes(workOrder.id) 
+                          ? 'bg-primary-50 dark:bg-primary-900/20' 
+                          : ''
+                      }`}
+                      style={{
+                        boxShadow: selectedIds.includes(workOrder.id) 
+                          ? 'inset 4px 0 0 0 rgb(59 130 246)' 
+                          : undefined
+                      }}
                       onClick={() => router.push(`/work-orders/${workOrder.id}`)}
                     >
                     {/* Checkbox */}

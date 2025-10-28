@@ -35,7 +35,7 @@ export function BulkActionBar({
 
   return (
     <div 
-      className="sticky top-0 z-20 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800 p-4 shadow-md"
+      className="fixed top-28 sm:top-24 left-0 right-0 z-20 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800 p-4 shadow-md"
       role="region"
       aria-label="批量操作工具列"
     >

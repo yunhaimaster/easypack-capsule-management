@@ -156,6 +156,41 @@ export default function WorkOrdersPage() {
     return () => abortControllerRef.current?.abort()
   }, [fetchWorkOrders])
 
+  // Keyboard shortcuts for desktop productivity
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input field
+      if (
+        e.target instanceof HTMLInputElement || 
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return
+      }
+      
+      // Ctrl/Cmd + A: Select all visible rows
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault()
+        if (workOrders.length > 0) {
+          setSelectedIds(workOrders.map(wo => wo.id))
+        }
+      }
+      
+      // Escape: Clear selection
+      if (e.key === 'Escape' && selectedIds.length > 0) {
+        setSelectedIds([])
+      }
+      
+      // Delete key: Trigger bulk delete (only if items selected)
+      if (e.key === 'Delete' && selectedIds.length > 0) {
+        handleBulkDeleteClick()
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedIds, workOrders])
+
   // Handle basic search
   const handleSearch = () => {
     const newFilters = {
