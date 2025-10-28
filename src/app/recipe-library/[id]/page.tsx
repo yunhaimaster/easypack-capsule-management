@@ -185,78 +185,98 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     try {
       // Dynamic import for client-side only
       const jsPDF = (await import('jspdf')).default
-      // Import autoTable - it's a function, not a plugin that extends jsPDF
-      const autoTable = (await import('jspdf-autotable')).default
+      const html2canvas = (await import('html2canvas')).default
       
       const doc = new jsPDF()
       
-      // Set font (using Helvetica for now, which supports basic Latin)
-      doc.setFont('helvetica')
-      
-      // Title
-      doc.setFontSize(18)
-      doc.text(recipe.recipeName, 15, 20)
-      
-      // Metadata section
-      doc.setFontSize(11)
-      let yPos = 35
-      doc.text(`Customer: ${recipe.customerName}`, 15, yPos)
-      yPos += 7
-      doc.text(`Product: ${recipe.productName}`, 15, yPos)
-      yPos += 7
-      doc.text(`Recipe Type: ${recipe.recipeType === 'production' ? 'Production Recipe' : 'Template Recipe'}`, 15, yPos)
-      yPos += 10
-      
-      // Ingredients table
-      doc.setFontSize(14)
-      doc.text('Ingredient List', 15, yPos)
-      yPos += 5
+      // Create a temporary container for rendering Chinese text
+      const tempDiv = document.createElement('div')
+      tempDiv.style.position = 'absolute'
+      tempDiv.style.left = '-9999px'
+      tempDiv.style.padding = '30px'
+      tempDiv.style.backgroundColor = 'white'
+      tempDiv.style.width = '700px'
+      tempDiv.style.fontFamily = "'Microsoft YaHei', 'PingFang SC', 'SimHei', sans-serif"
       
       const ingredients = typeof recipe.ingredients === 'string' 
         ? JSON.parse(recipe.ingredients)
         : recipe.ingredients
-      const tableData = ingredients.map((ing: any) => [
-        ing.materialName,
-        `${ing.unitContentMg} mg`
-      ])
       
-      // Call autoTable as a function, not a method
-      autoTable(doc, {
-        startY: yPos,
-        head: [['Ingredient Name', 'Content per Unit (mg)']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235] },
-        styles: { font: 'helvetica', fontSize: 10 }
+      tempDiv.innerHTML = `
+        <div style="margin-bottom: 30px;">
+          <div style="font-size: 28px; font-weight: bold; color: #2563eb; margin-bottom: 20px; border-bottom: 3px solid #2563eb; padding-bottom: 10px;">
+            ${recipe.recipeName}
+          </div>
+          <div style="font-size: 16px; line-height: 2;">
+            <div><strong>客戶：</strong>${recipe.customerName}</div>
+            <div><strong>產品：</strong>${recipe.productName}</div>
+            <div><strong>配方類型：</strong>${recipe.recipeType === 'production' ? '生產配方' : '模板配方'}</div>
+            <div><strong>單粒總重量：</strong>${recipe.unitWeightMg} mg</div>
+          </div>
+        </div>
+        
+        <div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">原料清單</div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+              <tr style="background-color: #2563eb; color: white;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">原料名稱</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">單粒含量 (mg)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${ingredients.map((ing: any) => `
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 10px;">${ing.materialName}</td>
+                  <td style="border: 1px solid #ddd; padding: 10px;">${ing.unitContentMg}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        ${recipe.aiEffectsAnalysis ? `
+          <div style="margin-top: 30px;">
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">AI 功效分析</div>
+            <div style="font-size: 14px; line-height: 1.8; color: #374151; padding: 15px; background-color: #f3f4f6; border-radius: 8px;">
+              ${recipe.aiEffectsAnalysis}
+            </div>
+          </div>
+        ` : ''}
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #6b7280;">
+          生成時間：${new Date().toLocaleString('zh-HK')}
+        </div>
+      `
+      document.body.appendChild(tempDiv)
+      
+      // Render the entire content as image
+      const canvas = await html2canvas(tempDiv, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false
       })
       
-      yPos = (doc as any).lastAutoTable.finalY + 10
+      document.body.removeChild(tempDiv)
       
-      // Total weight
-      doc.setFontSize(11)
-      doc.text(`Total Weight per Unit: ${recipe.unitWeightMg} mg`, 15, yPos)
+      // Calculate dimensions to fit in PDF
+      const imgWidth = 180 // PDF width minus margins
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
       
-      // AI Effects Analysis (if available)
-      if (recipe.aiEffectsAnalysis) {
-        yPos += 15
-        doc.setFontSize(14)
-        doc.text('AI Effects Analysis', 15, yPos)
-        yPos += 7
-        
-        doc.setFontSize(10)
-        const splitText = doc.splitTextToSize(recipe.aiEffectsAnalysis, 180)
-        doc.text(splitText, 15, yPos)
+      // Add image to PDF (split into multiple pages if needed)
+      const pageHeight = 280 // PDF page height minus margins
+      let heightLeft = imgHeight
+      let position = 10
+      
+      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 15, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+      
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10
+        doc.addPage()
+        doc.addImage(canvas.toDataURL('image/png'), 'PNG', 15, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
       }
-      
-      // Footer with timestamp
-      const pageCount = (doc as any).internal.getNumberOfPages()
-      doc.setFontSize(9)
-      doc.setTextColor(150)
-      doc.text(
-        `Generated: ${new Date().toLocaleString('en-HK')}`,
-        15,
-        doc.internal.pageSize.height - 10
-      )
       
       // Save the PDF
       doc.save(`Recipe_${recipe.recipeName}_${new Date().toISOString().split('T')[0]}.pdf`)
@@ -271,7 +291,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
       
       showToast({
         title: 'Export Successful',
-        description: 'Recipe exported as PDF',
+        description: 'Recipe exported as PDF with Chinese support',
         variant: 'default'
       })
     } catch (error) {
