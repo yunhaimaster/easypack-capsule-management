@@ -35,7 +35,7 @@ export function BulkActionBar({
 
   return (
     <div 
-      className="fixed top-28 sm:top-24 left-0 right-0 z-20 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800 p-4 shadow-md"
+      className="fixed top-28 sm:top-24 left-0 right-0 z-20 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800 p-4 shadow-md backdrop-blur-sm"
       role="region"
       aria-label="批量操作工具列"
     >
@@ -47,8 +47,13 @@ export function BulkActionBar({
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={onClearSelection}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onClearSelection()
+            }}
             aria-label="清除全部選擇"
+            className="cursor-pointer"
           >
             <X className="h-4 w-4 mr-2" />
             清除選擇

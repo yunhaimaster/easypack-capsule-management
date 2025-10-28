@@ -797,19 +797,11 @@ export default function WorkOrdersPage() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={() => {
-                    setSelectedStatuses([])
-                    setSelectedWorkTypes([])
-                    setSelectedPersons([])
-                    setDateFrom('')
-                    setDateTo('')
-                    setVipOnly(false)
-                    setLinkedOnly(undefined)
-                  }}
+                  onClick={handleClearAllFilters}
                   className="transition-apple text-xs sm:text-sm h-9 sm:h-auto"
                   size="sm"
                 >
-                  重設
+                  清除所有篩選
                 </Button>
               </div>
             </div>
