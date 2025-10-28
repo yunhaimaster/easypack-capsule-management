@@ -149,11 +149,33 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
 
   // Unified save handler for both keyboard shortcut and save button
   const handleSave = async () => {
-    if (isSubmitting) return
+    console.log('[Order Form] handleSave called', { isSubmitting })
+    if (isSubmitting) {
+      console.log('[Order Form] Already submitting, ignoring save request')
+      return
+    }
     
+    console.log('[Order Form] Triggering form validation and submission')
     // Use handleSubmit to trigger form validation and submission
-    const submitHandler = handleSubmit(onSubmit)
+    const submitHandler = handleSubmit(onSubmit, (errors) => {
+      // This callback is called when validation fails
+      console.error('[Order Form] Validation failed:', errors)
+      
+      // Show a toast with the first error
+      const firstError = Object.values(errors)[0]
+      const errorMessage = firstError?.message || 
+        (firstError && typeof firstError === 'object' && 'message' in firstError 
+          ? (firstError as any).message 
+          : '請檢查表單中的錯誤')
+      
+      showToast({
+        title: '表單驗證失敗',
+        description: errorMessage,
+        variant: 'destructive'
+      })
+    })
     await submitHandler()
+    console.log('[Order Form] handleSave completed')
   }
 
   // Keyboard shortcut for save (Cmd+S / Ctrl+S)
@@ -215,20 +237,50 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
 
   // 實際提交訂單的函數
   const submitOrder = async (data: ProductionOrderFormData) => {
+    console.log('[Order Form] Starting submitOrder')
     setIsSubmitting(true)
+    
+    // Safety timeout to prevent stuck loading state (30 seconds)
+    const timeoutId = setTimeout(() => {
+      console.error('[Order Form] Submit timeout - resetting isSubmitting')
+      setIsSubmitting(false)
+      showToast({
+        title: '請求超時',
+        description: '儲存請求超時，請檢查網絡連接後重試',
+        variant: 'destructive'
+      })
+    }, 30000)
+    
     try {
       const url = orderId ? `/api/orders/${orderId}` : '/api/orders'
       const method = orderId ? 'PUT' : 'POST'
+      
+      console.log('[Order Form] Preparing payload', { url, method })
+
+      // Validate worklogs before submission
+      const processedWorklogs = data.worklogs?.map((entry, index) => {
+        try {
+          const parsed = worklogSchema.parse(entry)
+          const { minutes, units } = calculateWorkUnits({ 
+            date: parsed.workDate, 
+            startTime: parsed.startTime, 
+            endTime: parsed.endTime, 
+            headcount: Number(parsed.headcount) 
+          })
+          return { ...parsed, workDate: parsed.workDate, effectiveMinutes: minutes, calculatedWorkUnits: units }
+        } catch (error) {
+          console.error(`[Order Form] Worklog validation error at index ${index}:`, error)
+          throw new Error(`工作日誌 #${index + 1} 驗證失敗: ${error instanceof Error ? error.message : '未知錯誤'}`)
+        }
+      })
 
       const payload = {
         ...data,
         verificationPassword: verificationToken ? atob(verificationToken) : undefined,
-        worklogs: data.worklogs?.map((entry) => {
-          const parsed = worklogSchema.parse(entry)
-          const { minutes, units } = calculateWorkUnits({ date: parsed.workDate, startTime: parsed.startTime, endTime: parsed.endTime, headcount: Number(parsed.headcount) })
-          return { ...parsed, workDate: parsed.workDate, effectiveMinutes: minutes, calculatedWorkUnits: units }
-        })
+        worklogs: processedWorklogs
       }
+      
+      console.log('[Order Form] Sending request')
 
       const response = await fetch(url, {
         method,
@@ -237,10 +289,12 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         },
         body: JSON.stringify(payload),
       })
+      
+      console.log('[Order Form] Response received', { ok: response.ok, status: response.status })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        console.error('API Error:', errorData)
+        console.error('[Order Form] API Error:', errorData)
         
         // 處理密碼驗證錯誤
         if (errorData.error === '密碼錯誤' || errorData.error === '需要密碼驗證') {
@@ -253,10 +307,11 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
           return
         }
         
-        throw new Error(`儲存失敗: ${errorData.error || '未知錯誤'}`)
+        throw new Error(`儲存失敗: ${errorData.error || errorData.message || '未知錯誤'}`)
       }
 
-      await response.json()
+      const result = await response.json()
+      console.log('[Order Form] Save successful', result)
 
       // Reset dirty state after successful save
       resetDirty()
@@ -268,7 +323,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       router.push('/orders')
       router.refresh()
     } catch (error) {
-      console.error('Error saving order:', error)
+      console.error('[Order Form] Error saving order:', error)
       const errorMessage = error instanceof Error ? error.message : '儲存失敗，請重試'
       showToast({
         title: '儲存失敗',
@@ -276,19 +331,36 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         variant: 'destructive'
       })
     } finally {
+      clearTimeout(timeoutId)
       setIsSubmitting(false)
+      console.log('[Order Form] submitOrder completed')
     }
   }
 
   // 表單提交入口
   const onSubmit = async (data: ProductionOrderFormData) => {
+    console.log('[Order Form] onSubmit called', { 
+      hasWorklogs: !!data.worklogs?.length,
+      ingredientCount: data.ingredients?.length,
+      customerName: data.customerName,
+      productName: data.productName
+    })
+    
     // 檢查是否修改了受保護的字段（客戶指定的原料）
     const modifiedProtectedFields = hasModifiedProtectedFields(data)
+    
+    console.log('[Order Form] Protection check', { 
+      modifiedProtectedFields, 
+      needsPasswordVerification, 
+      hasToken: !!verificationToken 
+    })
     
     // 只有在修改了受保護字段且有密碼保護時才需要驗證
     if (modifiedProtectedFields && needsPasswordVerification && !verificationToken) {
       // 保存待提交的數據
       pendingSubmitData.current = data
+      
+      console.log('[Order Form] Password verification required')
       
       showToast({
         title: '需要密碼驗證',
@@ -303,6 +375,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
     }
 
     // 如果不需要密碼驗證，或者只修改了非受保護字段，直接提交
+    console.log('[Order Form] Proceeding to submitOrder')
     await submitOrder(data)
   }
 
