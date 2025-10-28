@@ -10,8 +10,14 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients, recipeId } = await request.json()
     
+    console.log('[analyze-interactions] Request received:', {
+      recipeId,
+      ingredientCount: ingredients?.length || 0
+    })
+    
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
     if (!OPENROUTER_API_KEY) {
+      console.error('[analyze-interactions] OpenRouter API key not configured')
       return NextResponse.json({
         success: false,
         error: 'AI 服務暫時無法使用'
@@ -84,19 +90,46 @@ ${ingredientList}
 
     clearTimeout(timeoutId)
 
+    console.log('[analyze-interactions] OpenRouter response:', {
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText
+    })
+
     if (!response.ok) {
+      console.error('[analyze-interactions] OpenRouter API error:', response.status)
       throw new Error('AI API 請求失敗')
     }
 
     const data = await response.json()
     const content = data.choices?.[0]?.message?.content?.trim()
     
+    console.log('[analyze-interactions] AI response:', {
+      hasChoices: !!data.choices,
+      contentLength: content?.length || 0,
+      contentPreview: content?.substring(0, 100)
+    })
+    
     if (!content) {
+      console.error('[analyze-interactions] AI response empty')
       throw new Error('AI 回應為空')
     }
     
     // Parse JSON response
-    const result = JSON.parse(content)
+    let result
+    try {
+      result = JSON.parse(content)
+      console.log('[analyze-interactions] Parsed result:', {
+        hasWarnings: !!result.warnings,
+        warningCount: result.warnings?.length || 0
+      })
+    } catch (parseError) {
+      console.error('[analyze-interactions] JSON parse error:', {
+        error: parseError instanceof Error ? parseError.message : String(parseError),
+        content: content.substring(0, 500)
+      })
+      throw new Error('AI 回應格式錯誤')
+    }
 
     // 🆕 保存相互作用分析到數據庫（失敗不影響響應）
     if (recipeId && result.warnings) {
@@ -134,7 +167,11 @@ ${ingredientList}
       data: result
     })
   } catch (error) {
-    console.error('Analyze interactions error:', error)
+    console.error('[analyze-interactions] Error:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack?.substring(0, 500) : undefined
+    })
     
     if (error instanceof Error && error.name === 'AbortError') {
       return NextResponse.json({
@@ -145,7 +182,7 @@ ${ingredientList}
     
     return NextResponse.json({
       success: false,
-      error: '分析失敗，請重試'
+      error: error instanceof Error ? error.message : '分析失敗，請重試'
     }, { status: 500 })
   }
 }
