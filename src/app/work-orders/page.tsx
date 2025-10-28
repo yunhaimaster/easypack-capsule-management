@@ -448,7 +448,8 @@ function WorkOrdersContent() {
     try {
       // Delete single item
       const response = await fetch(`/api/work-orders/${ids[0]}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
 
       if (!response.ok) {
