@@ -46,6 +46,7 @@
     "date-fns": "^3.0.6",
     "jose": "^5.10.0",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.546.0",
     "luxon": "^3.4.4",
     "nanoid": "^5.1.6",

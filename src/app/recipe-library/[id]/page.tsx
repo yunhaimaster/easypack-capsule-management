@@ -185,7 +185,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     try {
       // Dynamic import for client-side only
       const { jsPDF } = await import('jspdf')
-      require('jspdf-autotable')
+      await import('jspdf-autotable')
       
       const doc = new jsPDF()
       
