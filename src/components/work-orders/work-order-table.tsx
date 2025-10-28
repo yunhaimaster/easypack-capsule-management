@@ -29,7 +29,8 @@ import {
   AlertCircle,
   Star,
   Factory,
-  User as UserIcon
+  User as UserIcon,
+  Calendar
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
@@ -562,117 +563,100 @@ export function WorkOrderTable({
           {(isLoading || isFetching) ? (
             <>
               {[...Array(5)].map((_, i) => (
-                <div key={`skeleton-${i}`} className="p-4 bg-surface-primary rounded-lg">
-                  <Skeleton className="h-24 w-full" />
+                <div key={`skeleton-${i}`} className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700">
+                  {/* Customer name skeleton */}
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  {/* Job number skeleton */}
+                  <Skeleton className="h-4 w-1/3 mb-3" />
+                  {/* Delivery date skeleton */}
+                  <Skeleton className="h-5 w-2/3 mb-2" />
+                  {/* Person in charge skeleton */}
+                  <Skeleton className="h-4 w-1/2 mb-2" />
+                  {/* Badges skeleton */}
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
                 </div>
               ))}
             </>
           ) : workOrders.length === 0 ? (
-            <div className="text-center py-8 text-neutral-500 dark:text-white/65">
-              沒有找到工作單
+            <div className="lg:hidden py-12 px-4 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 mb-4">
+                <div className="text-neutral-400 dark:text-white/55">📋</div>
+              </div>
+              <Text.Primary className="text-lg font-medium mb-2">
+                沒有找到工作單
+              </Text.Primary>
+              <Text.Secondary className="text-sm">
+                嘗試調整篩選條件或新增工作單
+              </Text.Secondary>
             </div>
           ) : (
             workOrders.map((workOrder) => (
               <div
                 key={workOrder.id}
-                className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer"
+                className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer mobile-card"
                 onClick={() => router.push(`/work-orders/${workOrder.id}`)}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-start gap-3 flex-1">
                     <Checkbox
                       checked={selectedIds.includes(workOrder.id)}
                       onCheckedChange={(checked) => handleSelectRow(workOrder.id, checked as boolean)}
                       onClick={(e) => e.stopPropagation()}
                       aria-label={`選擇 ${workOrder.jobNumber || workOrder.customerName}`}
+                      className="mt-1"
                     />
-                    <div className="flex-1 space-y-2">
-                      {/* Customer name */}
-                      <div className="font-semibold text-neutral-900 dark:text-white/95 text-base">
+                    <div className="flex-1 min-w-0">
+                      {/* Customer Name - LARGE */}
+                      <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95 mb-1 truncate">
                         {workOrder.customerName}
-                      </div>
+                      </h3>
                       
-                      {/* Job number + Status */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-neutral-500 dark:text-white/65">
-                          {workOrder.jobNumber || '無編號'}
-                        </span>
-                        <StatusBadge status={workOrder.status} />
-                        <WorkTypeBadge
-                          workType={workOrder.workType}
-                          productionStarted={workOrder.productionStarted}
-                        />
-                      </div>
+                      {/* Job Number - Small, gray */}
+                      <p className="text-xs text-neutral-500 dark:text-white/65 mb-2">
+                        {workOrder.jobNumber || '無編號'}
+                      </p>
                       
-                      {/* VIP badges */}
-                      {(workOrder.isCustomerServiceVip || workOrder.isBossVip || workOrder.isUrgent) && (
-                        <div className="flex items-center gap-1 flex-wrap">
-                          {workOrder.isCustomerServiceVip && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400">
-                              <Star className="h-2.5 w-2.5 fill-current" />
-                              客服VIP
-                            </span>
-                          )}
-                          {workOrder.isBossVip && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-400">
-                              <Star className="h-2.5 w-2.5 fill-current" />
-                              老闆VIP
-                            </span>
-                          )}
-                          {workOrder.isUrgent && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-400">
-                              ⚡ 加急
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Person in charge */}
-                      <div className="text-sm text-neutral-700 dark:text-white/85">
-                        <span className="font-medium">負責人: </span>
-                        {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}
-                      </div>
-                      
-                      {/* Quantity */}
-                      <div className="text-sm text-neutral-700 dark:text-white/85">
-                        <span className="font-medium">數量: </span>
-                        {workOrder.productionQuantity && `生產 ${workOrder.productionQuantity}${workOrder.productionQuantityStat || '個'}`}
-                        {workOrder.productionQuantity && workOrder.packagingQuantity && ' / '}
-                        {workOrder.packagingQuantity && `包裝 ${workOrder.packagingQuantity}${workOrder.packagingQuantityStat || '個'}`}
-                        {!workOrder.productionQuantity && !workOrder.packagingQuantity && '-'}
-                      </div>
-                      
-                      {/* Materials */}
-                      <div className="text-sm space-y-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-medium text-neutral-700 dark:text-white/85">物料: </span>
-                          {workOrder.productionMaterialsReady ? (
-                            <span className="text-success-700 dark:text-success-400 text-xs">生產 ✓</span>
-                          ) : (
-                            <span className="text-neutral-500 dark:text-white/65 text-xs">生產 ✗</span>
-                          )}
-                          {workOrder.packagingMaterialsReady ? (
-                            <span className="text-success-700 dark:text-success-400 text-xs">包裝 ✓</span>
-                          ) : (
-                            <span className="text-neutral-500 dark:text-white/65 text-xs">包裝 ✗</span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Created date */}
-                      <div className="text-xs text-neutral-500 dark:text-white/65">
-                        {workOrder.markedDate
-                          ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK', {
+                      {/* Delivery Date - PROMINENT with icon */}
+                      {workOrder.requestedDeliveryDate && (
+                        <div className="flex items-center gap-1.5 mb-2 text-sm text-neutral-700 dark:text-white/85">
+                          <Calendar className="h-4 w-4 shrink-0" />
+                          <span className="font-medium">
+                            {new Date(workOrder.requestedDeliveryDate).toLocaleDateString('zh-HK', {
                               year: 'numeric',
                               month: '2-digit',
                               day: '2-digit'
-                            })
-                          : '-'}
+                            })}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Essential Info - One line each */}
+                      <div className="space-y-1.5 text-sm text-neutral-700 dark:text-white/85">
+                        {/* Person in charge */}
+                        <div className="flex items-center gap-1.5">
+                          <UserIcon className="h-3.5 w-3.5 text-neutral-500 dark:text-white/65 shrink-0" />
+                          <span>{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
+                        </div>
+                        
+                        {/* Work Type + Badges */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <WorkTypeBadge
+                            workType={workOrder.workType}
+                            productionStarted={workOrder.productionStarted}
+                          />
+                          {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
+                          {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
+                          {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
+                          {workOrder.status && <StatusBadge status={workOrder.status} />}
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Actions dropdown */}
+                  {/* Quick Actions - Right side */}
                   <div onClick={(e) => e.stopPropagation()}>
                     <QuickActionsMenu
                       workOrder={workOrder}

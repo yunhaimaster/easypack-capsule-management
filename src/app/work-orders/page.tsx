@@ -942,9 +942,9 @@ export default function WorkOrdersPage() {
             </Button>
             <Button
               variant="outline"
-              size="sm"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
+              className="h-12 min-w-[88px] lg:h-auto lg:min-w-0"
             >
               上一頁
             </Button>
@@ -953,9 +953,9 @@ export default function WorkOrdersPage() {
             </span>
             <Button
               variant="outline"
-              size="sm"
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.totalPages}
+              className="h-12 min-w-[88px] lg:h-auto lg:min-w-0"
             >
               下一頁
             </Button>

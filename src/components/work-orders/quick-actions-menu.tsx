@@ -122,23 +122,24 @@ export function QuickActionsMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 w-10 lg:h-9 lg:w-9"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-5 w-5 lg:h-4 lg:w-4 animate-spin" />
         ) : (
-          <MoreVertical className="h-4 w-4" />
+          <MoreVertical className="h-5 w-5 lg:h-4 lg:w-4" />
         )}
         <span className="sr-only">操作選單</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-64 lg:w-56">
         {/* Group 1: View/Edit */}
         <DropdownMenuItem
           onClick={(e) => {
             e.stopPropagation()
             router.push(`/work-orders/${workOrder.id}`)
           }}
+          className="h-12 lg:h-auto"
         >
           <Eye className="mr-2 h-4 w-4" />
           <span>查看詳情</span>
@@ -148,6 +149,7 @@ export function QuickActionsMenu({
             e.stopPropagation()
             router.push(`/work-orders/${workOrder.id}/edit`)
           }}
+          className="h-12 lg:h-auto"
         >
           <Edit className="mr-2 h-4 w-4" />
           <span>編輯</span>
@@ -233,6 +235,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <Package className="mr-2 h-4 w-4" />
           <span>{workOrder.productionMaterialsReady ? '取消生產物料齊' : '標記生產物料齊'}</span>
@@ -251,6 +254,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <Package2 className="mr-2 h-4 w-4" />
           <span>{workOrder.packagingMaterialsReady ? '取消包裝物料齊' : '標記包裝物料齊'}</span>
@@ -272,6 +276,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <Factory className="mr-2 h-4 w-4" />
           <span>{workOrder.productionStarted ? '取消已開工' : '標記已開工'}</span>
@@ -290,6 +295,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <CheckCircle className="mr-2 h-4 w-4" />
           <span>{workOrder.isCompleted ? '標記未完成' : '標記已完成'}</span>
@@ -311,6 +317,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <Star className="mr-2 h-4 w-4" />
           <span>{workOrder.isCustomerServiceVip ? '取消客服VIP' : '標記客服VIP'}</span>
@@ -329,6 +336,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <Star className="mr-2 h-4 w-4" />
           <span>{workOrder.isBossVip ? '取消老闆VIP' : '標記老闆VIP'}</span>
@@ -347,6 +355,7 @@ export function QuickActionsMenu({
             )
           }}
           disabled={isLoading}
+          className="h-12 lg:h-auto"
         >
           <AlertTriangle className="mr-2 h-4 w-4" />
           <span>{workOrder.isUrgent ? '取消加急' : '標記加急'}</span>
@@ -364,6 +373,7 @@ export function QuickActionsMenu({
               e.stopPropagation()
               router.push(`/orders/${workOrder.capsulationOrder?.id}`)
             }}
+            className="h-12 lg:h-auto"
           >
             <Link className="mr-2 h-4 w-4" />
             <span>查看關聯訂單</span>
@@ -378,7 +388,7 @@ export function QuickActionsMenu({
             e.stopPropagation()
             onDelete(workOrder.id)
           }}
-          className="text-danger-600 focus:text-danger-600"
+          className="text-danger-600 focus:text-danger-600 h-12 lg:h-auto"
           disabled={isLoading}
         >
           <Trash2 className="mr-2 h-4 w-4" />
