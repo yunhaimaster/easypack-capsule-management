@@ -32,7 +32,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: baseUrl,
   },
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
