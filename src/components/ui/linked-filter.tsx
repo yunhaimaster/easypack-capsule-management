@@ -324,7 +324,7 @@ export function LinkedFilter({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h3 className="text-sm font-semibold text-neutral-700 dark:text-white/85 tracking-wide uppercase">訂單篩選</h3>
-            <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、產品、原料與膠囊規格的即時篩查</p>
+            <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、膠囊配方、原料與膠囊規格的即時篩查</p>
           </div>
           <div className="flex items-center gap-2 sm:self-auto self-start">
             <span className="text-xs font-semibold text-neutral-600 dark:text-white/75">每頁顯示</span>
@@ -377,10 +377,10 @@ export function LinkedFilter({
           </div>
         </div>
 
-        {/* 產品名稱篩選 */}
+        {/* 膠囊配方篩選 */}
         <div className="relative">
           <label className="block text-sm font-medium text-neutral-700 dark:text-white/85 mb-2">
-            產品名稱
+            膠囊配方
           </label>
           <div className="relative">
             <Input
@@ -388,7 +388,7 @@ export function LinkedFilter({
               value={filters.productName}
               onChange={(e) => handleInputChange('productName', e.target.value)}
               onFocus={() => setShowDropdowns(prev => ({ ...prev, product: true }))}
-              placeholder="輸入或選擇產品"
+              placeholder="輸入或選擇配方"
               className="pr-8"
             />
             <button
