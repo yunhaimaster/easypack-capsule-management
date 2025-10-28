@@ -52,29 +52,29 @@ export interface UpdateNotificationState {
  * }
  */
 export function useUpdateNotification(): UpdateNotificationState {
-  // Initialize from storage (SSR-safe)
-  const [isDismissed, setIsDismissed] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    return updateStorage.isDismissed(CURRENT_VERSION.version)
-  })
-  
-  const [hasSeenToast, setHasSeenToast] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    return updateStorage.hasSeenToast(CURRENT_VERSION.version)
-  })
+  // Initialize with false to match SSR (prevents hydration error)
+  const [isDismissed, setIsDismissed] = useState<boolean>(false)
+  const [hasSeenToast, setHasSeenToast] = useState<boolean>(false)
+  const [isNewVersion, setIsNewVersion] = useState<boolean>(false)
+  const [isHydrated, setIsHydrated] = useState<boolean>(false)
   
   /**
-   * Check if current version is newer than last seen version
-   * Memoized to prevent unnecessary comparisons
+   * Hydrate from localStorage after mount (fixes hydration mismatch)
+   * This ensures server and client render the same initial HTML
    */
-  const isNewVersion = useMemo(() => {
-    if (typeof window === 'undefined') return false
+  useEffect(() => {
+    if (typeof window === 'undefined') return
     
+    // Read from storage after mount
+    setIsDismissed(updateStorage.isDismissed(CURRENT_VERSION.version))
+    setHasSeenToast(updateStorage.hasSeenToast(CURRENT_VERSION.version))
+    
+    // Check if new version
     const lastSeen = updateStorage.getLastSeenVersion()
-    if (!lastSeen) return true // First time user, show update
+    setIsNewVersion(!lastSeen || isNewerVersion(CURRENT_VERSION.version, lastSeen))
     
-    return isNewerVersion(CURRENT_VERSION.version, lastSeen)
-  }, []) // Only compute once on mount
+    setIsHydrated(true)
+  }, []) // Only run once on mount
   
   /**
    * Dismiss handler - marks update as dismissed and seen
