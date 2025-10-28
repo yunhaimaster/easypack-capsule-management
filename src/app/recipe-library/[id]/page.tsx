@@ -185,7 +185,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     try {
       // Dynamic import for client-side only
       const jsPDF = (await import('jspdf')).default
-      // Import autoTable to register it as jsPDF plugin (extends doc.autoTable())
+      // Import autoTable - it's a function, not a plugin that extends jsPDF
       const autoTable = (await import('jspdf-autotable')).default
       
       const doc = new jsPDF()
@@ -220,7 +220,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         `${ing.unitContentMg} mg`
       ])
       
-      ;(doc as any).autoTable({
+      // Call autoTable as a function, not a method
+      autoTable(doc, {
         startY: yPos,
         head: [['Ingredient Name', 'Content per Unit (mg)']],
         body: tableData,
