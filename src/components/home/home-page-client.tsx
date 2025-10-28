@@ -165,18 +165,18 @@ export function HomePageClient() {
             <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
-                  <IconContainer icon={Plus} variant="success" size="md" />
+                  <IconContainer icon={FileText} variant="primary" size="md" />
                   <div className="text-right space-y-1">
-                    <h3 className="text-sm font-semibold text-success-600">新增膠囊訂單</h3>
-                    <p className="text-xs text-success-500/70">快速建立生產訂單</p>
+                    <h3 className="text-sm font-semibold text-primary-600">查看膠囊訂單</h3>
+                    <p className="text-xs text-primary-500/70">管理所有生產訂單</p>
                   </div>
                 </div>
                 <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
-                  建立新的膠囊生產訂單，設定原料比例、膠囊規格與生產數量。
+                  查看、搜尋和管理所有膠囊生產訂單，追蹤訂單狀態與生產進度。
                 </p>
                 <div className="mt-auto">
-                  <Button asChild size="sm" className="w-full bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 transition-all duration-300">
-                    <Link href="/orders/new">新增訂單</Link>
+                  <Button asChild size="sm" className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300">
+                    <Link href="/orders">查看訂單</Link>
                   </Button>
                 </div>
               </div>

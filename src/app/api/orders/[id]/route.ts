@@ -297,12 +297,12 @@ export async function PUT(
     })
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { error: '驗證失敗', details: error.message },
+        { success: false, error: '驗證失敗', message: error.message, details: error.message },
         { status: 400 }
       )
     }
     return NextResponse.json(
-      { error: '更新訂單失敗' },
+      { success: false, error: '更新訂單失敗', message: error instanceof Error ? error.message : '未知錯誤' },
       { status: 500 }
     )
   }
