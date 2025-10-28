@@ -66,9 +66,7 @@ export function StickyActionBar({
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 100,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)'
+        zIndex: 100
       }}
     >
       {/* Glass content wrapper */}
@@ -96,11 +94,11 @@ export function StickyActionBar({
               {/* Keyboard shortcut hint */}
               {showKeyboardHint && isDirty && (
                 <div className="hidden md:flex items-center gap-1.5 text-xs text-neutral-500 dark:text-white/65">
-                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 dark:text-white/85 font-mono">
+                  <kbd className="px-2 py-1 bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded text-neutral-700 dark:text-white/95 font-mono">
                     {isMac ? '⌘' : 'Ctrl'}
                   </kbd>
                   <span>+</span>
-                  <kbd className="px-2 py-1 bg-neutral-100 border border-neutral-300 rounded text-neutral-700 dark:text-white/85 font-mono">
+                  <kbd className="px-2 py-1 bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded text-neutral-700 dark:text-white/95 font-mono">
                     S
                   </kbd>
                   <span className="ml-1">儲存</span>
@@ -119,7 +117,12 @@ export function StickyActionBar({
                 className={cn(
                   "min-w-[88px] min-h-[44px]",
                   "touch-feedback",
-                  "transition-apple"
+                  "transition-apple",
+                  // Better dark mode contrast
+                  "bg-white dark:bg-neutral-800",
+                  "text-neutral-700 dark:text-white/95",
+                  "border-neutral-300 dark:border-neutral-600",
+                  "hover:bg-neutral-50 dark:hover:bg-neutral-700"
                 )}
               >
                 <X className="h-4 w-4 mr-1.5" aria-hidden="true" />
@@ -135,10 +138,10 @@ export function StickyActionBar({
                   "min-w-[120px] min-h-[44px]",
                   "touch-feedback",
                   "transition-apple",
-                  // Dynamic styling based on dirty state
+                  // Dynamic styling based on dirty state with proper dark mode
                   isDirty
-                    ? "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-                    : "bg-neutral-200 hover:bg-neutral-300 text-neutral-600 dark:text-white/75"
+                    ? "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white"
+                    : "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300"
                 )}
               >
                 {isSaving ? (
