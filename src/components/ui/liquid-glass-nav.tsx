@@ -94,7 +94,7 @@ export function LiquidGlassNav({
                 Easy Health
               </h1>
               <p className="hidden sm:block text-xs md:text-sm text-neutral-600 dark:text-white/75">
-                膠囊配方管理系統
+                生產管理系統
               </p>
             </div>
           </div>

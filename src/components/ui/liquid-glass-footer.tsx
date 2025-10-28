@@ -46,11 +46,11 @@ export function LiquidGlassFooter({ className = '' }: LiquidGlassFooterProps) {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white/95">Easy Health</h3>
-            <p className="text-sm text-neutral-600 dark:text-white/75">膠囊配方管理系統</p>
+            <p className="text-sm text-neutral-600 dark:text-white/75">生產管理系統</p>
           </div>
         </div>
           <p className="text-sm text-neutral-600 dark:text-white/75 max-w-xs">
-            專業的膠囊灌裝工廠代工管理系統，提供AI驅動的配方生成和生產管理解決方案。
+            專業的生產管理系統，提供AI驅動的配方生成和生產管理解決方案。
           </p>
         </div>
 
