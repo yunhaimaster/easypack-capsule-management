@@ -67,6 +67,7 @@ export function BatchAnalysisModal({ isOpen, onClose, recipes, onComplete }: Bat
         const response = await fetch(`/api/recipes/${recipe.id}/analyze-effects`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           signal: controller.signal
         })
 

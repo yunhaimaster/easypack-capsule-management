@@ -101,6 +101,7 @@ export function EditRecipeDialog({
       const response = await fetch(`/api/recipes/${recipe.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       })
 

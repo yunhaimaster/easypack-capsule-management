@@ -59,6 +59,7 @@ export function SaveRecipeDialog({
       const response = await fetch(`/api/recipes/from-order/${orderId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           recipeName: recipeName.trim(),
           description: description.trim() || undefined,

@@ -92,6 +92,7 @@ export function IngredientWarnings({ recipe }: IngredientWarningsProps) {
       const response = await fetch('/api/recipes/analyze-interactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           recipeId,
           ingredients: ingredients.map(ing => ({

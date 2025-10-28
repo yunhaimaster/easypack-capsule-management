@@ -83,6 +83,7 @@ export function AIInsightsPanel({ recipe }: AIInsightsPanelProps) {
       const response = await fetch('/api/recipes/suggest-alternatives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ 
           recipeId: recipe.id,
           ingredients: recipe.ingredients 
