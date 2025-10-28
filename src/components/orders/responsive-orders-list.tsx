@@ -362,7 +362,9 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                           <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-white/75">
                             <span>{order.customerName}</span>
                             {order.customerService && (
-                              <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">客服：{order.customerService}</span>
+                              <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">
+                                客服：{(order.customerService as any)?.nickname || (order.customerService as any)?.phoneE164 || order.customerService}
+                              </span>
                             )}
                           </div>
                           {hasProcessOrQualityIssues(order) && (

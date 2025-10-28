@@ -144,6 +144,13 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           ingredients: true,
+          customerService: {
+            select: {
+              id: true,
+              nickname: true,
+              phoneE164: true
+            }
+          },
           worklogs: {
             orderBy: { workDate: 'asc' }
           }
@@ -218,6 +225,7 @@ export async function POST(request: NextRequest) {
     const order = await prisma.productionOrder.create({
       data: {
         ...validatedData,
+        customerServiceId: validatedData.customerServiceId === 'UNASSIGNED' ? null : validatedData.customerServiceId,
         completionDate: validatedData.completionDate ? DateTime.fromFormat(validatedData.completionDate, 'yyyy-MM-dd').toJSDate() : null,
         unitWeightMg,
         batchTotalWeightMg,
@@ -255,6 +263,13 @@ export async function POST(request: NextRequest) {
       },
       include: {
         ingredients: true,
+        customerService: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        },
         worklogs: true,
       },
     })

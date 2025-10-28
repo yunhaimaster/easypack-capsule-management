@@ -91,6 +91,13 @@ export async function POST(request: NextRequest) {
       where,
       include: {
         ingredients: includeIngredients,
+        customerService: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        },
         worklogs: {
           orderBy: { workDate: 'asc' }
         }
@@ -149,7 +156,7 @@ export async function POST(request: NextRequest) {
             (order.completionDate instanceof Date ? 
               order.completionDate.toISOString().split('T')[0] : 
               order.completionDate) : '',
-          order.customerService || '',
+          order.customerService ? (order.customerService.nickname || order.customerService.phoneE164) : '',
           order.actualProductionQuantity != null ? order.actualProductionQuantity.toString() : '',
           order.materialYieldQuantity != null ? order.materialYieldQuantity.toString() : '',
           totalWorkUnits.toString()

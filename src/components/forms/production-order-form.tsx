@@ -22,6 +22,8 @@ import { StickyActionBar } from '@/components/ui/sticky-action-bar'
 import { useSaveShortcut } from '@/hooks/use-keyboard-shortcut'
 import { useDirtyForm } from '@/hooks/use-dirty-form'
 import { useImportReview } from '@/hooks/use-import-review'
+import { useUsers } from '@/lib/queries/work-orders'
+import type { User } from '@/types/work-order'
 
 interface ProductionOrderFormProps {
   initialData?: Partial<ProductionOrderFormData>
@@ -43,6 +45,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
   const [hasStartedTyping, setHasStartedTyping] = useState(false)
   const pendingSubmitData = useRef<ProductionOrderFormData | null>(null)
   const { openReview, drawer } = useImportReview()
+  const { data: users, isLoading: usersLoading } = useUsers()
 
   // 處理產品名字的智能預填
   const handleProductNameFocus = () => {
@@ -77,7 +80,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       capsuleColor: initialData?.capsuleColor || '',
       capsuleSize: initialData?.capsuleSize || null,
       capsuleType: initialData?.capsuleType || null,
-      customerService: initialData?.customerService || '',
+      customerServiceId: initialData?.customerServiceId || 'UNASSIGNED',
       actualProductionQuantity: initialData?.actualProductionQuantity ?? undefined,
       materialYieldQuantity: initialData?.materialYieldQuantity ?? undefined,
       ingredients: initialData?.ingredients?.map(ingredient => ({
@@ -124,7 +127,7 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
     capsuleColor: initialData?.capsuleColor || '',
     capsuleSize: initialData?.capsuleSize || null,
     capsuleType: initialData?.capsuleType || null,
-    customerService: initialData?.customerService || '',
+    customerServiceId: initialData?.customerServiceId || 'UNASSIGNED',
     actualProductionQuantity: initialData?.actualProductionQuantity ?? undefined,
     materialYieldQuantity: initialData?.materialYieldQuantity ?? undefined,
     ingredients: initialData?.ingredients?.map(ingredient => ({
@@ -585,14 +588,37 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
 
             <div className="space-y-2">
               <Label htmlFor="customerService">客服 *</Label>
-              <Input
-                id="customerService"
-                {...register('customerService')}
-                placeholder="請輸入客服姓名"
-                className="flex-1 form-focus-effect input-micro-focus"
-              />
-              {errors.customerService && (
-                <p className="text-sm text-destructive">{errors.customerService.message}</p>
+              {usersLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm text-neutral-600">載入用戶列表中...</span>
+                </div>
+              ) : (
+                <Controller
+                  name="customerServiceId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || undefined}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger id="customerService" className="flex-1">
+                        <SelectValue placeholder="請選擇客服" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="UNASSIGNED">未指定</SelectItem>
+                        {users?.map((user: User) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.nickname || user.phoneE164}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              )}
+              {errors.customerServiceId && (
+                <p className="text-sm text-destructive">{errors.customerServiceId.message}</p>
               )}
             </div>
 

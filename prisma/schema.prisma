@@ -96,6 +96,7 @@ model User {
   auditLogs             AuditLog[]
   workOrdersInCharge    UnifiedWorkOrder[]  @relation("WorkOrderPersonInCharge")
   capsulationOrders     CapsulationOrder[]  @relation("CapsulationOrderCustomerService")
+  productionOrders      ProductionOrder[]   @relation("ProductionOrderCustomerService")
 
   @@index([role])
   @@map("users")
@@ -175,7 +176,11 @@ model ProductionOrder {
   capsuleType              String? // 膠囊成份 (明膠胃溶, 植物胃溶, 明膠腸溶, 植物腸溶)
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
-  customerService          String? // 客服姓名
+  
+  // User reference with safe deletion
+  customerServiceId        String?
+  customerService          User?          @relation("ProductionOrderCustomerService", fields: [customerServiceId], references: [id], onDelete: SetNull)
+  
   actualProductionQuantity Int? // 實際生產完成數量（粒）
   materialYieldQuantity    Int? // 材料實際可做數量（粒）
   lockPassword             String? // 4 位數密碼保護（nullable）
@@ -183,6 +188,7 @@ model ProductionOrder {
   worklogs                 OrderWorklog[]
 
   @@index([completionDate, createdAt])
+  @@index([customerServiceId])
   @@map("production_orders")
 }
 

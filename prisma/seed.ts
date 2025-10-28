@@ -17,7 +17,6 @@ async function main() {
       capsuleColor: '白色',
       capsuleSize: '#0',
       capsuleType: '明膠胃溶',
-      customerService: '張小姐',
       actualProductionQuantity: null,
       materialYieldQuantity: null,
       ingredients: [
@@ -37,7 +36,6 @@ async function main() {
       capsuleColor: '透明',
       capsuleSize: '#1',
       capsuleType: '植物胃溶',
-      customerService: '李小姐',
       actualProductionQuantity: null,
       materialYieldQuantity: null,
       ingredients: [
@@ -56,7 +54,6 @@ async function main() {
       capsuleColor: '棕色',
       capsuleSize: '#0',
       capsuleType: '明膠腸溶',
-      customerService: '王小姐',
       actualProductionQuantity: null,
       materialYieldQuantity: null,
       ingredients: [
@@ -76,7 +73,6 @@ async function main() {
       capsuleColor: '黃色',
       capsuleSize: '#00',
       capsuleType: '植物腸溶',
-      customerService: '陳小姐',
       actualProductionQuantity: null,
       materialYieldQuantity: null,
       ingredients: [
@@ -95,7 +91,6 @@ async function main() {
       capsuleColor: '藍色',
       capsuleSize: '#1',
       capsuleType: '明膠胃溶',
-      customerService: '林小姐',
       actualProductionQuantity: null,
       materialYieldQuantity: null,
       ingredients: [
@@ -128,7 +123,6 @@ async function main() {
         capsuleColor: orderData.capsuleColor,
         capsuleSize: orderData.capsuleSize,
         capsuleType: orderData.capsuleType,
-        customerService: orderData.customerService,
         actualProductionQuantity: orderData.actualProductionQuantity ?? null,
         materialYieldQuantity: orderData.materialYieldQuantity ?? null,
         ingredients: {

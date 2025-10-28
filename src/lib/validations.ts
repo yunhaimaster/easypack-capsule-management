@@ -113,10 +113,9 @@ export const productionOrderSchema = z.object({
     })
     .optional()
     .nullable(),
-  customerService: z
-    .string({ required_error: '客服姓名不能為空' })
-    .min(1, '客服姓名不能為空')
-    .max(100, '客服姓名不能超過100字')
+  customerServiceId: z
+    .string({ required_error: '客服為必填項' })
+    .min(1, '請選擇客服')
     .optional()
     .nullable(),
   actualProductionQuantity: z

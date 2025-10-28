@@ -34,6 +34,13 @@ export async function GET(
       where: { id },
       include: {
         ingredients: true,
+        customerService: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        },
         worklogs: {
           orderBy: { workDate: 'asc' }
         }
@@ -236,7 +243,7 @@ export async function PUT(
         capsuleColor: orderPayload.capsuleColor,
         capsuleSize: orderPayload.capsuleSize,
         capsuleType: orderPayload.capsuleType,
-        customerService: orderPayload.customerService,
+        customerServiceId: orderPayload.customerServiceId === 'UNASSIGNED' ? null : orderPayload.customerServiceId,
         actualProductionQuantity: orderPayload.actualProductionQuantity ?? null,
         materialYieldQuantity: orderPayload.materialYieldQuantity ?? null,
         // 更新原料：先刪除舊的再新增，包含客戶來源標記
@@ -256,6 +263,13 @@ export async function PUT(
       },
       include: {
         ingredients: true,
+        customerService: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        },
         worklogs: {
           orderBy: { workDate: 'asc' }
         }
