@@ -13,6 +13,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { WorkOrder, User } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +35,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 import { QuickActionsMenu } from './quick-actions-menu'
 import { useToast } from '@/components/ui/toast-provider'
-import { WorkOrderPopup } from './work-order-popup'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
@@ -119,7 +119,7 @@ function WorkTypeBadge({ workType, productionStarted }: { workType: string; prod
 }
 
 /**
- * Delivery date cell component with urgency color coding
+ * Delivery date cell component - neutral display
  */
 function DeliveryDateCell({ requestedDeliveryDate }: { requestedDeliveryDate: Date | null | undefined }) {
   if (!requestedDeliveryDate) {
@@ -127,35 +127,6 @@ function DeliveryDateCell({ requestedDeliveryDate }: { requestedDeliveryDate: Da
   }
 
   const deliveryDate = new Date(requestedDeliveryDate)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  deliveryDate.setHours(0, 0, 0, 0)
-  
-  const daysUntil = Math.ceil((deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  
-  // Determine color based on urgency
-  let colorClass = 'text-neutral-700 dark:text-white/85'
-  let icon = null
-  
-  if (daysUntil < 0) {
-    // Overdue
-    colorClass = 'text-danger-700 dark:text-danger-400 font-medium'
-    icon = <AlertCircle className="h-3 w-3 text-danger-600 dark:text-danger-400" />
-  } else if (daysUntil === 0) {
-    // Today
-    colorClass = 'text-warning-700 dark:text-warning-400 font-medium'
-    icon = <AlertCircle className="h-3 w-3 text-warning-600 dark:text-warning-400" />
-  } else if (daysUntil <= 3) {
-    // Within 3 days
-    colorClass = 'text-warning-700 dark:text-warning-400'
-  } else if (daysUntil <= 7) {
-    // Within a week
-    colorClass = 'text-neutral-700 dark:text-white/85'
-  } else {
-    // More than a week away
-    colorClass = 'text-neutral-600 dark:text-white/75'
-  }
-
   const formattedDate = deliveryDate.toLocaleDateString('zh-HK', {
     year: 'numeric',
     month: '2-digit',
@@ -163,27 +134,9 @@ function DeliveryDateCell({ requestedDeliveryDate }: { requestedDeliveryDate: Da
   })
 
   return (
-    <div className="flex flex-col gap-0.5">
-      <div className={`flex items-center gap-1.5 text-xs ${colorClass}`}>
-        {icon}
-        <span>{formattedDate}</span>
-      </div>
-      {daysUntil < 0 && (
-        <span className="text-xs text-danger-600 dark:text-danger-400">
-          已逾期 {Math.abs(daysUntil)} 天
-        </span>
-      )}
-      {daysUntil === 0 && (
-        <span className="text-xs text-warning-600 dark:text-warning-400">
-          今天到期
-        </span>
-      )}
-      {daysUntil > 0 && daysUntil <= 3 && (
-        <span className="text-xs text-warning-600 dark:text-warning-400">
-          {daysUntil} 天內到期
-        </span>
-      )}
-    </div>
+    <span className="text-xs text-neutral-700 dark:text-white/85">
+      {formattedDate}
+    </span>
   )
 }
 
@@ -230,6 +183,7 @@ export function WorkOrderTable({
   onDelete,
   onRefresh
 }: WorkOrderTableProps) {
+  const router = useRouter()
   const { showToast } = useToast()
 
   const handleSelectAll = () => {
@@ -426,10 +380,10 @@ export function WorkOrderTable({
                 </tr>
               ) : (
                 workOrders.map((workOrder) => (
-                  <WorkOrderPopup key={workOrder.id} workOrder={workOrder} side="top">
                     <tr
+                      key={workOrder.id}
                       className="border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer"
-                      onClick={() => window.location.href = `/work-orders/${workOrder.id}`}
+                      onClick={() => router.push(`/work-orders/${workOrder.id}`)}
                     >
                     {/* Checkbox */}
                     <td className="px-3 py-3">
@@ -595,7 +549,6 @@ export function WorkOrderTable({
                       />
                     </td>
                   </tr>
-                  </WorkOrderPopup>
                 ))
               )}
             </tbody>
@@ -623,7 +576,7 @@ export function WorkOrderTable({
               <div
                 key={workOrder.id}
                 className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => window.location.href = `/work-orders/${workOrder.id}`}
+                onClick={() => router.push(`/work-orders/${workOrder.id}`)}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 flex-1">
