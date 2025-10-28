@@ -74,50 +74,50 @@ export function AdminPageClient() {
         <div className="flex gap-2 mb-6 overflow-x-auto">
           <button
             onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
               activeTab === 'users'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
-            <Users className="h-4 w-4" />
-            用戶管理
+            <Users className="h-4 w-4 flex-shrink-0" />
+            <span className="leading-none">用戶管理</span>
           </button>
           
           <button
             onClick={() => setActiveTab('sessions')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
               activeTab === 'sessions'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
-            <Monitor className="h-4 w-4" />
-            活躍會話
+            <Monitor className="h-4 w-4 flex-shrink-0" />
+            <span className="leading-none">活躍會話</span>
           </button>
 
           <button
             onClick={() => setActiveTab('devices')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
               activeTab === 'devices'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
-            <Smartphone className="h-4 w-4" />
-            受信任設備
+            <Smartphone className="h-4 w-4 flex-shrink-0" />
+            <span className="leading-none">受信任設備</span>
           </button>
           
           <button
             onClick={() => setActiveTab('logs')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
               activeTab === 'logs'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
-            <FileText className="h-4 w-4" />
-            審計日誌
+            <FileText className="h-4 w-4 flex-shrink-0" />
+            <span className="leading-none">審計日誌</span>
           </button>
         </div>
 
