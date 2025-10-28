@@ -40,7 +40,6 @@ export function LiquidGlassFooter({ className = '' }: LiquidGlassFooterProps) {
               fill
               className="object-contain"
               priority
-              quality={90}
               sizes="32px"
             />
           </div>
