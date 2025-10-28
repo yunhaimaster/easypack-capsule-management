@@ -45,6 +45,7 @@ export function BulkActionBar({
             已選擇 {selectedCount} 項
           </Badge>
           <Button 
+            type="button"
             variant="ghost" 
             size="sm" 
             onClick={(e) => {
@@ -61,27 +62,42 @@ export function BulkActionBar({
         </div>
         <div className="flex gap-2 flex-wrap">
           <Button 
+            type="button"
             variant="outline" 
             size="sm" 
-            onClick={onExport}
+          onClick={(e) => { 
+            e.preventDefault()
+            e.stopPropagation()
+            onExport()
+          }}
             aria-label={`匯出選中的 ${selectedCount} 個工作單`}
           >
             <FileDown className="h-4 w-4 mr-2" />
             匯出選中項
           </Button>
           <Button 
+            type="button"
             variant="outline" 
             size="sm" 
-            onClick={onStatusChange}
+          onClick={(e) => { 
+            e.preventDefault()
+            e.stopPropagation()
+            onStatusChange()
+          }}
             aria-label={`變更選中的 ${selectedCount} 個工作單的狀態`}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             變更狀態
           </Button>
           <Button 
+            type="button"
             variant="outline" 
             size="sm" 
-            onClick={onDelete} 
+          onClick={(e) => { 
+            e.preventDefault()
+            e.stopPropagation()
+            onDelete()
+          }}
             className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 border-danger-200"
             aria-label={`刪除選中的 ${selectedCount} 個工作單`}
           >

@@ -10,8 +10,8 @@
 
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { Route } from 'next'
 import { useUsers } from '@/lib/queries/work-orders'
 import { WorkOrderTable } from '@/components/work-orders/work-order-table'
@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/accessible-dialog'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Text } from '@/components/ui/text'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
@@ -37,31 +38,90 @@ import { Plus, Search, FileDown, Upload, Filter, X, Briefcase } from 'lucide-rea
 import type { WorkOrderSearchFilters, SortField, WorkOrder } from '@/types/work-order'
 import { WorkOrderStatus, WorkType, WORK_ORDER_STATUS_LABELS, WORK_TYPE_LABELS } from '@/types/work-order'
 
-export default function WorkOrdersPage() {
+// Type-safe URL param parsing
+function parseStatusFromURL(value: string): WorkOrderStatus | null {
+  if (value === 'null') return null
+  const validStatuses: WorkOrderStatus[] = ['PAUSED', 'COMPLETED', 'CANCELLED']
+  return validStatuses.includes(value as WorkOrderStatus) ? (value as WorkOrderStatus) : null
+}
+
+function parseWorkTypeFromURL(value: string): WorkType | null {
+  const validTypes: WorkType[] = ['PACKAGING', 'PRODUCTION', 'PRODUCTION_PACKAGING', 'WAREHOUSING']
+  return validTypes.includes(value as WorkType) ? (value as WorkType) : null
+}
+
+function WorkOrdersContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   
-  // Search filters state
-  const [filters, setFilters] = useState<WorkOrderSearchFilters>({
-    page: 1,
-    limit: 25,
-    sortBy: 'markedDate',
-    sortOrder: 'desc',
-    isCompleted: false  // Hide completed orders by default
+  // Safety check for searchParams (can be null during SSR)
+  const safeGet = useCallback((key: string) => {
+    try {
+      return searchParams?.get(key) || ''
+    } catch {
+      return ''
+    }
+  }, [searchParams])
+  
+  // Initialize filters from URL with validation
+  const [filters, setFilters] = useState<WorkOrderSearchFilters>(() => {
+    return {
+      page: Math.max(1, parseInt(safeGet('page') || '1')),
+      limit: [10, 25, 50, 100].includes(parseInt(searchParams.get('limit') || '25')) 
+        ? parseInt(searchParams.get('limit') || '25') 
+        : 25,
+      sortBy: (searchParams.get('sortBy') as SortField) || 'markedDate',
+      sortOrder: searchParams.get('sortOrder') === 'asc' ? 'asc' : 'desc',
+      isCompleted: searchParams.get('showCompleted') === 'true' ? undefined : false,
+      keyword: searchParams.get('keyword') || undefined,
+      status: searchParams.getAll('status')
+        .map(parseStatusFromURL)
+        .filter((s): s is WorkOrderStatus | null => s !== null && s !== undefined),
+      workType: searchParams.getAll('workType')
+        .map(parseWorkTypeFromURL)
+        .filter((t): t is WorkType => t !== null),
+      personInCharge: searchParams.getAll('personInCharge')
+        .filter(p => p.length > 0),
+      dateFrom: searchParams.get('dateFrom') || undefined,
+      dateTo: searchParams.get('dateTo') || undefined,
+      isVip: searchParams.get('isVip') === 'true' || undefined,
+      hasLinkedCapsulation: searchParams.get('linked') === 'true' 
+        ? true 
+        : searchParams.get('linked') === 'false' 
+          ? false 
+          : undefined,
+    }
   })
   
-  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState(searchParams.get('keyword') || '')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(
+    searchParams.has('status') || 
+    searchParams.has('workType') || 
+    searchParams.has('personInCharge') ||
+    searchParams.has('dateFrom') ||
+    searchParams.has('isVip')
+  )
   
-  // Advanced filter states
-  const [selectedStatuses, setSelectedStatuses] = useState<(WorkOrderStatus | null)[]>([])
-  const [selectedWorkTypes, setSelectedWorkTypes] = useState<WorkType[]>([])
-  const [selectedPersons, setSelectedPersons] = useState<string[]>([])
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
-  const [vipOnly, setVipOnly] = useState(false)
-  const [linkedOnly, setLinkedOnly] = useState<boolean | undefined>(undefined)
-  const [showCompleted, setShowCompleted] = useState(false)  // Hide completed orders by default
+  // Advanced filter states (initialize from URL)
+  const [selectedStatuses, setSelectedStatuses] = useState<(WorkOrderStatus | null)[]>(
+    searchParams.getAll('status').map(parseStatusFromURL).filter((s): s is WorkOrderStatus | null => s !== null && s !== undefined)
+  )
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<WorkType[]>(
+    searchParams.getAll('workType').map(parseWorkTypeFromURL).filter((t): t is WorkType => t !== null)
+  )
+  const [selectedPersons, setSelectedPersons] = useState<string[]>(
+    searchParams.getAll('personInCharge').filter(p => p.length > 0)
+  )
+  const [dateFrom, setDateFrom] = useState(searchParams.get('dateFrom') || '')
+  const [dateTo, setDateTo] = useState(searchParams.get('dateTo') || '')
+  const [vipOnly, setVipOnly] = useState(searchParams.get('isVip') === 'true')
+  const [linkedOnly, setLinkedOnly] = useState<boolean | undefined>(
+    searchParams.get('linked') === 'true' ? true 
+      : searchParams.get('linked') === 'false' ? false 
+      : undefined
+  )
+  const [showCompleted, setShowCompleted] = useState(searchParams.get('showCompleted') === 'true')
   
   // Dialog states
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
@@ -87,6 +147,38 @@ export default function WorkOrdersPage() {
   // Fetch users for person filter
   const { data: usersData } = useUsers()
   const users = usersData || []
+  
+  // Sync filters to URL
+  const syncFiltersToURL = useCallback((newFilters: WorkOrderSearchFilters) => {
+    const params = new URLSearchParams()
+    
+    // Only add non-default values
+    if (newFilters.page && newFilters.page > 1) params.set('page', String(newFilters.page))
+    if (newFilters.limit && newFilters.limit !== 25) params.set('limit', String(newFilters.limit))
+    if (newFilters.sortBy && newFilters.sortBy !== 'markedDate') params.set('sortBy', newFilters.sortBy)
+    if (newFilters.sortOrder && newFilters.sortOrder !== 'desc') params.set('sortOrder', newFilters.sortOrder)
+    if (newFilters.keyword) params.set('keyword', newFilters.keyword)
+    
+    // Arrays
+    newFilters.status?.forEach(s => params.append('status', s === null ? 'null' : s))
+    newFilters.workType?.forEach(t => params.append('workType', t))
+    newFilters.personInCharge?.forEach(p => params.append('personInCharge', p))
+    
+    // Dates
+    if (newFilters.dateFrom) params.set('dateFrom', newFilters.dateFrom)
+    if (newFilters.dateTo) params.set('dateTo', newFilters.dateTo)
+    
+    // Booleans
+    if (newFilters.isVip) params.set('isVip', 'true')
+    if (newFilters.hasLinkedCapsulation !== undefined) {
+      params.set('linked', String(newFilters.hasLinkedCapsulation))
+    }
+    if (newFilters.isCompleted === undefined) params.set('showCompleted', 'true')
+    
+    // Update URL without navigation (replaceState, not push)
+    const newURL = params.toString() ? `/work-orders?${params.toString()}` : '/work-orders'
+    router.replace(newURL as Route, { scroll: false })
+  }, [router])
 
   // Manual fetch function (like worklogs)
   const fetchWorkOrders = useCallback(async (newFilters = filters) => {
@@ -199,6 +291,7 @@ export default function WorkOrdersPage() {
       page: 1
     }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -216,8 +309,23 @@ export default function WorkOrdersPage() {
       page: 1
     }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
-    // Keep filter panel open so users can see their selections and adjust easily
+    
+    // Auto-collapse filter panel after applying
+    setShowAdvancedFilters(false)
+    
+    // Smooth scroll to table after brief delay
+    setTimeout(() => {
+      const tableWrapper = document.querySelector('[role="table"]') || document.querySelector('table')
+      if (tableWrapper) {
+        tableWrapper.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest',
+          inline: 'nearest'
+        })
+      }
+    }, 150)
   }
 
   // Clear all filters
@@ -240,6 +348,7 @@ export default function WorkOrdersPage() {
       isCompleted: false  // Reset to hide completed orders
     }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -306,6 +415,7 @@ export default function WorkOrdersPage() {
 
     setActiveSmartFilter(preset.id)
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -324,6 +434,7 @@ export default function WorkOrdersPage() {
       page: 1
     }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -331,6 +442,7 @@ export default function WorkOrdersPage() {
   const handlePageChange = (newPage: number) => {
     const newFilters = { ...filters, page: newPage }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -338,6 +450,7 @@ export default function WorkOrdersPage() {
   const handleLimitChange = (newLimit: number) => {
     const newFilters = { ...filters, limit: newLimit, page: 1 }
     setFilters(newFilters)
+    syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
   }
 
@@ -395,7 +508,7 @@ export default function WorkOrdersPage() {
   }
 
   // Handle bulk status change
-  const handleBulkStatusChange = async (newStatus: WorkOrderStatus) => {
+  const handleBulkStatusChange = async (newStatus: WorkOrderStatus | null) => {
     try {
       const response = await fetch('/api/work-orders/bulk-status', {
         method: 'PATCH',
@@ -772,6 +885,7 @@ export default function WorkOrdersPage() {
                           page: 1
                         }
                         setFilters(newFilters)
+                        syncFiltersToURL(newFilters)
                         fetchWorkOrders(newFilters)
                       }}
                       className="transition-apple"
@@ -1100,5 +1214,17 @@ export default function WorkOrdersPage() {
       </div>
       <LiquidGlassFooter />
     </div>
+  )
+}
+
+export default function WorkOrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    }>
+      <WorkOrdersContent />
+    </Suspense>
   )
 }

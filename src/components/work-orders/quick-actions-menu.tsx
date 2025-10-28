@@ -36,14 +36,14 @@ import {
   Star,
   AlertTriangle
 } from 'lucide-react'
-import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS } from '@/types/work-order'
+import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS, getValidStatusTransitions } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
 import { useToast } from '@/components/ui/toast-provider'
 
 interface QuickActionsMenuProps {
   workOrder: WorkOrder
   onDelete: (id: string) => void
-  onStatusChange?: (id: string, newStatus: WorkOrderStatus) => Promise<void>
+  onStatusChange?: (id: string, newStatus: WorkOrderStatus | null) => Promise<void>
   onToggleMaterialReady?: (id: string, field: 'production' | 'packaging', value: boolean) => Promise<void>
   onToggleProductionStarted?: (id: string, value: boolean) => Promise<void>
   onRefresh?: () => Promise<void>  // Fixed: should be async
@@ -165,61 +165,128 @@ export function QuickActionsMenu({
               <span>更改狀態</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {/* Only show CANCELLED option - COMPLETED is auto-triggered by checkbox */}
-              {workOrder.status !== 'CANCELLED' && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleAction(
-                      'status-change',
-                      () => onStatusChange(workOrder.id, 'CANCELLED'),
-                      '狀態已更改為：已取消',
-                      true // Skip refresh - handleStatusChange handles it
-                    )
-                  }}
-                  disabled={isLoading}
-                >
-                  <span className="text-danger-600">已取消</span>
-                  {loadingAction === 'status-change' && (
-                    <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-                  )}
-                </DropdownMenuItem>
-              )}
+              {(() => {
+                // Get valid transitions for current status
+                const validTransitions = getValidStatusTransitions(workOrder.status)
+                
+                // If no valid transitions, show disabled message
+                if (validTransitions.length === 0) {
+                  return (
+                    <DropdownMenuItem disabled>
+                      <span className="text-neutral-500 text-xs">
+                        此狀態無法變更（終態）
+                      </span>
+                    </DropdownMenuItem>
+                  )
+                }
+                
+                return (
+                  <>
+                    {/* UNPAUSE option - show FIRST when paused */}
+                    {validTransitions.includes(null) && workOrder.status === 'PAUSED' && (
+                      <>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleAction(
+                              'status-unpause',
+                              () => onStatusChange(workOrder.id, null),
+                              '工作單已恢復進行',
+                              true
+                            )
+                          }}
+                          disabled={isLoading}
+                          className="h-12 lg:h-auto"
+                        >
+                          <span className="text-primary-600">恢復進行</span>
+                          {loadingAction === 'status-unpause' && (
+                            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    
+                    {/* Show PAUSED if it's a valid transition */}
+                    {validTransitions.includes('PAUSED') && (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAction(
+                            'status-paused',
+                            () => onStatusChange(workOrder.id, 'PAUSED'),
+                            '狀態已更改為：已暫停',
+                            true
+                          )
+                        }}
+                        disabled={isLoading}
+                        className="h-12 lg:h-auto"
+                      >
+                        <span className="text-warning-600">已暫停</span>
+                        {loadingAction === 'status-paused' && (
+                          <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                        )}
+                      </DropdownMenuItem>
+                    )}
+                    
+                    {/* Show COMPLETED if it's a valid transition */}
+                    {validTransitions.includes('COMPLETED') && (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAction(
+                            'status-completed',
+                            () => onStatusChange(workOrder.id, 'COMPLETED'),
+                            '狀態已更改為：已完成',
+                            true
+                          )
+                        }}
+                        disabled={isLoading}
+                        className="h-12 lg:h-auto"
+                      >
+                        <span className="text-success-600">已完成</span>
+                        {loadingAction === 'status-completed' && (
+                          <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                        )}
+                      </DropdownMenuItem>
+                    )}
+                    
+                    {/* Show CANCELLED if it's a valid transition */}
+                    {validTransitions.includes('CANCELLED') && (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAction(
+                            'status-cancelled',
+                            () => onStatusChange(workOrder.id, 'CANCELLED'),
+                            '狀態已更改為：已取消',
+                            true
+                          )
+                        }}
+                        disabled={isLoading}
+                        className="h-12 lg:h-auto"
+                      >
+                        <span className="text-danger-600">已取消</span>
+                        {loadingAction === 'status-cancelled' && (
+                          <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                        )}
+                      </DropdownMenuItem>
+                    )}
+                  </>
+                )
+              })()}
               
-              {/* Show current status if it's COMPLETED or CANCELLED */}
+              {/* Show current status */}
               {workOrder.status && (
-                <DropdownMenuItem disabled>
-                  <span className="text-neutral-500">
-                    目前狀態：{WORK_ORDER_STATUS_LABELS[workOrder.status]}
-                  </span>
-                </DropdownMenuItem>
-              )}
-              
-              {/* Legacy code for reference - remove after testing */}
-              {false && Object.entries(WORK_ORDER_STATUS_LABELS)
-                .filter(([status]) => {
-                  // Only show valid transitions from current status
-                  const validTransitions = workOrder.status ? VALID_STATUS_TRANSITIONS[workOrder.status] : []
-                  return validTransitions.includes(status as WorkOrderStatus)
-                })
-                .map(([status, label]) => (
-                  <DropdownMenuItem
-                    key={status}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleAction(
-                        'status-change',
-                        () => onStatusChange!(workOrder.id, status as WorkOrderStatus),
-                        `狀態已更改為：${label}`,
-                        true // Skip refresh - handleStatusChange handles it
-                      )
-                    }}
-                    disabled={workOrder.status === status || isLoading}
-                  >
-                    {label}
-                    {workOrder.status === status && ' (目前)'}
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>
+                    <span className="text-neutral-500 text-xs">
+                      目前狀態：{WORK_ORDER_STATUS_LABELS[workOrder.status]}
+                    </span>
                   </DropdownMenuItem>
-                ))}
+                </>
+              )}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         )}

@@ -14,7 +14,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/middleware/work-order-auth'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
-import { VALID_STATUS_TRANSITIONS } from '@/types/work-order'
+import { getValidStatusTransitions } from '@/types/work-order'
 
 export const dynamic = 'force-dynamic'
 
@@ -195,24 +195,27 @@ export async function PATCH(
     if (validatedData.status !== undefined && validatedData.status !== existingWorkOrder.status) {
       const currentStatus = existingWorkOrder.status
       const newStatus = validatedData.status
-
-      // If current status is null, allow any transition
-      if (currentStatus && newStatus) {
-        const validTransitions = VALID_STATUS_TRANSITIONS[currentStatus]
-        if (!validTransitions.includes(newStatus)) {
-          return NextResponse.json(
-            { 
-              success: false, 
-              error: '無效的狀態轉換',
-              details: {
-                currentStatus,
-                attemptedStatus: newStatus,
-                validTransitions
-              }
-            },
-            { status: 400 }
-          )
-        }
+      
+      // Get valid transitions for current status (handles null case)
+      const validTransitions = getValidStatusTransitions(currentStatus)
+      
+      // Check if transition is allowed
+      if (newStatus && !validTransitions.includes(newStatus)) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: '無效的狀態轉換',
+            details: {
+              currentStatus: currentStatus || '進行中',
+              attemptedStatus: newStatus,
+              validTransitions,
+              message: currentStatus 
+                ? `狀態 "${currentStatus}" 只能轉換到: ${validTransitions.join(', ') || '無（終態）'}`
+                : `進行中的工作單可以轉換到: ${validTransitions.join(', ')}`
+            }
+          },
+          { status: 400 }
+        )
       }
     }
 
@@ -307,7 +310,7 @@ export async function PATCH(
       if (validatedData.isCompleted !== undefined) workOrderUpdateData.isCompleted = validatedData.isCompleted
 
       // If status is being updated, set metadata
-      if (validatedData.status) {
+      if (validatedData.status !== undefined) {
         workOrderUpdateData.status = validatedData.status
         workOrderUpdateData.statusUpdatedAt = new Date()
         workOrderUpdateData.statusUpdatedBy = session.userId

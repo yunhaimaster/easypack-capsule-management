@@ -14,6 +14,7 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
 }
 
 export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
+  PAUSED: '已暫停',
   COMPLETED: '已完成',
   CANCELLED: '已取消',
 }
@@ -379,9 +380,28 @@ export interface UserMappingResult {
 
 // ===== Status Transition Types =====
 
+// Helper function to get valid transitions
+export function getValidStatusTransitions(currentStatus: WorkOrderStatus | null): Array<WorkOrderStatus | null> {
+  // Ongoing (null status) can transition to any status
+  if (currentStatus === null) {
+    return ['PAUSED', 'COMPLETED', 'CANCELLED']
+  }
+  
+  // Status-specific transitions
+  const transitions: Record<WorkOrderStatus, Array<WorkOrderStatus | null>> = {
+    PAUSED: [null, 'COMPLETED', 'CANCELLED'],  // Can unpause (null), complete, or cancel
+    COMPLETED: [],                              // Final state
+    CANCELLED: []                               // Final state
+  }
+  
+  return transitions[currentStatus] || []
+}
+
+// Keep for backward compatibility
 export const VALID_STATUS_TRANSITIONS: Record<WorkOrderStatus, WorkOrderStatus[]> = {
-  COMPLETED: [],  // Cannot transition from COMPLETED
-  CANCELLED: []   // Cannot transition from CANCELLED
+  PAUSED: ['COMPLETED', 'CANCELLED'],
+  COMPLETED: [],
+  CANCELLED: []
 }
 
 export function canTransitionStatus(from: WorkOrderStatus, to: WorkOrderStatus): boolean {

@@ -29,6 +29,7 @@ interface EditableStatusCellProps {
 
 // Status to badge variant mapping
 const STATUS_VARIANTS: Record<WorkOrderStatus, 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'> = {
+  PAUSED: 'warning',
   COMPLETED: 'success',
   CANCELLED: 'danger'
 } as const

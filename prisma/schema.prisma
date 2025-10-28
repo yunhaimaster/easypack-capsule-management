@@ -225,6 +225,7 @@ model OrderWorklog {
 // Simplified status workflow - only CANCELLED and COMPLETED
 // Default state is NULL (ongoing work, managed by checkboxes)
 enum WorkOrderStatus {
+  PAUSED         // 已暫停 - Paused/On Hold
   CANCELLED      // 已取消 - Cancelled
   COMPLETED      // 已完成 - Fully completed
 }

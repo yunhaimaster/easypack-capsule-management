@@ -82,7 +82,7 @@ export default function WorkOrderDetailPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => router.push('/work-orders' as never)}
+            onClick={() => router.back()}
             className="transition-apple self-start"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

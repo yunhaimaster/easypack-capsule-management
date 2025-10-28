@@ -24,7 +24,7 @@ interface BulkStatusDialogProps {
   isOpen: boolean
   onClose: () => void
   selectedCount: number
-  onConfirm: (newStatus: WorkOrderStatus) => Promise<void>
+  onConfirm: (newStatus: WorkOrderStatus | null) => Promise<void>
 }
 
 export function BulkStatusDialog({ 
@@ -33,7 +33,7 @@ export function BulkStatusDialog({
   selectedCount, 
   onConfirm 
 }: BulkStatusDialogProps) {
-  const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus | ''>('')
+  const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus | 'null' | ''>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,7 +47,9 @@ export function BulkStatusDialog({
     setError(null)
 
     try {
-      await onConfirm(selectedStatus as WorkOrderStatus)
+      // Convert "null" string to actual null for API
+      const statusValue = selectedStatus === 'null' ? null : (selectedStatus as WorkOrderStatus)
+      await onConfirm(statusValue)
       // Success - parent will handle closing and showing success message
       handleClose()
     } catch (err) {
@@ -102,13 +104,17 @@ export function BulkStatusDialog({
           </label>
           <Select
             value={selectedStatus}
-            onValueChange={(value) => setSelectedStatus(value as WorkOrderStatus)}
+            onValueChange={(value) => setSelectedStatus(value as WorkOrderStatus | 'null')}
             disabled={isSubmitting}
           >
             <SelectTrigger>
               <SelectValue placeholder="請選擇狀態" />
             </SelectTrigger>
             <SelectContent>
+              {/* Add ongoing option FIRST */}
+              <SelectItem value="null">
+                進行中 (取消狀態標記)
+              </SelectItem>
               {Object.entries(WORK_ORDER_STATUS_LABELS).map(([key, label]) => (
                 <SelectItem key={key} value={key}>
                   {label}

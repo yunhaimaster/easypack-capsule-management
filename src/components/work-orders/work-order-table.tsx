@@ -79,13 +79,14 @@ function StatusBadge({ status }: { status: string | null }) {
   }
 
   const variants: Record<string, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
-    COMPLETED: 'success',
-    CANCELLED: 'danger'
+    PAUSED: 'warning',      // Orange for paused
+    COMPLETED: 'success',   // Green for completed
+    CANCELLED: 'danger'     // Red for cancelled
   }
 
   return (
     <Badge variant={variants[status] || 'default'} className="text-xs">
-      {WORK_ORDER_STATUS_LABELS[status as keyof typeof WORK_ORDER_STATUS_LABELS]}
+      {WORK_ORDER_STATUS_LABELS[status as keyof typeof WORK_ORDER_STATUS_LABELS] || status}
     </Badge>
   )
 }
@@ -255,7 +256,7 @@ export function WorkOrderTable({
     }
   }
 
-  const handleStatusChange = async (workOrderId: string, newStatus: WorkOrderStatus) => {
+  const handleStatusChange = async (workOrderId: string, newStatus: WorkOrderStatus | null) => {
     try {
       const response = await fetch(`/api/work-orders/${workOrderId}`, {
         method: 'PATCH',
