@@ -57,14 +57,21 @@ export function LinkOrderModal({
       const result = await response.json()
 
       if (result.success) {
+        // Clean data before setting state - ensure person is always string | null
+        const cleanData = (matches: LinkSuggestion[]) => 
+          matches.map(item => ({
+            ...item,
+            person: typeof item.person === 'string' ? item.person : null
+          }))
+
         if (search) {
           // Search results
           const allResults = [...result.data.bestMatches, ...result.data.goodMatches]
-          setSearchResults(allResults)
+          setSearchResults(cleanData(allResults))
         } else {
           // Initial suggestions
-          setBestMatches(result.data.bestMatches)
-          setGoodMatches(result.data.goodMatches)
+          setBestMatches(cleanData(result.data.bestMatches))
+          setGoodMatches(cleanData(result.data.goodMatches))
           setSearchResults([])
         }
       }
