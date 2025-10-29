@@ -19,6 +19,7 @@ import { WorkOrderStatus } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
 import { Text } from '@/components/ui/text'
 import { TableWrapper } from '@/components/ui/table-wrapper'
+import { OrderLinkBadge } from '@/components/ui/order-link-badge'
 import {
   ArrowUpDown,
   ArrowUp,
@@ -316,6 +317,9 @@ export function WorkOrderTable({
                     onSort={onSort}
                   />
                 </th>
+                <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm hidden xl:table-cell">
+                  關聯膠囊訂單
+                </th>
                 <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
                   數量
                 </th>
@@ -431,6 +435,20 @@ export function WorkOrderTable({
                         workType={workOrder.workType}
                         productionStarted={workOrder.productionStarted}
                       />
+                    </td>
+
+                    {/* Linked Encapsulation Order */}
+                    <td className="py-3 px-3 text-sm align-top hidden xl:table-cell">
+                      {workOrder.productionOrder ? (
+                        <OrderLinkBadge
+                          type="encapsulation-order"
+                          orderId={workOrder.productionOrder.id}
+                          label={workOrder.productionOrder.productName}
+                          size="sm"
+                        />
+                      ) : (
+                        <Text.Secondary className="text-xs">-</Text.Secondary>
+                      )}
                     </td>
 
                     {/* Quantity */}

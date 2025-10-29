@@ -243,6 +243,15 @@ export async function GET(request: NextRequest) {
           // Description
           workDescription: true,
           
+          // NEW: Include linked encapsulation order
+          productionOrder: {
+            select: {
+              id: true,
+              productName: true,
+              customerName: true
+            }
+          },
+          
           // Timestamps
           createdAt: true,
           updatedAt: true

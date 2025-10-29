@@ -8,6 +8,7 @@ import { LinkedFilter } from '@/components/ui/linked-filter'
 import { LiquidGlassConfirmModal, useLiquidGlassModal } from '@/components/ui/liquid-glass-modal'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
 import { TableWrapper } from '@/components/ui/table-wrapper'
+import { OrderLinkBadge } from '@/components/ui/order-link-badge'
 import { Search, Filter, Download, Eye, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown, ChevronRight, AlertTriangle, ClipboardCheck, Bot, Timer, Square, Calendar, Package2, RefreshCw, Loader2 } from 'lucide-react'
 import { formatDateOnly, downloadFile } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast-provider'
@@ -359,7 +360,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                       <td className="py-4 px-4 text-neutral-900 text-sm align-top">
                         <div className="flex flex-col gap-1">
                           <div className="font-semibold text-neutral-900 dark:text-white/95 text-base">{order.productName}</div>
-                          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-white/75">
+                          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-white/75 flex-wrap">
                             <span>{order.customerName}</span>
                             {order.customerService && (
                               <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">
@@ -367,6 +368,15 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                                   ? ((order.customerService as any).nickname || (order.customerService as any).phoneE164 || '未知客服')
                                   : order.customerService || '未知客服'}
                               </span>
+                            )}
+                            {order.workOrder && (
+                              <OrderLinkBadge
+                                type="work-order"
+                                orderId={order.workOrder.id}
+                                label={order.workOrder.jobNumber || order.workOrder.customerName}
+                                size="sm"
+                                showIcon={false}
+                              />
                             )}
                           </div>
                           {hasProcessOrQualityIssues(order) && (

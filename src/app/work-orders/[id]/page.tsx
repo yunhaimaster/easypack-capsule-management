@@ -10,7 +10,8 @@ import { Text } from '@/components/ui/text'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
-import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { OrderLinkBadge } from '@/components/ui/order-link-badge'
+import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2 } from 'lucide-react'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS, CapsulationIngredient } from '@/types/work-order'
 
 export default function WorkOrderDetailPage() {
@@ -375,6 +376,31 @@ export default function WorkOrderDetailPage() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Linked Encapsulation Order */}
+      {workOrder.productionOrder && (
+        <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
+              關聯膠囊訂單
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <OrderLinkBadge
+                type="encapsulation-order"
+                orderId={workOrder.productionOrder.id}
+                label={workOrder.productionOrder.productName}
+                size="md"
+              />
+              <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                <p>客戶名稱: {workOrder.productionOrder.customerName}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

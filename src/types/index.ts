@@ -1,3 +1,5 @@
+import { WorkType } from '@prisma/client'
+
 export interface ProductionOrder {
   id: string
   customerName: string
@@ -20,6 +22,15 @@ export interface ProductionOrder {
   ingredients: Ingredient[]
   worklogs?: OrderWorklog[]
   totalWorkUnits?: number
+  
+  // NEW: Linked work order
+  workOrderId?: string | null
+  workOrder?: {
+    id: string
+    jobNumber?: string | null
+    customerName: string
+    workType: WorkType
+  } | null
 }
 
 export interface Ingredient {

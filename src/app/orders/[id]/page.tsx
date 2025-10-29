@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Edit, Download, Brain, BookmarkPlus, Lock, Unlock } from 'lucide-react'
+import { ArrowLeft, Edit, Download, Brain, BookmarkPlus, Lock, Unlock, Link2 } from 'lucide-react'
 import { formatDateOnly, formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight } from '@/lib/utils'
 import { ProductionOrder, OrderWorklog, RecipeLibraryItem } from '@/types'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
@@ -22,6 +22,8 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { Text } from '@/components/ui/text'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { UserLink } from '@/components/ui/user-link'
+import { OrderLinkBadge } from '@/components/ui/order-link-badge'
+import { WORK_TYPE_LABELS } from '@/types/work-order'
 import Link from 'next/link'
 import { sumWorkUnits } from '@/lib/worklog'
 
@@ -426,6 +428,32 @@ export default function OrderDetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Linked Work Order */}
+          {order.workOrder && (
+            <Card className="liquid-glass-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
+                  關聯工作單
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <OrderLinkBadge
+                    type="work-order"
+                    orderId={order.workOrder.id}
+                    label={order.workOrder.jobNumber || `工作單 - ${order.workOrder.customerName}`}
+                    size="md"
+                  />
+                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                    <p>客戶名稱: {order.workOrder.customerName}</p>
+                    <p>工作類型: {WORK_TYPE_LABELS[order.workOrder.workType]}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* 原料配方明細 */}
           <Card className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction">

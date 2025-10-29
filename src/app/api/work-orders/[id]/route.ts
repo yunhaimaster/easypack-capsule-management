@@ -81,6 +81,15 @@ export async function GET(
               orderBy: { workDate: 'desc' }
             }
           }
+        },
+        // NEW: Include linked encapsulation order
+        productionOrder: {
+          select: {
+            id: true,
+            productName: true,
+            customerName: true,
+            productionQuantity: true
+          }
         }
       }
     })

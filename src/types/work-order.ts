@@ -74,6 +74,14 @@ export interface WorkOrder {
   notes?: string | null
   
   capsulationOrder?: CapsulationOrder | null
+  
+  // NEW: Linked encapsulation order (ProductionOrder)
+  productionOrder?: {
+    id: string
+    productName: string
+    customerName: string
+  } | null
+  
   createdAt: Date
   updatedAt: Date
   createdBy?: string | null

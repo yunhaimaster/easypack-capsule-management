@@ -43,6 +43,15 @@ export async function GET(
         },
         worklogs: {
           orderBy: { workDate: 'asc' }
+        },
+        // NEW: Include linked work order
+        workOrder: {
+          select: {
+            id: true,
+            jobNumber: true,
+            customerName: true,
+            workType: true
+          }
         }
       }
     })
