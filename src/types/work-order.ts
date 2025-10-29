@@ -228,6 +228,25 @@ export interface UpdateWorkOrderData {
   productionStarted?: boolean
   isCompleted?: boolean
   
+  // Capsulation order update (optional, only included if capsulation order exists)
+  capsulationOrder?: {
+    processIssues?: string | null
+    qualityNotes?: string | null
+    productName?: string
+    productionQuantity?: number
+    completionDate?: string | null
+    capsuleColor?: string | null
+    capsuleSize?: string | null
+    capsuleType?: string | null
+    customerServiceId?: string | null
+    ingredients?: Array<{
+      materialName: string
+      unitContentMg: number
+      isCustomerProvided: boolean
+      isCustomerSupplied: boolean
+    }>
+  }
+  
   // Legacy fields (deprecated but still accepted)
   isNewProductVip?: boolean
   isComplexityVip?: boolean

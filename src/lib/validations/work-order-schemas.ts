@@ -32,6 +32,8 @@ export const createCapsulationOrderSchema = z.object({
   capsuleSize: z.string().max(20).optional().nullable(),
   capsuleType: z.string().max(50).optional().nullable(),
   customerServiceId: z.string().cuid('無效的客服ID').optional().nullable(),
+  processIssues: z.string().max(5000).trim().optional().nullable(),
+  qualityNotes: z.string().max(5000).trim().optional().nullable(),
   ingredients: z.array(createIngredientSchema).min(1, '至少需要一個原料')
 })
 
@@ -120,6 +122,8 @@ export const updateWorkOrderSchema = z.object({
     capsuleSize: z.string().max(20).optional().nullable(),
     capsuleType: z.string().max(50).optional().nullable(),
     customerServiceId: z.string().cuid('無效的客服ID').optional().nullable(),
+    processIssues: z.string().max(5000).trim().optional().nullable(),
+    qualityNotes: z.string().max(5000).trim().optional().nullable(),
     ingredients: z.array(createIngredientSchema).min(1).optional()
   }).optional()
 }).refine(data => {

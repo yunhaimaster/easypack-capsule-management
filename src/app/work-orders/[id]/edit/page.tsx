@@ -52,7 +52,11 @@ export default function EditWorkOrderPage() {
     
     isUrgent: false,
     productionStarted: false,
-    isCompleted: false
+    isCompleted: false,
+    
+    // Capsulation order fields
+    capsulationProcessIssues: '',
+    capsulationQualityNotes: ''
   })
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
@@ -95,7 +99,11 @@ export default function EditWorkOrderPage() {
         
         isUrgent: workOrder.isUrgent,
         productionStarted: workOrder.productionStarted,
-        isCompleted: workOrder.isCompleted
+        isCompleted: workOrder.isCompleted,
+        
+        // Capsulation order fields
+        capsulationProcessIssues: workOrder.capsulationOrder?.processIssues || '',
+        capsulationQualityNotes: workOrder.capsulationOrder?.qualityNotes || ''
       })
     }
   }, [workOrder])
@@ -140,7 +148,15 @@ export default function EditWorkOrderPage() {
         
         isUrgent: formData.isUrgent,
         productionStarted: formData.productionStarted,
-        isCompleted: formData.isCompleted
+        isCompleted: formData.isCompleted,
+        
+        // Include capsulation order fields if capsulation order exists
+        ...(workOrder?.capsulationOrder ? {
+          capsulationOrder: {
+            processIssues: formData.capsulationProcessIssues.trim() || null,
+            qualityNotes: formData.capsulationQualityNotes.trim() || null
+          }
+        } : {})
       }
 
       await updateMutation.mutateAsync({ id, data: payload })
@@ -643,6 +659,47 @@ export default function EditWorkOrderPage() {
                 className="transition-apple text-sm sm:text-base"
               />
             </div>
+
+            {/* Capsulation Order Problem Fields - Only show if capsulation order exists */}
+            {workOrder?.capsulationOrder && (
+              <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+                <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
+                  膠囊訂單問題記錄
+                </Text.Primary>
+                <div className="space-y-4 sm:space-y-5">
+                  <div>
+                    <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                      製程問題記錄
+                    </Text.Primary>
+                    <Textarea
+                      value={formData.capsulationProcessIssues}
+                      onChange={(e) => setFormData(prev => ({ ...prev, capsulationProcessIssues: e.target.value }))}
+                      placeholder="記錄生產異常與解決方案"
+                      rows={4}
+                      className="transition-apple text-sm sm:text-base"
+                    />
+                    <Text.Tertiary className="text-xs mt-1">
+                      記錄生產過程中遇到的問題及解決方案
+                    </Text.Tertiary>
+                  </div>
+                  <div>
+                    <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                      品管備註
+                    </Text.Primary>
+                    <Textarea
+                      value={formData.capsulationQualityNotes}
+                      onChange={(e) => setFormData(prev => ({ ...prev, capsulationQualityNotes: e.target.value }))}
+                      placeholder="品管相關備註"
+                      rows={3}
+                      className="transition-apple text-sm sm:text-base"
+                    />
+                    <Text.Tertiary className="text-xs mt-1">
+                      記錄品質控制相關的備註事項
+                    </Text.Tertiary>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">

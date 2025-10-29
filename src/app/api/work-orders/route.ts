@@ -442,6 +442,8 @@ export async function POST(request: NextRequest) {
             capsuleSize: capsulationData.capsuleSize,
             capsuleType: capsulationData.capsuleType,
             customerServiceId: capsulationData.customerServiceId,
+            processIssues: capsulationData.processIssues || null,
+            qualityNotes: capsulationData.qualityNotes || null,
             ingredients: {
               createMany: {
                 data: capsulationData.ingredients.map(ing => ({

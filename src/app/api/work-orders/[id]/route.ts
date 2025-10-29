@@ -354,6 +354,8 @@ export async function PATCH(
         if (capsulationData.capsuleSize !== undefined) capsulationUpdateData.capsuleSize = capsulationData.capsuleSize
         if (capsulationData.capsuleType !== undefined) capsulationUpdateData.capsuleType = capsulationData.capsuleType
         if (capsulationData.customerServiceId !== undefined) capsulationUpdateData.customerServiceId = capsulationData.customerServiceId
+        if (capsulationData.processIssues !== undefined) capsulationUpdateData.processIssues = capsulationData.processIssues
+        if (capsulationData.qualityNotes !== undefined) capsulationUpdateData.qualityNotes = capsulationData.qualityNotes
 
         await tx.capsulationOrder.update({
           where: { workOrderId: id },
