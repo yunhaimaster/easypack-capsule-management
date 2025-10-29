@@ -60,7 +60,10 @@ function ManagerSchedulingContent() {
   const [error, setError] = useState<string | null>(null)
   const [showExportDialog, setShowExportDialog] = useState(false)
 
+  // Field-level permissions - all users can edit sync fields, only managers can edit priority
   const canEdit = isManager || isAdmin
+  const canEditSyncFields = true // All authenticated users can edit sync fields
+  const canEditPriority = isManager || isAdmin // Only managers can edit priority
 
   useEffect(() => {
     // Wait for auth to load before fetching entries
@@ -162,6 +165,8 @@ function ManagerSchedulingContent() {
             entries={entries}
             onEntriesChange={setEntries}
             canEdit={canEdit}
+            canEditSyncFields={canEditSyncFields}
+            canEditPriority={canEditPriority}
             onExport={canEdit ? handleExport : undefined}
           />
         )}

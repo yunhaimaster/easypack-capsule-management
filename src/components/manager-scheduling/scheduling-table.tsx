@@ -33,10 +33,12 @@ interface SchedulingTableProps {
   entries: ManagerSchedulingEntry[]
   onEntriesChange: (entries: ManagerSchedulingEntry[]) => void
   canEdit: boolean
+  canEditSyncFields: boolean
+  canEditPriority: boolean
   onExport?: () => void
 }
 
-export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }: SchedulingTableProps) {
+export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSyncFields, canEditPriority, onExport }: SchedulingTableProps) {
   const router = useRouter()
   const { showToast } = useToast()
   const [saving, setSaving] = useState<Set<string>>(new Set())
@@ -200,7 +202,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
     }
 
     dragStartIndex.current = null
-  }, [canEdit, draggedId, entries, handleReorder])
+  }, [canEditPriority, draggedId, entries, handleReorder])
 
   const handleDelete = useCallback(async (entryId: string) => {
     setDeleting(entryId)
@@ -309,7 +311,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                         draggedId === entry.id && 'opacity-50',
                         dragOverId === entry.id && 'bg-primary-50 dark:bg-primary-900/20 border-t-2 border-primary-500'
                       )}
-                      draggable={canEdit}
+                      draggable={canEditPriority}
                       onDragStart={(e) => handleDragStart(e, entry.id, index)}
                       onDragEnd={handleDragEnd}
                       onDragOver={(e) => handleDragOver(e, entry.id)}
@@ -449,13 +451,13 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                                 <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
                                   製程問題
                                 </h4>
-                                {canEdit ? (
+                                {canEditSyncFields ? (
                                   <SchedulingInlineEdit
                                     entryId={entry.id}
                                     field="processIssues"
                                     value={processIssuesValue}
                                     type="textarea"
-                                    canEdit={canEdit}
+                                    canEdit={canEditSyncFields}
                                     onSave={handleFieldEdit}
                                     isLoading={saving.has(entry.id)}
                                   />
@@ -473,13 +475,13 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                                 <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
                                   品質備註
                                 </h4>
-                                {canEdit ? (
+                                {canEditSyncFields ? (
                                   <SchedulingInlineEdit
                                     entryId={entry.id}
                                     field="qualityNotes"
                                     value={qualityNotesValue}
                                     type="textarea"
-                                    canEdit={canEdit}
+                                    canEdit={canEditSyncFields}
                                     onSave={handleFieldEdit}
                                     isLoading={saving.has(entry.id)}
                                   />
@@ -497,13 +499,13 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                                 <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
                                   工作描述
                                 </h4>
-                                {canEdit ? (
+                                {canEditSyncFields ? (
                                   <SchedulingInlineEdit
                                     entryId={entry.id}
                                     field="workDescription"
                                     value={workDescriptionValue}
                                     type="textarea"
-                                    canEdit={canEdit}
+                                    canEdit={canEditSyncFields}
                                     onSave={handleFieldEdit}
                                     isLoading={saving.has(entry.id)}
                                   />
@@ -610,7 +612,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                       field="customerName"
                       value={entry.workOrder.customerName}
                       type="text"
-                      canEdit={canEdit}
+                      canEdit={canEditSyncFields}
                       onSave={handleFieldEdit}
                       isLoading={saving.has(entry.id)}
                     />
@@ -653,13 +655,13 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                 
                 <div>
                   <span className="text-neutral-500 dark:text-neutral-500">生產物料已齊:</span>{' '}
-                  {canEdit ? (
+                  {canEditSyncFields ? (
                     <SchedulingInlineEdit
                       entryId={entry.id}
                       field="productionMaterialsReady"
                       value={entry.workOrder.productionMaterialsReady}
                       type="checkbox"
-                      canEdit={canEdit}
+                      canEdit={canEditSyncFields}
                       onSave={handleFieldEdit}
                       isLoading={saving.has(entry.id)}
                     />
@@ -679,7 +681,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, onExport }:
                     field="expectedProductionStartDate"
                     value={entry.expectedProductionStartDate || ''}
                     type="text"
-                    canEdit={canEdit}
+                    canEdit={canEditPriority}
                     onSave={handleFieldEdit}
                     isLoading={saving.has(entry.id)}
                   />
