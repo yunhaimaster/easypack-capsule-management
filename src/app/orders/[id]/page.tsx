@@ -23,8 +23,11 @@ import { Text } from '@/components/ui/text'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { UserLink } from '@/components/ui/user-link'
 import { OrderLinkBadge } from '@/components/ui/order-link-badge'
+import { LinkOrderModal } from '@/components/orders/link-order-modal'
+import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
 import { WORK_TYPE_LABELS } from '@/types/work-order'
 import Link from 'next/link'
+import { Unlink } from 'lucide-react'
 import { sumWorkUnits } from '@/lib/worklog'
 
 export default function OrderDetailPage() {
@@ -43,6 +46,8 @@ export default function OrderDetailPage() {
   const [showLockDialog, setShowLockDialog] = useState(false)
   const [showPasswordVerifyDialog, setShowPasswordVerifyDialog] = useState(false)
   const [lockDialogMode, setLockDialogMode] = useState<'set' | 'change' | 'verify'>('set')
+  const [linkModalOpen, setLinkModalOpen] = useState(false)
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
 
   useEffect(() => {
     if (params.id) {
@@ -94,6 +99,44 @@ export default function OrderDetailPage() {
       setLoading(false)
     }
   }
+
+  const handleUnlink = async () => {
+    if (!order) return
+    
+    try {
+      const response = await fetch(`/api/orders/${order.id}/link`, {
+        method: 'DELETE'
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        showToast({ title: '已取消關聯' })
+        fetchOrder(order.id)
+      } else {
+        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
+      }
+    } catch (error) {
+      showToast({ title: '取消關聯失敗', variant: 'destructive' })
+    } finally {
+      setShowUnlinkConfirm(false)
+    }
+  }
+
+  // Keyboard shortcut for opening link modal (Cmd/Ctrl+K)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        if (order && !order.workOrder) {
+          setLinkModalOpen(true)
+        }
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [order])
 
   const handleExportClick = () => {
     if (!order) return
@@ -430,13 +473,34 @@ export default function OrderDetailPage() {
           </Card>
 
           {/* Linked Work Order */}
-          {order.workOrder && (
+          {order.workOrder ? (
             <Card className="liquid-glass-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
-                  關聯工作單
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
+                    關聯工作單
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/work-orders/${order.workOrder!.id}`)}
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-1 rotate-180" />
+                      查看
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowUnlinkConfirm(true)}
+                      className="text-warning-600 hover:text-warning-700 dark:text-warning-400 dark:hover:text-warning-300"
+                    >
+                      <Unlink className="h-4 w-4 mr-1" />
+                      取消關聯
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -450,7 +514,28 @@ export default function OrderDetailPage() {
                     <p>客戶名稱: {order.workOrder.customerName}</p>
                     <p>工作類型: {WORK_TYPE_LABELS[order.workOrder.workType]}</p>
                   </div>
+                  {order.customerName !== order.workOrder.customerName && (
+                    <Badge variant="warning" className="mt-2">
+                      ⚠ 客戶名稱不匹配
+                    </Badge>
+                  )}
                 </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="liquid-glass-card border-dashed border-2">
+              <CardContent className="pt-6 pb-6 text-center">
+                <Link2 className="h-12 w-12 text-neutral-400 dark:text-neutral-600 mx-auto mb-3" />
+                <Text.Secondary className="mb-4">
+                  此訂單尚未關聯工作單
+                </Text.Secondary>
+                <Button onClick={() => setLinkModalOpen(true)}>
+                  <Link2 className="h-4 w-4 mr-2" />
+                  關聯工作單
+                </Button>
+                <Text.Tertiary className="mt-3 text-xs">
+                  或按 Cmd+K 快速開啟
+                </Text.Tertiary>
               </CardContent>
             </Card>
           )}
@@ -680,6 +765,34 @@ export default function OrderDetailPage() {
         mode="verify"
         orderId={order.id}
         onSuccess={handlePasswordVerifySuccess}
+      />
+
+      {/* Link Order Modal */}
+      <LinkOrderModal
+        isOpen={linkModalOpen}
+        onClose={() => setLinkModalOpen(false)}
+        sourceType="encapsulation-order"
+        sourceId={order.id}
+        sourceName={order.productName}
+        currentLink={order.workOrder ? {
+          id: order.workOrder.id,
+          name: order.workOrder.jobNumber || order.workOrder.customerName
+        } : null}
+        onLinkComplete={() => {
+          setLinkModalOpen(false)
+          fetchOrder(order.id)
+        }}
+      />
+
+      {/* Unlink Confirmation Modal */}
+      <LiquidGlassConfirmModal
+        isOpen={showUnlinkConfirm}
+        onClose={() => setShowUnlinkConfirm(false)}
+        onConfirm={handleUnlink}
+        title="確認取消關聯"
+        message={`確定要取消與工作單「${order.workOrder?.jobNumber || order.workOrder?.customerName}」的關聯嗎？`}
+        confirmText="取消關聯"
+        variant="danger"
       />
     </div>
   )
