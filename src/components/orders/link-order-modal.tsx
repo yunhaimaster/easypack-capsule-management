@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Text } from '@/components/ui/text'
 import { useToast } from '@/components/ui/toast-provider'
-import { Search, Link2, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react'
+import { Search, Link2, CheckCircle, AlertTriangle, Loader2, X } from 'lucide-react'
 import { SourceType, LinkSuggestion } from '@/lib/link-suggestions'
 
 interface LinkOrderModalProps {
@@ -65,9 +65,11 @@ export function LinkOrderModal({
           }))
 
         if (search) {
-          // Search results
-          const allResults = [...result.data.bestMatches, ...result.data.goodMatches]
+          // Search results - use searchResults array if available, otherwise combine matches
+          const allResults = result.data.searchResults || [...result.data.bestMatches, ...result.data.goodMatches]
           setSearchResults(cleanData(allResults))
+          setBestMatches([])
+          setGoodMatches([])
         } else {
           // Initial suggestions
           setBestMatches(cleanData(result.data.bestMatches))
@@ -146,7 +148,23 @@ export function LinkOrderModal({
     }
   }
 
-  const getMatchBadge = (score: number) => {
+  // Highlight search term in text
+  const highlightText = (text: string, search: string) => {
+    if (!search || !text) return text
+    
+    const parts = text.split(new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'))
+    return parts.map((part, i) => 
+      part.toLowerCase() === search.toLowerCase() ? (
+        <mark key={i} className="bg-info-200 dark:bg-info-900/50 text-info-900 dark:text-info-100 px-0.5 rounded">
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    )
+  }
+
+  const getMatchBadge = (score: number, searchRelevance?: number) => {
     if (score === 100) {
       return (
         <Badge variant="success" className="text-xs">
@@ -163,6 +181,15 @@ export function LinkOrderModal({
         </Badge>
       )
     }
+    // Show search relevance for search results
+    if (searchRelevance && searchRelevance > 0) {
+      return (
+        <Badge variant="info" className="text-xs">
+          <Search className="h-3 w-3 mr-1" />
+          {searchRelevance >= 80 ? '高相關' : searchRelevance >= 40 ? '相關' : '低相關'}
+        </Badge>
+      )
+    }
     return null
   }
 
@@ -175,18 +202,18 @@ export function LinkOrderModal({
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="font-medium text-neutral-900 dark:text-white/95 truncate">
-            {item.name}
+            {searchTerm ? highlightText(item.name, searchTerm) : item.name}
           </div>
           <div className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
-            客戶：{item.customerName}
+            客戶：{searchTerm ? highlightText(item.customerName, searchTerm) : item.customerName}
           </div>
           {item.person && (
             <div className="text-xs text-neutral-500 dark:text-neutral-500 truncate">
-              負責人：{item.person}
+              負責人：{searchTerm ? highlightText(item.person, searchTerm) : item.person}
             </div>
           )}
         </div>
-        {getMatchBadge(item.matchScore)}
+        {getMatchBadge(item.matchScore, item.searchRelevance)}
       </div>
     </button>
   )
@@ -214,11 +241,22 @@ export function LinkOrderModal({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
             <Input
               type="text"
-              placeholder={`搜尋${targetLabel}...`}
+              placeholder={`搜尋${targetLabel}（產品名稱、客戶名稱、負責人、ID）...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 pr-10"
+              autoFocus
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                aria-label="清除搜尋"
+                type="button"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* Loading state */}
@@ -242,7 +280,19 @@ export function LinkOrderModal({
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Text.Secondary>沒有找到匹配的{targetLabel}</Text.Secondary>
+                    <div className="mb-4">
+                      <Search className="h-12 w-12 text-neutral-300 dark:text-neutral-700 mx-auto mb-3" />
+                      <Text.Secondary className="text-base mb-2">沒有找到匹配的{targetLabel}</Text.Secondary>
+                      <Text.Tertiary className="text-xs text-neutral-500 dark:text-neutral-400">
+                        嘗試：
+                      </Text.Tertiary>
+                      <ul className="text-xs text-neutral-500 dark:text-neutral-400 mt-2 space-y-1 text-left max-w-md mx-auto">
+                        <li>• 檢查拼寫是否正確</li>
+                        <li>• 嘗試搜尋部分關鍵字（如客戶名稱的一部分）</li>
+                        <li>• 使用負責人的暱稱或電話號碼</li>
+                        <li>• 輸入訂單ID進行精確搜尋</li>
+                      </ul>
+                    </div>
                   </div>
                 )
               ) : (

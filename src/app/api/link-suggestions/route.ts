@@ -33,15 +33,27 @@ export async function GET(request: NextRequest) {
         name: item.name,
         customerName: item.customerName,
         person: typeof item.person === 'string' ? item.person : null,
-        matchScore: item.matchScore
+        matchScore: item.matchScore,
+        searchRelevance: item.searchRelevance
       })),
       goodMatches: suggestions.goodMatches.map(item => ({
         id: item.id,
         name: item.name,
         customerName: item.customerName,
         person: typeof item.person === 'string' ? item.person : null,
-        matchScore: item.matchScore
+        matchScore: item.matchScore,
+        searchRelevance: item.searchRelevance
       })),
+      ...(suggestions.searchResults && {
+        searchResults: suggestions.searchResults.map(item => ({
+          id: item.id,
+          name: item.name,
+          customerName: item.customerName,
+          person: typeof item.person === 'string' ? item.person : null,
+          matchScore: item.matchScore,
+          searchRelevance: item.searchRelevance
+        }))
+      }),
       total: suggestions.total
     }
 

@@ -8,11 +8,13 @@ export interface LinkSuggestion {
   customerName: string
   person: string | null
   matchScore: number
+  searchRelevance?: number  // 0-100, higher = more relevant to search term
 }
 
 export interface LinkSuggestionsResult {
   bestMatches: LinkSuggestion[]
   goodMatches: LinkSuggestion[]
+  searchResults?: LinkSuggestion[]  // Sorted search results when searching
   total: number
 }
 
@@ -38,36 +40,87 @@ export async function calculateLinkSuggestions(
   // Fetch potential target orders
   const targets = await fetchTargetOrders(sourceType, searchTerm)
 
-  // Calculate match scores
+  // Calculate match scores and relevance for search results
+  const searchLower = searchTerm?.toLowerCase().trim()
+  
   const scored = targets.map(target => {
     // Ensure person is always a primitive string, never an object
     const personValue = typeof target.person === 'string' 
       ? target.person 
       : (target.person === null || target.person === undefined ? null : String(target.person))
     
+    const matchScore = calculateMatchScore(source, target, sourceType)
+    
+    // Calculate search relevance score if searching
+    let searchRelevance = 0
+    if (searchLower) {
+      const nameLower = target.name.toLowerCase()
+      const customerLower = target.customerName.toLowerCase()
+      const personLower = personValue?.toLowerCase() || ''
+      const idLower = target.id.toLowerCase()
+      
+      // Priority: exact match > starts with > contains
+      if (nameLower === searchLower || customerLower === searchLower) {
+        searchRelevance = 100
+      } else if (nameLower.startsWith(searchLower) || customerLower.startsWith(searchLower)) {
+        searchRelevance = 80
+      } else if (nameLower.includes(searchLower) || customerLower.includes(searchLower)) {
+        searchRelevance = 60
+      } else if (personLower.includes(searchLower)) {
+        searchRelevance = 40
+      } else if (idLower.includes(searchLower)) {
+        searchRelevance = 20
+      }
+    }
+    
     return {
       id: target.id,
       name: target.name,
       customerName: target.customerName,
       person: personValue,
-      matchScore: calculateMatchScore(source, target, sourceType)
+      matchScore,
+      searchRelevance
     }
   })
 
-  // Group by match score
-  const bestMatches = scored
-    .filter(s => s.matchScore === 100)
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice(0, 5)
+  // If searching, sort by search relevance first, then match score
+  // If not searching, sort by match score
+  const sorted = searchTerm
+    ? scored.sort((a, b) => {
+        // Search mode: relevance > match score > name
+        if (b.searchRelevance !== a.searchRelevance) {
+          return b.searchRelevance - a.searchRelevance
+        }
+        if (b.matchScore !== a.matchScore) {
+          return b.matchScore - a.matchScore
+        }
+        return a.name.localeCompare(b.name)
+      })
+    : scored.sort((a, b) => {
+        // Suggestion mode: match score > name
+        if (b.matchScore !== a.matchScore) {
+          return b.matchScore - a.matchScore
+        }
+        return a.name.localeCompare(b.name)
+      })
 
-  const goodMatches = scored
-    .filter(s => s.matchScore === 50)
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice(0, 5)
+  // Group by match score (only for suggestions, not search)
+  const bestMatches = searchTerm 
+    ? [] 
+    : sorted
+        .filter(s => s.matchScore === 100)
+        .slice(0, 5)
+
+  const goodMatches = searchTerm
+    ? []
+    : sorted
+        .filter(s => s.matchScore === 50)
+        .slice(0, 5)
 
   return {
     bestMatches,
     goodMatches,
+    searchResults: searchTerm ? sorted : [],
     total: targets.length
   }
 }
@@ -119,10 +172,21 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
 }>> {
   if (sourceType === 'work-order') {
     // Source is work order, fetch encapsulation orders (ProductionOrder)
-    const where = searchTerm ? {
+    // Enhanced search: searches customerName, productName, person name, and ID
+    const cleanedSearch = searchTerm?.trim()
+    const where = cleanedSearch ? {
       OR: [
-        { customerName: { contains: searchTerm, mode: 'insensitive' as const } },
-        { productName: { contains: searchTerm, mode: 'insensitive' as const } }
+        { customerName: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        { productName: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        { id: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        {
+          customerService: {
+            OR: [
+              { nickname: { contains: cleanedSearch, mode: 'insensitive' as const } },
+              { phoneE164: { contains: cleanedSearch, mode: 'insensitive' as const } }
+            ]
+          }
+        }
       ]
     } : {}
 
@@ -140,7 +204,7 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
           }
         }
       },
-      take: 100,
+      take: 200,  // Increased limit for better search coverage
       orderBy: { createdAt: 'desc' }
     })
 
@@ -157,10 +221,21 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
     })
   } else {
     // Source is encapsulation order, fetch work orders
-    const where = searchTerm ? {
+    // Enhanced search: searches customerName, jobNumber, person name, and ID
+    const cleanedSearch = searchTerm?.trim()
+    const where = cleanedSearch ? {
       OR: [
-        { customerName: { contains: searchTerm, mode: 'insensitive' as const } },
-        { jobNumber: { contains: searchTerm, mode: 'insensitive' as const } }
+        { customerName: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        { jobNumber: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        { id: { contains: cleanedSearch, mode: 'insensitive' as const } },
+        {
+          personInCharge: {
+            OR: [
+              { nickname: { contains: cleanedSearch, mode: 'insensitive' as const } },
+              { phoneE164: { contains: cleanedSearch, mode: 'insensitive' as const } }
+            ]
+          }
+        }
       ]
     } : {}
 
