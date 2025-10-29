@@ -30,6 +30,8 @@ import {
   Package,
   Package2,
   Link,
+  Link2,
+  Unlink,
   Trash2,
   MoreVertical,
   Loader2,
@@ -39,6 +41,8 @@ import {
 import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS, getValidStatusTransitions } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
 import { useToast } from '@/components/ui/toast-provider'
+import { LinkOrderModal } from '@/components/orders/link-order-modal'
+import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
 
 interface QuickActionsMenuProps {
   workOrder: WorkOrder
@@ -61,6 +65,8 @@ export function QuickActionsMenu({
   const { showToast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [linkModalOpen, setLinkModalOpen] = useState(false)
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
 
   const handleAction = async (
     action: string,
@@ -119,7 +125,31 @@ export function QuickActionsMenu({
     return fieldLabels[field]?.[!currentValue ? 'on' : 'off'] || '更新成功'
   }
 
+  const handleUnlink = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/work-orders/${workOrder.id}/link`, {
+        method: 'DELETE'
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showToast({ title: '已取消關聯' })
+        if (onRefresh) await onRefresh()
+      } else {
+        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
+      }
+    } catch (error) {
+      showToast({ title: '取消關聯失敗', variant: 'destructive' })
+    } finally {
+      setIsLoading(false)
+      setShowUnlinkConfirm(false)
+    }
+  }
+
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger
         className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 w-10 lg:h-9 lg:w-9"
@@ -154,6 +184,45 @@ export function QuickActionsMenu({
           <Edit className="mr-2 h-4 w-4" />
           <span>編輯</span>
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        {/* Group: Relations - Context-aware */}
+        {workOrder.productionOrder ? (
+          <>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push(`/orders/${workOrder.productionOrder!.id}`)
+              }}
+              className="h-12 lg:h-auto"
+            >
+              <Eye className="mr-2 h-4 w-4 text-info-600" />
+              <span>查看已關聯訂單</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowUnlinkConfirm(true)
+              }}
+              className="h-12 lg:h-auto text-warning-600"
+            >
+              <Unlink className="mr-2 h-4 w-4" />
+              <span>取消關聯</span>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              setLinkModalOpen(true)
+            }}
+            className="h-12 lg:h-auto"
+          >
+            <Link2 className="mr-2 h-4 w-4 text-info-600" />
+            <span>關聯膠囊訂單</span>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 
@@ -463,6 +532,35 @@ export function QuickActionsMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    {/* Link Order Modal */}
+    <LinkOrderModal
+      isOpen={linkModalOpen}
+      onClose={() => setLinkModalOpen(false)}
+      sourceType="work-order"
+      sourceId={workOrder.id}
+      sourceName={workOrder.jobNumber || workOrder.customerName}
+      currentLink={workOrder.productionOrder ? {
+        id: workOrder.productionOrder.id,
+        name: workOrder.productionOrder.productName
+      } : null}
+      onLinkComplete={() => {
+        setLinkModalOpen(false)
+        if (onRefresh) onRefresh()
+      }}
+    />
+
+    {/* Unlink Confirmation Modal */}
+    <LiquidGlassConfirmModal
+      isOpen={showUnlinkConfirm}
+      onClose={() => setShowUnlinkConfirm(false)}
+      onConfirm={handleUnlink}
+      title="確認取消關聯"
+      message={`確定要取消與膠囊訂單「${workOrder.productionOrder?.productName}」的關聯嗎？`}
+      confirmText="取消關聯"
+      variant="danger"
+    />
+  </>
   )
 }
 

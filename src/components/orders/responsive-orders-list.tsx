@@ -9,6 +9,7 @@ import { LiquidGlassConfirmModal, useLiquidGlassModal } from '@/components/ui/li
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
 import { TableWrapper } from '@/components/ui/table-wrapper'
 import { OrderLinkBadge } from '@/components/ui/order-link-badge'
+import { OrderActionsMenu } from '@/components/orders/order-actions-menu'
 import { Search, Filter, Download, Eye, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown, ChevronRight, AlertTriangle, ClipboardCheck, Bot, Timer, Square, Calendar, Package2, RefreshCw, Loader2 } from 'lucide-react'
 import { formatDateOnly, downloadFile } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast-provider'
@@ -459,52 +460,11 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              window.location.href = `/orders/${order.id}`
-                            }}
-                            className="text-neutral-500 hover:text-neutral-700 dark:text-white/85 transition-colors"
-                            title="查看訂單"
-                            aria-label="查看訂單"
-                          >
-                            <Eye className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              window.location.href = `/orders/${order.id}/edit`
-                            }}
-                            className="text-primary-600 hover:text-primary-800 transition-colors"
-                            title="編輯訂單"
-                            aria-label="編輯訂單"
-                          >
-                            <Edit className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleOrderAIClick(order)
-                            }}
-                            className="text-info-600 dark:text-info-400 hover:text-info-800 dark:hover:text-info-300 transition-colors"
-                            title="Order AI 分析"
-                            aria-label="打開 AI 分析"
-                          >
-                            <Bot className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDeleteClick(order.id)
-                            }}
-                            className="text-danger-600 hover:text-danger-800 transition-colors"
-                            title="刪除訂單"
-                            aria-label="刪除訂單"
-                          >
-                            <Trash2 className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                        </div>
+                        <OrderActionsMenu
+                          order={order}
+                          onDelete={handleDeleteClick}
+                          onLinkComplete={() => fetchOrders()}
+                        />
                       </td>
                     </tr>
                   )
