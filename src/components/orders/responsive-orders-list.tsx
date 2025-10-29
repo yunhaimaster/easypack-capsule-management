@@ -363,7 +363,9 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                             <span>{order.customerName}</span>
                             {order.customerService && (
                               <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">
-                                客服：{(order.customerService as any)?.nickname || (order.customerService as any)?.phoneE164 || order.customerService}
+                                客服：{typeof order.customerService === 'object' && order.customerService !== null 
+                                  ? ((order.customerService as any).nickname || (order.customerService as any).phoneE164 || '未知客服')
+                                  : order.customerService || '未知客服'}
                               </span>
                             )}
                           </div>
