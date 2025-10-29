@@ -31,19 +31,19 @@ enum AuditAction {
   SESSION_REFRESH
   DEVICE_TRUST_CREATED
   DEVICE_TRUST_REVOKED
-  
+
   // User Management
   USER_CREATED
   USER_DELETED
   ROLE_UPDATED
-  
+
   // Production Orders (Legacy - will be migrated to Work Orders)
   ORDER_CREATED
   ORDER_VIEWED
   ORDER_UPDATED
   ORDER_DELETED
   ORDER_EXPORTED
-  
+
   // Work Orders (New Unified System)
   WORK_ORDER_CREATED
   WORK_ORDER_VIEWED
@@ -53,68 +53,75 @@ enum AuditAction {
   WORK_ORDER_IMPORTED
   WORK_ORDER_BULK_UPDATED
   WORK_ORDER_STATUS_CHANGED
-  
+
   // Capsulation Orders
   CAPSULATION_ORDER_CREATED
   CAPSULATION_ORDER_VIEWED
   CAPSULATION_ORDER_UPDATED
   CAPSULATION_ORDER_DELETED
-  
+
   // Recipes
   RECIPE_CREATED
   RECIPE_VIEWED
   RECIPE_UPDATED
   RECIPE_DELETED
   RECIPE_EXPORTED
-  
+
   // Work Logs
   WORKLOG_CREATED
   WORKLOG_UPDATED
   WORKLOG_DELETED
-  
+
   // Marketing
   MARKETING_GENERATED
   MARKETING_EXPORTED
-  
+
   // AI Features
   AI_GRANULATION_ANALYZED
   AI_RECIPE_GENERATED
   AI_CHAT_INTERACTION
   AI_IMAGE_GENERATED
-  
+
   // Order Linking
   LINK_CREATED
   LINK_REMOVED
+
+  // Manager Scheduling Table
+  SCHEDULING_ENTRY_CREATED
+  SCHEDULING_ENTRY_UPDATED
+  SCHEDULING_ENTRY_DELETED
+  SCHEDULING_REORDERED
+  SCHEDULING_SYNC_FAILED
 }
 
 model User {
-  id         String   @id @default(cuid())
-  phoneE164  String   @unique
-  nickname   String?  @db.VarChar(50)
-  role       Role     @default(EMPLOYEE)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  phoneE164 String   @unique
+  nickname  String?  @db.VarChar(50)
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  sessions              Session[]
-  devices               TrustedDevice[]
-  auditLogs             AuditLog[]
-  workOrdersInCharge    UnifiedWorkOrder[]  @relation("WorkOrderPersonInCharge")
-  capsulationOrders     CapsulationOrder[]  @relation("CapsulationOrderCustomerService")
-  productionOrders      ProductionOrder[]   @relation("ProductionOrderCustomerService")
+  sessions           Session[]
+  devices            TrustedDevice[]
+  auditLogs          AuditLog[]
+  workOrdersInCharge UnifiedWorkOrder[] @relation("WorkOrderPersonInCharge")
+  capsulationOrders  CapsulationOrder[] @relation("CapsulationOrderCustomerService")
+  productionOrders   ProductionOrder[]  @relation("ProductionOrderCustomerService")
 
   @@index([role])
   @@map("users")
 }
 
 model Session {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  revokedAt  DateTime?
-  userAgent  String?
-  ip         String?
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+  userAgent String?
+  ip        String?
 
   @@index([userId])
   @@index([expiresAt])
@@ -122,14 +129,14 @@ model Session {
 }
 
 model TrustedDevice {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   deviceIdHash String
   userAgent    String?
   ipFirstUsed  String?
-  createdAt    DateTime @default(now())
-  lastSeenAt   DateTime @default(now())
+  createdAt    DateTime  @default(now())
+  lastSeenAt   DateTime  @default(now())
   expiresAt    DateTime
   revokedAt    DateTime?
 
@@ -155,10 +162,10 @@ model AuditLog {
 }
 
 model OtpAttempt {
-  id         String   @id @default(cuid())
-  phoneE164  String
-  ip         String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  phoneE164 String
+  ip        String?
+  createdAt DateTime @default(now())
 
   @@index([phoneE164, createdAt])
   @@index([ip, createdAt])
@@ -166,39 +173,39 @@ model OtpAttempt {
 }
 
 model ProductionOrder {
-  id                       String         @id @default(cuid())
-  customerName             String // 客戶名稱
-  productName              String         @default("未命名產品") // 產品名字
-  productionQuantity       Int // 生產數量
-  unitWeightMg             Float // 單粒總重量（計算）
-  batchTotalWeightMg       Float // 批次總重量（計算）
-  completionDate           DateTime? // 完工日期
-  processIssues            String? // 製程問題記錄
-  qualityNotes             String? // 品管備註
-  capsuleColor             String? // 膠囊顏色
-  capsuleSize              String? // 膠囊大小 (#1, #0, #00)
-  capsuleType              String? // 膠囊成份 (明膠胃溶, 植物胃溶, 明膠腸溶, 植物腸溶)
-  createdAt                DateTime       @default(now())
-  updatedAt                DateTime       @updatedAt
-  
+  id                 String    @id @default(cuid())
+  customerName       String // 客戶名稱
+  productName        String    @default("未命名產品") // 產品名字
+  productionQuantity Int // 生產數量
+  unitWeightMg       Float // 單粒總重量（計算）
+  batchTotalWeightMg Float // 批次總重量（計算）
+  completionDate     DateTime? // 完工日期
+  processIssues      String? // 製程問題記錄
+  qualityNotes       String? // 品管備註
+  capsuleColor       String? // 膠囊顏色
+  capsuleSize        String? // 膠囊大小 (#1, #0, #00)
+  capsuleType        String? // 膠囊成份 (明膠胃溶, 植物胃溶, 明膠腸溶, 植物腸溶)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
   // User reference with safe deletion
-  customerServiceId        String?
-  customerService          User?          @relation("ProductionOrderCustomerService", fields: [customerServiceId], references: [id], onDelete: SetNull)
-  
+  customerServiceId String?
+  customerService   User?   @relation("ProductionOrderCustomerService", fields: [customerServiceId], references: [id], onDelete: SetNull)
+
   actualProductionQuantity Int? // 實際生產完成數量（粒）
   materialYieldQuantity    Int? // 材料實際可做數量（粒）
   lockPassword             String? // 4 位數密碼保護（nullable）
-  
+
   // Link to work order (1:many relationship - one work order can have multiple production orders)
-  workOrderId              String?
-  workOrder                UnifiedWorkOrder? @relation("ProductionWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
-  
-  ingredients              Ingredient[]
-  worklogs                 OrderWorklog[]
+  workOrderId String?
+  workOrder   UnifiedWorkOrder? @relation("ProductionWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
+
+  ingredients Ingredient[]
+  worklogs    OrderWorklog[]
 
   @@index([completionDate, createdAt])
   @@index([customerServiceId])
-  @@index([workOrderId])  // Index for query performance
+  @@index([workOrderId]) // Index for query performance
   @@map("production_orders")
 }
 
@@ -241,85 +248,86 @@ model OrderWorklog {
 // Simplified status workflow - only CANCELLED and COMPLETED
 // Default state is NULL (ongoing work, managed by checkboxes)
 enum WorkOrderStatus {
-  PAUSED         // 已暫停 - Paused/On Hold
-  CANCELLED      // 已取消 - Cancelled
-  COMPLETED      // 已完成 - Fully completed
+  PAUSED // 已暫停 - Paused/On Hold
+  CANCELLED // 已取消 - Cancelled
+  COMPLETED // 已完成 - Fully completed
 }
 
 enum WorkType {
-  PACKAGING              // 包裝
-  PRODUCTION            // 生產
-  PRODUCTION_PACKAGING  // 生產+包裝
-  WAREHOUSING          // 倉務
+  PACKAGING // 包裝
+  PRODUCTION // 生產
+  PRODUCTION_PACKAGING // 生產+包裝
+  WAREHOUSING // 倉務
 }
 
 model UnifiedWorkOrder {
-  id                    String   @id @default(cuid())
-  jobNumber             String?  @unique  // 訂單編號（如有） - 改為可選
-  
+  id        String  @id @default(cuid())
+  jobNumber String? @unique // 訂單編號（如有） - 改為可選
+
   // Status Management with Audit
-  status                WorkOrderStatus?  // Nullable - NULL means ongoing work
-  statusUpdatedAt       DateTime?
-  statusUpdatedBy       String?
-  
-  markedDate            DateTime  @default(now())  // 記號日期（系統自動記錄創建時間）
-  customerName          String    @db.VarChar(200)
-  
+  status          WorkOrderStatus? // Nullable - NULL means ongoing work
+  statusUpdatedAt DateTime?
+  statusUpdatedBy String?
+
+  markedDate   DateTime @default(now()) // 記號日期（系統自動記錄創建時間）
+  customerName String   @db.VarChar(200)
+
   // User references with safe deletion (nullable for legacy imports)
-  personInChargeId      String?
-  personInCharge        User?     @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)
-  
-  workType              WorkType
-  
+  personInChargeId String?
+  personInCharge   User?   @relation("WorkOrderPersonInCharge", fields: [personInChargeId], references: [id], onDelete: Restrict)
+
+  workType WorkType
+
   // VIP標記（簡化名稱）
-  isCustomerServiceVip  Boolean  @default(false)  // 客服VIP
-  isBossVip             Boolean  @default(false)  // 老闆VIP
-  
+  isCustomerServiceVip Boolean @default(false) // 客服VIP
+  isBossVip            Boolean @default(false) // 老闆VIP
+
   // 物料到齊狀態
-  expectedProductionMaterialsDate  DateTime?  // 預計生產物料到齊的日期
-  expectedPackagingMaterialsDate   DateTime?  // 預計包裝物料到齊的日期
-  productionMaterialsReady         Boolean @default(false)  // 生產物料齊
-  packagingMaterialsReady          Boolean @default(false)  // 包裝物料齊
-  
+  expectedProductionMaterialsDate DateTime? // 預計生產物料到齊的日期
+  expectedPackagingMaterialsDate  DateTime? // 預計包裝物料到齊的日期
+  productionMaterialsReady        Boolean   @default(false) // 生產物料齊
+  packagingMaterialsReady         Boolean   @default(false) // 包裝物料齊
+
   // 數量
-  productionQuantity     Int?
-  packagingQuantity      Int?
-  
+  productionQuantity Int?
+  packagingQuantity  Int?
+
   // 交貨期
-  requestedDeliveryDate  DateTime?  // 要求交貨的日期
-  internalExpectedDate   DateTime?  // 內部預計交貨期
-  
+  requestedDeliveryDate DateTime? // 要求交貨的日期
+  internalExpectedDate  DateTime? // 內部預計交貨期
+
   // 狀態標記
-  isUrgent               Boolean @default(false)  // 客人要求加急
-  productionStarted      Boolean @default(false)  // 已開生產線
-  isCompleted            Boolean @default(false)  // 已經完成
-  
+  isUrgent          Boolean @default(false) // 客人要求加急
+  productionStarted Boolean @default(false) // 已開生產線
+  isCompleted       Boolean @default(false) // 已經完成
+
   // 工作描述
-  workDescription       String   @db.Text
-  
+  workDescription String @db.Text
+
   // 保留舊欄位以兼容（標記為廢棄）
-  isNewProductVip       Boolean  @default(false)  // @deprecated
-  isComplexityVip       Boolean  @default(false)  // @deprecated
-  yearCategory          String?  @db.VarChar(50)  // @deprecated
-  expectedCompletionDate DateTime?  // @deprecated
-  dataCompleteDate      DateTime?  // @deprecated
-  notifiedDate          DateTime?
-  paymentReceivedDate   DateTime?
-  shippedDate           DateTime?
+  isNewProductVip        Boolean   @default(false) // @deprecated
+  isComplexityVip        Boolean   @default(false) // @deprecated
+  yearCategory           String?   @db.VarChar(50) // @deprecated
+  expectedCompletionDate DateTime? // @deprecated
+  dataCompleteDate       DateTime? // @deprecated
+  notifiedDate           DateTime?
+  paymentReceivedDate    DateTime?
+  shippedDate            DateTime?
   productionQuantityStat String?
   packagingQuantityStat  String?
-  internalDeliveryTime   String?  @db.VarChar(100)  // @deprecated
-  customerRequestedTime  String?  @db.VarChar(100)  // @deprecated
-  tokyoData             String?  @db.Text
-  notes                 String?  @db.Text
-  
-  capsulationOrder      CapsulationOrder?
-  productionOrders      ProductionOrder[] @relation("ProductionWorkOrder")  // 1:many relationship
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  createdBy             String?
-  
+  internalDeliveryTime   String?   @db.VarChar(100) // @deprecated
+  customerRequestedTime  String?   @db.VarChar(100) // @deprecated
+  tokyoData              String?   @db.Text
+  notes                  String?   @db.Text
+
+  capsulationOrder       CapsulationOrder?
+  productionOrders       ProductionOrder[]       @relation("ProductionWorkOrder") // 1:many relationship
+  managerSchedulingEntry ManagerSchedulingEntry?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
   // Enhanced Indexes for Performance
   @@index([jobNumber])
   @@index([customerName])
@@ -328,26 +336,26 @@ model UnifiedWorkOrder {
   @@index([status])
   @@index([markedDate])
   @@index([createdAt(sort: Desc)])
-  @@index([customerName, workType])  // Composite for common queries
-  @@index([status, requestedDeliveryDate])  // Composite for dashboard
+  @@index([customerName, workType]) // Composite for common queries
+  @@index([status, requestedDeliveryDate]) // Composite for dashboard
   @@map("unified_work_orders")
 }
 
 model CapsulationOrder {
-  id                       String   @id @default(cuid())
-  workOrderId              String   @unique
-  workOrder                UnifiedWorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
-  
-  productName              String   @default("未命名產品")
-  productionQuantity       Int
-  unitWeightMg             Float
-  batchTotalWeightMg       Float
-  completionDate           DateTime?
-  
+  id          String           @id @default(cuid())
+  workOrderId String           @unique
+  workOrder   UnifiedWorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  productName        String    @default("未命名產品")
+  productionQuantity Int
+  unitWeightMg       Float
+  batchTotalWeightMg Float
+  completionDate     DateTime?
+
   // User reference with safe deletion
-  customerServiceId        String?
-  customerService          User?    @relation("CapsulationOrderCustomerService", fields: [customerServiceId], references: [id], onDelete: SetNull)  // OK to clear if user deleted
-  
+  customerServiceId String?
+  customerService   User?   @relation("CapsulationOrderCustomerService", fields: [customerServiceId], references: [id], onDelete: SetNull) // OK to clear if user deleted
+
   capsuleColor             String?
   capsuleSize              String?
   capsuleType              String?
@@ -356,26 +364,26 @@ model CapsulationOrder {
   actualProductionQuantity Int?
   materialYieldQuantity    Int?
   lockPassword             String?
-  
-  ingredients              CapsulationIngredient[]
-  worklogs                 CapsulationWorklog[]
-  
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-  
+
+  ingredients CapsulationIngredient[]
+  worklogs    CapsulationWorklog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([workOrderId])
   @@index([customerServiceId])
   @@map("capsulation_orders")
 }
 
 model CapsulationIngredient {
-  id                 String            @id @default(cuid())
+  id                 String           @id @default(cuid())
   orderId            String
-  materialName       String            // 原料品名
-  unitContentMg      Float             // 單粒含量
-  isCustomerProvided Boolean           @default(true) // 是否客戶指定
-  isCustomerSupplied Boolean           @default(true) // 是否客戶提供
-  order              CapsulationOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  materialName       String // 原料品名
+  unitContentMg      Float // 單粒含量
+  isCustomerProvided Boolean          @default(true) // 是否客戶指定
+  isCustomerSupplied Boolean          @default(true) // 是否客戶提供
+  order              CapsulationOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
   @@index([materialName])
@@ -603,12 +611,12 @@ model RecipeLibrary {
   aiAnalyzedAt      DateTime? // AI 分析時間
 
   // 🆕 AI 優化建議
-  aiSuggestions     String?   @db.Text // JSON: suggestion[]
-  aiSuggestionsAt   DateTime? // 分析時間
+  aiSuggestions   String?   @db.Text // JSON: suggestion[]
+  aiSuggestionsAt DateTime? // 分析時間
 
   // 🆕 原料相互作用分析
-  aiInteractions    String?   @db.Text // JSON: warning[]
-  aiInteractionsAt  DateTime? // 分析時間
+  aiInteractions   String?   @db.Text // JSON: warning[]
+  aiInteractionsAt DateTime? // 分析時間
 
   // 🆕 配方類型與來源
   recipeType String @default("production") // "production" | "template"
@@ -624,4 +632,29 @@ model RecipeLibrary {
   @@index([recipeType])
   @@index([sourceType])
   @@map("recipe_library")
+}
+
+// ===== Manager Scheduling Table (經理排單表) =====
+
+model ManagerSchedulingEntry {
+  id          String           @id @default(cuid())
+  workOrderId String           @unique
+  workOrder   UnifiedWorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  priority Int // 1, 2, 3... for drag-drop ordering
+
+  // Bidirectional sync fields (synced with CapsulationOrder)
+  processIssues String? @db.Text // 製程問題 (synced with CapsulationOrder.processIssues)
+  qualityNotes  String? @db.Text // 品質備註 (synced with CapsulationOrder.qualityNotes)
+
+  // Scheduling-specific field
+  expectedProductionStartDate String? @db.VarChar(200) // 預計開產日期 (text field)
+
+  createdAt DateTime @default(now()) // System-generated only, NOT editable
+  updatedAt DateTime @updatedAt
+  createdBy String? // For audit trail
+
+  @@index([priority])
+  @@index([workOrderId])
+  @@map("manager_scheduling_entries")
 }

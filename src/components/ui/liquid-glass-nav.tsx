@@ -7,7 +7,7 @@ import { Logo } from '@/components/ui/logo'
 import { NavDropdown } from '@/components/ui/nav-dropdown'
 import { getMainNavigationLinks, type NavigationLink } from '@/data/navigation'
 import { useAuth } from '@/components/auth/auth-provider'
-import { Menu, X, ChevronDown, Library, Sparkles, FlaskConical, Palette } from 'lucide-react'
+import { Menu, X, ChevronDown, Library, Sparkles, FlaskConical, Palette, Calendar } from 'lucide-react'
 import { Route } from 'next'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 
@@ -20,7 +20,8 @@ const iconMap = {
   Library,
   Sparkles,
   FlaskConical,
-  Palette
+  Palette,
+  Calendar
 }
 
 interface LiquidGlassNavProps {

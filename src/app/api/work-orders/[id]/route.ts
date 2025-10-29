@@ -15,6 +15,7 @@ import { hasPermission } from '@/lib/middleware/work-order-auth'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { getValidStatusTransitions } from '@/types/work-order'
+import { syncToSchedulingEntry } from '@/lib/sync/scheduling-capsulation-sync'
 
 export const dynamic = 'force-dynamic'
 
@@ -92,6 +93,16 @@ export async function GET(
             createdAt: true
           },
           orderBy: { createdAt: 'desc' }
+        },
+        // NEW: Include manager scheduling entry if exists
+        managerSchedulingEntry: {
+          select: {
+            id: true,
+            priority: true,
+            processIssues: true,
+            qualityNotes: true,
+            expectedProductionStartDate: true
+          }
         }
       }
     })
@@ -369,6 +380,31 @@ export async function PATCH(
           where: { workOrderId: id },
           data: capsulationUpdateData
         })
+
+        // Sync processIssues and qualityNotes to scheduling entry if exists
+        if (capsulationData.processIssues !== undefined || capsulationData.qualityNotes !== undefined) {
+          const syncResult = await syncToSchedulingEntry(
+            id,
+            capsulationData.processIssues,
+            capsulationData.qualityNotes
+          )
+          
+          if (!syncResult.success) {
+            // Log sync failure but don't fail the operation
+            await logAudit({
+              action: AuditAction.SCHEDULING_SYNC_FAILED,
+              userId: session.userId,
+              phone: session.user.phoneE164,
+              ip: (await getUserContextFromRequest(request)).ip,
+              userAgent: (await getUserContextFromRequest(request)).userAgent,
+              metadata: {
+                workOrderId: id,
+                error: syncResult.error,
+                syncDirection: 'capsulation-to-scheduling'
+              }
+            })
+          }
+        }
 
         // If ingredients are provided, delete all and recreate
         if (capsulationData.ingredients && capsulationData.ingredients.length > 0) {

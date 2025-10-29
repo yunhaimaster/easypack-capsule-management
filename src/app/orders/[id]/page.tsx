@@ -50,17 +50,22 @@ export default function OrderDetailPage() {
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
 
   useEffect(() => {
-    if (params.id) {
-      fetchOrder(params.id as string)
+    const id = params?.id as string | undefined
+    if (id && typeof id === 'string' && id !== 'undefined') {
+      fetchOrder(id)
+    } else if (id === 'undefined' || !id) {
+      setError('訂單ID無效')
+      setLoading(false)
     }
-  }, [params.id])
+  }, [params?.id])
 
   // Check if order can be saved as recipe
   useEffect(() => {
-    if (order && params.id) {
-      checkRecipeSaveStatus(params.id as string)
+    const id = params?.id as string | undefined
+    if (order && id && typeof id === 'string' && id !== 'undefined') {
+      checkRecipeSaveStatus(id)
     }
-  }, [order, params.id])
+  }, [order, params?.id])
 
   const checkRecipeSaveStatus = async (orderId: string) => {
     try {
@@ -179,8 +184,9 @@ export default function OrderDetailPage() {
       variant: 'default'
     })
     // Refresh recipe status
-    if (params.id) {
-      checkRecipeSaveStatus(params.id as string)
+    const id = params?.id as string | undefined
+    if (id && typeof id === 'string' && id !== 'undefined') {
+      checkRecipeSaveStatus(id)
     }
   }
 
@@ -203,8 +209,9 @@ export default function OrderDetailPage() {
 
   const handleLockDialogSuccess = () => {
     // 密碼鎖操作成功，刷新訂單數據
-    if (params.id) {
-      fetchOrder(params.id as string)
+    const id = params?.id as string | undefined
+    if (id && typeof id === 'string' && id !== 'undefined') {
+      fetchOrder(id)
     }
   }
 
@@ -234,8 +241,9 @@ export default function OrderDetailPage() {
           variant: 'default'
         })
         // 刷新訂單數據
-        if (params.id) {
-          fetchOrder(params.id as string)
+        const id = params?.id as string | undefined
+        if (id && typeof id === 'string' && id !== 'undefined') {
+          fetchOrder(id)
         }
       } else {
         showToast({

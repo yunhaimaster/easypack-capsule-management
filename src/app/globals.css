@@ -3626,6 +3626,14 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
+.dark .liquid-glass-modal.confirm-modal {
+  background: linear-gradient(160deg, rgba(30, 30, 32, 0.95), rgba(24, 24, 27, 0.98)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
 .confirm-modal-body {
   display: flex;
   align-items: flex-start;
@@ -3659,10 +3667,18 @@
   margin-bottom: 0.35rem;
 }
 
+.dark .confirm-modal-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
 .confirm-modal-message {
   font-size: 0.95rem;
   color: rgba(34, 54, 74, 0.85);
   line-height: 1.6;
+}
+
+.dark .confirm-modal-message {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .confirm-modal-actions {
@@ -3701,15 +3717,32 @@
   color: rgba(18, 42, 64, 0.85);
 }
 
+.dark .confirm-modal-actions .confirm-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .confirm-modal-actions .confirm-cancel:hover {
   background: rgba(255, 255, 255, 0.9);
   color: rgba(18, 42, 64, 0.95);
+}
+
+.dark .confirm-modal-actions .confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .liquid-glass-modal.confirm-modal.confirm-danger .confirm-modal-icon {
   background: linear-gradient(135deg, rgba(239, 106, 106, 0.18), rgba(216, 74, 74, 0.12));
   border-color: rgba(216, 74, 74, 0.28);
   color: rgba(168, 24, 24, 0.9);
+}
+
+.dark .liquid-glass-modal.confirm-modal.confirm-danger .confirm-modal-icon {
+  background: linear-gradient(135deg, rgba(239, 106, 106, 0.25), rgba(216, 74, 74, 0.20));
+  border-color: rgba(239, 106, 106, 0.35);
+  color: rgba(252, 165, 165, 0.95);
 }
 
 @media (max-width: 640px) {

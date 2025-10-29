@@ -16,6 +16,7 @@ import { Plus, FileText, ArrowRight, Calendar, Timer, ClipboardList, Clock3, Wan
 import { IconContainer } from '@/components/ui/icon-container'
 import { SafeUpdateCard } from '@/components/home/update-card-safe'
 import { UpdateToastNotifier } from '@/components/home/update-toast'
+import { useAuth } from '@/components/auth/auth-provider'
 
 const QUICK_CARD_PADDING = 'px-4 py-4 sm:px-6 sm:py-6'
 const MINI_CARD_PADDING = 'px-3 sm:px-3.5 py-3'
@@ -73,6 +74,7 @@ const formatWorklogDate = (value: string) => {
 
 export function HomePageClient() {
   const router = useRouter()
+  const { isManager, isAdmin } = useAuth()
   const [recentOrders, setRecentOrders] = useState<ProductionOrder[]>([])
   const [recentWorklogs, setRecentWorklogs] = useState<WorklogWithOrder[]>([])
   const [loading, setLoading] = useState(true)
@@ -161,6 +163,28 @@ export function HomePageClient() {
                 </div>
               </div>
             </Card>
+
+            {(isManager || isAdmin) && (
+              <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-particles group">
+                <div className="liquid-glass-content flex flex-col gap-4 p-6">
+                  <div className="flex items-center justify-between">
+                    <IconContainer icon={Calendar} variant="info" size="md" />
+                    <div className="text-right space-y-1">
+                      <h3 className="text-sm font-semibold text-info-600">經理排單表</h3>
+                      <p className="text-xs text-info-500/70">管理生產優先順序</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-neutral-600 dark:text-white/75 leading-relaxed">
+                    管理膠囊生產工作單的優先順序和生產計劃，拖放排序與即時同步。
+                  </p>
+                  <div className="mt-auto">
+                    <Button asChild size="sm" className="w-full bg-gradient-to-r from-info-500 to-info-600 hover:from-info-600 hover:to-info-700 transition-all duration-300">
+                      <Link href="/manager-scheduling">排單表</Link>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
 
             <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">

@@ -114,8 +114,8 @@ function NewOrderContent() {
           <Alert className="bg-info-50 border-info-200">
             <Info className="h-4 w-4 text-info-600" />
             <AlertDescription className="text-info-700">
-              正在從工作單「{workOrderData.workOrderJobNumber || '未知編號'}」創建新訂單。
-              客戶名稱、客服和生產數量已自動填充，訂單創建後將自動關聯到工作單。
+              正在從工作單{workOrderData.workOrderJobNumber ? `「${workOrderData.workOrderJobNumber}」` : '創建新訂單'}。
+              {workOrderData.workOrderJobNumber && '客戶名稱、客服和生產數量已自動填充，訂單創建後將自動關聯到工作單。'}
             </AlertDescription>
           </Alert>
         )}

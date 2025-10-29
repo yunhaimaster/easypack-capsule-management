@@ -589,11 +589,12 @@ function WorkOrdersContent() {
           <div className="flex gap-2 flex-col sm:flex-row">
             <div className="flex-1 flex gap-2">
               <Input
-                placeholder="搜尋訂單編號、客戶名稱..."
+                placeholder="搜尋：訂單編號、客戶名稱、產品名稱、負責人、備註、工作描述..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1 transition-apple text-sm"
+                title="支援部分匹配搜尋，例如：只記得客戶名稱的一部分也可以找到"
               />
               <Button onClick={handleSearch} variant="default" className="transition-apple" size="sm">
                 <Search className="h-4 w-4 sm:mr-2" />

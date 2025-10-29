@@ -332,20 +332,55 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         throw new Error(`儲存失敗: ${errorMessage}`)
       }
 
-      const result = await response.json()
-      console.log('[Order Form] Save successful', result)
+      // Parse response with better error handling
+      let result: any
+      try {
+        const text = await response.text()
+        if (!text || text.trim() === '') {
+          throw new Error('Response body is empty')
+        }
+        result = JSON.parse(text)
+        console.log('[Order Form] Save successful', result)
+      } catch (parseError) {
+        console.error('[Order Form] Failed to parse response:', parseError)
+        showToast({
+          title: '儲存成功但無法解析響應',
+          description: '請刷新訂單列表頁面確認訂單已創建',
+          variant: 'default'
+        })
+        router.push('/orders')
+        return
+      }
 
       // Reset dirty state after successful save
       resetDirty()
 
       if (!orderId) {
         // Creating new order - redirect to detail page
+        // API returns: { success: true, data: { order: {...} } }
+        // The order object is nested in data.order based on jsonSuccess helper
+        const orderData = result?.data?.order || result?.data
+        const newOrderId = orderData?.id
+        
+        if (!result || typeof result !== 'object' || !result.success || !result.data || !newOrderId) {
+          console.error('[Order Form] Invalid response structure:', result)
+          showToast({
+            title: '創建成功但無法獲取訂單ID',
+            description: '請刷新訂單列表頁面確認訂單已創建',
+            variant: 'default'
+          })
+          router.push('/orders')
+          return
+        }
+        
         showToast({
           title: '訂單創建成功',
           description: workOrderId ? '已自動關聯到工作單' : undefined,
           variant: 'default'
         })
-        router.push(`/orders/${result.data.id}`)
+        
+        // Use window.location for more reliable navigation after creation
+        window.location.href = `/orders/${newOrderId}`
       } else {
         // Updating existing order - show success and stay on page
         showToast({

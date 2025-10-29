@@ -10,7 +10,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
@@ -37,13 +37,16 @@ import {
   Loader2,
   Star,
   AlertTriangle,
-  Plus
+  Plus,
+  Calendar,
+  CalendarX
 } from 'lucide-react'
 import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS, getValidStatusTransitions } from '@/types/work-order'
-import { WorkOrderStatus } from '@prisma/client'
+import { WorkOrderStatus, WorkType } from '@prisma/client'
 import { useToast } from '@/components/ui/toast-provider'
 import { LinkOrderModal } from '@/components/orders/link-order-modal'
 import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
+import { useAuth } from '@/components/auth/auth-provider'
 
 interface QuickActionsMenuProps {
   workOrder: WorkOrder
@@ -64,9 +67,103 @@ export function QuickActionsMenu({
 }: QuickActionsMenuProps) {
   const router = useRouter()
   const { showToast } = useToast()
+  const { isManager, isAdmin } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [linkModalOpen, setLinkModalOpen] = useState(false)
+  const [isInScheduling, setIsInScheduling] = useState<boolean | null>(null)
+  const [schedulingEntryId, setSchedulingEntryId] = useState<string | null>(null)
+
+  // Check if work order is in scheduling table
+  const checkSchedulingStatus = async () => {
+    try {
+      const response = await fetch(`/api/manager-scheduling/check/${workOrder.id}`, {
+        credentials: 'include',
+        cache: 'no-store'
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setIsInScheduling(data.data?.isInScheduling || false)
+        setSchedulingEntryId(data.data?.entryId || null)
+      }
+    } catch (error) {
+      console.error('Failed to check scheduling status:', error)
+    }
+  }
+
+  // Check on mount and when work order changes
+  useEffect(() => {
+    if ((isManager || isAdmin) && 
+        (workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING)) {
+      checkSchedulingStatus()
+    }
+  }, [workOrder.id, isManager, isAdmin])
+
+  const handleAddToScheduling = async () => {
+    setIsLoading(true)
+    setLoadingAction('add-to-scheduling')
+    try {
+      const response = await fetch('/api/manager-scheduling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ workOrderId: workOrder.id })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '新增失敗')
+      }
+
+      showToast({ title: '已加入排單表' })
+      setIsInScheduling(true)
+      await checkSchedulingStatus()
+      if (onRefresh) await onRefresh()
+    } catch (error) {
+      showToast({
+        title: '操作失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+      setLoadingAction(null)
+    }
+  }
+
+  const handleRemoveFromScheduling = async () => {
+    if (!schedulingEntryId) return
+
+    setIsLoading(true)
+    setLoadingAction('remove-from-scheduling')
+    try {
+      const response = await fetch(`/api/manager-scheduling/${schedulingEntryId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '移除失敗')
+      }
+
+      showToast({ title: '已從排單表移除' })
+      setIsInScheduling(false)
+      setSchedulingEntryId(null)
+      await checkSchedulingStatus()
+      if (onRefresh) await onRefresh()
+    } catch (error) {
+      showToast({
+        title: '操作失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+      setLoadingAction(null)
+    }
+  }
 
   const handleAction = async (
     action: string,
@@ -506,6 +603,46 @@ export function QuickActionsMenu({
         )}
 
         {workOrder.capsulationOrder && <DropdownMenuSeparator />}
+
+        {/* Group: Scheduling Table (MANAGER/ADMIN only, PRODUCTION/PRODUCTION_PACKAGING only) */}
+        {(isManager || isAdmin) && 
+         (workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING) && (
+          <>
+            {isInScheduling === false ? (
+              <DropdownMenuItem
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  await handleAddToScheduling()
+                }}
+                disabled={isLoading}
+                className="h-12 lg:h-auto text-info-600 focus:text-info-700 focus:bg-info-50 dark:focus:bg-info-900/20"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>加入排單表</span>
+                {loadingAction === 'add-to-scheduling' && (
+                  <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                )}
+              </DropdownMenuItem>
+            ) : isInScheduling === true ? (
+              <DropdownMenuItem
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  await handleRemoveFromScheduling()
+                }}
+                disabled={isLoading}
+                className="h-12 lg:h-auto text-neutral-600 focus:text-neutral-700 focus:bg-neutral-50 dark:focus:bg-neutral-900/20"
+              >
+                <CalendarX className="mr-2 h-4 w-4" />
+                <span>從排單表移除</span>
+                {loadingAction === 'remove-from-scheduling' && (
+                  <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                )}
+              </DropdownMenuItem>
+            ) : null}
+            
+            {isInScheduling !== null && <DropdownMenuSeparator />}
+          </>
+        )}
 
         {/* Group 4: Delete */}
         <DropdownMenuItem

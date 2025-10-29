@@ -13,6 +13,13 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
   WAREHOUSING: '倉務',
 }
 
+export const WORK_TYPE_SHORT_LABELS: Record<WorkType, string> = {
+  PACKAGING: '包裝',
+  PRODUCTION: '生產',
+  PRODUCTION_PACKAGING: '產+包',
+  WAREHOUSING: '倉務',
+}
+
 export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
   PAUSED: '已暫停',
   COMPLETED: '已完成',

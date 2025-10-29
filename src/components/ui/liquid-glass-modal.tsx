@@ -241,7 +241,7 @@ export function LiquidGlassConfirmModal({
       onClose={onClose}
       title={title}
       size="sm"
-      className={`white-theme confirm-modal ${variant === 'danger' ? 'confirm-danger' : ''}`}
+      className={`confirm-modal ${variant === 'danger' ? 'confirm-danger' : ''}`}
     >
       <div className="confirm-modal-body">
         <div className="confirm-modal-icon">

@@ -263,7 +263,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
 
       const payload = await response.json()
       if (!payload?.success) {
-        throw new Error(payload?.error?.message || '刪除訂單失敗')
+        throw new Error(payload?.error || payload?.error?.message || '刪除訂單失敗')
       }
 
       fetchOrders(filters)

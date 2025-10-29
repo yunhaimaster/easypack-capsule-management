@@ -13,6 +13,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/middleware/work-order-auth'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
+import { syncToSchedulingEntry } from '@/lib/sync/scheduling-capsulation-sync'
 
 export const dynamic = 'force-dynamic'
 
@@ -83,14 +84,53 @@ export async function GET(request: NextRequest) {
     const where: Prisma.UnifiedWorkOrderWhereInput = {}
     const searchConditions: Prisma.UnifiedWorkOrderWhereInput[] = []
 
-    // Keyword search across multiple fields
+    // Enhanced keyword search across multiple fields with partial matching
     if (validatedFilters.keyword) {
+      const keyword = validatedFilters.keyword.trim()
+      
+      // Build comprehensive search conditions
+      const keywordConditions: Prisma.UnifiedWorkOrderWhereInput[] = []
+      
+      // Direct fields (case-insensitive partial match)
+      keywordConditions.push(
+        { jobNumber: { contains: keyword, mode: 'insensitive' } },
+        { customerName: { contains: keyword, mode: 'insensitive' } },
+        { workDescription: { contains: keyword, mode: 'insensitive' } },
+        { notes: { contains: keyword, mode: 'insensitive' } }
+      )
+      
+      // Search in related person in charge (nickname or phone)
+      keywordConditions.push({
+        personInCharge: {
+          OR: [
+            { nickname: { contains: keyword, mode: 'insensitive' } },
+            { phoneE164: { contains: keyword, mode: 'insensitive' } }
+          ]
+        }
+      })
+      
+      // Search in related production orders (product name and customer name)
+      keywordConditions.push({
+        productionOrders: {
+          some: {
+            OR: [
+              { productName: { contains: keyword, mode: 'insensitive' } },
+              { customerName: { contains: keyword, mode: 'insensitive' } }
+            ]
+          }
+        }
+      })
+      
+      // Search in related capsulation order (product name)
+      keywordConditions.push({
+        capsulationOrder: {
+          productName: { contains: keyword, mode: 'insensitive' }
+        }
+      })
+      
+      // Combine all keyword conditions with OR
       searchConditions.push({
-        OR: [
-          { jobNumber: { contains: validatedFilters.keyword, mode: 'insensitive' } },
-          { customerName: { contains: validatedFilters.keyword, mode: 'insensitive' } },
-          { workDescription: { contains: validatedFilters.keyword, mode: 'insensitive' } }
-        ]
+        OR: keywordConditions
       })
     }
 
@@ -465,6 +505,31 @@ export async function POST(request: NextRequest) {
             }
           }
         })
+
+        // Sync processIssues and qualityNotes to scheduling entry if exists
+        if (capsulationData.processIssues || capsulationData.qualityNotes) {
+          const syncResult = await syncToSchedulingEntry(
+            newWorkOrder.id,
+            capsulationData.processIssues || null,
+            capsulationData.qualityNotes || null
+          )
+          
+          if (!syncResult.success) {
+            // Log sync failure but don't fail the operation
+            await logAudit({
+              action: AuditAction.SCHEDULING_SYNC_FAILED,
+              userId: session.userId,
+              phone: session.user.phoneE164,
+              ip: (await getUserContextFromRequest(request)).ip,
+              userAgent: (await getUserContextFromRequest(request)).userAgent,
+              metadata: {
+                workOrderId: newWorkOrder.id,
+                error: syncResult.error,
+                syncDirection: 'capsulation-create-to-scheduling'
+              }
+            })
+          }
+        }
       }
 
       return newWorkOrder

@@ -349,7 +349,7 @@ export async function DELETE(
 
     if (!order) {
       return NextResponse.json(
-        { error: '訂單不存在' },
+        { success: false, error: '訂單不存在' },
         { status: 404 }
       )
     }
@@ -376,13 +376,13 @@ export async function DELETE(
       }
     })
 
-    return NextResponse.json({ message: '訂單刪除成功' })
+    return NextResponse.json({ success: true, message: '訂單刪除成功' })
   } catch (error) {
     logger.error('刪除訂單錯誤', {
       error: error instanceof Error ? error.message : String(error)
     })
     return NextResponse.json(
-      { error: '刪除訂單失敗' },
+      { success: false, error: '刪除訂單失敗' },
       { status: 500 }
     )
   }

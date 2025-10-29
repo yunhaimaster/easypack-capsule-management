@@ -178,3 +178,90 @@ export function debounce<T extends (...args: any[]) => any>(
     timeout = setTimeout(() => func(...args), wait)
   }
 }
+
+/**
+ * Smart text truncation for Chinese and English text
+ * - Respects word boundaries for English
+ * - Handles Chinese characters properly
+ * - Preserves line breaks in preview
+ * - Returns { preview, fullText, isTruncated }
+ * 
+ * @param text - Text to truncate
+ * @param maxLength - Maximum length (characters, not bytes)
+ * @param preserveLineBreaks - Whether to preserve first line break in preview
+ * @returns Object with preview, fullText, and isTruncated flag
+ */
+export function truncateTextSmart(
+  text: string | null,
+  maxLength: number,
+  preserveLineBreaks: boolean = false
+): {
+  preview: string
+  fullText: string
+  isTruncated: boolean
+} {
+  if (!text) {
+    return {
+      preview: '',
+      fullText: '',
+      isTruncated: false
+    }
+  }
+
+  const fullText = text
+  const textLength = fullText.length
+
+  // If text is shorter than maxLength, no truncation needed
+  if (textLength <= maxLength) {
+    return {
+      preview: fullText,
+      fullText,
+      isTruncated: false
+    }
+  }
+
+  // Find first line break if preserveLineBreaks is true
+  const firstLineBreak = preserveLineBreaks ? fullText.indexOf('\n') : -1
+  const firstLineBreakWithinLimit = firstLineBreak >= 0 && firstLineBreak < maxLength
+
+  // Calculate truncation point
+  let truncateAt = maxLength
+
+  // Try to break at word boundary for English text (after space or punctuation)
+  if (truncateAt < textLength) {
+    // Look backwards from truncateAt for a word boundary
+    const beforeTruncate = fullText.substring(0, truncateAt)
+    const lastSpaceIndex = beforeTruncate.lastIndexOf(' ')
+    const lastPunctuationIndex = Math.max(
+      beforeTruncate.lastIndexOf('。'),
+      beforeTruncate.lastIndexOf('，'),
+      beforeTruncate.lastIndexOf('、'),
+      beforeTruncate.lastIndexOf('.'), 
+      beforeTruncate.lastIndexOf(','),
+      beforeTruncate.lastIndexOf(';')
+    )
+    
+    // Prefer breaking at punctuation, then space, but not too far back
+    const boundaryIndex = Math.max(lastPunctuationIndex, lastSpaceIndex)
+    if (boundaryIndex > maxLength * 0.7) { // Don't break too far back
+      truncateAt = boundaryIndex + 1
+    }
+  }
+
+  // If we have a line break within limit and preserveLineBreaks, include it
+  let preview = fullText.substring(0, truncateAt)
+  
+  if (firstLineBreakWithinLimit && preserveLineBreaks) {
+    // Keep the line break and truncate after it
+    preview = fullText.substring(0, Math.min(firstLineBreak + 1, truncateAt))
+  }
+
+  // Add ellipsis
+  preview = preview.trim() + '...'
+
+  return {
+    preview,
+    fullText,
+    isTruncated: true
+  }
+}
