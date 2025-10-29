@@ -103,7 +103,13 @@ async function fetchSourceOrder(sourceType: SourceType, sourceId: string) {
 /**
  * Fetch potential target orders
  */
-async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string) {
+async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): Promise<Array<{
+  id: string
+  name: string
+  customerName: string
+  personId: string | null
+  person: string | null
+}>> {
   if (sourceType === 'work-order') {
     // Source is work order, fetch encapsulation orders (ProductionOrder)
     const where = searchTerm ? {
@@ -136,7 +142,7 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string) {
       name: order.productName,
       customerName: order.customerName,
       personId: order.customerServiceId,
-      person: order.customerService?.nickname || order.customerService?.phoneE164 || null
+      person: (order.customerService?.nickname || order.customerService?.phoneE164 || null) as string | null
     }))
   } else {
     // Source is encapsulation order, fetch work orders
@@ -170,7 +176,7 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string) {
       name: wo.jobNumber || `工作單 - ${wo.customerName}`,
       customerName: wo.customerName,
       personId: wo.personInChargeId,
-      person: wo.personInCharge?.nickname || wo.personInCharge?.phoneE164 || null
+      person: (wo.personInCharge?.nickname || wo.personInCharge?.phoneE164 || null) as string | null
     }))
   }
 }
