@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useWorkOrder } from '@/lib/queries/work-orders'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,16 +12,60 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { OrderLinkBadge } from '@/components/ui/order-link-badge'
-import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2 } from 'lucide-react'
+import { LinkOrderModal } from '@/components/orders/link-order-modal'
+import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
+import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2, Unlink } from 'lucide-react'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS, CapsulationIngredient } from '@/types/work-order'
+import { useToast } from '@/components/ui/toast-provider'
 
 export default function WorkOrderDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { showToast } = useToast()
   const id = params.id as string
 
-  const { data, isLoading, error } = useWorkOrder(id)
+  const { data, isLoading, error, refetch } = useWorkOrder(id)
   const workOrder = data as any
+  
+  const [linkModalOpen, setLinkModalOpen] = useState(false)
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
+
+  // Handle unlink
+  const handleUnlink = async () => {
+    try {
+      const response = await fetch(`/api/work-orders/${id}/link`, {
+        method: 'DELETE'
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        showToast({ title: '已取消關聯' })
+        refetch()
+      } else {
+        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
+      }
+    } catch (error) {
+      showToast({ title: '取消關聯失敗', variant: 'destructive' })
+    } finally {
+      setShowUnlinkConfirm(false)
+    }
+  }
+
+  // Keyboard shortcut for opening link modal (Cmd/Ctrl+K)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        if (workOrder && !workOrder.productionOrder) {
+          setLinkModalOpen(true)
+        }
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [workOrder])
 
   if (isLoading) {
     return (
@@ -381,13 +426,34 @@ export default function WorkOrderDetailPage() {
       )}
 
       {/* Linked Encapsulation Order */}
-      {workOrder.productionOrder && (
+      {workOrder.productionOrder ? (
         <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
-              關聯膠囊訂單
-            </CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <CardTitle className="flex items-center gap-2">
+                <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
+                關聯膠囊訂單
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push(`/orders/${workOrder.productionOrder.id}`)}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1 rotate-180" />
+                  查看
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowUnlinkConfirm(true)}
+                  className="text-warning-600 hover:text-warning-700 dark:text-warning-400 dark:hover:text-warning-300"
+                >
+                  <Unlink className="h-4 w-4 mr-1" />
+                  取消關聯
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -400,7 +466,28 @@ export default function WorkOrderDetailPage() {
               <div className="text-sm text-neutral-600 dark:text-neutral-400">
                 <p>客戶名稱: {workOrder.productionOrder.customerName}</p>
               </div>
+              {workOrder.customerName !== workOrder.productionOrder.customerName && (
+                <Badge variant="warning" className="mt-2">
+                  ⚠ 客戶名稱不匹配
+                </Badge>
+              )}
             </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple border-dashed border-2">
+          <CardContent className="pt-6 pb-6 text-center">
+            <Link2 className="h-12 w-12 text-neutral-400 dark:text-neutral-600 mx-auto mb-3" />
+            <Text.Secondary className="mb-4">
+              此工作單尚未關聯膠囊訂單
+            </Text.Secondary>
+            <Button onClick={() => setLinkModalOpen(true)}>
+              <Link2 className="h-4 w-4 mr-2" />
+              關聯膠囊訂單
+            </Button>
+            <Text.Tertiary className="mt-3 text-xs">
+              或按 Cmd+K 快速開啟
+            </Text.Tertiary>
           </CardContent>
         </Card>
       )}
@@ -427,6 +514,34 @@ export default function WorkOrderDetailPage() {
         </div>
       </div>
       <LiquidGlassFooter />
+
+      {/* Link Order Modal */}
+      <LinkOrderModal
+        isOpen={linkModalOpen}
+        onClose={() => setLinkModalOpen(false)}
+        sourceType="work-order"
+        sourceId={workOrder.id}
+        sourceName={workOrder.jobNumber || workOrder.customerName}
+        currentLink={workOrder.productionOrder ? {
+          id: workOrder.productionOrder.id,
+          name: workOrder.productionOrder.productName
+        } : null}
+        onLinkComplete={() => {
+          setLinkModalOpen(false)
+          refetch()
+        }}
+      />
+
+      {/* Unlink Confirmation Modal */}
+      <LiquidGlassConfirmModal
+        isOpen={showUnlinkConfirm}
+        onClose={() => setShowUnlinkConfirm(false)}
+        onConfirm={handleUnlink}
+        title="確認取消關聯"
+        message={`確定要取消與膠囊訂單「${workOrder.productionOrder?.productName}」的關聯嗎？`}
+        confirmText="取消關聯"
+        variant="danger"
+      />
     </div>
   )
 }
