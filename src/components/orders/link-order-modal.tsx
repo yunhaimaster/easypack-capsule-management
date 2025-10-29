@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Text } from '@/components/ui/text'
 import { useToast } from '@/components/ui/toast-provider'
-import { Search, Link2, CheckCircle, AlertTriangle, Loader2, X } from 'lucide-react'
+import { formatDateOnly, formatNumber } from '@/lib/utils'
+import { Search, Link2, CheckCircle, AlertTriangle, Loader2, X, Calendar, Package } from 'lucide-react'
 import { SourceType, LinkSuggestion } from '@/lib/link-suggestions'
 
 interface LinkOrderModalProps {
@@ -193,30 +194,72 @@ export function LinkOrderModal({
     return null
   }
 
-  const renderSuggestionItem = (item: LinkSuggestion) => (
-    <button
-      key={item.id}
-      onClick={() => handleLinkClick(item)}
-      className="w-full text-left p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:border-info-500 hover:bg-info-50 dark:hover:bg-info-900/20 transition-colors"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-neutral-900 dark:text-white/95 truncate">
-            {searchTerm ? highlightText(item.name, searchTerm) : item.name}
-          </div>
-          <div className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
-            客戶：{searchTerm ? highlightText(item.customerName, searchTerm) : item.customerName}
-          </div>
-          {item.person && (
-            <div className="text-xs text-neutral-500 dark:text-neutral-500 truncate">
-              負責人：{searchTerm ? highlightText(item.person, searchTerm) : item.person}
+  const renderSuggestionItem = (item: LinkSuggestion) => {
+    // Format date based on order type
+    const displayDate = item.markedDate 
+      ? formatDateOnly(item.markedDate) 
+      : item.createdAt 
+        ? formatDateOnly(item.createdAt) 
+        : null
+    
+    const completionDate = item.completionDate ? formatDateOnly(item.completionDate) : null
+    
+    return (
+      <button
+        key={item.id}
+        onClick={() => handleLinkClick(item)}
+        className="w-full text-left p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:border-info-500 hover:bg-info-50 dark:hover:bg-info-900/20 transition-colors"
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-neutral-900 dark:text-white/95 truncate mb-1">
+              {searchTerm ? highlightText(item.name, searchTerm) : item.name}
+              {item.jobNumber && item.jobNumber !== item.name && (
+                <span className="ml-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  ({item.jobNumber})
+                </span>
+              )}
             </div>
-          )}
+            <div className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
+              客戶：{searchTerm ? highlightText(item.customerName, searchTerm) : item.customerName}
+            </div>
+            {item.person && (
+              <div className="text-xs text-neutral-500 dark:text-neutral-500 truncate">
+                負責人：{searchTerm ? highlightText(item.person, searchTerm) : item.person}
+              </div>
+            )}
+            {/* Additional distinguishing info */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-neutral-500 dark:text-neutral-500">
+              {displayDate && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  <span>建立：{displayDate}</span>
+                </div>
+              )}
+              {completionDate && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  <span>完工：{completionDate}</span>
+                </div>
+              )}
+              {item.productionQuantity !== null && item.productionQuantity !== undefined && (
+                <div className="flex items-center gap-1">
+                  <Package className="h-3 w-3" />
+                  <span>數量：{formatNumber(item.productionQuantity)} 粒</span>
+                </div>
+              )}
+              {item.id && (
+                <div className="font-mono text-[10px] text-neutral-400 dark:text-neutral-600">
+                  ID: {item.id.slice(-8)}
+                </div>
+              )}
+            </div>
+          </div>
+          {getMatchBadge(item.matchScore, item.searchRelevance)}
         </div>
-        {getMatchBadge(item.matchScore, item.searchRelevance)}
-      </div>
-    </button>
-  )
+      </button>
+    )
+  }
 
   return (
     <>

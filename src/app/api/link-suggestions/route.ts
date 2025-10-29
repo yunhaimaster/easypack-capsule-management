@@ -34,7 +34,12 @@ export async function GET(request: NextRequest) {
         customerName: item.customerName,
         person: typeof item.person === 'string' ? item.person : null,
         matchScore: item.matchScore,
-        searchRelevance: item.searchRelevance
+        searchRelevance: item.searchRelevance,
+        createdAt: item.createdAt,
+        completionDate: item.completionDate,
+        markedDate: item.markedDate,
+        productionQuantity: item.productionQuantity,
+        jobNumber: item.jobNumber
       })),
       goodMatches: suggestions.goodMatches.map(item => ({
         id: item.id,
@@ -42,7 +47,12 @@ export async function GET(request: NextRequest) {
         customerName: item.customerName,
         person: typeof item.person === 'string' ? item.person : null,
         matchScore: item.matchScore,
-        searchRelevance: item.searchRelevance
+        searchRelevance: item.searchRelevance,
+        createdAt: item.createdAt,
+        completionDate: item.completionDate,
+        markedDate: item.markedDate,
+        productionQuantity: item.productionQuantity,
+        jobNumber: item.jobNumber
       })),
       ...(suggestions.searchResults && {
         searchResults: suggestions.searchResults.map(item => ({
@@ -51,7 +61,12 @@ export async function GET(request: NextRequest) {
           customerName: item.customerName,
           person: typeof item.person === 'string' ? item.person : null,
           matchScore: item.matchScore,
-          searchRelevance: item.searchRelevance
+          searchRelevance: item.searchRelevance,
+          createdAt: item.createdAt,
+          completionDate: item.completionDate,
+          markedDate: item.markedDate,
+          productionQuantity: item.productionQuantity,
+          jobNumber: item.jobNumber
         }))
       }),
       total: suggestions.total

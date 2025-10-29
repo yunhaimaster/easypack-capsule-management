@@ -9,6 +9,12 @@ export interface LinkSuggestion {
   person: string | null
   matchScore: number
   searchRelevance?: number  // 0-100, higher = more relevant to search term
+  // Additional distinguishing fields
+  createdAt?: string  // ISO date string
+  completionDate?: string | null  // For encapsulation orders
+  markedDate?: string  // For work orders
+  productionQuantity?: number | null
+  jobNumber?: string | null  // For work orders
 }
 
 export interface LinkSuggestionsResult {
@@ -79,7 +85,12 @@ export async function calculateLinkSuggestions(
       customerName: target.customerName,
       person: personValue,
       matchScore,
-      searchRelevance
+      searchRelevance,
+      createdAt: target.createdAt,
+      completionDate: target.completionDate,
+      markedDate: target.markedDate,
+      productionQuantity: target.productionQuantity,
+      jobNumber: target.jobNumber
     }
   })
 
@@ -169,6 +180,11 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
   customerName: string
   personId: string | null
   person: string | null
+  createdAt?: string
+  completionDate?: string | null
+  markedDate?: string
+  productionQuantity?: number | null
+  jobNumber?: string | null
 }>> {
   if (sourceType === 'work-order') {
     // Source is work order, fetch encapsulation orders (ProductionOrder)
@@ -197,6 +213,9 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
         productName: true,
         customerName: true,
         customerServiceId: true,
+        createdAt: true,
+        completionDate: true,
+        productionQuantity: true,
         customerService: {
           select: {
             nickname: true,
@@ -216,7 +235,10 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
         name: order.productName,
         customerName: order.customerName,
         personId: order.customerServiceId,
-        person: personName
+        person: personName,
+        createdAt: order.createdAt.toISOString(),
+        completionDate: order.completionDate?.toISOString() || null,
+        productionQuantity: order.productionQuantity
       }
     })
   } else {
@@ -246,6 +268,9 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
         jobNumber: true,
         customerName: true,
         personInChargeId: true,
+        markedDate: true,
+        createdAt: true,
+        productionQuantity: true,
         personInCharge: {
           select: {
             nickname: true,
@@ -253,7 +278,7 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
           }
         }
       },
-      take: 100,
+      take: 200,  // Increased limit for better search coverage
       orderBy: { markedDate: 'desc' }
     })
 
@@ -265,7 +290,11 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
         name: wo.jobNumber || `工作單 - ${wo.customerName}`,
         customerName: wo.customerName,
         personId: wo.personInChargeId,
-        person: personName
+        person: personName,
+        markedDate: wo.markedDate.toISOString(),
+        createdAt: wo.createdAt.toISOString(),
+        productionQuantity: wo.productionQuantity,
+        jobNumber: wo.jobNumber
       }
     })
   }
