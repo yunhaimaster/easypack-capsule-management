@@ -25,11 +25,12 @@ export async function PATCH(
     const workOrder = await prisma.unifiedWorkOrder.findUnique({
       where: { id: workOrderId },
       include: {
-        productionOrder: {
+        productionOrders: {
           select: {
             id: true,
             productName: true
-          }
+          },
+          take: 1
         }
       }
     })
@@ -95,17 +96,18 @@ export async function PATCH(
       }
     })
 
-    // Return with warning if work order was previously linked
+    // Return with warning if work order was previously linked to a different order
     const response: Record<string, unknown> = {
       success: true,
       data: updated
     }
 
-    if (workOrder.productionOrder && workOrder.productionOrder.id !== id) {
+    const existingLink = workOrder.productionOrders?.find(po => po.id !== id)
+    if (existingLink) {
       response.warning = {
         existingLink: {
-          id: workOrder.productionOrder.id,
-          name: workOrder.productionOrder.productName
+          id: existingLink.id,
+          name: existingLink.productName
         }
       }
     }

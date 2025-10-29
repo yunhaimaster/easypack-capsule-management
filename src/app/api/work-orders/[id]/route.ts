@@ -82,14 +82,16 @@ export async function GET(
             }
           }
         },
-        // NEW: Include linked encapsulation order
-        productionOrder: {
+        // NEW: Include linked production orders (1:many)
+        productionOrders: {
           select: {
             id: true,
             productName: true,
             customerName: true,
-            productionQuantity: true
-          }
+            productionQuantity: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: 'desc' }
         }
       }
     })
@@ -99,6 +101,12 @@ export async function GET(
         { success: false, error: '工作單不存在' },
         { status: 404 }
       )
+    }
+
+    // For backward compatibility, also include first order as productionOrder
+    const serializedWorkOrder = {
+      ...workOrder,
+      productionOrder: workOrder.productionOrders?.[0] || null  // First order for compatibility
     }
 
     // Get audit context
@@ -120,7 +128,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: true,
-        data: workOrder
+        data: serializedWorkOrder
       },
       {
         headers: {

@@ -75,11 +75,21 @@ export interface WorkOrder {
   
   capsulationOrder?: CapsulationOrder | null
   
-  // NEW: Linked encapsulation order (ProductionOrder)
+  // NEW: Linked production orders (1:many relationship)
+  productionOrders?: Array<{
+    id: string
+    productName: string
+    customerName: string
+    productionQuantity: number
+    createdAt?: string | Date
+  }>
+  
+  // Backward compatibility: First order as productionOrder
   productionOrder?: {
     id: string
     productName: string
     customerName: string
+    productionQuantity?: number
   } | null
   
   createdAt: Date

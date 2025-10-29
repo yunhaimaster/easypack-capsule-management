@@ -243,13 +243,16 @@ export async function GET(request: NextRequest) {
           // Description
           workDescription: true,
           
-          // NEW: Include linked encapsulation order
-          productionOrder: {
+          // NEW: Include linked production orders (1:many)
+          productionOrders: {
             select: {
               id: true,
               productName: true,
-              customerName: true
-            }
+              customerName: true,
+              productionQuantity: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 5  // Limit for list view
           },
           
           // Timestamps
@@ -260,12 +263,18 @@ export async function GET(request: NextRequest) {
       prisma.unifiedWorkOrder.count({ where })
     ])
 
+    // Map to include first order for backward compatibility
+    const serializedWorkOrders = workOrders.map(wo => ({
+      ...wo,
+      productionOrder: wo.productionOrders?.[0] || null  // First order for compatibility
+    }))
+
     // Return paginated results
     return NextResponse.json(
       {
         success: true,
         data: {
-          workOrders,
+          workOrders: serializedWorkOrders,
           pagination: {
             page: validatedFilters.page,
             limit: validatedFilters.limit,

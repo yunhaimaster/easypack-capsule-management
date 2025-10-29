@@ -147,7 +147,8 @@ export const productionOrderSchema = z.object({
         return totalWeight > 0
       },
       '單粒總重量必須為正值'
-    )
+    ),
+  workOrderId: z.string().cuid().optional().nullable()  // For auto-linking to work order
 })
 
 export const searchFiltersSchema = z.object({

@@ -49,11 +49,12 @@ export async function PATCH(
         id: true,
         jobNumber: true,
         customerName: true,
-        productionOrder: {
+        productionOrders: {
           select: {
             id: true,
             productName: true
-          }
+          },
+          take: 1  // Just need first one for checking previous link
         }
       }
     })
@@ -66,7 +67,7 @@ export async function PATCH(
     }
 
     // Store previous link for audit (if work order had a different production order)
-    const previousLink = workOrder.productionOrder?.id
+    const previousLink = workOrder.productionOrders?.[0]?.id
 
     // Update the production order to link to this work order
     await prisma.productionOrder.update({
@@ -78,13 +79,15 @@ export async function PATCH(
     const updated = await prisma.unifiedWorkOrder.findUnique({
       where: { id },
       include: {
-        productionOrder: {
+        productionOrders: {
           select: {
             id: true,
             productName: true,
             customerName: true,
             productionQuantity: true
-          }
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 5  // Limit for response
         }
       }
     })
@@ -143,11 +146,11 @@ export async function DELETE(
     // Get audit context
     const auditContext = await getUserContextFromRequest(request)
 
-    // Get work order with current link
+    // Get work order with current links
     const workOrder = await prisma.unifiedWorkOrder.findUnique({
       where: { id },
       include: {
-        productionOrder: {
+        productionOrders: {
           select: {
             id: true,
             productName: true
@@ -163,16 +166,21 @@ export async function DELETE(
       )
     }
 
-    if (!workOrder.productionOrder) {
+    if (!workOrder.productionOrders || workOrder.productionOrders.length === 0) {
       return NextResponse.json(
         { success: false, error: '此工作單未關聯任何膠囊訂單' },
         { status: 400 }
       )
     }
 
-    // Remove link by updating the production order
-    await prisma.productionOrder.update({
-      where: { id: workOrder.productionOrder.id },
+    // Note: With 1:many relationship, we need productionOrderId to specify which link to remove
+    // For now, we'll remove all links (or could remove just the first one)
+    // Better approach: remove this DELETE handler and use DELETE from orders/[id]/link instead
+    const productionOrderIds = workOrder.productionOrders.map(po => po.id)
+    
+    // Remove all links
+    await prisma.productionOrder.updateMany({
+      where: { id: { in: productionOrderIds } },
       data: { workOrderId: null }
     })
 
@@ -180,26 +188,28 @@ export async function DELETE(
     const updated = await prisma.unifiedWorkOrder.findUnique({
       where: { id },
       include: {
-        productionOrder: true
+        productionOrders: true
       }
     })
 
-    // Audit logging
-    await logAudit({
-      action: AuditAction.LINK_REMOVED,
-      userId: auditContext.userId,
-      phone: auditContext.phone,
-      ip: auditContext.ip,
-      userAgent: auditContext.userAgent,
-      metadata: {
-        sourceType: 'work-order',
-        sourceId: id,
-        sourceName: workOrder.jobNumber || workOrder.customerName,
-        targetType: 'encapsulation-order',
-        targetId: workOrder.productionOrder.id,
-        targetName: workOrder.productionOrder.productName
-      }
-    })
+    // Audit logging for all removed links
+    for (const po of workOrder.productionOrders) {
+      await logAudit({
+        action: AuditAction.LINK_REMOVED,
+        userId: auditContext.userId,
+        phone: auditContext.phone,
+        ip: auditContext.ip,
+        userAgent: auditContext.userAgent,
+        metadata: {
+          sourceType: 'work-order',
+          sourceId: id,
+          sourceName: workOrder.jobNumber || workOrder.customerName,
+          targetType: 'encapsulation-order',
+          targetId: po.id,
+          targetName: po.productName
+        }
+      })
+    }
 
     return NextResponse.json({
       success: true,

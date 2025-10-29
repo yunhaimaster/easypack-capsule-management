@@ -13,8 +13,7 @@ import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { OrderLinkBadge } from '@/components/ui/order-link-badge'
 import { LinkOrderModal } from '@/components/orders/link-order-modal'
-import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
-import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2, Unlink } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2, Plus } from 'lucide-react'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS, CapsulationIngredient } from '@/types/work-order'
 import { useToast } from '@/components/ui/toast-provider'
 
@@ -28,36 +27,13 @@ export default function WorkOrderDetailPage() {
   const workOrder = data as any
   
   const [linkModalOpen, setLinkModalOpen] = useState(false)
-  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
-
-  // Handle unlink
-  const handleUnlink = async () => {
-    try {
-      const response = await fetch(`/api/work-orders/${id}/link`, {
-        method: 'DELETE'
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        showToast({ title: '已取消關聯' })
-        refetch()
-      } else {
-        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
-      }
-    } catch (error) {
-      showToast({ title: '取消關聯失敗', variant: 'destructive' })
-    } finally {
-      setShowUnlinkConfirm(false)
-    }
-  }
 
   // Keyboard shortcut for opening link modal (Cmd/Ctrl+K)
-  useEffect(() => {
+    useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        if (workOrder && !workOrder.productionOrder) {
+        if (workOrder && (!workOrder.productionOrders || workOrder.productionOrders.length === 0)) {
           setLinkModalOpen(true)
         }
       }
@@ -426,49 +402,56 @@ export default function WorkOrderDetailPage() {
       )}
 
       {/* Linked Encapsulation Order */}
-      {workOrder.productionOrder ? (
+      {workOrder.productionOrders && workOrder.productionOrders.length > 0 ? (
         <Card className="mt-5 sm:mt-6 card-interactive-apple transition-apple">
           <CardHeader>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <CardTitle className="flex items-center gap-2">
                 <Link2 className="h-5 w-5 text-info-600 dark:text-info-400" />
                 關聯膠囊訂單
+                <span className="ml-2 text-sm font-normal text-neutral-500 dark:text-neutral-400">
+                  ({workOrder.productionOrders.length})
+                </span>
               </CardTitle>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/orders/${workOrder.productionOrder.id}`)}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1 rotate-180" />
-                  查看
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowUnlinkConfirm(true)}
-                  className="text-warning-600 hover:text-warning-700 dark:text-warning-400 dark:hover:text-warning-300"
-                >
-                  <Unlink className="h-4 w-4 mr-1" />
-                  取消關聯
-                </Button>
-              </div>
+              <Button
+                onClick={() => router.push(`/orders/new?workOrderId=${workOrder.id}`)}
+                variant="default"
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                創建新訂單
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <OrderLinkBadge
-                type="encapsulation-order"
-                orderId={workOrder.productionOrder.id}
-                label={workOrder.productionOrder.productName}
-                size="md"
-              />
-              <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                <p>客戶名稱: {workOrder.productionOrder.customerName}</p>
-              </div>
-              {workOrder.customerName !== workOrder.productionOrder.customerName && (
+            <div className="space-y-2">
+              {workOrder.productionOrders.map((order: { id: string; productName: string; customerName: string; productionQuantity: number }) => (
+                <div key={order.id} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg">
+                  <div className="flex-1">
+                    <OrderLinkBadge
+                      type="encapsulation-order"
+                      orderId={order.id}
+                      label={order.productName}
+                      size="md"
+                    />
+                    <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                      <p>客戶名稱: {order.customerName}</p>
+                      <p>生產數量: {order.productionQuantity.toLocaleString('zh-HK')} 粒</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/orders/${order.id}`)}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-1 rotate-180" />
+                    查看
+                  </Button>
+                </div>
+              ))}
+              {workOrder.customerName !== workOrder.productionOrders[0].customerName && (
                 <Badge variant="warning" className="mt-2">
-                  ⚠ 客戶名稱不匹配
+                  ⚠ 部分訂單客戶名稱不匹配
                 </Badge>
               )}
             </div>
@@ -481,12 +464,18 @@ export default function WorkOrderDetailPage() {
             <Text.Secondary className="mb-4">
               此工作單尚未關聯膠囊訂單
             </Text.Secondary>
-            <Button onClick={() => setLinkModalOpen(true)}>
-              <Link2 className="h-4 w-4 mr-2" />
-              關聯膠囊訂單
-            </Button>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => router.push(`/orders/new?workOrderId=${workOrder.id}`)}>
+                <Plus className="h-4 w-4 mr-2" />
+                創建新訂單
+              </Button>
+              <Button variant="outline" onClick={() => setLinkModalOpen(true)}>
+                <Link2 className="h-4 w-4 mr-2" />
+                關聯現有訂單
+              </Button>
+            </div>
             <Text.Tertiary className="mt-3 text-xs">
-              或按 Cmd+K 快速開啟
+              或按 Cmd+K 快速開啟關聯
             </Text.Tertiary>
           </CardContent>
         </Card>
@@ -522,9 +511,9 @@ export default function WorkOrderDetailPage() {
         sourceType="work-order"
         sourceId={workOrder.id}
         sourceName={workOrder.jobNumber || workOrder.customerName}
-        currentLink={workOrder.productionOrder ? {
-          id: workOrder.productionOrder.id,
-          name: workOrder.productionOrder.productName
+        currentLink={workOrder.productionOrders && workOrder.productionOrders.length > 0 ? {
+          id: workOrder.productionOrders[0].id,
+          name: workOrder.productionOrders[0].productName
         } : null}
         onLinkComplete={() => {
           setLinkModalOpen(false)
@@ -532,16 +521,6 @@ export default function WorkOrderDetailPage() {
         }}
       />
 
-      {/* Unlink Confirmation Modal */}
-      <LiquidGlassConfirmModal
-        isOpen={showUnlinkConfirm}
-        onClose={() => setShowUnlinkConfirm(false)}
-        onConfirm={handleUnlink}
-        title="確認取消關聯"
-        message={`確定要取消與膠囊訂單「${workOrder.productionOrder?.productName}」的關聯嗎？`}
-        confirmText="取消關聯"
-        variant="danger"
-      />
     </div>
   )
 }

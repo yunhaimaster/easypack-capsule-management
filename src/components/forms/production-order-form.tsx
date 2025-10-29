@@ -36,9 +36,10 @@ interface ProductionOrderFormProps {
     recipeName: string
     originalProductName: string
   }
+  workOrderId?: string  // NEW: Work order ID for auto-linking
 }
 
-export function ProductionOrderForm({ initialData, orderId, verificationToken, onPasswordRequired, needsPasswordVerification, allowEditProductName = false, templateInfo }: ProductionOrderFormProps) {
+export function ProductionOrderForm({ initialData, orderId, verificationToken, onPasswordRequired, needsPasswordVerification, allowEditProductName = false, templateInfo, workOrderId }: ProductionOrderFormProps) {
   const router = useRouter()
   const { showToast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -280,10 +281,11 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       const payload = {
         ...data,
         verificationPassword: verificationToken ? atob(verificationToken) : undefined,
-        worklogs: processedWorklogs
+        worklogs: processedWorklogs,
+        workOrderId: workOrderId || data.workOrderId || undefined  // Include workOrderId for auto-linking
       }
       
-      console.log('[Order Form] Sending request')
+      console.log('[Order Form] Sending request', { hasWorkOrderId: !!payload.workOrderId })
 
       const response = await fetch(url, {
         method,
@@ -336,12 +338,24 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       // Reset dirty state after successful save
       resetDirty()
 
-      showToast({
-        title: orderId ? '訂單已更新' : '訂單已建立',
-        description: orderId ? '訂單資料更新完成。' : '新的訂單已成功建立。'
-      })
-      router.push('/orders')
-      router.refresh()
+      if (!orderId) {
+        // Creating new order - redirect to detail page
+        showToast({
+          title: '訂單創建成功',
+          description: workOrderId ? '已自動關聯到工作單' : undefined,
+          variant: 'default'
+        })
+        router.push(`/orders/${result.data.id}`)
+      } else {
+        // Updating existing order - show success and stay on page
+        showToast({
+          title: '訂單已更新',
+          description: '變更已成功儲存',
+          variant: 'default'
+        })
+        router.push('/orders')
+        router.refresh()
+      }
     } catch (error) {
       console.error('[Order Form] Error saving order:', error)
       const errorMessage = error instanceof Error ? error.message : '儲存失敗，請重試'

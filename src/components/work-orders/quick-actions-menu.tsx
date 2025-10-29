@@ -36,7 +36,8 @@ import {
   MoreVertical,
   Loader2,
   Star,
-  AlertTriangle
+  AlertTriangle,
+  Plus
 } from 'lucide-react'
 import { WorkOrder, WORK_ORDER_STATUS_LABELS, VALID_STATUS_TRANSITIONS, getValidStatusTransitions } from '@/types/work-order'
 import { WorkOrderStatus } from '@prisma/client'
@@ -66,7 +67,6 @@ export function QuickActionsMenu({
   const [isLoading, setIsLoading] = useState(false)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [linkModalOpen, setLinkModalOpen] = useState(false)
-  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
 
   const handleAction = async (
     action: string,
@@ -125,28 +125,6 @@ export function QuickActionsMenu({
     return fieldLabels[field]?.[!currentValue ? 'on' : 'off'] || '更新成功'
   }
 
-  const handleUnlink = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`/api/work-orders/${workOrder.id}/link`, {
-        method: 'DELETE'
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        showToast({ title: '已取消關聯' })
-        if (onRefresh) await onRefresh()
-      } else {
-        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
-      }
-    } catch (error) {
-      showToast({ title: '取消關聯失敗', variant: 'destructive' })
-    } finally {
-      setIsLoading(false)
-      setShowUnlinkConfirm(false)
-    }
-  }
 
   return (
     <>
@@ -188,27 +166,38 @@ export function QuickActionsMenu({
         <DropdownMenuSeparator />
 
         {/* Group: Relations - Context-aware */}
-        {workOrder.productionOrder ? (
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.stopPropagation()
+            router.push(`/orders/new?workOrderId=${workOrder.id}`)
+          }}
+          className="h-12 lg:h-auto text-success-600 focus:text-success-700 focus:bg-success-50 dark:focus:bg-success-900/20"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          <span>創建膠囊訂單</span>
+        </DropdownMenuItem>
+        
+        {workOrder.productionOrders && workOrder.productionOrders.length > 0 ? (
           <>
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation()
-                router.push(`/orders/${workOrder.productionOrder!.id}`)
+                router.push(`/orders/${workOrder.productionOrders![0].id}`)
               }}
               className="h-12 lg:h-auto"
             >
               <Eye className="mr-2 h-4 w-4 text-info-600" />
-              <span>查看已關聯訂單</span>
+              <span>查看已關聯訂單{workOrder.productionOrders.length > 1 ? ` (${workOrder.productionOrders.length})` : ''}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation()
-                setShowUnlinkConfirm(true)
+                setLinkModalOpen(true)
               }}
-              className="h-12 lg:h-auto text-warning-600"
+              className="h-12 lg:h-auto"
             >
-              <Unlink className="mr-2 h-4 w-4" />
-              <span>取消關聯</span>
+              <Link2 className="mr-2 h-4 w-4 text-info-600" />
+              <span>關聯更多訂單</span>
             </DropdownMenuItem>
           </>
         ) : (
@@ -540,9 +529,9 @@ export function QuickActionsMenu({
       sourceType="work-order"
       sourceId={workOrder.id}
       sourceName={workOrder.jobNumber || workOrder.customerName}
-      currentLink={workOrder.productionOrder ? {
-        id: workOrder.productionOrder.id,
-        name: workOrder.productionOrder.productName
+      currentLink={workOrder.productionOrders && workOrder.productionOrders.length > 0 ? {
+        id: workOrder.productionOrders[0].id,
+        name: workOrder.productionOrders[0].productName
       } : null}
       onLinkComplete={() => {
         setLinkModalOpen(false)
@@ -550,16 +539,7 @@ export function QuickActionsMenu({
       }}
     />
 
-    {/* Unlink Confirmation Modal */}
-    <LiquidGlassConfirmModal
-      isOpen={showUnlinkConfirm}
-      onClose={() => setShowUnlinkConfirm(false)}
-      onConfirm={handleUnlink}
-      title="確認取消關聯"
-      message={`確定要取消與膠囊訂單「${workOrder.productionOrder?.productName}」的關聯嗎？`}
-      confirmText="取消關聯"
-      variant="danger"
-    />
+    {/* Unlink Confirmation Modal - Removed: unlink is now handled per-order in order detail page */}
   </>
   )
 }

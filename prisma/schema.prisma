@@ -189,8 +189,8 @@ model ProductionOrder {
   materialYieldQuantity    Int? // 材料實際可做數量（粒）
   lockPassword             String? // 4 位數密碼保護（nullable）
   
-  // Link to work order (1:1 relationship)
-  workOrderId              String? @unique
+  // Link to work order (1:many relationship - one work order can have multiple production orders)
+  workOrderId              String?
   workOrder                UnifiedWorkOrder? @relation("ProductionWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
   
   ingredients              Ingredient[]
@@ -198,6 +198,7 @@ model ProductionOrder {
 
   @@index([completionDate, createdAt])
   @@index([customerServiceId])
+  @@index([workOrderId])  // Index for query performance
   @@map("production_orders")
 }
 
@@ -313,7 +314,7 @@ model UnifiedWorkOrder {
   notes                 String?  @db.Text
   
   capsulationOrder      CapsulationOrder?
-  productionOrder       ProductionOrder? @relation("ProductionWorkOrder")
+  productionOrders      ProductionOrder[] @relation("ProductionWorkOrder")  // 1:many relationship
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

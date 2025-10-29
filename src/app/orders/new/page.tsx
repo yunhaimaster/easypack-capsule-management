@@ -13,9 +13,17 @@ function NewOrderContent() {
   const searchParams = useSearchParams()
   const recipeId = searchParams?.get('recipeId')
   const fromTemplate = searchParams?.get('fromTemplate') // 🆕 從模板創建
+  const workOrderId = searchParams?.get('workOrderId')  // NEW: From work order
   
   const [recipe, setRecipe] = useState<RecipeLibraryItem | null>(null)
-  const [loading, setLoading] = useState(!!(recipeId || fromTemplate))
+  const [workOrderData, setWorkOrderData] = useState<{
+    customerName: string
+    customerServiceId: string
+    productionQuantity: number
+    workOrderId: string
+    workOrderJobNumber: string | null
+  } | null>(null)
+  const [loading, setLoading] = useState(!!(recipeId || fromTemplate || workOrderId))
   const [error, setError] = useState<string | null>(null)
   const [isFromTemplate, setIsFromTemplate] = useState(false) // 🆕 標記是否從模板創建
 
@@ -24,8 +32,29 @@ function NewOrderContent() {
       loadRecipe(recipeId, false)
     } else if (fromTemplate) {
       loadRecipe(fromTemplate, true)
+    } else if (workOrderId) {
+      loadWorkOrderData(workOrderId)
     }
-  }, [recipeId, fromTemplate])
+  }, [recipeId, fromTemplate, workOrderId])
+
+  const loadWorkOrderData = async (id: string) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/work-orders/${id}/prefill-data`)
+      const result = await response.json()
+      
+      if (result.success) {
+        setWorkOrderData(result.data)
+      } else {
+        setError(result.error || '無法載入工作單資料')
+      }
+    } catch (error) {
+      console.error('Load work order data error:', error)
+      setError('無法連接到服務器')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const loadRecipe = async (id: string, fromTemplateFlag: boolean) => {
     try {
@@ -80,8 +109,19 @@ function NewOrderContent() {
           </div>
         </section>
 
+        {/* Work order alert */}
+        {workOrderData && !error && (
+          <Alert className="bg-info-50 border-info-200">
+            <Info className="h-4 w-4 text-info-600" />
+            <AlertDescription className="text-info-700">
+              正在從工作單「{workOrderData.workOrderJobNumber || '未知編號'}」創建新訂單。
+              客戶名稱、客服和生產數量已自動填充，訂單創建後將自動關聯到工作單。
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Recipe loaded alert */}
-        {recipe && !error && !isFromTemplate && (
+        {recipe && !error && !isFromTemplate && !workOrderData && (
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
@@ -110,7 +150,12 @@ function NewOrderContent() {
 
         {/* Form Card */}
         <ProductionOrderForm
-          initialData={recipe ? {
+          initialData={workOrderData ? {
+            customerName: workOrderData.customerName,
+            customerServiceId: workOrderData.customerServiceId,
+            productionQuantity: workOrderData.productionQuantity,
+            workOrderId: workOrderData.workOrderId
+          } : recipe ? {
             customerName: isFromTemplate ? '' : recipe.customerName, // 🆕 模板配方時清空客戶名稱
             productName: recipe.productName,
             capsuleColor: recipe.capsuleColor || undefined,
@@ -123,6 +168,7 @@ function NewOrderContent() {
               isCustomerSupplied: ing.isCustomerSupplied
             }))
           } : undefined}
+          workOrderId={workOrderId || undefined}  // Pass separately for form submission
           allowEditProductName={isFromTemplate} // 🆕 从模板创建时允许编辑产品名称
           templateInfo={isFromTemplate && recipe ? {
             recipeName: recipe.recipeName,

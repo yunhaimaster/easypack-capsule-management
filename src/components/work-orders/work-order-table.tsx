@@ -437,15 +437,25 @@ export function WorkOrderTable({
                       />
                     </td>
 
-                    {/* Linked Encapsulation Order */}
+                    {/* Linked Encapsulation Orders */}
                     <td className="py-3 px-3 text-sm align-top hidden xl:table-cell">
-                      {workOrder.productionOrder ? (
-                        <OrderLinkBadge
-                          type="encapsulation-order"
-                          orderId={workOrder.productionOrder.id}
-                          label={workOrder.productionOrder.productName}
-                          size="sm"
-                        />
+                      {workOrder.productionOrders && workOrder.productionOrders.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 items-center">
+                          {workOrder.productionOrders.slice(0, 2).map(order => (
+                            <OrderLinkBadge
+                              key={order.id}
+                              type="encapsulation-order"
+                              orderId={order.id}
+                              label={order.productName}
+                              size="sm"
+                            />
+                          ))}
+                          {workOrder.productionOrders.length > 2 && (
+                            <Badge variant="secondary" className="text-xs">
+                              +{workOrder.productionOrders.length - 2}
+                            </Badge>
+                          )}
+                        </div>
                       ) : (
                         <Text.Secondary className="text-xs">-</Text.Secondary>
                       )}

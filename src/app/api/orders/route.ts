@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { Prisma, AuditAction } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { productionOrderSchema, searchFiltersSchema, worklogSchema } from '@/lib/validations'
@@ -9,6 +9,7 @@ import { logger } from '@/lib/logger'
 import { jsonSuccess, jsonError } from '@/lib/api-response'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
+import { getUserContextFromRequest } from '@/lib/audit-context'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 300 // 5 minutes
@@ -216,71 +217,102 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
     const validatedData = productionOrderSchema.parse(body)
+    const { workOrderId, ...orderData } = validatedData
+    
+    // Verify work order exists if workOrderId provided
+    if (workOrderId) {
+      const workOrderExists = await prisma.unifiedWorkOrder.findUnique({
+        where: { id: workOrderId },
+        select: { id: true }
+      })
+      
+      if (!workOrderExists) {
+        return NextResponse.json(
+          { success: false, error: '指定的工作單不存在' },
+          { status: 400 }
+        )
+      }
+    }
+    
     logger.info('POST /api/orders - Payload validated', {
-      hasWorklogs: Array.isArray((validatedData as typeof validatedData & { worklogs?: unknown[] }).worklogs),
-      ingredientCount: validatedData.ingredients.length,
-      completionDateProvided: Boolean(validatedData.completionDate)
+      hasWorklogs: Array.isArray(orderData.worklogs),
+      ingredientCount: orderData.ingredients.length,
+      completionDateProvided: Boolean(orderData.completionDate),
+      workOrderId: workOrderId || null
     })
     
     // Calculate weights
-    const unitWeightMg = validatedData.ingredients.reduce(
+    const unitWeightMg = orderData.ingredients.reduce(
       (sum, ingredient) => sum + ingredient.unitContentMg,
       0
     )
-    const batchTotalWeightMg = unitWeightMg * validatedData.productionQuantity
+    const batchTotalWeightMg = unitWeightMg * orderData.productionQuantity
     
     logger.debug('Calculated production order weights', { unitWeightMg, batchTotalWeightMg })
     
-    const order = await prisma.productionOrder.create({
-      data: {
-        ...validatedData,
-        customerServiceId: validatedData.customerServiceId === 'UNASSIGNED' ? null : validatedData.customerServiceId,
-        completionDate: validatedData.completionDate ? DateTime.fromFormat(validatedData.completionDate, 'yyyy-MM-dd').toJSDate() : null,
-        unitWeightMg,
-        batchTotalWeightMg,
-        ingredients: {
-          create: validatedData.ingredients.map((ingredient) => ({
-            materialName: ingredient.materialName,
-            unitContentMg: ingredient.unitContentMg,
-            isCustomerProvided: ingredient.isCustomerProvided,
-            isCustomerSupplied: ingredient.isCustomerSupplied ?? ingredient.isCustomerProvided,
-          })),
-        },
-        worklogs: validatedData.worklogs
-          ? {
-              create: validatedData.worklogs.map((entry) => {
-                const parsed = worklogSchema.parse(entry)
-                const { minutes, units } = calculateWorkUnits({
-                  date: parsed.workDate,
-                  startTime: parsed.startTime,
-                  endTime: parsed.endTime,
-                  headcount: Number(parsed.headcount),
-                })
+    // Create order and link in same transaction
+    const order = await prisma.$transaction(async (tx) => {
+      const newOrder = await tx.productionOrder.create({
+        data: {
+          ...orderData,
+          customerServiceId: orderData.customerServiceId === 'UNASSIGNED' ? null : orderData.customerServiceId,
+          completionDate: orderData.completionDate ? DateTime.fromFormat(orderData.completionDate, 'yyyy-MM-dd').toJSDate() : null,
+          unitWeightMg,
+          batchTotalWeightMg,
+          workOrderId: workOrderId || null,  // Link during creation
+          ingredients: {
+            create: orderData.ingredients.map((ingredient) => ({
+              materialName: ingredient.materialName,
+              unitContentMg: ingredient.unitContentMg,
+              isCustomerProvided: ingredient.isCustomerProvided,
+              isCustomerSupplied: ingredient.isCustomerSupplied ?? ingredient.isCustomerProvided,
+            })),
+          },
+          worklogs: orderData.worklogs
+            ? {
+                create: orderData.worklogs.map((entry) => {
+                  const parsed = worklogSchema.parse(entry)
+                  const { minutes, units } = calculateWorkUnits({
+                    date: parsed.workDate,
+                    startTime: parsed.startTime,
+                    endTime: parsed.endTime,
+                    headcount: Number(parsed.headcount),
+                  })
 
-                return {
-                  workDate: parsed.workDate,
-                  startTime: parsed.startTime,
-                  endTime: parsed.endTime,
-                  headcount: Number(parsed.headcount),
-                  notes: parsed.notes || null,
-                  effectiveMinutes: minutes,
-                  calculatedWorkUnits: units,
-                }
-              }),
+                  return {
+                    workDate: parsed.workDate,
+                    startTime: parsed.startTime,
+                    endTime: parsed.endTime,
+                    headcount: Number(parsed.headcount),
+                    notes: parsed.notes || null,
+                    effectiveMinutes: minutes,
+                    calculatedWorkUnits: units,
+                  }
+                }),
+              }
+            : undefined,
+        },
+        include: {
+          ingredients: true,
+          customerService: {
+            select: {
+              id: true,
+              nickname: true,
+              phoneE164: true
             }
-          : undefined,
-      },
-      include: {
-        ingredients: true,
-        customerService: {
-          select: {
-            id: true,
-            nickname: true,
-            phoneE164: true
+          },
+          worklogs: true,
+          workOrder: {
+            select: {
+              id: true,
+              jobNumber: true,
+              customerName: true
+            }
           }
         },
-        worklogs: true,
-      },
+      })
+      
+      return newOrder
     })
 
     logger.info('Order created successfully', {
@@ -290,20 +322,42 @@ export async function POST(request: NextRequest) {
     })
 
     // Audit log
+    const auditContext = await getUserContextFromRequest(request)
     await logAudit({
       action: AuditAction.ORDER_CREATED,
-      userId: session?.userId || null,
-      phone: session?.user?.phoneE164 || null,
-      ip,
-      userAgent,
+      userId: auditContext.userId,
+      phone: auditContext.phone,
+      ip: auditContext.ip,
+      userAgent: auditContext.userAgent,
       metadata: {
         orderId: order.id,
         customerName: order.customerName,
         productName: order.productName,
         quantity: order.productionQuantity,
         ingredientCount: order.ingredients.length,
+        workOrderId: workOrderId || null,
+        autoLinked: !!workOrderId
       }
     })
+    
+    // If auto-linked, also log link creation
+    if (workOrderId) {
+      await logAudit({
+        action: AuditAction.LINK_CREATED,
+        userId: auditContext.userId,
+        phone: auditContext.phone,
+        ip: auditContext.ip,
+        userAgent: auditContext.userAgent,
+        metadata: {
+          sourceType: 'encapsulation-order',
+          sourceId: order.id,
+          sourceName: order.productName,
+          targetType: 'work-order',
+          targetId: workOrderId,
+          autoCreated: true
+        }
+      })
+    }
 
     return jsonSuccess({
       order,
