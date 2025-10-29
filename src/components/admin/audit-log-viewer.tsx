@@ -115,6 +115,141 @@ const actionIcons: Record<string, { icon: any; variant: 'success' | 'danger' | '
   AI_IMAGE_GENERATED: { icon: Sparkles, variant: 'success' },
 }
 
+/**
+ * Format metadata for human-readable display
+ * Converts machine IDs to readable labels and hides redundant ID fields when names exist
+ */
+function formatMetadata(metadata: Record<string, any>, action: string): Array<{ label: string; value: string }> {
+  const result: Array<{ label: string; value: string }> = []
+  const processed = new Set<string>()
+
+  // Field label mappings (Chinese)
+  const fieldLabels: Record<string, string> = {
+    // Order-related
+    orderId: '訂單ID',
+    workOrderId: '工作單ID',
+    productionOrderId: '膠囊訂單ID',
+    worklogId: '工作日誌ID',
+    recipeId: '配方ID',
+    
+    // Link-related
+    sourceId: '來源ID',
+    sourceType: '來源類型',
+    sourceName: '來源',
+    targetId: '目標ID',
+    targetType: '目標類型',
+    targetName: '目標',
+    previousLink: '先前關聯ID',
+    
+    // Names and readable fields
+    customerName: '客戶',
+    productName: '產品',
+    jobNumber: '訂單編號',
+    workDescription: '工作描述',
+    
+    // Counts and quantities
+    quantity: '數量',
+    productionQuantity: '生產數量',
+    ingredientCount: '原料數量',
+    worklogCount: '工作日誌數量',
+    workUnits: '工作單位',
+    headcount: '人數',
+    
+    // Status and types
+    role: '角色',
+    actionType: '操作類型',
+    contextPage: '頁面',
+    
+    // Other
+    messageLength: '訊息長度',
+    orderCount: '訂單數量',
+  }
+
+  // Type labels
+  const typeLabels: Record<string, string> = {
+    'encapsulation-order': '膠囊訂單',
+    'work-order': '工作單',
+    'production-order': '膠囊訂單',
+  }
+
+  // Prioritize displaying names over IDs
+  // If both sourceId and sourceName exist, only show sourceName
+  const nameFields = ['sourceName', 'targetName', 'productName', 'customerName', 'jobNumber']
+  const idFields = ['sourceId', 'targetId', 'orderId', 'workOrderId', 'productionOrderId', 'worklogId', 'recipeId', 'previousLink']
+
+  // First pass: Process name fields (and their paired IDs)
+  nameFields.forEach(nameField => {
+    if (metadata[nameField] !== undefined && metadata[nameField] !== null) {
+      const value = metadata[nameField]
+      let label = fieldLabels[nameField] || nameField
+      
+      // Format value based on field
+      let displayValue = String(value)
+      
+      // Special formatting for source/target in link actions
+      if ((nameField === 'sourceName' || nameField === 'targetName') && metadata[`${nameField.replace('Name', 'Type')}`]) {
+        const type = metadata[`${nameField.replace('Name', 'Type')}`]
+        label = nameField === 'sourceName' ? '來源' : '目標'
+        displayValue = `${typeLabels[type] || type}：${value}`
+      }
+      
+      result.push({ label, value: displayValue })
+      processed.add(nameField)
+      
+      // Mark corresponding ID field as processed (we won't show it since we have the name)
+      if (nameField === 'sourceName') {
+        processed.add('sourceId')
+      } else if (nameField === 'targetName') {
+        processed.add('targetId')
+      } else if (nameField === 'productName') {
+        // productName can come from orderId or productionOrderId context
+        processed.add('orderId')
+        processed.add('productionOrderId')
+      } else if (nameField === 'customerName') {
+        // Usually paired with orderId
+        processed.add('orderId')
+      } else if (nameField === 'jobNumber') {
+        processed.add('workOrderId')
+      }
+    }
+  })
+
+  // Second pass: Process remaining fields (excluding already processed IDs)
+  Object.entries(metadata).forEach(([key, value]) => {
+    if (processed.has(key)) return
+    if (value === null || value === undefined) return
+
+    let label = fieldLabels[key] || key
+    let displayValue: string
+
+    // Format value based on type
+    if (typeof value === 'object') {
+      displayValue = JSON.stringify(value)
+    } else if (typeof value === 'number') {
+      // Format numbers with commas
+      displayValue = value.toLocaleString('zh-HK')
+    } else if (typeof value === 'boolean') {
+      displayValue = value ? '是' : '否'
+    } else {
+      displayValue = String(value)
+      
+      // Truncate long IDs (show last 8 chars)
+      if (idFields.includes(key) && displayValue.length > 20) {
+        displayValue = `...${displayValue.slice(-8)}`
+      }
+      
+      // Format type fields
+      if (key.endsWith('Type') && typeLabels[displayValue]) {
+        displayValue = typeLabels[displayValue]
+      }
+    }
+
+    result.push({ label, value: displayValue })
+  })
+
+  return result
+}
+
 interface AuditLogViewerProps {
   selectedUserId?: string | null
   onClearFilter?: () => void
@@ -267,10 +402,10 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
                     {log.metadata && Object.keys(log.metadata as Record<string, any>).length > 0 && (
                       <div className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800/30 rounded text-xs">
                         <div className="space-y-0.5">
-                          {Object.entries(log.metadata as Record<string, any>).map(([key, value]) => (
-                            <div key={key} className="flex gap-2">
-                              <span className="text-neutral-500 dark:text-white/75 font-medium min-w-[80px]">{key}:</span>
-                              <span className="text-neutral-700 dark:text-white/95">{String(value)}</span>
+                          {formatMetadata(log.metadata as Record<string, any>, log.action).map((item, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <span className="text-neutral-500 dark:text-white/75 font-medium min-w-[80px]">{item.label}:</span>
+                              <span className="text-neutral-700 dark:text-white/95">{item.value}</span>
                             </div>
                           ))}
                         </div>
