@@ -1,0 +1,4 @@
+-- AlterEnum
+ALTER TYPE "AuditAction" ADD VALUE 'LINK_CREATED';
+ALTER TYPE "AuditAction" ADD VALUE 'LINK_REMOVED';
+

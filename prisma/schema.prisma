@@ -81,6 +81,10 @@ enum AuditAction {
   AI_RECIPE_GENERATED
   AI_CHAT_INTERACTION
   AI_IMAGE_GENERATED
+  
+  // Order Linking
+  LINK_CREATED
+  LINK_REMOVED
 }
 
 model User {

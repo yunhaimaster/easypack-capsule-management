@@ -1,0 +1,165 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Eye,
+  Edit,
+  Link2,
+  Unlink,
+  Trash2,
+  MoreVertical,
+  Loader2,
+} from 'lucide-react'
+import { ProductionOrder } from '@/types'
+import { useToast } from '@/components/ui/toast-provider'
+import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
+
+interface OrderActionsMenuProps {
+  order: ProductionOrder
+  onDelete: (id: string) => void
+  onLinkComplete: () => void
+}
+
+export function OrderActionsMenu({
+  order,
+  onDelete,
+  onLinkComplete
+}: OrderActionsMenuProps) {
+  const router = useRouter()
+  const { showToast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
+
+  const handleUnlink = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/orders/${order.id}/link`, {
+        method: 'DELETE'
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showToast({ title: '已取消關聯' })
+        onLinkComplete()
+      } else {
+        showToast({ title: result.error || '取消關聯失敗', variant: 'destructive' })
+      }
+    } catch (error) {
+      showToast({ title: '取消關聯失敗', variant: 'destructive' })
+    } finally {
+      setIsLoading(false)
+      setShowUnlinkConfirm(false)
+    }
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <MoreVertical className="h-5 w-5" />
+          )}
+          <span className="sr-only">操作選單</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          {/* View/Edit */}
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/orders/${order.id}`)
+            }}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            <span>查看詳情</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/orders/${order.id}/edit`)
+            }}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            <span>編輯</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Relations - Context-aware */}
+          {order.workOrder ? (
+            <>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/work-orders/${order.workOrder!.id}`)
+                }}
+              >
+                <Eye className="mr-2 h-4 w-4 text-info-600" />
+                <span>查看已關聯工作單</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowUnlinkConfirm(true)
+                }}
+                className="text-warning-600"
+              >
+                <Unlink className="mr-2 h-4 w-4" />
+                <span>取消關聯</span>
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push(`/orders/${order.id}#link`)
+              }}
+            >
+              <Link2 className="mr-2 h-4 w-4 text-info-600" />
+              <span>關聯工作單</span>
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuSeparator />
+
+          {/* Delete */}
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(order.id)
+            }}
+            className="text-danger-600"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>刪除</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Unlink Confirmation Modal */}
+      <LiquidGlassConfirmModal
+        isOpen={showUnlinkConfirm}
+        onClose={() => setShowUnlinkConfirm(false)}
+        onConfirm={handleUnlink}
+        title="確認取消關聯"
+        message={`確定要取消與工作單「${order.workOrder?.jobNumber || order.workOrder?.customerName}」的關聯嗎？`}
+        confirmText="取消關聯"
+        variant="danger"
+      />
+    </>
+  )
+}
+
