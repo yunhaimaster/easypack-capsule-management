@@ -26,9 +26,28 @@ export async function GET(request: NextRequest) {
     // Calculate suggestions
     const suggestions = await calculateLinkSuggestions(sourceType, sourceId, search)
 
+    // Ensure all objects are properly serialized (remove any nested objects)
+    const cleanedSuggestions = {
+      bestMatches: suggestions.bestMatches.map(item => ({
+        id: item.id,
+        name: item.name,
+        customerName: item.customerName,
+        person: typeof item.person === 'string' ? item.person : null,
+        matchScore: item.matchScore
+      })),
+      goodMatches: suggestions.goodMatches.map(item => ({
+        id: item.id,
+        name: item.name,
+        customerName: item.customerName,
+        person: typeof item.person === 'string' ? item.person : null,
+        matchScore: item.matchScore
+      })),
+      total: suggestions.total
+    }
+
     return NextResponse.json({
       success: true,
-      data: suggestions
+      data: cleanedSuggestions
     })
 
   } catch (error) {

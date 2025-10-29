@@ -39,13 +39,20 @@ export async function calculateLinkSuggestions(
   const targets = await fetchTargetOrders(sourceType, searchTerm)
 
   // Calculate match scores
-  const scored = targets.map(target => ({
-    id: target.id,
-    name: target.name,
-    customerName: target.customerName,
-    person: target.person,
-    matchScore: calculateMatchScore(source, target, sourceType)
-  }))
+  const scored = targets.map(target => {
+    // Ensure person is always a primitive string, never an object
+    const personValue = typeof target.person === 'string' 
+      ? target.person 
+      : (target.person === null || target.person === undefined ? null : String(target.person))
+    
+    return {
+      id: target.id,
+      name: target.name,
+      customerName: target.customerName,
+      person: personValue,
+      matchScore: calculateMatchScore(source, target, sourceType)
+    }
+  })
 
   // Group by match score
   const bestMatches = scored
