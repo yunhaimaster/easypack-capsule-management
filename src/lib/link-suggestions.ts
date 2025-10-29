@@ -137,13 +137,17 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
       orderBy: { createdAt: 'desc' }
     })
 
-    return orders.map(order => ({
-      id: order.id,
-      name: order.productName,
-      customerName: order.customerName,
-      personId: order.customerServiceId,
-      person: (order.customerService?.nickname || order.customerService?.phoneE164 || null) as string | null
-    }))
+    return orders.map(order => {
+      // Explicitly extract string value and discard object
+      const personName = order.customerService?.nickname || order.customerService?.phoneE164 || null
+      return {
+        id: order.id,
+        name: order.productName,
+        customerName: order.customerName,
+        personId: order.customerServiceId,
+        person: personName
+      }
+    })
   } else {
     // Source is encapsulation order, fetch work orders
     const where = searchTerm ? {
@@ -171,13 +175,17 @@ async function fetchTargetOrders(sourceType: SourceType, searchTerm?: string): P
       orderBy: { markedDate: 'desc' }
     })
 
-    return workOrders.map(wo => ({
-      id: wo.id,
-      name: wo.jobNumber || `工作單 - ${wo.customerName}`,
-      customerName: wo.customerName,
-      personId: wo.personInChargeId,
-      person: (wo.personInCharge?.nickname || wo.personInCharge?.phoneE164 || null) as string | null
-    }))
+    return workOrders.map(wo => {
+      // Explicitly extract string value and discard object
+      const personName = wo.personInCharge?.nickname || wo.personInCharge?.phoneE164 || null
+      return {
+        id: wo.id,
+        name: wo.jobNumber || `工作單 - ${wo.customerName}`,
+        customerName: wo.customerName,
+        personId: wo.personInChargeId,
+        person: personName
+      }
+    })
   }
 }
 
