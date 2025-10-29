@@ -403,7 +403,15 @@ export default function OrderDetailPage() {
                     <p><span className="font-medium text-neutral-900 dark:text-white/95">訂單數量：</span>{formatNumber(order.productionQuantity)} 粒</p>
                     <p><span className="font-medium text-neutral-900 dark:text-white/95">實際生產數量：</span>{order.actualProductionQuantity != null ? formatNumber(order.actualProductionQuantity) + ' 粒' : '—'}</p>
                     <p><span className="font-medium text-neutral-900 dark:text-white/95">材料可做數量：</span>{order.materialYieldQuantity != null ? formatNumber(order.materialYieldQuantity) + ' 粒' : '—'}</p>
-                    <p><span className="font-medium text-neutral-900 dark:text-white/95">客服：</span>{order.customerService || '未填寫'}</p>
+                    <p><span className="font-medium text-neutral-900 dark:text-white/95">客服：</span>
+                      {order.customerService 
+                        ? (typeof order.customerService === 'object' && order.customerService !== null
+                          ? ((order.customerService as { nickname?: string | null; phoneE164?: string }).nickname || 
+                             (order.customerService as { nickname?: string | null; phoneE164?: string }).phoneE164 || 
+                             '未知客服')
+                          : String(order.customerService))
+                        : '未填寫'}
+                    </p>
                   </div>
                 </div>
 
