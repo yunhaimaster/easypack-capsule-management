@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma'
 import { updateSchedulingEntrySchema } from '@/lib/validations/manager-scheduling-schemas'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/middleware/manager-scheduling-auth'
+import { validateFieldPermissions, canDeleteEntries } from '@/lib/middleware/field-level-permissions'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { syncToCapsulationOrder, syncToWorkOrder } from '@/lib/sync/scheduling-capsulation-sync'
@@ -56,19 +57,24 @@ export async function PATCH(
       )
     }
 
-    // Authorization check - UPDATE permission required
-    if (!hasPermission(session.user.role, 'UPDATE')) {
+    // Parse and validate request body first
+    const body = await request.json()
+    const validatedData = updateSchedulingEntrySchema.parse(body)
+
+    // Field-level permission validation
+    const permissionCheck = validateFieldPermissions(session.user.role, validatedData)
+    if (!permissionCheck.valid) {
       return NextResponse.json(
-        { success: false, error: '權限不足' },
+        { 
+          success: false, 
+          error: '權限不足',
+          details: permissionCheck.errors
+        },
         { status: 403 }
       )
     }
 
     const { id } = await context.params
-
-    // Parse and validate request body
-    const body = await request.json()
-    const validatedData = updateSchedulingEntrySchema.parse(body)
 
     // Get existing entry with work order
     const existingEntry = await prisma.managerSchedulingEntry.findUnique({
@@ -325,7 +331,7 @@ export async function DELETE(
     }
 
     // Authorization check - DELETE permission required
-    if (!hasPermission(session.user.role, 'DELETE')) {
+    if (!canDeleteEntries(session.user.role)) {
       return NextResponse.json(
         { success: false, error: '權限不足' },
         { status: 403 }
