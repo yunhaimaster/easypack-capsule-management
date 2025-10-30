@@ -4437,3 +4437,35 @@ input[type="reset"],
 [data-rbd-droppable-id] > div {
   overflow: visible !important;
 }
+
+/* Fix drag preview positioning - remove sticky positioning from preview */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] {
+  position: relative !important;
+}
+
+/* Remove sticky positioning from cells in drag preview */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] td[class*="sticky"],
+[data-rbd-draggable-id][data-rbd-draggable-context-id] th[class*="sticky"] {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+  box-shadow: none !important;
+}
+
+/* Ensure drag preview maintains table structure */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] tr {
+  display: table !important;
+  width: 100% !important;
+}
+
+[data-rbd-draggable-id][data-rbd-draggable-context-id] table {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+/* Fix drag preview offset calculation */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] {
+  transform-origin: top left !important;
+}
