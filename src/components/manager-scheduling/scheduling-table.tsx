@@ -268,7 +268,91 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
         )}
         
         <DragDropContext onBeforeDragStart={handleBeforeDragStart} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <Droppable droppableId="scheduling-table" isDropDisabled={!canEditPriority}>
+          <Droppable 
+            droppableId="scheduling-table" 
+            isDropDisabled={!canEditPriority}
+            renderClone={(provided, snapshot, rubric) => {
+              const entry = entries[rubric.source.index]
+              return (
+                <TableRow
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  style={{
+                    ...provided.draggableProps.style,
+                    display: 'table',
+                    width: '100%'
+                  }}
+                  className="bg-surface-primary dark:bg-surface-primary shadow-lg"
+                >
+                  {/* Expand Button */}
+                  <TableCell className="w-10">
+                    <div className="h-8 w-8" />
+                  </TableCell>
+
+                  {/* Priority - NO STICKY */}
+                  {canEdit && (
+                    <TableCell className="w-16 bg-surface-primary dark:bg-surface-primary">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-4 w-4 text-neutral-400" />
+                        <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                          {entry.priority}
+                        </span>
+                      </div>
+                    </TableCell>
+                  )}
+                  
+                  {/* Customer Name */}
+                  <TableCell className="w-40">
+                    <div className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                      {entry.workOrder.customerName}
+                    </div>
+                  </TableCell>
+                  
+                  {/* Person in Charge */}
+                  <TableCell className="w-24 text-sm text-neutral-600 dark:text-neutral-400">
+                    {entry.workOrder.personInCharge?.nickname || 
+                     entry.workOrder.personInCharge?.phoneE164 || 
+                     '未指派'}
+                  </TableCell>
+                  
+                  {/* Expected Production Start Date */}
+                  <TableCell className="w-40">
+                    <div className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      {entry.expectedProductionStartDate || '-'}
+                    </div>
+                  </TableCell>
+                  
+                  {/* Production Materials Ready */}
+                  <TableCell className="w-20">
+                    <Badge variant={entry.workOrder.productionMaterialsReady ? 'success' : 'warning'}>
+                      {entry.workOrder.productionMaterialsReady ? '已齊' : '未齊'}
+                    </Badge>
+                  </TableCell>
+                  
+                  {/* Work Type */}
+                  <TableCell className="w-28">
+                    <Badge 
+                      variant={
+                        entry.workOrder.workType === 'PRODUCTION' ? 'success' :
+                        entry.workOrder.workType === 'PRODUCTION_PACKAGING' ? 'info' :
+                        'outline'
+                      }
+                    >
+                      {WORK_TYPE_SHORT_LABELS[entry.workOrder.workType]}
+                    </Badge>
+                  </TableCell>
+                  
+                  {/* Actions - NO STICKY */}
+                  {canEdit && (
+                    <TableCell className="w-16 bg-surface-primary dark:bg-surface-primary">
+                      <div className="h-8 w-8" />
+                    </TableCell>
+                  )}
+                </TableRow>
+              )
+            }}
+          >
             {(provided, snapshot) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className="overflow-x-auto">
                 <TableWrapper>
