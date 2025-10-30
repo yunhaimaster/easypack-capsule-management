@@ -475,8 +475,10 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                               <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">無關聯訂單</Badge>
                             )
                           }
+                          // For now, use scheduling-based logic since capsulation order data is limited
+                          // TODO: Update API to include worklogs and completionDate in capsulation order
                           const inProgress = Boolean(entry.expectedProductionStartDate && new Date(entry.expectedProductionStartDate) <= new Date())
-                          const completed = false
+                          const completed = false // Cannot determine completion from current data structure
                           const notStarted = !completed && !inProgress
                           return (
                             <Badge variant="outline" className={
