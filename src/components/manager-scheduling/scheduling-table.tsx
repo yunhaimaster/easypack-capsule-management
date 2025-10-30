@@ -312,8 +312,9 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                               <TableRow
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
+                                {...provided.dragHandleProps}
                                 className={cn(
-                                  "hover:bg-surface-secondary/30 transition-colors",
+                                  "hover:bg-surface-secondary/30 transition-colors cursor-move",
                                   snapshot.isDragging && 'opacity-50 shadow-lg'
                                 )}
                               >
@@ -336,7 +337,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
 
                       {canEdit && (
                         <TableCell className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20">
-                          <div {...provided.dragHandleProps} className="flex items-center gap-2 cursor-move">
+                          <div className="flex items-center gap-2">
                             <GripVertical className="h-4 w-4 text-neutral-400" />
                             <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                               {entry.priority}
