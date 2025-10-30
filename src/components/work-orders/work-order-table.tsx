@@ -31,7 +31,9 @@ import {
   Factory,
   User as UserIcon,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Timer,
+  Square
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
@@ -69,23 +71,62 @@ function SkeletonRow() {
 }
 
 /**
- * Status badge component
+ * Resolve capsule production order status for work order
  */
-function StatusBadge({ status }: { status: string | null }) {
-  // If no status (ongoing work), don't display anything
-  if (!status) {
-    return null
+function resolveCapsuleOrderStatus(workOrder: WorkOrder): 'inProgress' | 'notStarted' | 'completed' | 'noOrders' {
+  // If no production orders linked, return 'noOrders'
+  if (!workOrder.productionOrders || workOrder.productionOrders.length === 0) {
+    return 'noOrders'
   }
 
-  const variants: Record<string, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
-    PAUSED: 'warning',      // Orange for paused
-    COMPLETED: 'success',   // Green for completed
-    CANCELLED: 'danger'     // Red for cancelled
+  // Use work order's own status and completion information
+  const hasWork = workOrder.productionStarted // If production has started, there's work
+  const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
+
+  if (hasWork && !isCompleted) return 'inProgress'
+  if (!isCompleted) return 'notStarted'
+  return 'completed'
+}
+
+/**
+ * Capsule production order status badge component
+ */
+function CapsuleOrderStatusBadge({ workOrder }: { workOrder: WorkOrder }) {
+  const status = resolveCapsuleOrderStatus(workOrder)
+  
+  if (status === 'noOrders') {
+    return (
+      <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
+        無關聯訂單
+      </Badge>
+    )
   }
+
+  const statusConfig = {
+    inProgress: {
+      label: '進行中',
+      icon: Timer,
+      className: 'text-warning-700 dark:text-warning-400'
+    },
+    notStarted: {
+      label: '未開始',
+      icon: Square,
+      className: 'text-neutral-600 dark:text-white/75'
+    },
+    completed: {
+      label: '已完成',
+      icon: Calendar,
+      className: 'text-success-700 dark:text-success-400'
+    }
+  }
+
+  const config = statusConfig[status]
+  const Icon = config.icon
 
   return (
-    <Badge variant={variants[status] || 'default'} className="text-xs">
-      {WORK_ORDER_STATUS_LABELS[status as keyof typeof WORK_ORDER_STATUS_LABELS] || status}
+    <Badge variant="outline" className={`inline-flex items-center gap-1 text-xs ${config.className}`}>
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      {config.label}
     </Badge>
   )
 }
@@ -351,12 +392,11 @@ export function WorkOrderTable({
                           </button>
                         </div>
                         
-                        {/* Job number + Status badge */}
+                        {/* Job number */}
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-neutral-500 dark:text-white/65">
                             {workOrder.jobNumber || '無編號'}
                           </span>
-                          <StatusBadge status={workOrder.status} />
                         </div>
                         
                         {/* Work description (truncated to 1 line) */}
@@ -412,9 +452,9 @@ export function WorkOrderTable({
                       </div>
                     </td>
 
-                    {/* Status */}
+                    {/* Capsule Order Status */}
                     <td className="py-3 px-3 text-sm align-top">
-                      <StatusBadge status={workOrder.status} />
+                      <CapsuleOrderStatusBadge workOrder={workOrder} />
                     </td>
 
                     {/* Linked Encapsulation Orders */}
@@ -612,9 +652,9 @@ export function WorkOrderTable({
                           <span>{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
                         </div>
                         
-                        {/* Status + Badges */}
+                        {/* Capsule Order Status + Badges */}
                         <div className="flex items-center gap-2 flex-wrap">
-                          <StatusBadge status={workOrder.status} />
+                          <CapsuleOrderStatusBadge workOrder={workOrder} />
                           {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
                           {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
                           {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
