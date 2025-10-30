@@ -313,6 +313,10 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  display: snapshot.isDragging ? 'table' : undefined
+                                }}
                                 className={cn(
                                   "hover:bg-surface-secondary/30 transition-colors cursor-move",
                                   snapshot.isDragging && 'opacity-50 shadow-lg'
