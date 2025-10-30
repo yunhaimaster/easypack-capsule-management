@@ -4417,3 +4417,11 @@ input[type="reset"],
 /* (Keep only cursors; avoid intrusive overrides that break DnD calculations) */
 [data-rbd-drag-handle-draggable-id] td { cursor: grab; }
 [data-rbd-drag-handle-draggable-id] td:active { cursor: grabbing; }
+
+/* Line clamp utility for work description */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

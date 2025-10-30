@@ -33,7 +33,8 @@ import {
   Calendar,
   ExternalLink,
   Timer,
-  Square
+  Square,
+  Link2
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
@@ -71,74 +72,50 @@ function SkeletonRow() {
 }
 
 /**
- * Resolve capsule production order status for work order
+ * Check if production has really started (mirrors /orders page logic)
+ * Production has started if:
+ * - Capsulation order has worklogs AND is not completed
+ * - OR work order productionStarted flag is true (for linked production orders without capsulation order)
  */
-function resolveCapsuleOrderStatus(workOrder: WorkOrder): 'inProgress' | 'notStarted' | 'completed' | 'noOrders' {
-  // 1) If capsulationOrder exists, mirror /orders page logic exactly
+function hasProductionStarted(workOrder: WorkOrder): boolean {
+  // 1) If capsulationOrder exists, check if it has worklogs (mirrors /orders page logic)
   if (workOrder.capsulationOrder) {
     const order = workOrder.capsulationOrder
-    const hasWork = Array.isArray(order.worklogs) && order.worklogs.length > 0
+    const hasWorklog = Array.isArray(order.worklogs) && order.worklogs.length > 0
     const completed = Boolean(order.completionDate)
-    if (hasWork && !completed) return 'inProgress'
-    if (!completed) return 'notStarted'
-    return 'completed'
+    return hasWorklog && !completed
   }
 
-  // 2) If there are linked productionOrders but no capsulation order, we cannot see worklogs here.
-  // Fall back to a heuristic based on work order state.
+  // 2) If there are linked productionOrders but no capsulation order, use productionStarted flag
   if (workOrder.productionOrders && workOrder.productionOrders.length > 0) {
-    const hasWork = workOrder.productionStarted
     const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
-    if (hasWork && !isCompleted) return 'inProgress'
-    if (!isCompleted) return 'notStarted'
-    return 'completed'
+    return workOrder.productionStarted && !isCompleted
   }
 
-  // 3) No related orders
-  return 'noOrders'
+  // 3) No related orders - production cannot have started
+  return false
 }
 
 /**
  * Capsule production order status badge component
+ * NOTE: Still used in desktop table, but mobile cards use hasProductionStarted() instead
  */
 function CapsuleOrderStatusBadge({ workOrder }: { workOrder: WorkOrder }) {
-  const status = resolveCapsuleOrderStatus(workOrder)
+  // Check if production has really started using same logic as /orders page
+  const productionStarted = hasProductionStarted(workOrder)
   
-  if (status === 'noOrders') {
+  // Only show indicator if production has started
+  if (productionStarted) {
     return (
-      <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
-        無關聯訂單
+      <Badge variant="outline" className="inline-flex items-center gap-1 text-xs text-warning-700 dark:text-warning-400">
+        <Factory className="h-3.5 w-3.5" aria-hidden="true" />
+        生產中
       </Badge>
     )
   }
-
-  const statusConfig = {
-    inProgress: {
-      label: '進行中',
-      icon: Timer,
-      className: 'text-warning-700 dark:text-warning-400'
-    },
-    notStarted: {
-      label: '未開始',
-      icon: Square,
-      className: 'text-neutral-600 dark:text-white/75'
-    },
-    completed: {
-      label: '已完成',
-      icon: Calendar,
-      className: 'text-success-700 dark:text-success-400'
-    }
-  }
-
-  const config = statusConfig[status]
-  const Icon = config.icon
-
-  return (
-    <Badge variant="outline" className={`inline-flex items-center gap-1 text-xs ${config.className}`}>
-      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-      {config.label}
-    </Badge>
-  )
+  
+  // Don't show anything if production hasn't started
+  return null
 }
 
 
@@ -617,60 +594,28 @@ export function WorkOrderTable({
                 className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer mobile-card"
                 onClick={() => router.push(`/work-orders/${workOrder.id}`)}
               >
+                {/* Header Section */}
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className="flex-1 min-w-0">
-                      {/* Customer Name - LARGE and Clickable */}
-                      <div className="group mb-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            router.push(`/work-orders/${workOrder.id}`)
-                          }}
-                          className="text-base font-semibold text-neutral-900 dark:text-white/95 hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer underline decoration-dotted underline-offset-4 transition-colors text-left flex items-center gap-1.5 truncate w-full"
-                          title={`點擊查看 ${workOrder.customerName} 的詳細信息`}
-                        >
-                          {workOrder.customerName}
-                          <ExternalLink className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                        </button>
-                      </div>
-                      
-                      {/* Job Number - Small, gray */}
-                      <p className="text-xs text-neutral-500 dark:text-white/65 mb-2">
-                        {workOrder.jobNumber || '無編號'}
-                      </p>
-                      
-                      {/* Delivery Date - PROMINENT with icon */}
-                      {workOrder.requestedDeliveryDate && (
-                        <div className="flex items-center gap-1.5 mb-2 text-sm text-neutral-700 dark:text-white/85">
-                          <Calendar className="h-4 w-4 shrink-0" />
-                          <span className="font-medium">
-                            {new Date(workOrder.requestedDeliveryDate).toLocaleDateString('zh-HK', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit'
-                            })}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {/* Essential Info - One line each */}
-                      <div className="space-y-1.5 text-sm text-neutral-700 dark:text-white/85">
-                        {/* Person in charge */}
-                        <div className="flex items-center gap-1.5">
-                          <UserIcon className="h-3.5 w-3.5 text-neutral-500 dark:text-white/65 shrink-0" />
-                          <span>{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
-                        </div>
-                        
-                        {/* Capsule Order Status + Badges */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <CapsuleOrderStatusBadge workOrder={workOrder} />
-                          {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
-                          {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
-                          {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
-                        </div>
-                      </div>
+                  <div className="flex-1 min-w-0">
+                    {/* Customer Name - LARGE and Clickable */}
+                    <div className="group mb-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/work-orders/${workOrder.id}`)
+                        }}
+                        className="text-base font-semibold text-neutral-900 dark:text-white/95 hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer underline decoration-dotted underline-offset-4 transition-colors text-left flex items-center gap-1.5 truncate w-full"
+                        title={`點擊查看 ${workOrder.customerName} 的詳細信息`}
+                      >
+                        {workOrder.customerName}
+                        <ExternalLink className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                      </button>
                     </div>
+                    
+                    {/* Job Number - Small, gray */}
+                    <p className="text-xs text-neutral-500 dark:text-white/65">
+                      {workOrder.jobNumber || '無編號'}
+                    </p>
                   </div>
                   
                   {/* Quick Actions - Right side */}
@@ -684,6 +629,116 @@ export function WorkOrderTable({
                       onRefresh={onRefresh}
                     />
                   </div>
+                </div>
+
+                {/* Two-Column Info Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  {/* Left Column */}
+                  <div className="space-y-2">
+                    {/* Delivery Date */}
+                    {workOrder.requestedDeliveryDate && (
+                      <div className="flex items-center gap-1.5 text-sm text-neutral-700 dark:text-white/85">
+                        <Calendar className="h-3.5 w-3.5 shrink-0" />
+                        <span className="font-medium">
+                          {new Date(workOrder.requestedDeliveryDate).toLocaleDateString('zh-HK', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Person in charge */}
+                    <div className="flex items-center gap-1.5 text-sm text-neutral-700 dark:text-white/85">
+                      <UserIcon className="h-3.5 w-3.5 text-neutral-500 dark:text-white/65 shrink-0" />
+                      <span className="truncate">{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
+                    </div>
+                    
+                    {/* Work Type Badge */}
+                    <Badge variant="info" className="text-xs w-fit">
+                      {WORK_TYPE_LABELS[workOrder.workType]}
+                    </Badge>
+                    
+                    {/* Production Started Indicator - Only show when production has really started */}
+                    {hasProductionStarted(workOrder) && (
+                      <div className="flex items-center gap-1 text-xs text-warning-700 dark:text-warning-400">
+                        <Factory className="h-3 w-3" />
+                        <span>生產中</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-2">
+                    {/* Production Quantity */}
+                    {workOrder.productionQuantity && (
+                      <div className="text-xs text-neutral-700 dark:text-white/85">
+                        生產: {workOrder.productionQuantity}{workOrder.productionQuantityStat || '個'}
+                      </div>
+                    )}
+                    
+                    {/* Packaging Quantity */}
+                    {workOrder.packagingQuantity && (
+                      <div className="text-xs text-neutral-700 dark:text-white/85">
+                        包裝: {workOrder.packagingQuantity}{workOrder.packagingQuantityStat || '個'}
+                      </div>
+                    )}
+                    
+                    {/* Production Materials Status */}
+                    <div className="flex items-center gap-1 text-xs">
+                      {workOrder.productionMaterialsReady ? (
+                        <>
+                          <CheckCircle className="h-3 w-3 text-success-600" />
+                          <span className="text-success-700 dark:text-success-400">生產物料齊</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3 text-neutral-400" />
+                          <span className="text-neutral-500 dark:text-white/65">生產物料未齊</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Packaging Materials Status */}
+                    <div className="flex items-center gap-1 text-xs">
+                      {workOrder.packagingMaterialsReady ? (
+                        <>
+                          <CheckCircle className="h-3 w-3 text-success-600" />
+                          <span className="text-success-700 dark:text-success-400">包裝物料齊</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3 text-neutral-400" />
+                          <span className="text-neutral-500 dark:text-white/65">包裝物料未齊</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Work Description Section */}
+                {workOrder.workDescription && (
+                  <div 
+                    className="text-xs text-neutral-600 dark:text-white/75 line-clamp-2 mb-3"
+                    title={workOrder.workDescription}
+                  >
+                    {workOrder.workDescription}
+                  </div>
+                )}
+
+                {/* Badges Row */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
+                  {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
+                  {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
+                  {workOrder.isCompleted && <Badge variant="success" className="text-xs">✓ 已完成</Badge>}
+                  {workOrder.productionOrders && workOrder.productionOrders.length > 0 && (
+                    <Badge variant="secondary" className="inline-flex items-center gap-1 text-xs">
+                      <Link2 className="h-3 w-3" />
+                      {workOrder.productionOrders.length}個關聯訂單
+                    </Badge>
+                  )}
                 </div>
               </div>
             ))
