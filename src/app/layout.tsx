@@ -4,7 +4,6 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { ProtectedLayout } from '@/components/auth/protected-layout'
 import { Analytics } from '@vercel/analytics/next'
 import ErrorBoundary from '@/components/ui/error-boundary'
-import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { OfflineIndicator } from '@/hooks/use-offline'
 import { AppClientProviders } from '@/components/app-client-providers'
 import { ThemeProvider } from '@/components/theme/theme-provider'
@@ -109,7 +108,6 @@ export default function RootLayout({
                 </ProtectedLayout>
               </AuthProvider>
             </ErrorBoundary>
-            <PerformanceMonitor />
             {process.env.NODE_ENV === 'production' && process.env.VERCEL && <Analytics />}
           </AppClientProviders>
         </ThemeProvider>
