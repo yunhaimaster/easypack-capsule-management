@@ -274,17 +274,17 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
             renderClone={(provided, snapshot, rubric) => {
               const entry = entries[rubric.source.index]
               return (
-                <TableRow
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  style={{
-                    ...provided.draggableProps.style,
-                    display: 'table',
-                    width: '100%'
-                  }}
-                  className="bg-surface-primary dark:bg-surface-primary shadow-lg"
-                >
+                <table style={{ width: '100%', tableLayout: 'fixed' }}>
+                  <tbody>
+                    <TableRow
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={{
+                        ...provided.draggableProps.style,
+                      }}
+                      className="bg-surface-primary dark:bg-surface-primary shadow-lg"
+                    >
                   {/* Expand Button */}
                   <TableCell className="w-10">
                     <div className="h-8 w-8" />
@@ -350,6 +350,8 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                     </TableCell>
                   )}
                 </TableRow>
+                  </tbody>
+                </table>
               )
             }}
           >
@@ -397,13 +399,9 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                style={{
-                                  ...provided.draggableProps.style,
-                                  display: snapshot.isDragging ? 'table' : undefined
-                                }}
                                 className={cn(
                                   "hover:bg-surface-secondary/30 transition-colors cursor-move",
-                                  snapshot.isDragging && 'opacity-50 shadow-lg'
+                                  snapshot.isDragging && 'opacity-50'
                                 )}
                               >
                       {/* Expand Button */}
