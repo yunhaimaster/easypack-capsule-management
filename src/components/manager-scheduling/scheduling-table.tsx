@@ -12,6 +12,7 @@
 'use client'
 
 import { useState, useCallback, useRef, Fragment } from 'react'
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { ManagerSchedulingEntry } from '@/types/manager-scheduling'
 import { WorkType, WORK_TYPE_LABELS, WORK_TYPE_SHORT_LABELS } from '@/types/work-order'
 import { TableWrapper } from '@/components/ui/table-wrapper'
@@ -44,11 +45,8 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
   const [saving, setSaving] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-  const [draggedId, setDraggedId] = useState<string | null>(null)
-  const [dragOverId, setDragOverId] = useState<string | null>(null)
   const [quickViewEntry, setQuickViewEntry] = useState<ManagerSchedulingEntry | null>(null)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
-  const dragStartIndex = useRef<number | null>(null)
   
   const toggleExpand = useCallback((entryId: string) => {
     setExpandedRows(prev => {
@@ -147,49 +145,28 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
     }
   }, [onEntriesChange, showToast])
 
-  // Drag and drop handlers
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLTableRowElement>, entryId: string, index: number) => {
+  // Drag and drop handlers for @hello-pangea/dnd
+  const handleDragStart = useCallback(() => {
     if (!canEdit) return
-    dragStartIndex.current = index
-    setDraggedId(entryId)
-    e.dataTransfer.effectAllowed = 'move'
-    e.dataTransfer.setData('text/plain', entryId)
-    // Add visual feedback
-    e.currentTarget.style.opacity = '0.5'
+    
+    // Add vibration feedback for mobile devices
+    if (window.navigator.vibrate) {
+      window.navigator.vibrate(100)
+    }
   }, [canEdit])
 
-  const handleDragEnd = useCallback((e: React.DragEvent<HTMLTableRowElement>) => {
-    e.currentTarget.style.opacity = '1'
-    setDraggedId(null)
-    setDragOverId(null)
-    dragStartIndex.current = null
-  }, [])
+  const handleDragEnd = useCallback(async (result: DropResult) => {
+    if (!canEdit || !result.destination) return
 
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLTableRowElement>, entryId: string) => {
-    if (!canEdit || draggedId === entryId) return
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setDragOverId(entryId)
-  }, [canEdit, draggedId])
-
-  const handleDragLeave = useCallback(() => {
-    setDragOverId(null)
-  }, [])
-
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLTableRowElement>, dropEntryId: string, dropIndex: number) => {
-    if (!canEdit || !draggedId || draggedId === dropEntryId || dragStartIndex.current === null) return
+    const { source, destination } = result
     
-    e.preventDefault()
-    setDragOverId(null)
-    setDraggedId(null)
-
-    const startIndex = dragStartIndex.current
-    const endIndex = dropIndex
+    // If dropped in the same position, do nothing
+    if (source.index === destination.index) return
 
     // Create new array with reordered entries
     const newEntries = [...entries]
-    const [draggedEntry] = newEntries.splice(startIndex, 1)
-    newEntries.splice(endIndex, 0, draggedEntry)
+    const [draggedEntry] = newEntries.splice(source.index, 1)
+    newEntries.splice(destination.index, 0, draggedEntry)
 
     // Calculate new priorities (1-based)
     const updates: Array<{ id: string; priority: number }> = newEntries.map((entry, index) => ({
@@ -197,12 +174,14 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
       priority: index + 1
     }))
 
+    // Update local state immediately for better UX
+    onEntriesChange(newEntries)
+
+    // Send updates to server
     if (updates.length > 0) {
       await handleReorder(updates)
     }
-
-    dragStartIndex.current = null
-  }, [canEditPriority, draggedId, entries, handleReorder])
+  }, [canEdit, entries, onEntriesChange, handleReorder])
 
   const handleDelete = useCallback(async (entryId: string) => {
     setDeleting(entryId)
@@ -296,28 +275,33 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                 )}
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {entries.map((entry, index) => {
-                const isExpanded = expandedRows.has(entry.id)
-                const processIssuesValue = entry.processIssues ?? entry.workOrder.capsulationOrder?.processIssues ?? entry.workOrder.productionOrder?.processIssues ?? ''
-                const qualityNotesValue = entry.qualityNotes ?? entry.workOrder.capsulationOrder?.qualityNotes ?? entry.workOrder.productionOrder?.qualityNotes ?? ''
-                const workDescriptionValue = entry.workOrder.workDescription || ''
-                
-                return (
-                  <Fragment key={entry.id}>
-                    <TableRow
-                      className={cn(
-                        "hover:bg-surface-secondary/30 transition-colors",
-                        draggedId === entry.id && 'opacity-50',
-                        dragOverId === entry.id && 'bg-primary-50 dark:bg-primary-900/20 border-t-2 border-primary-500'
-                      )}
-                      draggable={canEditPriority}
-                      onDragStart={(e) => handleDragStart(e, entry.id, index)}
-                      onDragEnd={handleDragEnd}
-                      onDragOver={(e) => handleDragOver(e, entry.id)}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, entry.id, index)}
-                    >
+            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              <Droppable droppableId="scheduling-table" isDropDisabled={!canEditPriority}>
+                {(provided, snapshot) => (
+                  <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                    {entries.map((entry, index) => {
+                      const isExpanded = expandedRows.has(entry.id)
+                      const processIssuesValue = entry.processIssues ?? entry.workOrder.capsulationOrder?.processIssues ?? entry.workOrder.productionOrder?.processIssues ?? ''
+                      const qualityNotesValue = entry.qualityNotes ?? entry.workOrder.capsulationOrder?.qualityNotes ?? entry.workOrder.productionOrder?.qualityNotes ?? ''
+                      const workDescriptionValue = entry.workOrder.workDescription || ''
+                      
+                      return (
+                        <Draggable
+                          key={entry.id}
+                          draggableId={entry.id}
+                          index={index}
+                          isDragDisabled={!canEditPriority}
+                        >
+                          {(provided, snapshot) => (
+                            <Fragment>
+                              <TableRow
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={cn(
+                                  "hover:bg-surface-secondary/30 transition-colors",
+                                  snapshot.isDragging && 'opacity-50 shadow-lg'
+                                )}
+                              >
                       {/* Expand Button */}
                       <TableCell className="w-10">
                         <Button
@@ -335,10 +319,12 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                         </Button>
                       </TableCell>
 
-{canEdit && (
+                      {canEdit && (
                         <TableCell className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20">
                           <div className="flex items-center gap-2">
-                            <GripVertical className="h-4 w-4 text-neutral-400 cursor-move" />
+                            <div {...provided.dragHandleProps} className="cursor-move">
+                              <GripVertical className="h-4 w-4 text-neutral-400" />
+                            </div>
                             <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                               {entry.priority}
                             </span>
@@ -543,12 +529,18 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                             )}
                           </div>
                         </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                )
-              })}
-            </TableBody>
+                              </TableRow>
+                            )}
+                            </Fragment>
+                          )}
+                        </Draggable>
+                      )
+                    })}
+                    {provided.placeholder}
+                  </TableBody>
+                )}
+              </Droppable>
+            </DragDropContext>
           </Table>
         </TableWrapper>
         </div>
