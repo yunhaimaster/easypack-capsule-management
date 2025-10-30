@@ -478,17 +478,56 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
       {/* Mobile cards */}
       <div className="lg:hidden space-y-4">
         {loading ? (
-          <div className="text-center py-8 text-neutral-500 dark:text-white/65">
-            載入中...
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="liquid-glass-card animate-pulse">
+                <div className="p-4 space-y-3">
+                  <div className="h-5 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
+                  <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-10 bg-neutral-200 dark:bg-neutral-700 rounded" />
+                    <div className="h-10 bg-neutral-200 dark:bg-neutral-700 rounded" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-neutral-200 dark:bg-neutral-700 rounded w-20" />
+                    <div className="h-6 bg-neutral-200 dark:bg-neutral-700 rounded w-20" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : orders.length === 0 ? (
-          <div className="text-center py-8 text-neutral-500 dark:text-white/65">
-            沒有找到訂單
+          <div className="text-center py-12 px-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 dark:bg-elevation-2 mb-4">
+              <Package2 className="h-8 w-8 text-neutral-400 dark:text-white/55" />
+            </div>
+            <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95 mb-2">
+              未找到訂單
+            </h3>
+            <p className="text-sm text-neutral-500 dark:text-white/65 mb-4">
+              調整篩選條件或清除篩選以查看所有訂單
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setFilters(DEFAULT_FILTERS)
+                fetchOrders(DEFAULT_FILTERS)
+              }}
+              size="sm"
+            >
+              清除篩選
+            </Button>
           </div>
         ) : (
           orders.map((order) => {
             const status = resolveOrderStatus(order)
             const statusLabel = STATUS_ORDER[status] === 0 ? '進行中' : STATUS_ORDER[status] === 1 ? '未開始' : '已完成'
+            const statusBadgeClass =
+              STATUS_ORDER[status] === 0
+                ? 'bg-primary-600 text-white'
+                : STATUS_ORDER[status] === 1
+                  ? 'bg-neutral-600 text-white'
+                  : 'bg-success-600 text-white'
             const latestWorklog = order.worklogs && order.worklogs.length > 0
               ? order.worklogs[order.worklogs.length - 1]
               : null
@@ -496,32 +535,83 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
             return (
               <div
                 key={order.id}
-                className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction cursor-pointer"
+                className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction cursor-pointer transition-transform active:scale-[0.98]"
                 onClick={() => window.location.href = `/orders/${order.id}`}
               >
                 <div className="p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95">{order.productName}</h3>
-                      <p className="text-xs text-neutral-500 dark:text-white/65">{order.customerName}</p>
+                  {/* Header with status and actions */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95 truncate">
+                        {order.productName}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="text-xs text-neutral-500 dark:text-white/65">
+                          {order.customerName}
+                        </span>
+                        {order.customerService && (
+                          <span className="text-xs bg-neutral-100 dark:bg-elevation-2 text-neutral-500 dark:text-white/65 px-2 py-0.5 rounded-full">
+                            客服：{typeof order.customerService === 'object' && order.customerService !== null 
+                              ? ((order.customerService as any).nickname || (order.customerService as any).phoneE164 || '未知客服')
+                              : order.customerService || '未知客服'}
+                          </span>
+                        )}
+                        {order.workOrder && (
+                          <OrderLinkBadge
+                            type="work-order"
+                            orderId={order.workOrder.id}
+                            label={order.workOrder.jobNumber || order.workOrder.customerName}
+                            size="sm"
+                            showIcon={false}
+                          />
+                        )}
+                      </div>
+                      {hasProcessOrQualityIssues(order) && (
+                        <div className="flex items-center gap-1 mt-1">
+                          {order.processIssues && order.processIssues.trim() !== '' && (
+                            <div title={`製程問題: ${order.processIssues}`}>
+                              <AlertTriangle className="h-3.5 w-3.5 text-danger-500" aria-hidden="true" />
+                            </div>
+                          )}
+                          {order.qualityNotes && order.qualityNotes.trim() !== '' && (
+                            <div title={`品管備註: ${order.qualityNotes}`}>
+                              <ClipboardCheck className="h-3.5 w-3.5 text-primary-500" aria-hidden="true" />
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1 ${STATUS_ORDER[status] === 2 ? 'bg-success-600 text-white' : STATUS_ORDER[status] === 0 ? 'bg-primary-600 text-white' : 'bg-neutral-600 text-white'}`}>
+                    
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <Badge variant="outline" className={`inline-flex items-center gap-1 ${statusBadgeClass}`}>
+                        {STATUS_ORDER[status] === 0 ? <Timer className="h-3.5 w-3.5" aria-hidden="true" /> : STATUS_ORDER[status] === 2 ? <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> : <Square className="h-3.5 w-3.5" aria-hidden="true" />}
                       {statusLabel}
-                    </span>
+                      </Badge>
+                      <OrderActionsMenu
+                        order={order}
+                        onDelete={handleDeleteClick}
+                        onLinkComplete={() => fetchOrders()}
+                      />
+                    </div>
                   </div>
 
+                  {/* Status details */}
                   <div className="text-xs text-neutral-500 dark:text-white/65 space-y-1">
                     {STATUS_ORDER[status] === 2 && order.completionDate && (
-                      <div>完成：{typeof order.completionDate === 'string' ? order.completionDate : formatDateOnly(order.completionDate)}</div>
+                      <div>完成日期：{typeof order.completionDate === 'string' ? order.completionDate : formatDateOnly(order.completionDate)}</div>
                     )}
                     {STATUS_ORDER[status] === 0 && order.totalWorkUnits && (
-                      <div>累積：{order.totalWorkUnits.toFixed(1)} 工時</div>
+                      <div>累積工時：{order.totalWorkUnits.toFixed(1)} 工時</div>
                     )}
                     {STATUS_ORDER[status] === 0 && latestWorklog && (
                       <div>最新工時：{formatDateOnly(latestWorklog.workDate)} {latestWorklog.startTime}-{latestWorklog.endTime}</div>
                     )}
+                    {STATUS_ORDER[status] === 1 && (
+                      <div>尚未安排工時</div>
+                    )}
                   </div>
 
+                  {/* Quantities grid */}
                   <div className="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-white/75">
                     <div>
                       <span className="block text-neutral-400 dark:text-white/55">訂單數量</span>
@@ -533,11 +623,21 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                         <span className="text-sm font-semibold text-neutral-900 dark:text-white/95">{order.actualProductionQuantity.toLocaleString()} 粒</span>
                       </div>
                     )}
+                    {order.materialYieldQuantity != null && (
+                      <div>
+                        <span className="block text-neutral-400 dark:text-white/55">材料可做</span>
+                        <span className="text-sm font-semibold text-neutral-900 dark:text-white/95">{order.materialYieldQuantity.toLocaleString()} 粒</span>
+                      </div>
+                    )}
                   </div>
 
-                  {order.ingredients && order.ingredients.length > 0 ? (
+                  {/* Ingredients */}
+                  {order.ingredients && order.ingredients.length > 0 && (
                     <div className="flex flex-wrap gap-2 text-xs">
-                      {order.ingredients.slice(0, 3).map((ingredient, index) => (
+                      {order.ingredients
+                        .sort((a, b) => (b.unitContentMg || 0) - (a.unitContentMg || 0))
+                        .slice(0, 3)
+                        .map((ingredient, index) => (
                         <span key={index} className="bg-surface-primary/80 dark:bg-elevation-2 border border-neutral-200 dark:border-white/20 px-2 py-0.5 rounded-full">
                           {ingredient.materialName}
                         </span>
@@ -546,30 +646,7 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
                         <span className="text-neutral-400 dark:text-white/55">+{order.ingredients.length - 3}</span>
                       )}
                     </div>
-                  ) : null}
-
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.location.href = `/orders/${order.id}/edit`
-                      }}
-                    >
-                      <Edit className="h-4 w-4 mr-1" aria-hidden="true" /> 編輯
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-primary-600 hover:bg-primary-700"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleOrderAIClick(order)
-                      }}
-                    >
-                      <Bot className="h-4 w-4 mr-1" aria-hidden="true" /> AI
-                    </Button>
-                  </div>
+                  )}
                 </div>
               </div>
             )
@@ -579,33 +656,36 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
 
       {/* 分頁 */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mt-6">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => {
               const newFilters = { ...filters, page: filters.page - 1 }
               setFilters(newFilters)
               fetchOrders(newFilters)
             }}
             disabled={filters.page <= 1}
+            className="w-full sm:w-auto min-h-[44px]"
           >
             上一頁
           </Button>
           
           <span className="text-sm text-neutral-600 dark:text-white/75 px-4">
-            第 {filters.page} 頁，共 {pagination.totalPages} 頁
+            <span className="sm:hidden">{filters.page} / {pagination.totalPages}</span>
+            <span className="hidden sm:inline">第 {filters.page} 頁，共 {pagination.totalPages} 頁</span>
           </span>
           
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => {
               const newFilters = { ...filters, page: filters.page + 1 }
               setFilters(newFilters)
               fetchOrders(newFilters)
             }}
             disabled={filters.page >= pagination.totalPages}
+            className="w-full sm:w-auto min-h-[44px]"
           >
             下一頁
           </Button>

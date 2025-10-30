@@ -294,11 +294,12 @@ export function LinkedFilter({
 
     return createPortal(
       <div 
-        className="fixed z-[9999] bg-surface-primary border border-neutral-200 rounded-md shadow-lg max-h-60 overflow-auto"
+        className="fixed z-[100] bg-surface-primary dark:bg-elevation-1 border border-neutral-200 dark:border-white/20 rounded-md shadow-lg max-h-60 overflow-auto"
         style={{
           top: position.top,
-          left: position.left,
-          width: position.width
+          left: Math.max(position.left, 16),
+          width: Math.min(position.width, typeof window !== 'undefined' ? window.innerWidth - 32 : position.width),
+          maxWidth: position.width
         }}
       >
         {options.map((option) => (
@@ -306,7 +307,7 @@ export function LinkedFilter({
             key={option.value}
             type="button"
             onClick={() => onSelect(option.value, option.label)}
-            className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none"
+            className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-elevation-2 focus:bg-neutral-100 dark:focus:bg-elevation-2 focus:outline-none min-h-[44px] sm:min-h-0 flex items-center"
           >
             {option.label}
           </button>
@@ -319,25 +320,27 @@ export function LinkedFilter({
   const limitOptions = [25, 50, 100]
 
   return (
-    <div className="liquid-glass-card liquid-glass-card-subtle p-6 relative">
-      <div className="flex flex-col gap-4 mb-5 sm:mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div className="liquid-glass-card liquid-glass-card-subtle p-4 sm:p-6 relative">
+      <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex items-center justify-between gap-2">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-700 dark:text-white/85 tracking-wide uppercase">訂單篩選</h3>
-            <p className="text-xs text-neutral-500 dark:text-white/65">支援客戶、膠囊配方、原料與膠囊規格的即時篩查</p>
+            <h3 className="text-sm font-semibold text-neutral-700 dark:text-white/85">訂單篩選</h3>
+            <p className="hidden sm:block text-xs text-neutral-500 dark:text-white/65 mt-1">
+              支援客戶、膠囊配方、原料與膠囊規格的即時篩查
+            </p>
           </div>
-          <div className="flex items-center gap-2 sm:self-auto self-start">
-            <span className="text-xs font-semibold text-neutral-600 dark:text-white/75">每頁顯示</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-600 dark:text-white/75 hidden sm:inline">每頁顯示</span>
             <Select
               value={String(limit)}
               onValueChange={(value) => onLimitChange?.(Number(value))}
             >
-              <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none">
+              <SelectTrigger className="w-[84px] h-9 sm:h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none min-h-[44px] sm:min-h-0">
                 <SelectValue placeholder="筆數" />
               </SelectTrigger>
               <SelectContent>
                 {limitOptions.map((option) => (
-                  <SelectItem key={option} value={option.toString()} className="text-sm">
+                  <SelectItem key={option} value={option.toString()} className="text-sm min-h-[44px] sm:min-h-0">
                     {option} 筆
                   </SelectItem>
                 ))}
@@ -360,12 +363,12 @@ export function LinkedFilter({
               onChange={(e) => handleInputChange('customerName', e.target.value)}
               onFocus={() => setShowDropdowns(prev => ({ ...prev, customer: true }))}
               placeholder="輸入或選擇客戶"
-              className="pr-8"
+              className="pr-8 min-h-[44px] sm:min-h-0"
             />
             <button
               type="button"
               onClick={() => toggleDropdown('customer')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -389,12 +392,12 @@ export function LinkedFilter({
               onChange={(e) => handleInputChange('productName', e.target.value)}
               onFocus={() => setShowDropdowns(prev => ({ ...prev, product: true }))}
               placeholder="輸入或選擇配方"
-              className="pr-8"
+              className="pr-8 min-h-[44px] sm:min-h-0"
             />
             <button
               type="button"
               onClick={() => toggleDropdown('product')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -418,12 +421,12 @@ export function LinkedFilter({
               onChange={(e) => handleInputChange('ingredientName', e.target.value)}
               onFocus={() => setShowDropdowns(prev => ({ ...prev, ingredient: true }))}
               placeholder="輸入或選擇原料"
-              className="pr-8"
+              className="pr-8 min-h-[44px] sm:min-h-0"
             />
             <button
               type="button"
               onClick={() => toggleDropdown('ingredient')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -447,12 +450,12 @@ export function LinkedFilter({
               onChange={(e) => handleInputChange('capsuleType', e.target.value)}
               onFocus={() => setShowDropdowns(prev => ({ ...prev, capsule: true }))}
               placeholder="輸入或選擇類型"
-              className="pr-8"
+              className="pr-8 min-h-[44px] sm:min-h-0"
             />
             <button
               type="button"
               onClick={() => toggleDropdown('capsule')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-white/55 hover:text-neutral-600 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -472,7 +475,7 @@ export function LinkedFilter({
             variant="outline"
             onClick={clearFilters}
             disabled={loading}
-            className="flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-2 min-h-[44px]"
           >
             <X className="h-4 w-4" aria-hidden="true" />
             清除篩選
@@ -481,7 +484,7 @@ export function LinkedFilter({
             <Button
               onClick={onExport}
               variant="outline"
-              className="flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 min-h-[44px]"
               disabled={loading}
             >
               <Download className="h-4 w-4" aria-hidden="true" />
@@ -493,13 +496,13 @@ export function LinkedFilter({
             <Button
               onClick={handleSearch}
               disabled={loading}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all duration-300"
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all duration-300 min-h-[44px]"
             >
               {loading ? '搜尋中...' : '重新搜尋'}
             </Button>
             <Link href="/orders/new" className="w-full sm:w-auto">
               <Button
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-info-500 to-info-600 text-white hover:from-info-600 hover:to-info-700 transition-all duration-300 w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-info-500 to-info-600 text-white hover:from-info-600 hover:to-info-700 transition-all duration-300 w-full sm:w-auto min-h-[44px]"
                 disabled={loading}
               >
                 + 新建訂單

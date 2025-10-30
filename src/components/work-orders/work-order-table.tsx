@@ -277,7 +277,7 @@ export function WorkOrderTable({
       )}
 
       {/* Desktop table */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block overflow-x-auto">
         <TableWrapper>
           <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
             <thead className="bg-surface-primary/80 dark:bg-elevation-0/80">

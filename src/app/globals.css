@@ -2267,6 +2267,43 @@
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
+  
+  /* Mobile-specific styling for xs size modals */
+  .liquid-glass-modal.max-w-xs {
+    border-radius: 20px !important;
+    max-height: auto !important;
+    transform: scale(0.9) translateY(20px) !important;
+    margin-top: 2rem !important;
+  }
+  
+  .liquid-glass-modal-backdrop.active .liquid-glass-modal.max-w-xs {
+    transform: scale(1) translateY(0) !important;
+  }
+  
+  /* Override slide animations for xs size on mobile */
+  .liquid-glass-modal.max-w-xs.liquid-glass-modal-scale-from-center {
+    transform: scale(0.9) translateY(20px) !important;
+    border-radius: 20px !important;
+    margin-top: 2rem !important;
+  }
+  
+  .liquid-glass-modal.max-w-xs.liquid-glass-modal-scale-from-button {
+    transform: scale(0.9) translateY(20px) !important;
+    border-radius: 20px !important;
+    margin-top: 2rem !important;
+  }
+  
+  .liquid-glass-modal-backdrop.active .liquid-glass-modal.max-w-xs.liquid-glass-modal-scale-from-center {
+    transform: scale(1) translateY(0) !important;
+    border-radius: 20px !important;
+    margin-top: 2rem !important;
+  }
+  
+  .liquid-glass-modal-backdrop.active .liquid-glass-modal.max-w-xs.liquid-glass-modal-scale-from-button {
+    transform: scale(1) translateY(0) !important;
+    border-radius: 20px !important;
+    margin-top: 2rem !important;
+  }
 }
 
 /* Progressive Enhancement for Modals */

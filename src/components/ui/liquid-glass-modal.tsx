@@ -12,7 +12,7 @@ interface LiquidGlassModalProps {
   children: ReactNode
   footer?: ReactNode
   headerButtons?: ReactNode
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
   closeOnBackdropClick?: boolean
   closeOnEscape?: boolean
   className?: string
@@ -132,6 +132,7 @@ export function LiquidGlassModal({
   }
 
   const sizeClasses = {
+    xs: 'max-w-xs',
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
@@ -240,7 +241,7 @@ export function LiquidGlassConfirmModal({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      size="sm"
+      size="xs"
       className={`confirm-modal ${variant === 'danger' ? 'confirm-danger' : ''}`}
     >
       <div className="confirm-modal-body">

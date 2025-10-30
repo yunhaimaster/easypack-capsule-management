@@ -10,7 +10,7 @@
 
 'use client'
 
-import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
+import { useState, useCallback, useRef, useEffect, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { Route } from 'next'
 import { useUsers } from '@/lib/queries/work-orders'
@@ -140,11 +140,31 @@ function WorkOrdersContent() {
   const [error, setError] = useState<Error | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   
+  // Scroll position preservation
+  const scrollPositionRef = useRef<number>(0)
+  const isSelectOpenRef = useRef<boolean>(false)
+  
+  // Handle Select component open/close to prevent scroll jumps
+  const handleSelectOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      // Store scroll position when opening
+      scrollPositionRef.current = window.scrollY
+      isSelectOpenRef.current = true
+    } else {
+      // Restore scroll position when closing
+      isSelectOpenRef.current = false
+      // Use requestAnimationFrame to ensure it happens after browser's focus scroll
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollPositionRef.current)
+      })
+    }
+  }, [])
+  
   // Fetch users for person filter
   const { data: usersData } = useUsers()
   const users = usersData || []
   
-  // Sync filters to URL
+  // Sync filters to URL without causing scroll jumps
   const syncFiltersToURL = useCallback((newFilters: WorkOrderSearchFilters) => {
     const params = new URLSearchParams()
     
@@ -171,13 +191,16 @@ function WorkOrdersContent() {
     }
     if (newFilters.isCompleted === undefined) params.set('showCompleted', 'true')
     
-    // Update URL without navigation (replaceState, not push)
+    // Use direct URL manipulation to avoid any scroll behavior
     const newURL = params.toString() ? `/work-orders?${params.toString()}` : '/work-orders'
-    router.replace(newURL as Route, { scroll: false })
-  }, [router])
+    window.history.replaceState(null, '', newURL)
+  }, [])
 
-  // Manual fetch function (like worklogs)
+  // Manual fetch function with scroll position preservation
   const fetchWorkOrders = useCallback(async (newFilters = filters) => {
+    // Store current scroll position before fetching
+    const savedScroll = window.scrollY
+    
     setIsLoading(true)
     setIsFetching(true)
     setError(null)
@@ -204,13 +227,11 @@ function WorkOrdersContent() {
 
       const response = await fetchWithTimeout(`/api/work-orders?${params.toString()}`, {
         signal: controller.signal,
-        cache: 'no-store'  // Prevent caching to always get fresh data
+        cache: 'no-store'
       })
 
       if (!response.ok) {
-        // Handle authentication errors specifically
         if (response.status === 401) {
-          // Redirect to login page for authentication errors
           window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
           return
         }
@@ -219,7 +240,6 @@ function WorkOrdersContent() {
 
       const result = await response.json()
       if (!result.success) {
-        // Handle authentication errors in response body
         if (result.error === '未授權' || result.error === '權限不足') {
           window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
           return
@@ -238,13 +258,17 @@ function WorkOrdersContent() {
       const errorMessage = err instanceof Error ? err.message : '載入工作單失敗'
       setError(new Error(errorMessage))
       setNotification({ type: 'error', message: errorMessage })
-      // Clear stale data when error occurs
       setWorkOrders([])
       setPagination({ page: 1, limit: 25, total: 0, totalPages: 0 })
     } finally {
       setIsLoading(false)
       setIsFetching(false)
       abortControllerRef.current = null
+      
+      // Restore scroll position after render completes
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedScroll)
+      })
     }
   }, [filters])
 
@@ -280,7 +304,9 @@ function WorkOrdersContent() {
     }
     
     checkAuth()
-    return () => abortControllerRef.current?.abort()
+    return () => {
+      abortControllerRef.current?.abort()
+    }
   }, [fetchWorkOrders])
 
   // Keyboard shortcuts for desktop productivity
@@ -333,18 +359,6 @@ function WorkOrdersContent() {
     
     // Auto-collapse filter panel after applying
     setShowAdvancedFilters(false)
-    
-    // Smooth scroll to table after brief delay
-    setTimeout(() => {
-      const tableWrapper = document.querySelector('[role="table"]') || document.querySelector('table')
-      if (tableWrapper) {
-        tableWrapper.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'nearest',
-          inline: 'nearest'
-        })
-      }
-    }, 150)
   }
 
   // Clear all filters
@@ -357,14 +371,14 @@ function WorkOrdersContent() {
     setDateTo('')
     setVipOnly(false)
     setLinkedOnly(undefined)
-    setShowCompleted(false)  // Reset to hide completed orders
-    setActiveSmartFilter(null) // Clear smart filter
+    setShowCompleted(false)
+    setActiveSmartFilter(null)
     const newFilters = {
       page: 1,
       limit: 25,
       sortBy: 'markedDate' as SortField,
       sortOrder: 'desc' as 'asc' | 'desc',
-      isCompleted: false  // Reset to hide completed orders
+      isCompleted: false
     }
     setFilters(newFilters)
     syncFiltersToURL(newFilters)
@@ -608,6 +622,7 @@ function WorkOrdersContent() {
               <Select
                 value={String(filters.limit)}
                 onValueChange={(value) => handleLimitChange(Number(value))}
+                onOpenChange={handleSelectOpenChange}
               >
                 <SelectTrigger className="w-[84px] h-7 border-none bg-transparent text-sm font-medium text-neutral-700 dark:text-white/75 focus:ring-0 focus:outline-none">
                   <SelectValue placeholder="筆數" />
@@ -701,6 +716,7 @@ function WorkOrdersContent() {
                         setSelectedStatuses([value as WorkOrderStatus])
                       }
                     }}
+                    onOpenChange={handleSelectOpenChange}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇狀態" />
@@ -730,6 +746,7 @@ function WorkOrdersContent() {
                         setSelectedWorkTypes([value as WorkType])
                       }
                     }}
+                    onOpenChange={handleSelectOpenChange}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇類型" />
@@ -759,6 +776,7 @@ function WorkOrdersContent() {
                         setSelectedPersons([value])
                       }
                     }}
+                    onOpenChange={handleSelectOpenChange}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇負責人" />
@@ -822,6 +840,7 @@ function WorkOrdersContent() {
                         setLinkedOnly(undefined)
                       }
                     }}
+                    onOpenChange={handleSelectOpenChange}
                   >
                     <SelectTrigger className="h-10 sm:h-11 text-xs sm:text-sm">
                       <SelectValue placeholder="選擇特殊標記" />
@@ -843,7 +862,6 @@ function WorkOrdersContent() {
                       checked={showCompleted}
                       onCheckedChange={(checked) => {
                         setShowCompleted(checked as boolean)
-                        // Auto-apply when toggled
                         const newFilters = {
                           ...filters,
                           isCompleted: (checked as boolean) ? undefined : false,
@@ -1006,20 +1024,18 @@ function WorkOrdersContent() {
       )}
 
       {/* Table - Mobile Optimized */}
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full align-middle px-2 sm:px-0">
-          <WorkOrderTable
-            workOrders={workOrders}
-            users={users}
-            isLoading={isLoading}
-            isFetching={isFetching}
-            onSort={handleSort}
-            sortBy={filters.sortBy}
-            sortOrder={filters.sortOrder}
-            onDelete={handleDeleteClick}
-            onRefresh={fetchWorkOrders}
-          />
-        </div>
+      <div className="w-full">
+        <WorkOrderTable
+          workOrders={workOrders}
+          users={users}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          onSort={handleSort}
+          sortBy={filters.sortBy}
+          sortOrder={filters.sortOrder}
+          onDelete={handleDeleteClick}
+          onRefresh={fetchWorkOrders}
+        />
       </div>
 
       {/* Pagination */}
@@ -1077,6 +1093,7 @@ function WorkOrdersContent() {
             <Select
               value={pagination.limit.toString()}
               onValueChange={(value) => handleLimitChange(parseInt(value))}
+              onOpenChange={handleSelectOpenChange}
             >
               <SelectTrigger className="w-20 h-9">
                 <SelectValue />
