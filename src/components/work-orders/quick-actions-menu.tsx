@@ -237,7 +237,15 @@ export function QuickActionsMenu({
         )}
         <span className="sr-only">操作選單</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 lg:w-56">
+      <DropdownMenuContent 
+        align="end" 
+        side="bottom"
+        alignOffset={-10}
+        sideOffset={8}
+        className="w-64 lg:w-56"
+        avoidCollisions={true}
+        collisionPadding={16}
+      >
         {/* Group 1: View/Edit */}
         <DropdownMenuItem
           onClick={(e) => {
