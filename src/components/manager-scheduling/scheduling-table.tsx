@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast-provider'
 import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
-import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus } from 'lucide-react'
+import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus, Calendar, Timer, Square } from 'lucide-react'
 import { formatDateOnly } from '@/lib/utils'
 import { SchedulingInlineEdit } from './scheduling-inline-edit'
 import { WorkOrderQuickPanel } from './work-order-quick-panel'
@@ -371,7 +371,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                       <TableHead className="w-24">負責人</TableHead>
                       <TableHead className="w-40">預計開產時間</TableHead>
                       <TableHead className="w-20">物料已齊</TableHead>
-                      <TableHead className="w-28">工作類型</TableHead>
+                      <TableHead className="w-28">狀態</TableHead>
 {canEdit && (
                         <TableHead className="sticky right-0 bg-surface-primary dark:bg-surface-primary shadow-[-4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
                           操作
@@ -466,19 +466,31 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                         </Badge>
                       </TableCell>
                       
-                      {/* Work Type */}
+                      {/* Capsule Order Status */}
                       <TableCell className="w-28">
-                        <div title={WORK_TYPE_LABELS[entry.workOrder.workType]}>
-                          <Badge 
-                            variant={
-                              entry.workOrder.workType === 'PRODUCTION' ? 'success' :
-                              entry.workOrder.workType === 'PRODUCTION_PACKAGING' ? 'info' :
-                              'outline'
-                            }
-                          >
-                            {WORK_TYPE_SHORT_LABELS[entry.workOrder.workType]}
-                          </Badge>
-                        </div>
+                        {(() => {
+                          const hasOrders = Boolean(entry.workOrder.capsulationOrder) || Boolean(entry.workOrder.productionOrder)
+                          if (!hasOrders) {
+                            return (
+                              <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">無關聯訂單</Badge>
+                            )
+                          }
+                          const inProgress = Boolean(entry.expectedProductionStartDate && new Date(entry.expectedProductionStartDate) <= new Date())
+                          const completed = false
+                          const notStarted = !completed && !inProgress
+                          return (
+                            <Badge variant="outline" className={
+                              `inline-flex items-center gap-1 text-xs ${
+                                completed ? 'text-success-700 dark:text-success-400' :
+                                inProgress ? 'text-warning-700 dark:text-warning-400' :
+                                'text-neutral-600 dark:text-white/75'
+                              }`
+                            }>
+                              {completed ? <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> : inProgress ? <Timer className="h-3.5 w-3.5" aria-hidden="true" /> : <Square className="h-3.5 w-3.5" aria-hidden="true" />}
+                              {completed ? '已完成' : inProgress ? '進行中' : '未開始'}
+                            </Badge>
+                          )
+                        })()}
                       </TableCell>
                       
                       {/* Actions */}

@@ -74,18 +74,28 @@ function SkeletonRow() {
  * Resolve capsule production order status for work order
  */
 function resolveCapsuleOrderStatus(workOrder: WorkOrder): 'inProgress' | 'notStarted' | 'completed' | 'noOrders' {
-  // If no production orders linked, return 'noOrders'
-  if (!workOrder.productionOrders || workOrder.productionOrders.length === 0) {
-    return 'noOrders'
+  // 1) If capsulationOrder exists, mirror /orders page logic exactly
+  if (workOrder.capsulationOrder) {
+    const order = workOrder.capsulationOrder
+    const hasWork = Array.isArray(order.worklogs) && order.worklogs.length > 0
+    const completed = Boolean(order.completionDate)
+    if (hasWork && !completed) return 'inProgress'
+    if (!completed) return 'notStarted'
+    return 'completed'
   }
 
-  // Use work order's own status and completion information
-  const hasWork = workOrder.productionStarted // If production has started, there's work
-  const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
+  // 2) If there are linked productionOrders but no capsulation order, we cannot see worklogs here.
+  // Fall back to a heuristic based on work order state.
+  if (workOrder.productionOrders && workOrder.productionOrders.length > 0) {
+    const hasWork = workOrder.productionStarted
+    const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
+    if (hasWork && !isCompleted) return 'inProgress'
+    if (!isCompleted) return 'notStarted'
+    return 'completed'
+  }
 
-  if (hasWork && !isCompleted) return 'inProgress'
-  if (!isCompleted) return 'notStarted'
-  return 'completed'
+  // 3) No related orders
+  return 'noOrders'
 }
 
 /**
