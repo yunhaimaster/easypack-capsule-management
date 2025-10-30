@@ -258,9 +258,9 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10"></TableHead>
-{canEdit && (
+                {canEdit && (
                   <TableHead className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
-                    優先級
+                    次序
                   </TableHead>
                 )}
                 <TableHead className="w-40">客戶名稱</TableHead>
@@ -581,7 +581,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                     <GripVertical className="h-4 w-4 text-neutral-400" />
                   )}
                   <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    優先級: {entry.priority}
+                    次序: {entry.priority}
                   </span>
                 </div>
                 <Badge 

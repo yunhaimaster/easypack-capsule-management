@@ -4404,7 +4404,7 @@ input[type="reset"],
   cursor: grabbing;
 }
 
-/* Ensure drag preview follows cursor correctly */
+/* @hello-pangea/dnd drag and drop styles */
 [data-rbd-drag-handle-draggable-id] {
   cursor: grab;
 }
@@ -4413,7 +4413,7 @@ input[type="reset"],
   cursor: grabbing;
 }
 
-/* Fix for table row drag positioning */
+/* Fix for table row drag positioning with @hello-pangea/dnd */
 [data-rbd-draggable-id] tr[data-rbd-draggable-context-id] {
   display: table !important;
 }
@@ -4427,12 +4427,14 @@ input[type="reset"],
   cursor: grabbing;
 }
 
-/* Fix for drag preview positioning - ensure it follows cursor */
+/* Fix for drag preview positioning - ensure it follows cursor correctly */
 [data-rbd-draggable-id][data-rbd-draggable-context-id] {
   z-index: 9999 !important;
   pointer-events: none !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
   border-radius: 8px !important;
+  transform: none !important;
+  position: fixed !important;
 }
 
 /* Ensure drag clone is positioned correctly */
@@ -4445,6 +4447,18 @@ input[type="reset"],
 /* Fix for nested scroll container warning */
 [data-rbd-droppable-id] {
   overflow: visible !important;
+}
+
+/* Additional fix for @hello-pangea/dnd drag preview positioning */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] table {
+  transform: none !important;
+  position: relative !important;
+}
+
+/* Fix drag preview offset issue - ensure it follows cursor properly */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] tbody tr {
+  transform: none !important;
+  position: relative !important;
 }
 
 /* Ensure the droppable area is the only scroll container */
