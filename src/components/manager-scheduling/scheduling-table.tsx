@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast-provider'
 import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
-import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus, Calendar, Timer, Square } from 'lucide-react'
+import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus, Calendar, PlayCircle, Clock } from 'lucide-react'
 import { formatDateOnly } from '@/lib/utils'
 import { SchedulingInlineEdit } from './scheduling-inline-edit'
 import { WorkOrderQuickPanel } from './work-order-quick-panel'
@@ -466,30 +466,48 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                         </Badge>
                       </TableCell>
                       
-                      {/* Capsule Order Status */}
+                      {/* Scheduling Status */}
                       <TableCell className="w-28">
                         {(() => {
+                          // No related orders
                           const hasOrders = Boolean(entry.workOrder.capsulationOrder) || Boolean(entry.workOrder.productionOrder)
                           if (!hasOrders) {
                             return (
-                              <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">無關聯訂單</Badge>
+                              <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
+                                <AlertCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                                無關聯訂單
+                              </Badge>
                             )
                           }
-                          // For now, use scheduling-based logic since capsulation order data is limited
-                          // TODO: Update API to include worklogs and completionDate in capsulation order
-                          const inProgress = Boolean(entry.expectedProductionStartDate && new Date(entry.expectedProductionStartDate) <= new Date())
-                          const completed = false // Cannot determine completion from current data structure
-                          const notStarted = !completed && !inProgress
+                          
+                          // Determine scheduling status based on available data
+                          const now = new Date()
+                          const hasDate = Boolean(entry.expectedProductionStartDate)
+                          const date = hasDate && entry.expectedProductionStartDate ? new Date(entry.expectedProductionStartDate) : null
+                          const materialsReady = entry.workOrder.productionMaterialsReady
+                          
+                          let status: 'scheduled' | 'readyToStart' | 'awaitingPreparation' = 'readyToStart'
+                          let icon = PlayCircle
+                          let label = '可開始'
+                          let className = 'text-success-700 dark:text-success-400'
+                          
+                          if (!materialsReady) {
+                            status = 'awaitingPreparation'
+                            icon = Clock
+                            label = '待準備'
+                            className = 'text-warning-700 dark:text-warning-400'
+                          } else if (hasDate && date && date > now) {
+                            status = 'scheduled'
+                            icon = Calendar
+                            label = '已排程'
+                            className = 'text-info-700 dark:text-info-400'
+                          }
+                          
+                          const Icon = icon
                           return (
-                            <Badge variant="outline" className={
-                              `inline-flex items-center gap-1 text-xs ${
-                                completed ? 'text-success-700 dark:text-success-400' :
-                                inProgress ? 'text-warning-700 dark:text-warning-400' :
-                                'text-neutral-600 dark:text-white/75'
-                              }`
-                            }>
-                              {completed ? <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> : inProgress ? <Timer className="h-3.5 w-3.5" aria-hidden="true" /> : <Square className="h-3.5 w-3.5" aria-hidden="true" />}
-                              {completed ? '已完成' : inProgress ? '進行中' : '未開始'}
+                            <Badge variant="outline" className={`inline-flex items-center gap-1 text-xs ${className}`}>
+                              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                              {label}
                             </Badge>
                           )
                         })()}
