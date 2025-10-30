@@ -702,172 +702,417 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
         />
       )}
 
+      {/* Mobile Action Bar */}
+      {entries.length > 0 && (
+        <div className="lg:hidden mb-4 flex justify-end gap-3">
+          {someExpanded && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={allExpanded ? collapseAll : expandAll}
+              className="gap-2"
+            >
+              {allExpanded ? (
+                <>
+                  <ChevronsUp className="h-4 w-4" />
+                  收起全部
+                </>
+              ) : (
+                <>
+                  <ChevronsDown className="h-4 w-4" />
+                  展開全部
+                </>
+              )}
+            </Button>
+          )}
+          {onExport && (
+            <Button 
+              onClick={onExport}
+              size="sm"
+              className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white gap-2"
+            >
+              匯出排單表
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
-        {entries.map((entry) => (
-          <Card key={entry.id} className="liquid-glass-card liquid-glass-card-elevated">
-            <div className="liquid-glass-content p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                {canEdit ? (
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-neutral-400" />
-                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                      次序: {entry.priority}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    次序: {entry.priority}
-                  </span>
-                )}
-                <Badge 
-                  variant={
-                    entry.workOrder.workType === 'PRODUCTION' ? 'success' :
-                    entry.workOrder.workType === 'PRODUCTION_PACKAGING' ? 'info' :
-                    'outline'
-                  }
-                >
-                  {WORK_TYPE_LABELS[entry.workOrder.workType]}
-                </Badge>
+        <DragDropContext 
+          onBeforeDragStart={handleBeforeDragStart}
+          onDragStart={handleDragStart} 
+          onDragEnd={handleDragEnd}
+        >
+          <Droppable droppableId="scheduling-table-mobile" isDropDisabled={!canEditPriority}>
+            {(provided, snapshot) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
+                {entries.map((entry, index) => {
+                  const isExpanded = expandedRows.has(entry.id)
+                  const processIssuesValue = entry.processIssues ?? entry.workOrder.capsulationOrder?.processIssues ?? entry.workOrder.productionOrder?.processIssues ?? ''
+                  const qualityNotesValue = entry.qualityNotes ?? entry.workOrder.capsulationOrder?.qualityNotes ?? entry.workOrder.productionOrder?.qualityNotes ?? ''
+                  const workDescriptionValue = entry.workOrder.workDescription || ''
+                  
+                  return (
+                    <Draggable
+                      key={entry.id}
+                      draggableId={entry.id}
+                      index={index}
+                      isDragDisabled={!canEditPriority}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={cn(
+                            "transition-all",
+                            snapshot.isDragging && "opacity-50 shadow-xl"
+                          )}
+                        >
+                          <Card className="liquid-glass-card liquid-glass-card-elevated">
+                            <div className="liquid-glass-content p-4 space-y-3">
+                              {/* Header Row */}
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  {/* Drag Handle */}
+                                  {canEditPriority && (
+                                    <div {...provided.dragHandleProps} className="touch-manipulation flex-shrink-0">
+                                      <div className="h-11 w-11 flex items-center justify-center rounded-lg hover:bg-surface-secondary/50 active:bg-surface-secondary transition-colors">
+                                        <GripVertical className="h-5 w-5 text-neutral-400" />
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Priority */}
+                                  <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
+                                    #{entry.priority}
+                                  </span>
+                                  
+                                  {/* Expand Toggle */}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => toggleExpand(entry.id)}
+                                    className="h-11 w-11 p-0 ml-auto flex-shrink-0"
+                                  >
+                                    {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                  </Button>
+                                </div>
+                                
+                                {/* Work Type Badge */}
+                                <Badge 
+                                  variant={
+                                    entry.workOrder.workType === 'PRODUCTION' ? 'success' :
+                                    entry.workOrder.workType === 'PRODUCTION_PACKAGING' ? 'info' :
+                                    'outline'
+                                  }
+                                  className="flex-shrink-0"
+                                >
+                                  {WORK_TYPE_SHORT_LABELS[entry.workOrder.workType]}
+                                </Badge>
+                              </div>
+                              
+                              {/* Customer Name */}
+                              <div>
+                                <h3 className="text-base font-semibold text-neutral-900 dark:text-white">
+                                  {entry.workOrder.customerName}
+                                </h3>
+                              </div>
+                              
+                              {/* Status Badge */}
+                              <div>
+                                {(() => {
+                                  // No related orders
+                                  const hasOrders = Boolean(entry.workOrder.capsulationOrder) || Boolean(entry.workOrder.productionOrder)
+                                  if (!hasOrders) {
+                                    return (
+                                      <Badge variant="outline" className="inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-white/65">
+                                        <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                        <span>無關聯訂單</span>
+                                      </Badge>
+                                    )
+                                  }
+                                  
+                                  // Determine scheduling status based on available data
+                                  const now = new Date()
+                                  const hasDate = Boolean(entry.expectedProductionStartDate)
+                                  const date = hasDate && entry.expectedProductionStartDate ? new Date(entry.expectedProductionStartDate) : null
+                                  const materialsReady = entry.workOrder.productionMaterialsReady
+                                  
+                                  let status: 'scheduled' | 'readyToStart' | 'awaitingPreparation' = 'readyToStart'
+                                  let icon = PlayCircle
+                                  let label = '可開始'
+                                  let className = 'text-success-700 dark:text-success-400'
+                                  
+                                  if (!materialsReady) {
+                                    status = 'awaitingPreparation'
+                                    icon = Clock
+                                    label = '待準備'
+                                    className = 'text-warning-700 dark:text-warning-400'
+                                  } else if (hasDate && date && date > now) {
+                                    status = 'scheduled'
+                                    icon = Calendar
+                                    label = '已排程'
+                                    className = 'text-info-700 dark:text-info-400'
+                                  }
+                                  
+                                  const Icon = icon
+                                  return (
+                                    <Badge variant="outline" className={`inline-flex items-center gap-1.5 text-xs ${className}`}>
+                                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                                      <span>{label}</span>
+                                    </Badge>
+                                  )
+                                })()}
+                              </div>
+
+                              {/* Basic Info - Always Visible */}
+                              <div className="space-y-2.5 text-sm">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-neutral-500 dark:text-neutral-500">負責人</span>
+                                  <span className="font-medium text-neutral-900 dark:text-white text-right">
+                                    {entry.workOrder.personInCharge?.nickname || 
+                                     entry.workOrder.personInCharge?.phoneE164 || 
+                                     '未指派'}
+                                  </span>
+                                </div>
+                                
+                                <div className="flex items-start justify-between gap-2">
+                                  <span className="text-neutral-500 dark:text-neutral-500 flex-shrink-0">預計開產</span>
+                                  <div className="text-right min-w-0 flex-1">
+                                    {canEditPriority ? (
+                                      <SchedulingInlineEdit
+                                        entryId={entry.id}
+                                        field="expectedProductionStartDate"
+                                        value={entry.expectedProductionStartDate || ''}
+                                        type="text"
+                                        canEdit={canEditPriority}
+                                        onSave={handleFieldEdit}
+                                        isLoading={saving.has(entry.id)}
+                                      />
+                                    ) : (
+                                      <span>{entry.expectedProductionStartDate || '未設定'}</span>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between">
+                                  <span className="text-neutral-500 dark:text-neutral-500">物料狀態</span>
+                                  <div>
+                                    {canEditSyncFields ? (
+                                      <SchedulingInlineEdit
+                                        entryId={entry.id}
+                                        field="productionMaterialsReady"
+                                        value={entry.workOrder.productionMaterialsReady}
+                                        type="checkbox"
+                                        canEdit={canEditSyncFields}
+                                        onSave={handleFieldEdit}
+                                        isLoading={saving.has(entry.id)}
+                                      />
+                                    ) : (
+                                      <Badge 
+                                        variant={entry.workOrder.productionMaterialsReady ? 'success' : 'warning'}
+                                      >
+                                        {entry.workOrder.productionMaterialsReady ? '已齊' : '未齊'}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Expanded State Content */}
+                              {isExpanded && (
+                                <>
+                                  <div className="border-t border-neutral-200 dark:border-neutral-700 my-3" />
+                                  
+                                  {/* Stats Grid */}
+                                  <div className="grid grid-cols-3 gap-3 text-sm">
+                                    <div>
+                                      <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">創建日期</span>
+                                      <div className="font-medium text-neutral-900 dark:text-white">
+                                        {formatDateOnly(entry.workOrder.createdAt)}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">生產數量</span>
+                                      <div className="font-medium text-neutral-900 dark:text-white">
+                                        {entry.workOrder.productionQuantity || 0}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">預計物料到齊</span>
+                                      <div className="font-medium text-neutral-900 dark:text-white">
+                                        {entry.workOrder.expectedProductionMaterialsDate
+                                          ? formatDateOnly(entry.workOrder.expectedProductionMaterialsDate)
+                                          : '未設定'}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Process Issues */}
+                                  {processIssuesValue && (
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                                        製程問題
+                                      </h4>
+                                      {canEditSyncFields ? (
+                                        <SchedulingInlineEdit
+                                          entryId={entry.id}
+                                          field="processIssues"
+                                          value={processIssuesValue}
+                                          type="textarea"
+                                          canEdit={canEditSyncFields}
+                                          onSave={handleFieldEdit}
+                                          isLoading={saving.has(entry.id)}
+                                        />
+                                      ) : (
+                                        <div className="text-sm text-neutral-700 dark:text-white/90 whitespace-pre-wrap leading-relaxed bg-surface-primary/30 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700">
+                                          {processIssuesValue}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Quality Notes */}
+                                  {qualityNotesValue && (
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                                        品質備註
+                                      </h4>
+                                      {canEditSyncFields ? (
+                                        <SchedulingInlineEdit
+                                          entryId={entry.id}
+                                          field="qualityNotes"
+                                          value={qualityNotesValue}
+                                          type="textarea"
+                                          canEdit={canEditSyncFields}
+                                          onSave={handleFieldEdit}
+                                          isLoading={saving.has(entry.id)}
+                                        />
+                                      ) : (
+                                        <div className="text-sm text-neutral-700 dark:text-white/90 whitespace-pre-wrap leading-relaxed bg-surface-primary/30 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700">
+                                          {qualityNotesValue}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Work Description */}
+                                  {workDescriptionValue && (
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                                        工作描述
+                                      </h4>
+                                      {canEditSyncFields ? (
+                                        <SchedulingInlineEdit
+                                          entryId={entry.id}
+                                          field="workDescription"
+                                          value={workDescriptionValue}
+                                          type="textarea"
+                                          canEdit={canEditSyncFields}
+                                          onSave={handleFieldEdit}
+                                          isLoading={saving.has(entry.id)}
+                                        />
+                                      ) : (
+                                        <div className="text-sm text-neutral-700 dark:text-white/90 whitespace-pre-wrap leading-relaxed bg-surface-primary/30 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700">
+                                          {workDescriptionValue}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Links to related orders */}
+                                  {entry.workOrder.capsulationOrder && (
+                                    <div>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-500">膠囊訂單:</span>{' '}
+                                      <Link
+                                        href={`/work-orders/${entry.workOrder.id}#capsulation`}
+                                        className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 inline-flex items-center gap-1.5 text-sm font-medium"
+                                      >
+                                        <span>查看</span>
+                                        <ExternalLink className="h-4 w-4" />
+                                      </Link>
+                                    </div>
+                                  )}
+                                  {entry.workOrder.productionOrder && !entry.workOrder.capsulationOrder && (
+                                    <div>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-500">生產訂單:</span>{' '}
+                                      <Link
+                                        href={`/orders/${entry.workOrder.productionOrder.id}`}
+                                        className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 inline-flex items-center gap-1.5 text-sm font-medium"
+                                      >
+                                        <span>查看</span>
+                                        <ExternalLink className="h-4 w-4" />
+                                      </Link>
+                                    </div>
+                                  )}
+
+                                  {/* Warning and Create Order Button if no order exists */}
+                                  {!entry.workOrder.capsulationOrder && !entry.workOrder.productionOrder && (
+                                    <div className="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg p-4">
+                                      <div className="flex items-start gap-3">
+                                        <AlertCircle className="h-5 w-5 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" />
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="text-sm font-semibold text-warning-900 dark:text-warning-200 mb-1">
+                                            此工作單尚未關聯訂單
+                                          </h4>
+                                          <p className="text-sm text-warning-700 dark:text-warning-300 mb-3">
+                                            請創建生產訂單或膠囊訂單以繼續流程。
+                                          </p>
+                                          <Button
+                                            size="sm"
+                                            onClick={() => router.push(`/orders/new?workOrderId=${entry.workOrder.id}`)}
+                                            className="bg-warning-600 hover:bg-warning-700 text-white"
+                                          >
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            創建生產訂單
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                              
+                              {/* Delete Button */}
+                              {canEdit && (
+                                <>
+                                  <div className="border-t border-neutral-200 dark:border-neutral-700 mt-3 pt-3" />
+                                  <div className="flex justify-end">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setDeleteConfirmId(entry.id)}
+                                      disabled={deleting === entry.id}
+                                      className="text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20 gap-2"
+                                    >
+                                      {deleting === entry.id ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                          刪除中...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Trash2 className="h-4 w-4" />
+                                          從排單表移除
+                                        </>
+                                      )}
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </Card>
+                        </div>
+                      )}
+                    </Draggable>
+                  )
+                })}
+                {provided.placeholder}
               </div>
-              
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">客戶:</span>{' '}
-                  <div className="inline-flex items-center gap-1">
-                    <SchedulingInlineEdit
-                      entryId={entry.id}
-                      field="customerName"
-                      value={entry.workOrder.customerName}
-                      type="text"
-                      canEdit={canEditSyncFields}
-                      onSave={handleFieldEdit}
-                      isLoading={saving.has(entry.id)}
-                    />
-                    <Link
-                      href={`/work-orders/${entry.workOrder.id}`}
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                      title="查看工作單"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                    </Link>
-                  </div>
-                </div>
-                
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">負責人:</span>{' '}
-                  {entry.workOrder.personInCharge?.nickname || 
-                   entry.workOrder.personInCharge?.phoneE164 || 
-                   '未指派'}
-                </div>
-                
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">工作類型:</span>{' '}
-                  <Badge 
-                    variant={
-                      entry.workOrder.workType === 'PRODUCTION' ? 'success' :
-                      entry.workOrder.workType === 'PRODUCTION_PACKAGING' ? 'info' :
-                      'outline'
-                    }
-                  >
-                    {WORK_TYPE_LABELS[entry.workOrder.workType]}
-                  </Badge>
-                </div>
-                
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">預計生產物料到齊日期:</span>{' '}
-                  {entry.workOrder.expectedProductionMaterialsDate
-                    ? formatDateOnly(entry.workOrder.expectedProductionMaterialsDate)
-                    : <span className="text-neutral-400 dark:text-neutral-500">未設定</span>}
-                </div>
-                
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">生產物料已齊:</span>{' '}
-                  {canEditSyncFields ? (
-                    <SchedulingInlineEdit
-                      entryId={entry.id}
-                      field="productionMaterialsReady"
-                      value={entry.workOrder.productionMaterialsReady}
-                      type="checkbox"
-                      canEdit={canEditSyncFields}
-                      onSave={handleFieldEdit}
-                      isLoading={saving.has(entry.id)}
-                    />
-                  ) : (
-                    <Badge 
-                      variant={entry.workOrder.productionMaterialsReady ? 'success' : 'warning'}
-                    >
-                      {entry.workOrder.productionMaterialsReady ? '已齊' : '未齊'}
-                    </Badge>
-                  )}
-                </div>
-                
-                <div>
-                  <span className="text-neutral-500 dark:text-neutral-500">預計開產日期:</span>{' '}
-                  <SchedulingInlineEdit
-                    entryId={entry.id}
-                    field="expectedProductionStartDate"
-                    value={entry.expectedProductionStartDate || ''}
-                    type="text"
-                    canEdit={canEditPriority}
-                    onSave={handleFieldEdit}
-                    isLoading={saving.has(entry.id)}
-                  />
-                </div>
-                
-                {entry.workOrder.capsulationOrder && (
-                  <div>
-                    <span className="text-neutral-500 dark:text-neutral-500">膠囊訂單:</span>{' '}
-                    <Link
-                      href={`/work-orders/${entry.workOrder.id}#capsulation`}
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 inline-flex items-center gap-1"
-                    >
-                      <span>查看</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </Link>
-                  </div>
-                )}
-                {entry.workOrder.productionOrder && !entry.workOrder.capsulationOrder && (
-                  <div>
-                    <span className="text-neutral-500 dark:text-neutral-500">生產訂單:</span>{' '}
-                    <Link
-                      href={`/orders/${entry.workOrder.productionOrder.id}`}
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 inline-flex items-center gap-1"
-                    >
-                      <span>查看</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </Link>
-                  </div>
-                )}
-              </div>
-              
-              {/* Mobile Actions */}
-              {canEdit && (
-                <div className="flex justify-end pt-2 border-t border-neutral-200 dark:border-neutral-700">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDeleteConfirmId(entry.id)}
-                    disabled={deleting === entry.id}
-                    className="text-danger-600 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/20"
-                  >
-                    {deleting === entry.id ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        刪除中...
-                      </>
-                    ) : (
-                      <>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        移除
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </Card>
-        ))}
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     </div>
   )
