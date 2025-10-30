@@ -4414,58 +4414,6 @@ input[type="reset"],
 }
 
 /* Fix for table row drag positioning with @hello-pangea/dnd */
-[data-rbd-draggable-id] tr[data-rbd-draggable-context-id] {
-  display: table !important;
-}
-
-/* Ensure drag handle is properly positioned */
-[data-rbd-drag-handle-draggable-id] td {
-  cursor: grab;
-}
-
-[data-rbd-drag-handle-draggable-id] td:active {
-  cursor: grabbing;
-}
-
-/* Fix for nested scroll container warning */
-[data-rbd-droppable-id] {
-  overflow: visible !important;
-}
-
-
-/* Ensure the droppable area is the only scroll container */
-[data-rbd-droppable-id] > div {
-  overflow: visible !important;
-}
-
-/* Fix drag preview positioning - remove sticky positioning from preview */
-[data-rbd-draggable-id][data-rbd-draggable-context-id] {
-  position: relative !important;
-}
-
-/* Remove sticky positioning from cells in drag preview */
-[data-rbd-draggable-id][data-rbd-draggable-context-id] td[class*="sticky"],
-[data-rbd-draggable-id][data-rbd-draggable-context-id] th[class*="sticky"] {
-  position: static !important;
-  left: auto !important;
-  right: auto !important;
-  z-index: auto !important;
-  box-shadow: none !important;
-}
-
-/* Ensure drag preview maintains table structure */
-[data-rbd-draggable-id][data-rbd-draggable-context-id] tr {
-  display: table !important;
-  width: 100% !important;
-}
-
-[data-rbd-draggable-id][data-rbd-draggable-context-id] table {
-  display: table !important;
-  width: 100% !important;
-  table-layout: fixed !important;
-}
-
-/* Fix drag preview offset calculation */
-[data-rbd-draggable-id][data-rbd-draggable-context-id] {
-  transform-origin: top left !important;
-}
+/* (Keep only cursors; avoid intrusive overrides that break DnD calculations) */
+[data-rbd-drag-handle-draggable-id] td { cursor: grab; }
+[data-rbd-drag-handle-draggable-id] td:active { cursor: grabbing; }
