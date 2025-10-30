@@ -131,7 +131,7 @@ export function WorkOrderQuickPanel({
             {WORK_TYPE_LABELS[entry.workOrder.workType]}
           </Badge>
           <span className="text-sm text-neutral-600 dark:text-neutral-400">
-            優先級: {entry.priority}
+            次序: {entry.priority}
           </span>
         </div>
 

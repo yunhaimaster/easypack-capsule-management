@@ -143,7 +143,7 @@ export function HomePageClient() {
             <h2 className="text-sm font-semibold text-neutral-600 dark:text-white/75 uppercase tracking-wider">核心功能</h2>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">

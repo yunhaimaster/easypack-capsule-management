@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest) {
     
     if (JSON.stringify(priorities) !== JSON.stringify(expectedPriorities)) {
       return NextResponse.json(
-        { success: false, error: '優先級必須是連續的整數（1, 2, 3...），且不能重複' },
+        { success: false, error: '次序必須是連續的整數（1, 2, 3...），且不能重複' },
         { status: 400 }
       )
     }

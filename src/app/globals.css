@@ -4393,3 +4393,61 @@ input[type="reset"],
     transform: none;
   }
 }
+
+/* ===== Drag and Drop Fixes ===== */
+/* Fix for @hello-pangea/dnd drag positioning issues in tables */
+[data-rbd-draggable-id] {
+  cursor: grab;
+}
+
+[data-rbd-draggable-id]:active {
+  cursor: grabbing;
+}
+
+/* Ensure drag preview follows cursor correctly */
+[data-rbd-drag-handle-draggable-id] {
+  cursor: grab;
+}
+
+[data-rbd-drag-handle-draggable-id]:active {
+  cursor: grabbing;
+}
+
+/* Fix for table row drag positioning */
+[data-rbd-draggable-id] tr[data-rbd-draggable-context-id] {
+  display: table !important;
+}
+
+/* Ensure drag handle is properly positioned */
+[data-rbd-drag-handle-draggable-id] td {
+  cursor: grab;
+}
+
+[data-rbd-drag-handle-draggable-id] td:active {
+  cursor: grabbing;
+}
+
+/* Fix for drag preview positioning - ensure it follows cursor */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] {
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+}
+
+/* Ensure drag clone is positioned correctly */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] div {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Fix for nested scroll container warning */
+[data-rbd-droppable-id] {
+  overflow: visible !important;
+}
+
+/* Ensure the droppable area is the only scroll container */
+[data-rbd-droppable-id] > div {
+  overflow: visible !important;
+}

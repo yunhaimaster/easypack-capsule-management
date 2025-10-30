@@ -3,7 +3,7 @@
  * 
  * Defines which fields can be edited by which user roles.
  * Implements selective editing permissions as requested:
- * - Manager/Admin: Can edit priority ordering and all fields
+ * - Manager/Admin: Can edit order sequence and all fields
  * - All users: Can edit fields that sync with other tables + create order link
  */
 
@@ -14,7 +14,7 @@ import { Role } from '@prisma/client'
  * 
  * Fields are categorized by their sync behavior and business importance:
  * - SYNC_FIELDS: Fields that sync with other tables (CapsulationOrder, ProductionOrder, WorkOrder)
- * - PRIORITY_FIELDS: Fields related to priority ordering (Manager/Admin only)
+ * - PRIORITY_FIELDS: Fields related to order sequence (Manager/Admin only)
  * - GENERAL_FIELDS: Other fields that don't sync (Manager/Admin only)
  */
 export const FIELD_PERMISSIONS = {
@@ -97,10 +97,10 @@ export function getEditableFields(userRole: string): string[] {
 }
 
 /**
- * Check if a user can perform priority reordering (drag-drop)
+ * Check if a user can perform order reordering (drag-drop)
  * 
  * @param userRole - User's role from session
- * @returns true if user can reorder priorities, false otherwise
+ * @returns true if user can reorder sequence, false otherwise
  */
 export function canReorderPriorities(userRole: string): boolean {
   return userRole === 'ADMIN' || userRole === 'MANAGER'
@@ -132,7 +132,7 @@ export const FIELD_NAMES: Record<keyof typeof ALL_EDITABLE_FIELDS, string> = {
   workType: '工作類型',
   
   // Priority fields
-  priority: '優先級',
+  priority: '次序',
   expectedProductionStartDate: '預計開產時間'
 }
 

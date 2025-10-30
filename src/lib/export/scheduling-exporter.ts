@@ -17,7 +17,7 @@ import { addUTF8BOM } from './encoding-utils'
  */
 export const SCHEDULING_COLUMNS = {
   // Column 1: Priority order
-  priority: '優先級',
+  priority: '次序',
   
   // Column 2: Process issues (from CapsulationOrder)
   processIssues: '製程問題',

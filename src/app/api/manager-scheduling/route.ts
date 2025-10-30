@@ -1,7 +1,7 @@
 /**
  * Manager Scheduling Table API - List & Create Operations
  * 
- * GET /api/manager-scheduling - List all scheduling entries ordered by priority
+ * GET /api/manager-scheduling - List all scheduling entries ordered by sequence
  * POST /api/manager-scheduling - Add work order to scheduling table
  */
 
@@ -20,7 +20,7 @@ export const dynamic = 'force-dynamic'
 /**
  * GET /api/manager-scheduling
  * 
- * List all scheduling entries ordered by priority ASC.
+ * List all scheduling entries ordered by sequence ASC.
  * Accessible by all authenticated users (VIEW permission).
  * 
  * Returns:

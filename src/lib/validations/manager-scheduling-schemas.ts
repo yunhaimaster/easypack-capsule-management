@@ -16,7 +16,7 @@ export const createSchedulingEntrySchema = z.object({
  * Note: createdAt is explicitly excluded - it's system-generated only
  */
 export const updateSchedulingEntrySchema = z.object({
-  priority: z.number().int().positive('優先級必須是正整數').optional(),
+  priority: z.number().int().positive('次序必須是正整數').optional(),
   processIssues: z.string().nullable().optional(),
   qualityNotes: z.string().nullable().optional(),
   expectedProductionStartDate: z.string().max(200, '預計開產日期長度不能超過200字符').nullable().optional(),
@@ -36,7 +36,7 @@ export const updateSchedulingEntrySchema = z.object({
 export const reorderSchedulingSchema = z.object({
   updates: z.array(z.object({
     id: z.string().cuid('無效的排單表ID'),
-    priority: z.number().int().positive('優先級必須是正整數')
+    priority: z.number().int().positive('次序必須是正整數')
   })).min(1, '至少需要一個更新項')
 })
 
