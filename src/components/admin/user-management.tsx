@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus, Trash2, Edit2, Phone, Calendar, Shield, Check, X, Eye } from 'lucide-react'
+import { Plus, Trash2, Edit2, Phone, Calendar, Shield, Check, X, Eye, UserCircle } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
+import { useAuth } from '@/components/auth/auth-provider'
 
 interface User {
   id: string
@@ -47,6 +48,9 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
   const [editingRole, setEditingRole] = useState<'EMPLOYEE' | 'MANAGER' | 'ADMIN'>('EMPLOYEE')
   const [editingNickname, setEditingNickname] = useState<string | null>(null)
   const [nicknameValue, setNicknameValue] = useState('')
+  const [impersonating, setImpersonating] = useState(false)
+  
+  const { isImpersonating } = useAuth()
 
   useEffect(() => {
     loadUsers()
@@ -194,6 +198,37 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
     } catch (error) {
       console.error('刪除用戶失敗:', error)
       alert('刪除用戶失敗')
+    }
+  }
+
+  const startImpersonation = async (userId: string, phone: string) => {
+    if (isImpersonating) {
+      alert('您已經在模擬身份中，請先結束當前模擬')
+      return
+    }
+
+    if (!confirm(`確定要模擬用戶 ${phone} 嗎？您將以該用戶的身份瀏覽應用程式。`)) return
+
+    try {
+      setImpersonating(true)
+      const res = await fetch('/api/admin/impersonate/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId: userId })
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        // Reload page to apply impersonation
+        window.location.reload()
+      } else {
+        alert(data.error || '模擬身份失敗')
+      }
+    } catch (error) {
+      console.error('模擬身份失敗:', error)
+      alert('模擬身份失敗')
+    } finally {
+      setImpersonating(false)
     }
   }
 
@@ -391,6 +426,16 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                     title="查看此用戶的設備和日誌"
                   >
                     <Eye className="h-4 w-4" />
+                  </button>
+                )}
+                {user.role !== 'ADMIN' && (
+                  <button
+                    onClick={() => startImpersonation(user.id, user.phoneE164)}
+                    disabled={impersonating || isImpersonating}
+                    className="p-2 text-success-600 hover:bg-success-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="模擬此用戶身份"
+                  >
+                    <UserCircle className="h-4 w-4" />
                   </button>
                 )}
                 <button

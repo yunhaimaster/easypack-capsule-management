@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
+import { getImpersonationState } from './impersonation'
 
 const SESSION_COOKIE_NAME = 'session'
 const SESSION_TTL_SHORT_HOURS = 12  // 不信任裝置：12 小時
@@ -90,6 +91,37 @@ export async function getSessionFromCookie() {
     if (session.expiresAt.getTime() < Date.now()) {
       console.log('[Session] Session expired')
       return null
+    }
+    
+    // Check for impersonation state
+    const impersonationState = await getImpersonationState()
+    
+    if (impersonationState?.isImpersonating && impersonationState.impersonatedUserId) {
+      console.log('[Session] Impersonation active, switching to target user:', impersonationState.impersonatedUserId)
+      
+      // Get the impersonated user's data
+      const impersonatedUser = await prisma.user.findUnique({
+        where: { id: impersonationState.impersonatedUserId },
+        select: {
+          id: true,
+          phoneE164: true,
+          nickname: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      })
+      
+      if (!impersonatedUser) {
+        console.error('[Session] Impersonated user not found, falling back to original session')
+        return session
+      }
+      
+      // Return session with impersonated user data
+      return {
+        ...session,
+        user: impersonatedUser
+      }
     }
     
     console.log('[Session] Valid session for user:', session.userId)

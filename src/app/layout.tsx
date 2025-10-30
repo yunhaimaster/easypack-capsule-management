@@ -8,6 +8,7 @@ import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { OfflineIndicator } from '@/hooks/use-offline'
 import { AppClientProviders } from '@/components/app-client-providers'
 import { ThemeProvider } from '@/components/theme/theme-provider'
+import { ImpersonationBanner } from '@/components/admin/impersonation-banner'
 
 const appTitle = 'Easy Health 膠囊配方管理系統'
 const appDescription = 'Easy Health 內部生產管理系統'
@@ -101,6 +102,7 @@ export default function RootLayout({
             <ErrorBoundary>
               <AuthProvider>
                 <ProtectedLayout>
+                  <ImpersonationBanner />
                   <div className="min-h-screen">
                     {children}
                   </div>

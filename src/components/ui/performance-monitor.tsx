@@ -112,7 +112,7 @@ export function PerformanceMonitor() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-black/90 text-white text-xs p-3 rounded-lg font-mono z-50 max-w-xs">
+    <div className="fixed bottom-4 right-4 bg-black/90 text-white text-xs p-3 rounded-lg font-mono z-[9998] max-w-xs hidden sm:block">
       <div className="space-y-1">
         <div className="font-bold text-primary-400 mb-2">Performance Monitor</div>
         <div>載入時間: {metrics.loadTime.toFixed(0)}ms</div>
