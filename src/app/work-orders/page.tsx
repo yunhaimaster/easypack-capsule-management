@@ -208,11 +208,22 @@ function WorkOrdersContent() {
       })
 
       if (!response.ok) {
+        // Handle authentication errors specifically
+        if (response.status === 401) {
+          // Redirect to login page for authentication errors
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+          return
+        }
         throw new Error('載入工作單失敗')
       }
 
       const result = await response.json()
       if (!result.success) {
+        // Handle authentication errors in response body
+        if (result.error === '未授權' || result.error === '權限不足') {
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+          return
+        }
         throw new Error(result.error || '載入工作單失敗')
       }
 
@@ -238,9 +249,37 @@ function WorkOrdersContent() {
   }, [filters])
 
 
-  // Fetch on mount and when filters change
+  // Check authentication on mount
   useEffect(() => {
-    fetchWorkOrders()
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+          cache: 'no-store'
+        })
+        
+        if (!response.ok) {
+          // User is not authenticated, redirect to login
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+          return
+        }
+        
+        const result = await response.json()
+        if (!result.success) {
+          // Authentication failed, redirect to login
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+          return
+        }
+        
+        // User is authenticated, proceed with data fetching
+        fetchWorkOrders()
+      } catch (error) {
+        console.error('[WorkOrders] Auth check failed:', error)
+        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+      }
+    }
+    
+    checkAuth()
     return () => abortControllerRef.current?.abort()
   }, [fetchWorkOrders])
 
