@@ -146,6 +146,21 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
   }, [onEntriesChange, showToast])
 
   // Drag and drop handlers for @hello-pangea/dnd
+  const handleBeforeDragStart = useCallback((start: any) => {
+    if (!canEdit) return
+    
+    // Lock cell dimensions to prevent layout shifts during drag
+    const draggedElement = document.querySelector(`[data-rbd-draggable-id='${start.draggableId}']`)
+    if (draggedElement) {
+      const cells = draggedElement.querySelectorAll('td')
+      cells.forEach((cell) => {
+        const computedStyle = window.getComputedStyle(cell)
+        cell.style.width = computedStyle.width
+        cell.style.boxSizing = 'border-box'
+      })
+    }
+  }, [canEdit])
+
   const handleDragStart = useCallback(() => {
     if (!canEdit) return
     
@@ -275,7 +290,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                 )}
               </TableRow>
             </TableHeader>
-            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <DragDropContext onBeforeDragStart={handleBeforeDragStart} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
               <Droppable droppableId="scheduling-table" isDropDisabled={!canEditPriority}>
                 {(provided, snapshot) => (
                   <TableBody ref={provided.innerRef} {...provided.droppableProps}>
@@ -321,10 +336,8 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
 
                       {canEdit && (
                         <TableCell className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20">
-                          <div className="flex items-center gap-2">
-                            <div {...provided.dragHandleProps} className="cursor-move">
-                              <GripVertical className="h-4 w-4 text-neutral-400" />
-                            </div>
+                          <div {...provided.dragHandleProps} className="flex items-center gap-2 cursor-move">
+                            <GripVertical className="h-4 w-4 text-neutral-400" />
                             <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                               {entry.priority}
                             </span>
@@ -576,14 +589,18 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
           <Card key={entry.id} className="liquid-glass-card liquid-glass-card-elevated">
             <div className="liquid-glass-content p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {canEdit && (
+                {canEdit ? (
+                  <div className="flex items-center gap-2">
                     <GripVertical className="h-4 w-4 text-neutral-400" />
-                  )}
+                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      次序: {entry.priority}
+                    </span>
+                  </div>
+                ) : (
                   <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     次序: {entry.priority}
                   </span>
-                </div>
+                )}
                 <Badge 
                   variant={
                     entry.workOrder.workType === 'PRODUCTION' ? 'success' :
