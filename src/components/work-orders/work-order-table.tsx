@@ -90,34 +90,6 @@ function StatusBadge({ status }: { status: string | null }) {
   )
 }
 
-/**
- * Work type badge component with color coding
- */
-function WorkTypeBadge({ workType, productionStarted }: { workType: string; productionStarted: boolean }) {
-  // Color-code by work type
-  const variantMap: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
-    'PACKAGING': 'default',              // Blue - 包裝
-    'PRODUCTION': 'success',             // Green - 生產
-    'PRODUCTION_PACKAGING': 'warning',   // Orange - 生產+包裝
-    'WAREHOUSING': 'info'                // Purple - 倉務
-  }
-  
-  const variant = variantMap[workType] || 'info'
-  
-  return (
-    <div className="flex items-center gap-1.5">
-      <Badge variant={variant} className="text-xs">
-        {WORK_TYPE_LABELS[workType as keyof typeof WORK_TYPE_LABELS]}
-      </Badge>
-      {productionStarted && (
-        <span className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400">
-          <Factory className="h-3 w-3" />
-          生產中
-        </span>
-      )}
-    </div>
-  )
-}
 
 /**
  * Delivery date cell component - neutral display
@@ -311,8 +283,8 @@ export function WorkOrderTable({
                 </th>
                 <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
                   <SortableHeader
-                    label="工作類型"
-                    field="workType"
+                    label="狀態"
+                    field="status"
                     currentSort={sortBy}
                     currentOrder={sortOrder}
                     onSort={onSort}
@@ -440,12 +412,9 @@ export function WorkOrderTable({
                       </div>
                     </td>
 
-                    {/* Work Type + Production Started */}
+                    {/* Status */}
                     <td className="py-3 px-3 text-sm align-top">
-                      <WorkTypeBadge
-                        workType={workOrder.workType}
-                        productionStarted={workOrder.productionStarted}
-                      />
+                      <StatusBadge status={workOrder.status} />
                     </td>
 
                     {/* Linked Encapsulation Orders */}
@@ -643,16 +612,12 @@ export function WorkOrderTable({
                           <span>{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
                         </div>
                         
-                        {/* Work Type + Badges */}
+                        {/* Status + Badges */}
                         <div className="flex items-center gap-2 flex-wrap">
-                          <WorkTypeBadge
-                            workType={workOrder.workType}
-                            productionStarted={workOrder.productionStarted}
-                          />
+                          <StatusBadge status={workOrder.status} />
                           {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
                           {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
                           {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
-                          {workOrder.status && <StatusBadge status={workOrder.status} />}
                         </div>
                       </div>
                     </div>
