@@ -4432,6 +4432,38 @@ input[type="reset"],
   overflow: visible !important;
 }
 
+/* CRITICAL: Fix drag preview positioning to follow cursor */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  transform: none !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+}
+
+/* Ensure drag preview table follows cursor properly */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] table {
+  transform: none !important;
+  position: relative !important;
+  margin: 0 !important;
+}
+
+/* Fix drag preview table row positioning */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] tbody tr {
+  transform: none !important;
+  position: relative !important;
+  display: table !important;
+  width: 100% !important;
+}
+
+/* Ensure drag preview cells are properly sized */
+[data-rbd-draggable-id][data-rbd-draggable-context-id] td {
+  transform: none !important;
+  position: relative !important;
+  display: table-cell !important;
+}
+
 /* Ensure the droppable area is the only scroll container */
 [data-rbd-droppable-id] > div {
   overflow: visible !important;
