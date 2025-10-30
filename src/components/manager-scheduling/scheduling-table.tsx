@@ -705,26 +705,24 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
       {/* Mobile Action Bar */}
       {entries.length > 0 && (
         <div className="lg:hidden mb-4 flex justify-end gap-3">
-          {someExpanded && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={allExpanded ? collapseAll : expandAll}
-              className="gap-2"
-            >
-              {allExpanded ? (
-                <>
-                  <ChevronsUp className="h-4 w-4" />
-                  收起全部
-                </>
-              ) : (
-                <>
-                  <ChevronsDown className="h-4 w-4" />
-                  展開全部
-                </>
-              )}
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={allExpanded ? collapseAll : expandAll}
+            className="gap-2"
+          >
+            {allExpanded ? (
+              <>
+                <ChevronsUp className="h-4 w-4" />
+                收起全部
+              </>
+            ) : (
+              <>
+                <ChevronsDown className="h-4 w-4" />
+                展開全部
+              </>
+            )}
+          </Button>
           {onExport && (
             <Button 
               onClick={onExport}
