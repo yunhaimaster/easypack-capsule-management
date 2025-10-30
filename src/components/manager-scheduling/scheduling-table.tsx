@@ -267,33 +267,33 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
           </div>
         )}
         
-        <div className="overflow-x-auto">
-          <TableWrapper>
-            <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10"></TableHead>
-                {canEdit && (
-                  <TableHead className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
-                    次序
-                  </TableHead>
-                )}
-                <TableHead className="w-40">客戶名稱</TableHead>
-                <TableHead className="w-24">負責人</TableHead>
-                <TableHead className="w-40">預計開產時間</TableHead>
-                <TableHead className="w-20">物料已齊</TableHead>
-                <TableHead className="w-28">工作類型</TableHead>
+        <DragDropContext onBeforeDragStart={handleBeforeDragStart} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <Droppable droppableId="scheduling-table" isDropDisabled={!canEditPriority}>
+            {(provided, snapshot) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className="overflow-x-auto">
+                <TableWrapper>
+                  <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-10"></TableHead>
+                      {canEdit && (
+                        <TableHead className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
+                          次序
+                        </TableHead>
+                      )}
+                      <TableHead className="w-40">客戶名稱</TableHead>
+                      <TableHead className="w-24">負責人</TableHead>
+                      <TableHead className="w-40">預計開產時間</TableHead>
+                      <TableHead className="w-20">物料已齊</TableHead>
+                      <TableHead className="w-28">工作類型</TableHead>
 {canEdit && (
-                  <TableHead className="sticky right-0 bg-surface-primary dark:bg-surface-primary shadow-[-4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
-                    操作
-                  </TableHead>
-                )}
-              </TableRow>
-            </TableHeader>
-            <DragDropContext onBeforeDragStart={handleBeforeDragStart} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-              <Droppable droppableId="scheduling-table" isDropDisabled={!canEditPriority}>
-                {(provided, snapshot) => (
-                  <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                        <TableHead className="sticky right-0 bg-surface-primary dark:bg-surface-primary shadow-[-4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
+                          操作
+                        </TableHead>
+                      )}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {entries.map((entry, index) => {
                       const isExpanded = expandedRows.has(entry.id)
                       const processIssuesValue = entry.processIssues ?? entry.workOrder.capsulationOrder?.processIssues ?? entry.workOrder.productionOrder?.processIssues ?? ''
@@ -552,12 +552,12 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                     })}
                     {provided.placeholder}
                   </TableBody>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </Table>
-        </TableWrapper>
-        </div>
+                  </Table>
+                </TableWrapper>
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
 
       {/* Quick View Panel */}
