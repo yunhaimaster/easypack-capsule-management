@@ -374,8 +374,8 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
         }
         
         showToast({
-          title: '訂單創建成功',
-          description: workOrderId ? '已自動關聯到工作單' : undefined,
+          title: '膠囊訂單創建成功',
+          description: workOrderId ? '已自動關聯到父工作單' : undefined,
           variant: 'default'
         })
         

@@ -189,7 +189,7 @@ export function HomePageClient() {
                 <div className="flex items-center justify-between">
                   <IconContainer icon={FileText} variant="primary" size="md" />
                   <div className="text-right space-y-1">
-                    <h3 className="text-sm font-semibold text-primary-600">查看膠囊訂單</h3>
+                    <h3 className="text-sm font-semibold text-primary-600">查看膠囊訂單（工作單子訂單）</h3>
                     <p className="text-xs text-primary-500/70">管理所有生產訂單</p>
                   </div>
                 </div>

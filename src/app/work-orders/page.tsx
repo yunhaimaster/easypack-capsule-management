@@ -584,7 +584,7 @@ function WorkOrdersContent() {
                   工作單管理
                 </Text.Primary>
                 <Text.Secondary className="text-xs md:text-xs mt-0.5">
-                  統一工作單系統 - 包裝、生產、倉務全流程管理
+                  工作單管理（主訂單）- 可包含多個膠囊生產訂單
                 </Text.Secondary>
               </div>
             </div>

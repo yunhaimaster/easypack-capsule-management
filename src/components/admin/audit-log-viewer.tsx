@@ -40,11 +40,11 @@ const actionNames: Record<string, string> = {
   ROLE_UPDATED: '角色更新',
   
   // Production Orders
-  ORDER_CREATED: '創建訂單',
-  ORDER_VIEWED: '查看訂單',
-  ORDER_UPDATED: '更新訂單',
-  ORDER_DELETED: '刪除訂單',
-  ORDER_EXPORTED: '導出訂單',
+  ORDER_CREATED: '創建膠囊訂單',
+  ORDER_VIEWED: '查看膠囊訂單',
+  ORDER_UPDATED: '更新膠囊訂單',
+  ORDER_DELETED: '刪除膠囊訂單',
+  ORDER_EXPORTED: '導出膠囊訂單',
   
   // Work Orders
   WORK_ORDER_CREATED: '創建工作單',

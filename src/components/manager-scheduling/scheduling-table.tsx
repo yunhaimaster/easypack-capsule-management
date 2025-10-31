@@ -566,7 +566,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                             return (
                               <Badge variant="outline" className="text-xs text-neutral-500 dark:text-white/65">
                                 <AlertCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
-                                無關聯訂單
+                                無關聯膠囊訂單
                               </Badge>
                             )
                           }
@@ -733,7 +733,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                   <AlertCircle className="h-5 w-5 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" />
                                   <div className="flex-1">
                                     <h4 className="text-sm font-semibold text-warning-900 dark:text-warning-200 mb-1">
-                                      此工作單尚未關聯訂單
+                                      此工作單尚未關聯膠囊訂單
                                     </h4>
                                     <p className="text-sm text-warning-700 dark:text-warning-300 mb-3">
                                       請創建生產訂單或膠囊訂單以繼續流程。
@@ -959,7 +959,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                     return (
                                       <Badge variant="outline" className="inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-white/65">
                                         <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                                        <span>無關聯訂單</span>
+                                        <span>無關聯膠囊訂單</span>
                                       </Badge>
                                     )
                                   }
@@ -1185,7 +1185,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                         <AlertCircle className="h-5 w-5 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" />
                                         <div className="flex-1 min-w-0">
                                           <h4 className="text-sm font-semibold text-warning-900 dark:text-warning-200 mb-1">
-                                            此工作單尚未關聯訂單
+                                            此工作單尚未關聯膠囊訂單
                                           </h4>
                                           <p className="text-sm text-warning-700 dark:text-warning-300 mb-3">
                                             請創建生產訂單或膠囊訂單以繼續流程。

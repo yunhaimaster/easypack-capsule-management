@@ -45,8 +45,9 @@ export function OrdersPageClient() {
             <div className="flex items-center gap-4">
               <IconContainer icon={Users} variant="secondary" size="md" className="shadow-[0_12px_30px_rgba(34,211,238,0.25)]" />
               <div>
-                <h1 className="text-lg md:text-lg font-semibold text-neutral-800 dark:text-white/95 tracking-tight">膠囊訂單管理</h1>
-                <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">掌握所有膠囊生產訂單狀態、搜尋篩選與匯出報表</p>
+                <h1 className="text-lg md:text-lg font-semibold text-neutral-800 dark:text-white/95 tracking-tight">膠囊訂單管理（工作單子訂單）</h1>
+                <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">管理屬於工作單的膠囊生產訂單，包含狀態追蹤、搜尋篩選與匯出報表</p>
+                <p className="text-xs md:text-xs text-neutral-500 dark:text-white/60 mt-1">此列表顯示膠囊訂單，每個訂單都屬於一個工作單</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
@@ -61,7 +62,7 @@ export function OrdersPageClient() {
           orders={orders}
           pageData={{
             currentPage: '/orders',
-            pageDescription: '生產記錄管理頁面 - 查看和管理所有膠囊生產訂單',
+            pageDescription: '生產記錄管理頁面 - 查看和管理所有膠囊生產訂單（每個訂單都屬於一個工作單）',
             timestamp: new Date().toISOString(),
             ordersCount: orders.length,
             hasCurrentOrder: false,

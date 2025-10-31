@@ -424,6 +424,9 @@ export default function WorkOrderDetailPage() {
             </div>
           </CardHeader>
           <CardContent>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">
+              此工作單包含以下膠囊訂單：
+            </p>
             <div className="space-y-2">
               {workOrder.productionOrders.map((order: { id: string; productName: string; customerName: string; productionQuantity: number }) => (
                 <div key={order.id} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg">
@@ -445,7 +448,7 @@ export default function WorkOrderDetailPage() {
                     onClick={() => router.push(`/orders/${order.id}`)}
                   >
                     <ArrowLeft className="h-4 w-4 mr-1 rotate-180" />
-                    查看
+                    查看膠囊訂單
                   </Button>
                 </div>
               ))}
