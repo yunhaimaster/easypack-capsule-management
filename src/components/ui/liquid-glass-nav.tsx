@@ -157,8 +157,8 @@ export function LiquidGlassNav({
             {processedLinks.map((link) => (
               <div key={link.href}>
                 {link.children ? (
-                  <div className="space-y-1">
-                    <div className="px-4 py-3 text-sm font-semibold text-neutral-600 dark:text-white/75 bg-neutral-50/50 border-b border-neutral-200/50">
+                  <div className="space-y-0.5">
+                    <div className="px-4 py-2.5 text-xs font-semibold text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
                       {link.label}
                     </div>
                     {link.children.map((child) => {
@@ -167,11 +167,11 @@ export function LiquidGlassNav({
                         <Link
                           key={child.href}
                           href={child.href as Route}
-                          className="liquid-glass-nav-link flex items-center pl-8 py-3 bg-white/30 hover:bg-white/50 transition-colors duration-200"
+                          className="liquid-glass-nav-link flex items-center pl-8 py-2.5 text-sm text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-white transition-colors duration-200"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {IconComponent && (
-                            <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-white/65" />
+                            <IconComponent className="h-4 w-4 mr-3 text-neutral-500 dark:text-neutral-400" />
                           )}
                           <span>{child.label}</span>
                         </Link>
@@ -181,7 +181,7 @@ export function LiquidGlassNav({
                 ) : (
                   <Link
                     href={link.href as Route}
-                    className={`liquid-glass-nav-link ${link.active ? 'active' : ''} px-4 py-3`}
+                    className={`liquid-glass-nav-link ${link.active ? 'active' : ''} text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-white`}
                     onClick={(event) => {
                       setIsMobileMenuOpen(false)
                       if (link.label === '登出') {
@@ -197,7 +197,7 @@ export function LiquidGlassNav({
                 )}
               </div>
             ))}
-            <div className="px-4 py-3 border-t border-neutral-200/50">
+            <div className="px-4 py-3 border-t border-neutral-200/30 dark:border-neutral-700/30 mt-1">
               <ThemeToggle />
             </div>
           </div>

@@ -1732,6 +1732,14 @@
   --liquid-glass-nav-saturate: 180%;
 }
 
+.dark {
+  --liquid-glass-nav-bg: rgba(30, 28, 26, 0.75);
+  --liquid-glass-nav-border: rgba(255, 255, 255, 0.1);
+  --liquid-glass-nav-shadow: rgba(0, 0, 0, 0.5);
+  --liquid-glass-nav-text: rgba(255, 255, 255, 0.95);
+  --liquid-glass-nav-text-secondary: rgba(255, 255, 255, 0.75);
+}
+
 
 /* Base Liquid Glass Navigation */
 .liquid-glass-nav {
@@ -1860,13 +1868,13 @@
 
 /* Mobile Navigation Menu */
 .liquid-glass-nav-mobile {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 10000;
@@ -1885,6 +1893,7 @@
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   overflow: hidden;
   font-size: 0.875rem;
+  background: transparent;
 }
 
 @media (min-width: 640px) {
@@ -1912,18 +1921,6 @@
   border-radius: 2px;
 }
 
-/* Mobile Navigation */
-.liquid-glass-nav-mobile {
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 /* Mobile Navigation - Show toggle and hide desktop links */
 @media (max-width: 639px) {
   .liquid-glass-nav-content {
@@ -1946,19 +1943,21 @@
   .liquid-glass-nav-mobile {
     display: flex !important;
     align-items: stretch;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
   }
   
   .liquid-glass-nav-link {
     padding: 0.75rem 1rem;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.12);
     text-align: center;
     transition: all 0.25s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    border: none;
   }
   
   .liquid-glass-nav-link:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: transparent;
   }
 }
 
