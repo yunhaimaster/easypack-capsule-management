@@ -123,9 +123,23 @@ export function UpdateCard({
       aria-live={position === 'top' && !isDismissed ? 'polite' : 'off'}
       aria-label="系統更新通知"
     >
-      <div className="liquid-glass-content p-6">
-        {/* Header with icon, version info, and dismiss button */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      <div className="liquid-glass-content p-6 relative">
+        {/* Close button - absolutely positioned top-right */}
+        {dismissible && position === 'top' && !isDismissed && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDismiss}
+            className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors z-10"
+            aria-label="關閉更新通知（按 Esc 鍵也可關閉）"
+            title="關閉更新通知"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+        
+        {/* Header with icon, version info, and link */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pr-10 sm:pr-0">
           <div className="flex items-center gap-3">
             <IconContainer 
               icon={CalendarDays} 
@@ -143,26 +157,13 @@ export function UpdateCard({
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <Link 
               href="/history" 
               className="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-300 hover:underline"
             >
               查看完整歷史
             </Link>
-            
-            {dismissible && position === 'top' && !isDismissed && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDismiss}
-                className="h-8 w-8 p-0 hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors"
-                aria-label="關閉更新通知（按 Esc 鍵也可關閉）"
-                title="關閉更新通知"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         </div>
         
