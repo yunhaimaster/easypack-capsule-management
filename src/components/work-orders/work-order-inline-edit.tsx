@@ -22,7 +22,7 @@ interface WorkOrderInlineEditProps {
   value: string | number | boolean | null
   type: 'text' | 'textarea' | 'number' | 'date' | 'select'
   canEdit: boolean
-  onSave: (workOrderId: string, field: string, value: string | number | boolean | null) => Promise<void>
+  onSave: (value: string | number | boolean | null) => Promise<void>
   isLoading: boolean
   className?: string
   options?: Array<{ value: string; label: string }> // For select type
@@ -75,7 +75,7 @@ export function WorkOrderInlineEdit({
       return
     }
 
-    await onSave(workOrderId, field, editValue)
+    await onSave(editValue)
     setIsEditing(false)
     setHasChanges(false)
   }
@@ -103,7 +103,7 @@ export function WorkOrderInlineEdit({
     setHasChanges(newValue !== value)
     // Auto-save select changes immediately
     if (canEdit && !isLoading) {
-      onSave(workOrderId, field, newValue).then(() => {
+      onSave(newValue).then(() => {
         setIsEditing(false)
         setHasChanges(false)
       })
