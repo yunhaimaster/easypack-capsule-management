@@ -235,10 +235,13 @@ export function WorkOrderTable({
     setSaving(prev => new Set(prev).add(workOrderId))
     
     try {
+      // Convert 'UNASSIGNED' to null for database fields
+      const processedValue = value === 'UNASSIGNED' ? null : value
+      
       const response = await fetch(`/api/work-orders/${workOrderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: value })
+        body: JSON.stringify({ [field]: processedValue })
       })
 
       if (!response.ok) {
