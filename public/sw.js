@@ -1,8 +1,9 @@
 // Easy Health Service Worker
-// Version: 2.2.5
+// Version: 3.1.0
+// Strategy: Stale-While-Revalidate (always show latest, cache for speed)
 
-const CACHE_NAME = 'easy-health-v2.2.5';
-const RUNTIME_CACHE = 'easy-health-runtime';
+const CACHE_NAME = 'easy-health-v3.1.0';
+const RUNTIME_CACHE = 'easy-health-runtime-v3.1.0';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -70,61 +71,104 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network first strategy for HTML pages
+  // Network-First with fast timeout for HTML pages
+  // Always try to get latest content, but use cache if network is slow
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Clone and cache successful responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
+      Promise.race([
+        // Try network first (with 2 second timeout for fast response)
+        fetch(request)
+          .then((response) => {
+            // Only cache successful, non-redirect responses
+            if (response && response.status === 200 && response.type === 'basic') {
+              const responseClone = response.clone();
+              caches.open(RUNTIME_CACHE).then((cache) => {
+                cache.put(request, responseClone);
+              });
+            }
+            return response;
+          })
+          .catch(() => {
+            // Network fetch failed, will fallback to cache
+            return null;
+          }),
+        // Timeout after 2 seconds
+        new Promise((resolve) => {
+          setTimeout(() => resolve(null), 2000);
         })
-        .catch(() => {
-          // Fallback to cache if network fails
+      ])
+        .then((networkResponse) => {
+          // If network succeeded within timeout, use it
+          if (networkResponse && networkResponse.ok) {
+            return networkResponse;
+          }
+          
+          // Network failed or timed out, try cache
           return caches.match(request)
             .then((cachedResponse) => {
               if (cachedResponse) {
+                // Return cache but trigger background update
+                // This ensures user sees content quickly, but gets fresh version next time
+                fetch(request)
+                  .then((freshResponse) => {
+                    if (freshResponse && freshResponse.ok) {
+                      const responseClone = freshResponse.clone();
+                      caches.open(RUNTIME_CACHE).then((cache) => {
+                        cache.put(request, responseClone);
+                      });
+                    }
+                  })
+                  .catch(() => {
+                    // Background update failed, cache is still valid
+                  });
                 return cachedResponse;
               }
-              // Return offline page if available
-              return caches.match('/');
+              
+              // No cache either, return offline page
+              return caches.match('/') || new Response('Offline', { 
+                status: 503,
+                headers: { 'Content-Type': 'text/html' }
+              });
             });
         })
     );
     return;
   }
 
-  // Cache first strategy for static assets
+  // Stale-While-Revalidate for static assets (JS, CSS, images)
+  // Returns cache immediately, updates in background
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
+        // Always fetch fresh version in background
+        const fetchPromise = fetch(request)
+          .then((response) => {
+            // Only cache successful responses
+            if (response && response.status === 200) {
+              const responseClone = response.clone();
+              caches.open(RUNTIME_CACHE).then((cache) => {
+                cache.put(request, responseClone);
+              });
+            }
+            return response;
+          })
+          .catch(() => {
+            // Network failed, cache remains valid
+          });
+
+        // Return cached version immediately if available
         if (cachedResponse) {
+          // Update cache in background (non-blocking)
+          fetchPromise.catch(() => {
+            // Silently handle background update failures
+          });
           return cachedResponse;
         }
 
-        return fetch(request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200) {
-              return response;
-            }
-
-            // Clone and cache
-            const responseClone = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => {
-              cache.put(request, responseClone);
-            });
-
-            return response;
-          })
-          .catch((error) => {
-            // Silently handle fetch errors to avoid console noise
-            console.warn('[SW] Fetch failed, falling back to cache:', request.url);
+        // No cache, wait for network response
+        return fetchPromise
+          .catch(() => {
+            // Final fallback - return cache even if stale
             return caches.match(request);
           });
       })

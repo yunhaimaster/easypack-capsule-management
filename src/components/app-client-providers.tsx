@@ -8,18 +8,13 @@ import { QueryProvider } from '@/components/providers/query-provider'
 
 export function AppClientProviders({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // TEMPORARILY DISABLED: Unregister existing service worker to fix auth
-    // The SW was breaking fetch() for /api/auth/* routes
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => {
-          registration.unregister()
-          console.log('[PWA] Service Worker unregistered temporarily for auth fix')
-        })
-      })
-    }
+    // Enable service worker with improved caching strategy
+    // API routes are explicitly bypassed in sw.js, so auth routes work correctly
+    import('@/lib/pwa-utils').then(({ registerServiceWorker }) => {
+      registerServiceWorker()
+    })
     
-    // Setup PWA install prompt (keeping this for future re-enable)
+    // Setup PWA install prompt
     setupPWAInstallPrompt()
   }, [])
 

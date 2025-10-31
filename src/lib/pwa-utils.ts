@@ -12,41 +12,79 @@ export function registerServiceWorker() {
 
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('/sw.js', {
+        // Update immediately when new version is available
+        updateViaCache: 'none'
+      })
       .then((registration) => {
-        // Service Worker registered successfully
+        console.log('[PWA] Service Worker registered:', registration.scope)
 
-        // Check for updates every hour
-        setInterval(() => {
-          registration.update()
-        }, 60 * 60 * 1000)
+        // Check for updates on page load and every 5 minutes
+        const checkForUpdates = () => {
+          registration.update().catch((error) => {
+            console.warn('[PWA] Update check failed:', error)
+          })
+        }
+
+        // Check immediately
+        checkForUpdates()
+
+        // Check every 5 minutes (more frequent for better UX)
+        const updateInterval = setInterval(checkForUpdates, 5 * 60 * 1000)
 
         // Handle updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing
           if (!newWorker) return
 
+          console.log('[PWA] New service worker found, installing...')
+
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New version available - auto reload after 3 seconds
-              setTimeout(() => {
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // New version available, wait for activation
+                console.log('[PWA] New version available, activating...')
                 newWorker.postMessage({ type: 'SKIP_WAITING' })
-                window.location.reload()
-              }, 3000)
+              } else {
+                // First time installation
+                console.log('[PWA] Service Worker installed for the first time')
+              }
+            } else if (newWorker.state === 'activated') {
+              // New version activated, reload page
+              console.log('[PWA] New version activated, reloading page...')
+              window.location.reload()
             }
           })
         })
+
+        // Clean up interval when page unloads
+        window.addEventListener('beforeunload', () => {
+          clearInterval(updateInterval)
+        })
       })
-      .catch(() => {
-        // Service Worker registration failed silently
+      .catch((error) => {
+        console.error('[PWA] Service Worker registration failed:', error)
       })
 
-    // Listen for service worker controlling the page
+    // Listen for service worker controlling the page (for immediate updates)
     let refreshing = false
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return
       refreshing = true
+      console.log('[PWA] Service worker controller changed, reloading...')
       window.location.reload()
+    })
+
+    // Also check when app becomes visible (user returns to app)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        // App became visible, check for updates
+        navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration) {
+            registration.update()
+          }
+        })
+      }
     })
   })
 }
