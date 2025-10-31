@@ -46,6 +46,16 @@ const actionNames: Record<string, string> = {
   ORDER_DELETED: '刪除訂單',
   ORDER_EXPORTED: '導出訂單',
   
+  // Work Orders
+  WORK_ORDER_CREATED: '創建工作單',
+  WORK_ORDER_VIEWED: '查看工作單',
+  WORK_ORDER_UPDATED: '更新工作單',
+  WORK_ORDER_DELETED: '刪除工作單',
+  WORK_ORDER_EXPORTED: '導出工作單',
+  WORK_ORDER_IMPORTED: '導入工作單',
+  WORK_ORDER_BULK_UPDATED: '批量更新工作單',
+  WORK_ORDER_STATUS_CHANGED: '工作單狀態變更',
+  
   // Recipes
   RECIPE_CREATED: '創建配方',
   RECIPE_VIEWED: '查看配方',
@@ -91,6 +101,16 @@ const actionIcons: Record<string, { icon: any; variant: 'success' | 'danger' | '
   ORDER_UPDATED: { icon: Edit, variant: 'warning' },
   ORDER_DELETED: { icon: Trash, variant: 'danger' },
   ORDER_EXPORTED: { icon: Download, variant: 'info' },
+  
+  // Work Orders
+  WORK_ORDER_CREATED: { icon: Plus, variant: 'success' },
+  WORK_ORDER_VIEWED: { icon: Eye, variant: 'info' },
+  WORK_ORDER_UPDATED: { icon: Edit, variant: 'warning' },
+  WORK_ORDER_DELETED: { icon: Trash, variant: 'danger' },
+  WORK_ORDER_EXPORTED: { icon: Download, variant: 'info' },
+  WORK_ORDER_IMPORTED: { icon: Plus, variant: 'info' },
+  WORK_ORDER_BULK_UPDATED: { icon: Edit, variant: 'warning' },
+  WORK_ORDER_STATUS_CHANGED: { icon: Edit, variant: 'warning' },
   
   // Recipes
   RECIPE_CREATED: { icon: Plus, variant: 'success' },
@@ -146,6 +166,7 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
     productName: '產品',
     jobNumber: '訂單編號',
     workDescription: '工作描述',
+    personInChargeName: '負責人',
     
     // Counts and quantities
     quantity: '數量',
@@ -174,7 +195,7 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
 
   // Prioritize displaying names over IDs
   // If both sourceId and sourceName exist, only show sourceName
-  const nameFields = ['sourceName', 'targetName', 'productName', 'customerName', 'jobNumber']
+  const nameFields = ['sourceName', 'targetName', 'productName', 'customerName', 'jobNumber', 'personInChargeName']
   const idFields = ['sourceId', 'targetId', 'orderId', 'workOrderId', 'productionOrderId', 'worklogId', 'recipeId', 'previousLink']
 
   // First pass: Process name fields (and their paired IDs)
@@ -353,7 +374,7 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
         </div>
         
         <div className="text-sm text-neutral-600 dark:text-white/75">
-          共 {logs.length} 條記錄
+          本頁顯示 {logs.length} 條記錄
         </div>
       </div>
 

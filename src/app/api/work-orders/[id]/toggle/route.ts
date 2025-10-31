@@ -99,6 +99,8 @@ export async function PATCH(
       userAgent: request.headers.get('user-agent') || 'unknown',
       metadata: {
         workOrderId,
+        customerName: updatedWorkOrder.customerName,
+        personInChargeName: updatedWorkOrder.personInCharge?.nickname || updatedWorkOrder.personInCharge?.phoneE164 || '未指定',
         field,
         newValue: value
       }

@@ -206,6 +206,14 @@ export async function PATCH(
         id: true, 
         status: true, 
         jobNumber: true,
+        customerName: true,
+        personInCharge: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        },
         capsulationOrder: {
           select: { id: true }
         }
@@ -442,6 +450,8 @@ export async function PATCH(
       metadata: {
         workOrderId: updatedWorkOrder.id,
         jobNumber: updatedWorkOrder.jobNumber,
+        customerName: updatedWorkOrder.customerName,
+        personInChargeName: updatedWorkOrder.personInCharge?.nickname || updatedWorkOrder.personInCharge?.phoneE164 || '未指定',
         statusChanged: validatedData.status ? {
           from: existingWorkOrder.status,
           to: validatedData.status
@@ -519,13 +529,21 @@ export async function DELETE(
 
     const { id } = await context.params
 
-    // Check if work order exists
+    // Check if work order exists (include customer and personInCharge for audit)
     const existingWorkOrder = await prisma.unifiedWorkOrder.findUnique({
       where: { id },
       select: { 
         id: true, 
         jobNumber: true,
-        status: true
+        customerName: true,
+        status: true,
+        personInCharge: {
+          select: {
+            id: true,
+            nickname: true,
+            phoneE164: true
+          }
+        }
       }
     })
 
@@ -554,6 +572,8 @@ export async function DELETE(
       metadata: {
         workOrderId: existingWorkOrder.id,
         jobNumber: existingWorkOrder.jobNumber,
+        customerName: existingWorkOrder.customerName,
+        personInChargeName: existingWorkOrder.personInCharge?.nickname || existingWorkOrder.personInCharge?.phoneE164 || '未指定',
         status: existingWorkOrder.status
       }
     })

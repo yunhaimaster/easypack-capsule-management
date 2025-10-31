@@ -568,6 +568,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         workOrderId: workOrder.id,
         jobNumber: workOrder.jobNumber,
+        customerName: workOrder.customerName,
+        personInChargeName: workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定',
         workType: workOrder.workType,
         hasCapsulationOrder: !!validatedData.capsulationOrder
       }

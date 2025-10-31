@@ -43,7 +43,7 @@ export function AdminPageClient() {
           <Card className="max-w-md p-8 text-center">
             <IconContainer icon={Shield} variant="danger" size="lg" className="mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95 mb-2">需要管理權限</h2>
-            <p className="text-neutral-600 dark:text-white/75 mb-6">您沒有權限訪問此頁面</p>
+            <p className="text-neutral-600 dark:text-white/75 mb-6">此頁面僅限管理員或經理訪問</p>
             <button
               onClick={() => router.push('/')}
               className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
@@ -67,7 +67,7 @@ export function AdminPageClient() {
             <IconContainer icon={Shield} variant="primary" size="md" />
             <h1 className="text-2xl font-bold text-neutral-800 dark:text-white/95">系統管理</h1>
           </div>
-          <p className="text-neutral-600 dark:text-white/75">管理用戶、監控設備、查看審計日誌</p>
+          <p className="text-neutral-600 dark:text-white/75">管理用戶帳號、監控登入會話、查看系統審計日誌</p>
         </div>
 
         {/* Tabs */}
