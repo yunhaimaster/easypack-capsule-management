@@ -145,28 +145,24 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
 
   // Field label mappings (Chinese)
   const fieldLabels: Record<string, string> = {
-    // Order-related
-    orderId: '訂單ID',
-    workOrderId: '工作單ID',
-    productionOrderId: '膠囊訂單ID',
-    worklogId: '工作日誌ID',
-    recipeId: '配方ID',
-    
-    // Link-related
-    sourceId: '來源ID',
-    sourceType: '來源類型',
-    sourceName: '來源',
-    targetId: '目標ID',
-    targetType: '目標類型',
-    targetName: '目標',
-    previousLink: '先前關聯ID',
-    
-    // Names and readable fields
+    // Names and readable fields (HIGH PRIORITY - shown first)
     customerName: '客戶',
     productName: '產品',
     jobNumber: '訂單編號',
     workDescription: '工作描述',
     personInChargeName: '負責人',
+    
+    // Link-related names
+    sourceName: '來源',
+    sourceType: '來源類型',
+    targetName: '目標',
+    targetType: '目標類型',
+    
+    // Status and types
+    status: '狀態',
+    role: '角色',
+    actionType: '操作類型',
+    contextPage: '頁面',
     
     // Counts and quantities
     quantity: '數量',
@@ -175,15 +171,23 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
     worklogCount: '工作日誌數量',
     workUnits: '工作單位',
     headcount: '人數',
+    productionOrderCount: '關聯訂單數',
     
-    // Status and types
-    role: '角色',
-    actionType: '操作類型',
-    contextPage: '頁面',
-    
-    // Other
+    // Other meaningful fields
     messageLength: '訊息長度',
     orderCount: '訂單數量',
+    autoLinked: '自動關聯',
+    autoCreated: '自動創建',
+    
+    // System IDs (will be filtered out)
+    orderId: '訂單ID',
+    workOrderId: '工作單ID',
+    productionOrderId: '膠囊訂單ID',
+    worklogId: '工作日誌ID',
+    recipeId: '配方ID',
+    sourceId: '來源ID',
+    targetId: '目標ID',
+    previousLink: '先前關聯ID',
   }
 
   // Type labels
@@ -193,18 +197,26 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
     'production-order': '膠囊訂單',
   }
 
-  // Prioritize displaying names over IDs
-  // If both sourceId and sourceName exist, only show sourceName
-  const nameFields = ['sourceName', 'targetName', 'productName', 'customerName', 'jobNumber', 'personInChargeName']
-  const idFields = ['sourceId', 'targetId', 'orderId', 'workOrderId', 'productionOrderId', 'worklogId', 'recipeId', 'previousLink']
+  // System IDs that should NEVER be displayed (completely filtered out)
+  const idFields = ['sourceId', 'targetId', 'orderId', 'workOrderId', 'productionOrderId', 'worklogId', 'recipeId', 'previousLink', 'userId', 'id']
+  
+  // High-priority name fields (shown first, and hide their corresponding IDs)
+  const nameFields = [
+    'customerName', 'productName', 'jobNumber', 'personInChargeName', 
+    'sourceName', 'targetName', 'workDescription'
+  ]
+  
+  // Status and type fields
+  const statusFields = ['status', 'role', 'actionType']
+  
+  // Count and quantity fields
+  const countFields = ['quantity', 'productionQuantity', 'ingredientCount', 'worklogCount', 'productionOrderCount', 'orderCount', 'headcount']
 
-  // First pass: Process name fields (and their paired IDs)
+  // First pass: Process high-priority name fields
   nameFields.forEach(nameField => {
     if (metadata[nameField] !== undefined && metadata[nameField] !== null) {
       const value = metadata[nameField]
       let label = fieldLabels[nameField] || nameField
-      
-      // Format value based on field
       let displayValue = String(value)
       
       // Special formatting for source/target in link actions
@@ -217,17 +229,15 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
       result.push({ label, value: displayValue })
       processed.add(nameField)
       
-      // Mark corresponding ID field as processed (we won't show it since we have the name)
+      // Mark corresponding ID fields as processed (never show IDs when we have names)
       if (nameField === 'sourceName') {
         processed.add('sourceId')
       } else if (nameField === 'targetName') {
         processed.add('targetId')
       } else if (nameField === 'productName') {
-        // productName can come from orderId or productionOrderId context
         processed.add('orderId')
         processed.add('productionOrderId')
       } else if (nameField === 'customerName') {
-        // Usually paired with orderId
         processed.add('orderId')
       } else if (nameField === 'jobNumber') {
         processed.add('workOrderId')
@@ -235,11 +245,39 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
     }
   })
 
-  // Second pass: Process remaining fields (excluding already processed IDs)
+  // Second pass: Process status and type fields
+  statusFields.forEach(field => {
+    if (metadata[field] !== undefined && metadata[field] !== null && !processed.has(field)) {
+      const value = metadata[field]
+      let displayValue = String(value)
+      
+      // Format type fields
+      if (field.endsWith('Type') && typeLabels[displayValue]) {
+        displayValue = typeLabels[displayValue]
+      }
+      
+      result.push({ label: fieldLabels[field] || field, value: displayValue })
+      processed.add(field)
+    }
+  })
+
+  // Third pass: Process count and quantity fields
+  countFields.forEach(field => {
+    if (metadata[field] !== undefined && metadata[field] !== null && !processed.has(field)) {
+      const value = metadata[field]
+      const displayValue = typeof value === 'number' ? value.toLocaleString('zh-HK') : String(value)
+      result.push({ label: fieldLabels[field] || field, value: displayValue })
+      processed.add(field)
+    }
+  })
+
+  // Fourth pass: Process remaining meaningful fields (excluding all IDs)
   Object.entries(metadata).forEach(([key, value]) => {
     if (processed.has(key)) return
     if (value === null || value === undefined) return
-
+    // NEVER show system IDs
+    if (idFields.includes(key)) return
+    
     let label = fieldLabels[key] || key
     let displayValue: string
 
@@ -247,17 +285,11 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
     if (typeof value === 'object') {
       displayValue = JSON.stringify(value)
     } else if (typeof value === 'number') {
-      // Format numbers with commas
       displayValue = value.toLocaleString('zh-HK')
     } else if (typeof value === 'boolean') {
       displayValue = value ? '是' : '否'
     } else {
       displayValue = String(value)
-      
-      // Truncate long IDs (show last 8 chars)
-      if (idFields.includes(key) && displayValue.length > 20) {
-        displayValue = `...${displayValue.slice(-8)}`
-      }
       
       // Format type fields
       if (key.endsWith('Type') && typeLabels[displayValue]) {

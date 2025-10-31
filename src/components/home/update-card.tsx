@@ -62,7 +62,7 @@ export function UpdateCard({
   
   // Select features based on mode
   const features = compact 
-    ? CURRENT_VERSION.features.slice(0, 3) // Top 3 for compact
+    ? CURRENT_VERSION.features.slice(0, 5) // Top 5 for compact
     : CURRENT_VERSION.features // All features for full view
   
   /**
@@ -139,15 +139,16 @@ export function UpdateCard({
         )}
         
         {/* Header with icon, version info, and link */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pr-10 sm:pr-0">
-          <div className="flex items-center gap-3">
+        {/* pr-12 on mobile (48px) for close button, pr-14 on desktop (56px) to prevent overlap */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pr-12 sm:pr-14">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <IconContainer 
               icon={CalendarDays} 
               variant="primary" 
               size="md"
               className="flex-shrink-0"
             />
-            <div>
+            <div className="min-w-0">
               <h3 className="text-base font-semibold text-neutral-800 dark:text-white/95">
                 {CURRENT_VERSION.date} · {CURRENT_VERSION.type}
               </h3>
@@ -157,10 +158,11 @@ export function UpdateCard({
             </div>
           </div>
           
-          <div className="flex items-center">
+          {/* Link container with flex-shrink-0 to prevent compression */}
+          <div className="flex items-center flex-shrink-0 mt-2 sm:mt-0">
             <Link 
               href="/history" 
-              className="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-300 hover:underline"
+              className="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-300 hover:underline whitespace-nowrap"
             >
               查看完整歷史
             </Link>

@@ -123,7 +123,7 @@ export async function GET(
     // Get audit context
     const auditContext = await getUserContextFromRequest(request)
 
-    // Log view action
+    // Log view action with meaningful information (no system IDs)
     await logAudit({
       action: AuditAction.WORK_ORDER_VIEWED,
       userId: session.userId,
@@ -131,8 +131,17 @@ export async function GET(
       ip: auditContext.ip,
       userAgent: auditContext.userAgent,
       metadata: {
-        workOrderId: workOrder.id,
-        jobNumber: workOrder.jobNumber
+        // Meaningful fields only - no system IDs
+        jobNumber: workOrder.jobNumber,
+        customerName: workOrder.customerName,
+        personInChargeName: workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定',
+        status: workOrder.status || '未設定',
+        workDescription: workOrder.workDescription || null,
+        // Show product name if linked to capsule order
+        productName: workOrder.capsulationOrder?.productName || workOrder.productionOrders?.[0]?.productName || null,
+        productionQuantity: workOrder.productionQuantity || workOrder.capsulationOrder?.productionQuantity || null,
+        // Counts
+        productionOrderCount: workOrder.productionOrders?.length || 0
       }
     })
 
@@ -457,7 +466,8 @@ export async function PATCH(
     // Get audit context
     const auditContext = await getUserContextFromRequest(request)
 
-    // Log audit action
+    // Log audit action with meaningful information (no system IDs)
+    // Use existingWorkOrder for product info since updatedWorkOrder doesn't include relations
     await logAudit({
       action: AuditAction.WORK_ORDER_UPDATED,
       userId: session.userId,
@@ -465,12 +475,13 @@ export async function PATCH(
       ip: auditContext.ip,
       userAgent: auditContext.userAgent,
       metadata: {
-        workOrderId: updatedWorkOrder.id,
+        // Meaningful fields only - no system IDs
         jobNumber: updatedWorkOrder.jobNumber,
         customerName: updatedWorkOrder.customerName,
         personInChargeName: updatedWorkOrder.personInCharge?.nickname || updatedWorkOrder.personInCharge?.phoneE164 || '未指定',
+        status: updatedWorkOrder.status || '未設定',
         statusChanged: validatedData.status ? {
-          from: existingWorkOrder.status,
+          from: existingWorkOrder.status || '未設定',
           to: validatedData.status
         } : undefined
       }
