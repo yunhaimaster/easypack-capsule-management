@@ -344,6 +344,9 @@ export async function PATCH(
       if (validatedData.isUrgent !== undefined) workOrderUpdateData.isUrgent = validatedData.isUrgent
       if (validatedData.productionStarted !== undefined) workOrderUpdateData.productionStarted = validatedData.productionStarted
       if (validatedData.isCompleted !== undefined) workOrderUpdateData.isCompleted = validatedData.isCompleted
+      
+      // 備註
+      if (validatedData.notes !== undefined) workOrderUpdateData.notes = validatedData.notes
 
       // If status is being updated, set metadata
       if (validatedData.status !== undefined) {

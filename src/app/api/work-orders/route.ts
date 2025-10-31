@@ -283,6 +283,9 @@ export async function GET(request: NextRequest) {
           // Description
           workDescription: true,
           
+          // Notes
+          notes: true,
+          
           // NEW: Include linked production orders (1:many)
           productionOrders: {
             select: {

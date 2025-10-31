@@ -40,6 +40,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 import { QuickActionsMenu } from './quick-actions-menu'
 import { useToast } from '@/components/ui/toast-provider'
+import { EditableNotesCell } from './editable-notes-cell'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
@@ -345,6 +346,9 @@ export function WorkOrderTable({
                     onSort={onSort}
                   />
                 </th>
+                <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm">
+                  備註
+                </th>
                 <th className="text-left py-3 px-3 font-medium text-neutral-900 dark:text-white/95 text-sm hidden xl:table-cell">
                   關聯膠囊訂單
                 </th>
@@ -377,7 +381,7 @@ export function WorkOrderTable({
                 </>
               ) : workOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-8 text-neutral-500 dark:text-white/65">
+                  <td colSpan={10} className="text-center py-8 text-neutral-500 dark:text-white/65">
                     沒有找到工作單
                   </td>
                 </tr>
@@ -469,6 +473,17 @@ export function WorkOrderTable({
                     {/* Capsule Order Status */}
                     <td className="py-3 px-3 text-sm align-top">
                       <CapsuleOrderStatusBadge workOrder={workOrder} />
+                    </td>
+
+                    {/* Notes - Multi-line text field */}
+                    <td 
+                      className="py-3 px-3 text-sm align-top max-w-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <EditableNotesCell
+                        workOrderId={workOrder.id}
+                        currentNotes={workOrder.notes}
+                      />
                     </td>
 
                     {/* Linked Encapsulation Orders */}

@@ -113,6 +113,9 @@ export const updateWorkOrderSchema = z.object({
   // 工作描述
   workDescription: z.string().min(1).trim().optional(),
   
+  // 備註
+  notes: z.string().max(5000).trim().optional().nullable(),
+  
   // 關聯數據
   capsulationOrder: z.object({
     productName: z.string().min(1).max(200).trim().optional(),
