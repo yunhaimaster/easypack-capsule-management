@@ -912,7 +912,10 @@ function WorkOrdersContent() {
                   <button
                     onClick={() => {
                       setSearchKeyword('')
-                      setFilters(prev => ({ ...prev, keyword: undefined, page: 1 }))
+                      const newFilters = { ...filters, keyword: undefined, page: 1 }
+                      setFilters(newFilters)
+                      syncFiltersToURL(newFilters)
+                      fetchWorkOrders(newFilters)
                     }}
                     className="hover:text-info-900 transition-apple"
                     aria-label="清除關鍵字篩選"
@@ -928,11 +931,14 @@ function WorkOrdersContent() {
                   <button
                     onClick={() => {
                       setSelectedStatuses(prev => prev.filter(s => s !== status))
-                      setFilters(prev => ({
-                        ...prev,
-                        status: prev.status?.filter(s => s !== status),
+                      const newFilters = {
+                        ...filters,
+                        status: filters.status?.filter(s => s !== status),
                         page: 1
-                      }))
+                      }
+                      setFilters(newFilters)
+                      syncFiltersToURL(newFilters)
+                      fetchWorkOrders(newFilters)
                     }}
                     className="hover:text-info-900 transition-apple"
                     aria-label={`清除${status ? WORK_ORDER_STATUS_LABELS[status] : '進行中'}篩選`}
@@ -948,11 +954,14 @@ function WorkOrdersContent() {
                   <button
                     onClick={() => {
                       setSelectedWorkTypes(prev => prev.filter(t => t !== type))
-                      setFilters(prev => ({
-                        ...prev,
-                        workType: prev.workType?.filter(t => t !== type),
+                      const newFilters = {
+                        ...filters,
+                        workType: filters.workType?.filter(t => t !== type),
                         page: 1
-                      }))
+                      }
+                      setFilters(newFilters)
+                      syncFiltersToURL(newFilters)
+                      fetchWorkOrders(newFilters)
                     }}
                     className="hover:text-success-900 transition-apple"
                     aria-label={`清除${WORK_TYPE_LABELS[type]}篩選`}
@@ -968,7 +977,10 @@ function WorkOrdersContent() {
                   <button
                     onClick={() => {
                       setVipOnly(false)
-                      setFilters(prev => ({ ...prev, isVip: undefined, page: 1 }))
+                      const newFilters = { ...filters, isVip: undefined, page: 1 }
+                      setFilters(newFilters)
+                      syncFiltersToURL(newFilters)
+                      fetchWorkOrders(newFilters)
                     }}
                     className="hover:text-warning-900 transition-apple"
                     aria-label="清除VIP篩選"
@@ -984,7 +996,10 @@ function WorkOrdersContent() {
                   <button
                     onClick={() => {
                       setLinkedOnly(undefined)
-                      setFilters(prev => ({ ...prev, hasLinkedCapsulation: undefined, page: 1 }))
+                      const newFilters = { ...filters, hasLinkedCapsulation: undefined, page: 1 }
+                      setFilters(newFilters)
+                      syncFiltersToURL(newFilters)
+                      fetchWorkOrders(newFilters)
                     }}
                     className="hover:text-info-900 transition-apple"
                     aria-label="清除關聯狀態篩選"

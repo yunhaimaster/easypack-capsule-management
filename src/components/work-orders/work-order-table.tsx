@@ -11,7 +11,7 @@
  * - Quick Actions dropdown menu
  */
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { WorkOrder, User } from '@/types/work-order'
@@ -20,6 +20,9 @@ import { Badge } from '@/components/ui/badge'
 import { Text } from '@/components/ui/text'
 import { TableWrapper } from '@/components/ui/table-wrapper'
 import { OrderLinkBadge } from '@/components/ui/order-link-badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
   ArrowUpDown,
   ArrowUp,
@@ -34,7 +37,11 @@ import {
   ExternalLink,
   Timer,
   Square,
-  Link2
+  Link2,
+  ChevronDown,
+  ChevronUp,
+  ChevronsDown,
+  ChevronsUp
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
@@ -219,6 +226,63 @@ export function WorkOrderTable({
   const [quickPanelWorkOrder, setQuickPanelWorkOrder] = useState<WorkOrder | null>(null)
   const [isQuickPanelOpen, setIsQuickPanelOpen] = useState(false)
   const [saving, setSaving] = useState<Set<string>>(new Set())
+  
+  // Expandable state for mobile cards
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  
+  const toggleExpand = useCallback((workOrderId: string, event?: React.MouseEvent<HTMLButtonElement>) => {
+    // Store scroll position BEFORE state update (like Select fix)
+    const savedScroll = window.scrollY
+    
+    // Update state
+    setExpandedRows(prev => {
+      const next = new Set(prev)
+      if (next.has(workOrderId)) {
+        next.delete(workOrderId)
+      } else {
+        next.add(workOrderId)
+      }
+      return next
+    })
+    
+    // Restore scroll position after DOM update (like Select fix)
+    // Use requestAnimationFrame to ensure it happens after browser's focus scroll
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: savedScroll,
+        left: 0,
+        behavior: 'instant' as ScrollBehavior
+      })
+      
+      // Double-check after a short delay (in case browser scroll happens later)
+      setTimeout(() => {
+        if (window.scrollY !== savedScroll) {
+          window.scrollTo({
+            top: savedScroll,
+            left: 0,
+            behavior: 'instant' as ScrollBehavior
+          })
+        }
+      }, 10)
+    })
+    
+    // Prevent button from maintaining focus (which can cause scroll)
+    if (event?.currentTarget) {
+      event.currentTarget.blur()
+    }
+  }, [])
+
+  const allExpanded = useMemo(() => {
+    return workOrders.length > 0 && expandedRows.size === workOrders.length
+  }, [workOrders.length, expandedRows.size])
+
+  const expandAll = useCallback(() => {
+    setExpandedRows(new Set(workOrders.map(wo => wo.id)))
+  }, [workOrders])
+
+  const collapseAll = useCallback(() => {
+    setExpandedRows(new Set())
+  }, [])
   
   // Open quick panel from row click
   const handleRowClick = (workOrder: WorkOrder) => {
@@ -708,27 +772,48 @@ export function WorkOrderTable({
         </TableWrapper>
       </div>
 
-      {/* Mobile/Tablet view - will be updated in next step */}
+      {/* Mobile Action Bar */}
+      {workOrders.length > 0 && (
+        <div className="lg:hidden mb-4 flex justify-end gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={allExpanded ? collapseAll : expandAll}
+            className="gap-2"
+          >
+            {allExpanded ? (
+              <>
+                <ChevronsUp className="h-4 w-4" />
+                收起全部
+              </>
+            ) : (
+              <>
+                <ChevronsDown className="h-4 w-4" />
+                展開全部
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* Mobile/Tablet view - Expandable Cards */}
       <div className="lg:hidden">
-        <div className="space-y-3">
+        <div className="space-y-4">
           {(isLoading || isFetching) ? (
             <>
               {[...Array(5)].map((_, i) => (
-                <div key={`skeleton-${i}`} className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700">
-                  {/* Customer name skeleton */}
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  {/* Job number skeleton */}
-                  <Skeleton className="h-4 w-1/3 mb-3" />
-                  {/* Delivery date skeleton */}
-                  <Skeleton className="h-5 w-2/3 mb-2" />
-                  {/* Person in charge skeleton */}
-                  <Skeleton className="h-4 w-1/2 mb-2" />
-                  {/* Badges skeleton */}
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                  </div>
-                </div>
+                <Card key={`skeleton-${i}`} className="liquid-glass-card liquid-glass-card-elevated">
+                  <CardContent className="liquid-glass-content p-4">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/3 mb-3" />
+                    <Skeleton className="h-5 w-2/3 mb-2" />
+                    <Skeleton className="h-4 w-1/2 mb-2" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-20" />
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </>
           ) : workOrders.length === 0 ? (
@@ -744,160 +829,315 @@ export function WorkOrderTable({
               </Text.Secondary>
             </div>
           ) : (
-            workOrders.map((workOrder) => (
-              <div
-                key={workOrder.id}
-                className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer mobile-card"
-                onClick={() => handleRowClick(workOrder)}
-              >
-                {/* Header Section */}
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex-1 min-w-0">
-                    {/* Customer Name - LARGE and Clickable */}
-                    <div className="group mb-1">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          router.push(`/work-orders/${workOrder.id}`)
+            workOrders.map((workOrder) => {
+              const isExpanded = expandedRows.has(workOrder.id)
+              
+              return (
+                <Card
+                  key={workOrder.id}
+                  className="liquid-glass-card liquid-glass-card-elevated transition-apple"
+                >
+                  <CardContent className="liquid-glass-content p-4 space-y-3">
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {/* Expand Toggle */}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            toggleExpand(workOrder.id, e)
+                          }}
+                          className="h-11 w-11 p-0 flex-shrink-0"
+                          aria-label={isExpanded ? "收起詳情" : "展開詳情"}
+                          tabIndex={0}
+                        >
+                          {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                        </Button>
+                        
+                        {/* Status Badge */}
+                        <div className="flex-shrink-0">
+                          <CapsuleOrderStatusBadge workOrder={workOrder} />
+                        </div>
+                      </div>
+                      
+                      {/* Quick Actions */}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <QuickActionsMenu
+                          workOrder={workOrder}
+                          onDelete={onDelete}
+                          onStatusChange={handleStatusChange}
+                          onToggleMaterialReady={handleToggleMaterialReady}
+                          onToggleProductionStarted={handleToggleProductionStarted}
+                          onRefresh={onRefresh}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Customer Name - Inline Editable */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <WorkOrderInlineEdit
+                        workOrderId={workOrder.id}
+                        field="customerName"
+                        value={workOrder.customerName}
+                        type="text"
+                        canEdit={true}
+                        onSave={async (value) => {
+                          await handleFieldSave(workOrder.id, 'customerName', value)
                         }}
-                        className="text-base font-semibold text-neutral-900 dark:text-white/95 hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer underline decoration-dotted underline-offset-4 transition-colors text-left flex items-center gap-1.5 truncate w-full"
-                        title={`點擊查看 ${workOrder.customerName} 的詳細信息`}
-                      >
-                        {workOrder.customerName}
-                        <ExternalLink className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                      </button>
+                        isLoading={saving.has(workOrder.id)}
+                        className="text-base font-semibold"
+                      />
                     </div>
                     
-                    {/* Job Number - Small, gray */}
-                    <p className="text-xs text-neutral-500 dark:text-white/65">
-                      {workOrder.jobNumber || '無編號'}
-                    </p>
-                  </div>
-                  
-                  {/* Quick Actions - Right side */}
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <QuickActionsMenu
-                      workOrder={workOrder}
-                      onDelete={onDelete}
-                      onStatusChange={handleStatusChange}
-                      onToggleMaterialReady={handleToggleMaterialReady}
-                      onToggleProductionStarted={handleToggleProductionStarted}
-                      onRefresh={onRefresh}
-                    />
-                  </div>
-                </div>
-
-                {/* Two-Column Info Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-3">
-                  {/* Left Column */}
-                  <div className="space-y-2">
-                    {/* Delivery Date */}
-                    {workOrder.requestedDeliveryDate && (
-                      <div className="flex items-center gap-1.5 text-sm text-neutral-700 dark:text-white/85">
-                        <Calendar className="h-3.5 w-3.5 shrink-0" />
-                        <span className="font-medium">
-                          {new Date(workOrder.requestedDeliveryDate).toLocaleDateString('zh-HK', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Person in charge */}
-                    <div className="flex items-center gap-1.5 text-sm text-neutral-700 dark:text-white/85">
-                      <UserIcon className="h-3.5 w-3.5 text-neutral-500 dark:text-white/65 shrink-0" />
-                      <span className="truncate">{workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}</span>
+                    {/* Job Number - Inline Editable */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <WorkOrderInlineEdit
+                        workOrderId={workOrder.id}
+                        field="jobNumber"
+                        value={workOrder.jobNumber || ''}
+                        type="text"
+                        canEdit={true}
+                        onSave={async (value) => {
+                          await handleFieldSave(workOrder.id, 'jobNumber', value)
+                        }}
+                        isLoading={saving.has(workOrder.id)}
+                        className="text-xs text-neutral-500 dark:text-white/65"
+                      />
                     </div>
-                    
-                    {/* Work Type Badge */}
-                    <Badge variant="info" className="text-xs w-fit">
-                      {WORK_TYPE_LABELS[workOrder.workType]}
-                    </Badge>
-                    
-                    {/* Production Started Indicator - Only show when production has really started */}
-                    {hasProductionStarted(workOrder) && (
-                      <div className="flex items-center gap-1 text-xs text-warning-700 dark:text-warning-400">
-                        <Factory className="h-3 w-3" />
-                        <span>生產中</span>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Right Column */}
-                  <div className="space-y-2">
-                    {/* Production Quantity */}
-                    {workOrder.productionQuantity && (
-                      <div className="text-xs text-neutral-700 dark:text-white/85">
-                        生產: {workOrder.productionQuantity}{workOrder.productionQuantityStat || '個'}
-                      </div>
-                    )}
-                    
-                    {/* Packaging Quantity */}
-                    {workOrder.packagingQuantity && (
-                      <div className="text-xs text-neutral-700 dark:text-white/85">
-                        包裝: {workOrder.packagingQuantity}{workOrder.packagingQuantityStat || '個'}
-                      </div>
-                    )}
-                    
-                    {/* Production Materials Status */}
-                    <div className="flex items-center gap-1 text-xs">
-                      {workOrder.productionMaterialsReady ? (
-                        <>
-                          <CheckCircle className="h-3 w-3 text-success-600" />
-                          <span className="text-success-700 dark:text-success-400">生產物料齊</span>
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="h-3 w-3 text-neutral-400" />
-                          <span className="text-neutral-500 dark:text-white/65">生產物料未齊</span>
-                        </>
+                    {/* Basic Info - Always Visible */}
+                    <div className="space-y-2.5 text-sm">
+                      {/* Delivery Date */}
+                      {workOrder.requestedDeliveryDate && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500 flex-shrink-0">要求交貨期</span>
+                          <span className="font-medium text-neutral-900 dark:text-white text-right">
+                            {new Date(workOrder.requestedDeliveryDate).toLocaleDateString('zh-HK', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit'
+                            })}
+                          </span>
+                        </div>
                       )}
-                    </div>
-                    
-                    {/* Packaging Materials Status */}
-                    <div className="flex items-center gap-1 text-xs">
-                      {workOrder.packagingMaterialsReady ? (
-                        <>
-                          <CheckCircle className="h-3 w-3 text-success-600" />
-                          <span className="text-success-700 dark:text-success-400">包裝物料齊</span>
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="h-3 w-3 text-neutral-400" />
-                          <span className="text-neutral-500 dark:text-white/65">包裝物料未齊</span>
-                        </>
+                      
+                      {/* Person in Charge - Inline Editable */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-neutral-500 dark:text-neutral-500 flex-shrink-0">負責人</span>
+                        <div className="text-right min-w-0 flex-1" onClick={(e) => e.stopPropagation()}>
+                          <WorkOrderInlineEdit
+                            workOrderId={workOrder.id}
+                            field="personInChargeId"
+                            value={workOrder.personInChargeId || 'UNASSIGNED'}
+                            type="select"
+                            canEdit={true}
+                            options={[
+                              { value: 'UNASSIGNED', label: '未指定' },
+                              ...users.map(user => ({ 
+                                value: user.id, 
+                                label: user.nickname || user.phoneE164 
+                              }))
+                            ]}
+                            onSave={async (value) => {
+                              await handleFieldSave(workOrder.id, 'personInChargeId', value)
+                            }}
+                            isLoading={saving.has(workOrder.id)}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Work Type Badge */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-neutral-500 dark:text-neutral-500">工作類型</span>
+                        <Badge variant="info" className="text-xs">
+                          {WORK_TYPE_LABELS[workOrder.workType]}
+                        </Badge>
+                      </div>
+                      
+                      {/* Production Started Indicator */}
+                      {hasProductionStarted(workOrder) && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500">狀態</span>
+                          <div className="flex items-center gap-1 text-xs text-warning-700 dark:text-warning-400">
+                            <Factory className="h-3 w-3" />
+                            <span>生產中</span>
+                          </div>
+                        </div>
                       )}
+                      
+                      {/* Production Materials Status */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
+                        <div className="flex items-center gap-1 text-xs">
+                          {workOrder.productionMaterialsReady ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
+                              <span className="text-success-700 dark:text-success-400">已齊</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
+                              <span className="text-neutral-500 dark:text-white/65">未齊</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Packaging Materials Status */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
+                        <div className="flex items-center gap-1 text-xs">
+                          {workOrder.packagingMaterialsReady ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
+                              <span className="text-success-700 dark:text-success-400">已齊</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
+                              <span className="text-neutral-500 dark:text-white/65">未齊</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Work Description Section */}
-                {workOrder.workDescription && (
-                  <div 
-                    className="text-xs text-neutral-600 dark:text-white/75 line-clamp-2 mb-3"
-                    title={workOrder.workDescription}
-                  >
-                    {workOrder.workDescription}
-                  </div>
-                )}
+                    {/* Badges Row */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
+                      {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
+                      {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
+                      {workOrder.isCompleted && <Badge variant="success" className="text-xs">✓ 已完成</Badge>}
+                    </div>
 
-                {/* Badges Row */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  {workOrder.isCustomerServiceVip && <Badge variant="warning" className="text-xs">客服VIP</Badge>}
-                  {workOrder.isBossVip && <Badge variant="danger" className="text-xs">老闆VIP</Badge>}
-                  {workOrder.isUrgent && <Badge variant="danger" className="text-xs">⚡ 加急</Badge>}
-                  {workOrder.isCompleted && <Badge variant="success" className="text-xs">✓ 已完成</Badge>}
-                  {workOrder.productionOrders && workOrder.productionOrders.length > 0 && (
-                    <Badge variant="secondary" className="inline-flex items-center gap-1 text-xs">
-                      <Link2 className="h-3 w-3" />
-                      {workOrder.productionOrders.length}個關聯訂單
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ))
+                    {/* Expanded State Content */}
+                    {isExpanded && (
+                      <>
+                        <div className="border-t border-neutral-200 dark:border-neutral-700 my-3" />
+                        
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-3 text-sm">
+                          <div>
+                            <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">創建日期</span>
+                            <div className="font-medium text-neutral-900 dark:text-white">
+                              {workOrder.markedDate
+                                ? new Date(workOrder.markedDate).toLocaleDateString('zh-HK', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                  })
+                                : '-'}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">生產數量</span>
+                            <div className="font-medium text-neutral-900 dark:text-white">
+                              {workOrder.productionQuantity || 0}
+                              {workOrder.productionQuantityStat || '個'}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">包裝數量</span>
+                            <div className="font-medium text-neutral-900 dark:text-white">
+                              {workOrder.packagingQuantity || 0}
+                              {workOrder.packagingQuantityStat || '個'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Work Description - Editable (Always Show) */}
+                        <div>
+                          <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                            工作描述
+                          </h4>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <WorkOrderInlineEdit
+                              workOrderId={workOrder.id}
+                              field="workDescription"
+                              value={workOrder.workDescription || ''}
+                              type="textarea"
+                              canEdit={true}
+                              onSave={async (value) => {
+                                await handleFieldSave(workOrder.id, 'workDescription', value)
+                              }}
+                              isLoading={saving.has(workOrder.id)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Notes - Editable */}
+                        <div>
+                          <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                            備註
+                          </h4>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <EditableNotesCell
+                              workOrderId={workOrder.id}
+                              currentNotes={workOrder.notes}
+                              onRefresh={onRefresh}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Linked Orders */}
+                        {workOrder.productionOrders && workOrder.productionOrders.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">
+                              關聯膠囊訂單
+                            </h4>
+                            <div className="flex flex-col gap-2">
+                              {workOrder.productionOrders.slice(0, 3).map(order => {
+                                const hasWorklogs = order.worklogs && order.worklogs.length > 0
+                                const isCompleted = hasWorklogs && order.completionDate
+                                const isInProgress = hasWorklogs && !order.completionDate
+                                
+                                const statusBadge = isCompleted ? (
+                                  <Badge variant="outline" className="text-xs text-success-700 dark:text-success-400 inline-flex items-center gap-0.5">
+                                    <CheckCircle className="h-3 w-3" />
+                                    已完成
+                                  </Badge>
+                                ) : isInProgress ? (
+                                  <Badge variant="outline" className="text-xs text-info-700 dark:text-info-400 inline-flex items-center gap-0.5">
+                                    <Timer className="h-3 w-3" />
+                                    進行中
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs text-neutral-600 dark:text-neutral-400 inline-flex items-center gap-0.5">
+                                    <Square className="h-3 w-3" />
+                                    未開始
+                                  </Badge>
+                                )
+                                
+                                return (
+                                  <div key={order.id} className="flex items-center gap-2">
+                                    <OrderLinkBadge
+                                      type="encapsulation-order"
+                                      orderId={order.id}
+                                      label={order.productName}
+                                      size="sm"
+                                    />
+                                    {statusBadge}
+                                  </div>
+                                )
+                              })}
+                              {workOrder.productionOrders.length > 3 && (
+                                <Badge variant="secondary" className="text-xs w-fit">
+                                  +{workOrder.productionOrders.length - 3} 更多訂單
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })
           )}
         </div>
       </div>
