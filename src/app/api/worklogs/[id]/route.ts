@@ -8,6 +8,7 @@ import { calculateWorkUnits } from '@/lib/worklog'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
+import { calculateOrderStatus } from '@/lib/order-status'
 
 const updateWorklogSchema = z.object({
   workDate: z.string().min(1, '工作日期必須填寫'),
@@ -171,6 +172,27 @@ export async function DELETE(
     await prisma.orderWorklog.delete({
       where: { id: worklogId }
     })
+
+    // Update parent order status after deletion
+    const parentOrder = await prisma.productionOrder.findUnique({
+      where: { id: existingWorklog.orderId },
+      include: { worklogs: true }
+    })
+    
+    if (parentOrder) {
+      const newStatus = calculateOrderStatus({
+        worklogs: parentOrder.worklogs,
+        completionDate: parentOrder.completionDate
+      })
+      
+      await prisma.productionOrder.update({
+        where: { id: existingWorklog.orderId },
+        data: {
+          status: newStatus,
+          statusUpdatedAt: new Date()
+        }
+      })
+    }
 
     // Get user context and log worklog deletion
     const context = await getUserContextFromRequest(request)

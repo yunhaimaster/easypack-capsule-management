@@ -8,6 +8,7 @@ import { calculateWorkUnits } from '@/lib/worklog'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
+import { calculateOrderStatus } from '@/lib/order-status'
 import Papa from 'papaparse'
 
 export const dynamic = 'force-dynamic'
@@ -178,6 +179,27 @@ export async function POST(request: NextRequest) {
           }
         }
       })
+
+      // Update parent order status
+      const parentOrder = await prisma.productionOrder.findUnique({
+        where: { id: data.orderId },
+        include: { worklogs: true }
+      })
+      
+      if (parentOrder) {
+        const newStatus = calculateOrderStatus({
+          worklogs: parentOrder.worklogs,
+          completionDate: parentOrder.completionDate
+        })
+        
+        await prisma.productionOrder.update({
+          where: { id: data.orderId },
+          data: {
+            status: newStatus,
+            statusUpdatedAt: new Date()
+          }
+        })
+      }
 
       // Get user context and log worklog creation
       const context = await getUserContextFromRequest(request)

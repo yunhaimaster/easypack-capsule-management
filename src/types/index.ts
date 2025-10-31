@@ -1,4 +1,4 @@
-import { WorkType } from '@prisma/client'
+import { WorkType, ProductionOrderStatus } from '@prisma/client'
 
 export interface ProductionOrder {
   id: string
@@ -19,6 +19,8 @@ export interface ProductionOrder {
   actualProductionQuantity?: number | null
   materialYieldQuantity?: number | null
   lockPassword?: string | null
+  status?: ProductionOrderStatus | null
+  statusUpdatedAt?: Date | null
   ingredients: Ingredient[]
   worklogs?: OrderWorklog[]
   totalWorkUnits?: number

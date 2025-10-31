@@ -200,6 +200,10 @@ model ProductionOrder {
   materialYieldQuantity    Int? // 材料實際可做數量（粒）
   lockPassword             String? // 4 位數密碼保護（nullable）
 
+  // Status Management
+  status          ProductionOrderStatus?
+  statusUpdatedAt DateTime?
+
   // Link to work order (1:many relationship - one work order can have multiple production orders)
   workOrderId String?
   workOrder   UnifiedWorkOrder? @relation("ProductionWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
@@ -210,6 +214,7 @@ model ProductionOrder {
   @@index([completionDate, createdAt])
   @@index([customerServiceId])
   @@index([workOrderId]) // Index for query performance
+  @@index([status])
   @@map("production_orders")
 }
 
@@ -262,6 +267,12 @@ enum WorkType {
   PRODUCTION // 生產
   PRODUCTION_PACKAGING // 生產+包裝
   WAREHOUSING // 倉務
+}
+
+enum ProductionOrderStatus {
+  NOT_STARTED  // 未開始
+  IN_PROGRESS  // 進行中
+  COMPLETED    // 已完成
 }
 
 model UnifiedWorkOrder {

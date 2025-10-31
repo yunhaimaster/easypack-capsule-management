@@ -8,6 +8,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
+import { calculateOrderStatus } from '@/lib/order-status'
 
 // Timing-safe comparison to prevent timing attacks
 function timingSafeEqual(a: string, b: string): boolean {
@@ -238,6 +239,13 @@ export async function PUT(
       }
     })
 
+    // Calculate status BEFORE update using prepared data (optimization: no extra query needed)
+    const completionDateValue = orderPayload.completionDate && orderPayload.completionDate !== '' ? new Date(orderPayload.completionDate) : null
+    const status = calculateOrderStatus({
+      worklogsCount: preparedWorklogs.length,
+      completionDate: completionDateValue
+    })
+
     const order = await prisma.productionOrder.update({
       where: { id },
       data: {
@@ -246,7 +254,9 @@ export async function PUT(
         productionQuantity: orderPayload.productionQuantity,
         unitWeightMg,
         batchTotalWeightMg,
-        completionDate: orderPayload.completionDate && orderPayload.completionDate !== '' ? new Date(orderPayload.completionDate) : null,
+        completionDate: completionDateValue,
+        status,
+        statusUpdatedAt: new Date(),
         processIssues: orderPayload.processIssues,
         qualityNotes: orderPayload.qualityNotes,
         capsuleColor: orderPayload.capsuleColor,

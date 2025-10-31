@@ -40,6 +40,14 @@ const STATUS_ORDER = {
 type StatusKey = keyof typeof STATUS_ORDER
 
 const resolveOrderStatus = (order: ProductionOrder): StatusKey => {
+  // Use stored status if available (from database)
+  if (order.status) {
+    return order.status === 'COMPLETED' ? 'completed' 
+      : order.status === 'IN_PROGRESS' ? 'inProgress' 
+      : 'notStarted'
+  }
+  
+  // Fallback to calculation (backward compatibility for orders without stored status)
   const hasWork = Array.isArray(order.worklogs) && order.worklogs.length > 0
   const completed = Boolean(order.completionDate)
   if (hasWork && !completed) return 'inProgress'

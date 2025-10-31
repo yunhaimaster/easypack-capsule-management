@@ -10,6 +10,7 @@ import { jsonSuccess, jsonError } from '@/lib/api-response'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
+import { calculateOrderStatus } from '@/lib/order-status'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 300 // 5 minutes
@@ -250,16 +251,26 @@ export async function POST(request: NextRequest) {
     
     logger.debug('Calculated production order weights', { unitWeightMg, batchTotalWeightMg })
     
+    // Calculate status based on worklogs and completionDate
+    const completionDateValue = orderData.completionDate ? DateTime.fromFormat(orderData.completionDate, 'yyyy-MM-dd').toJSDate() : null
+    const worklogsCount = orderData.worklogs?.length ?? 0
+    const status = calculateOrderStatus({
+      worklogsCount,
+      completionDate: completionDateValue
+    })
+    
     // Create order and link in same transaction
     const order = await prisma.$transaction(async (tx) => {
       const newOrder = await tx.productionOrder.create({
         data: {
           ...orderData,
           customerServiceId: orderData.customerServiceId === 'UNASSIGNED' ? null : orderData.customerServiceId,
-          completionDate: orderData.completionDate ? DateTime.fromFormat(orderData.completionDate, 'yyyy-MM-dd').toJSDate() : null,
+          completionDate: completionDateValue,
           unitWeightMg,
           batchTotalWeightMg,
           workOrderId: workOrderId || null,  // Link during creation
+          status,
+          statusUpdatedAt: new Date(),
           ingredients: {
             create: orderData.ingredients.map((ingredient) => ({
               materialName: ingredient.materialName,
