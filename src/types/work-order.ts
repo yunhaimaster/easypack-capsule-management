@@ -88,6 +88,8 @@ export interface WorkOrder {
     productName: string
     customerName: string
     productionQuantity: number
+    completionDate?: Date | null
+    worklogs: Array<{ id: string }>
     createdAt?: string | Date
   }>
   

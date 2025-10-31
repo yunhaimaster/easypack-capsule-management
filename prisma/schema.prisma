@@ -270,9 +270,9 @@ enum WorkType {
 }
 
 enum ProductionOrderStatus {
-  NOT_STARTED  // 未開始
-  IN_PROGRESS  // 進行中
-  COMPLETED    // 已完成
+  NOT_STARTED // 未開始
+  IN_PROGRESS // 進行中
+  COMPLETED // 已完成
 }
 
 model UnifiedWorkOrder {

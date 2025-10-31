@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast-provider'
 import { LiquidGlassConfirmModal } from '@/components/ui/liquid-glass-modal'
-import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus, Calendar, PlayCircle, Clock } from 'lucide-react'
+import { GripVertical, Trash2, Loader2, ExternalLink, ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, AlertCircle, Plus, Calendar, PlayCircle, Clock, CheckCircle } from 'lucide-react'
 import { formatDateOnly } from '@/lib/utils'
 import { SchedulingInlineEdit } from './scheduling-inline-edit'
 import { WorkOrderQuickPanel } from './work-order-quick-panel'
@@ -571,7 +571,32 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                             )
                           }
                           
-                          // Determine scheduling status based on available data
+                          // Calculate order status (check both capsulationOrder and productionOrder)
+                          const order = entry.workOrder.capsulationOrder || entry.workOrder.productionOrder
+                          const hasWorklogs = order && order.worklogs && order.worklogs.length > 0
+                          const isCompleted = hasWorklogs && order && order.completionDate
+                          const isInProgress = hasWorklogs && order && !order.completionDate
+                          
+                          // If order is in progress or completed, show actual status
+                          if (isCompleted) {
+                            return (
+                              <Badge variant="outline" className="inline-flex items-center gap-1 text-xs text-success-700 dark:text-success-400">
+                                <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                已完成
+                              </Badge>
+                            )
+                          }
+                          
+                          if (isInProgress) {
+                            return (
+                              <Badge variant="outline" className="inline-flex items-center gap-1 text-xs text-info-700 dark:text-info-400">
+                                <PlayCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                進行中
+                              </Badge>
+                            )
+                          }
+                          
+                          // Otherwise, status is "未開始" - check materials
                           const now = new Date()
                           const hasDate = Boolean(entry.expectedProductionStartDate)
                           const date = hasDate && entry.expectedProductionStartDate ? new Date(entry.expectedProductionStartDate) : null
@@ -580,7 +605,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                           let status: 'scheduled' | 'readyToStart' | 'awaitingPreparation' = 'readyToStart'
                           let icon = PlayCircle
                           let label = '可開始'
-                          let className = 'text-success-700 dark:text-success-400'
+                          let className = 'text-primary-700 dark:text-primary-400'
                           
                           if (!materialsReady) {
                             status = 'awaitingPreparation'
@@ -591,7 +616,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                             status = 'scheduled'
                             icon = Calendar
                             label = '已排程'
-                            className = 'text-info-700 dark:text-info-400'
+                            className = 'text-secondary-700 dark:text-secondary-400'
                           }
                           
                           const Icon = icon
@@ -964,7 +989,32 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                     )
                                   }
                                   
-                                  // Determine scheduling status based on available data
+                                  // Calculate order status (check both capsulationOrder and productionOrder)
+                                  const order = entry.workOrder.capsulationOrder || entry.workOrder.productionOrder
+                                  const hasWorklogs = order && order.worklogs && order.worklogs.length > 0
+                                  const isCompleted = hasWorklogs && order && order.completionDate
+                                  const isInProgress = hasWorklogs && order && !order.completionDate
+                                  
+                                  // If order is in progress or completed, show actual status
+                                  if (isCompleted) {
+                                    return (
+                                      <Badge variant="outline" className="inline-flex items-center gap-1.5 text-xs text-success-700 dark:text-success-400">
+                                        <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                        <span>已完成</span>
+                                      </Badge>
+                                    )
+                                  }
+                                  
+                                  if (isInProgress) {
+                                    return (
+                                      <Badge variant="outline" className="inline-flex items-center gap-1.5 text-xs text-info-700 dark:text-info-400">
+                                        <PlayCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                        <span>進行中</span>
+                                      </Badge>
+                                    )
+                                  }
+                                  
+                                  // Otherwise, status is "未開始" - check materials
                                   const now = new Date()
                                   const hasDate = Boolean(entry.expectedProductionStartDate)
                                   const date = hasDate && entry.expectedProductionStartDate ? new Date(entry.expectedProductionStartDate) : null
@@ -973,7 +1023,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                   let status: 'scheduled' | 'readyToStart' | 'awaitingPreparation' = 'readyToStart'
                                   let icon = PlayCircle
                                   let label = '可開始'
-                                  let className = 'text-success-700 dark:text-success-400'
+                                  let className = 'text-primary-700 dark:text-primary-400'
                                   
                                   if (!materialsReady) {
                                     status = 'awaitingPreparation'
@@ -984,7 +1034,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                     status = 'scheduled'
                                     icon = Calendar
                                     label = '已排程'
-                                    className = 'text-info-700 dark:text-info-400'
+                                    className = 'text-secondary-700 dark:text-secondary-400'
                                   }
                                   
                                   const Icon = icon

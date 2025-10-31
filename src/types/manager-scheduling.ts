@@ -31,11 +31,15 @@ export interface ManagerSchedulingEntry {
       id: string
       processIssues: string | null
       qualityNotes: string | null
+      worklogs: Array<{ id: string }>
+      completionDate: Date | null
     } | null
     productionOrder?: {
       id: string
       processIssues: string | null
       qualityNotes: string | null
+      worklogs: Array<{ id: string }>
+      completionDate: Date | null
     } | null
   }
 }

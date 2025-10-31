@@ -63,14 +63,26 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 processIssues: true,
-                qualityNotes: true
+                qualityNotes: true,
+                worklogs: {
+                  select: {
+                    id: true
+                  }
+                },
+                completionDate: true
               }
             },
             productionOrders: {
               select: {
                 id: true,
                 processIssues: true,
-                qualityNotes: true
+                qualityNotes: true,
+                worklogs: {
+                  select: {
+                    id: true
+                  }
+                },
+                completionDate: true
               },
               take: 1,
               orderBy: { createdAt: 'asc' }
@@ -133,14 +145,26 @@ export async function GET(request: NextRequest) {
                     select: {
                       id: true,
                       processIssues: true,
-                      qualityNotes: true
+                      qualityNotes: true,
+                      worklogs: {
+                        select: {
+                          id: true
+                        }
+                      },
+                      completionDate: true
                     }
                   },
                   productionOrders: {
                     select: {
                       id: true,
                       processIssues: true,
-                      qualityNotes: true
+                      qualityNotes: true,
+                      worklogs: {
+                        select: {
+                          id: true
+                        }
+                      },
+                      completionDate: true
                     },
                     take: 1,
                     orderBy: { createdAt: 'asc' }
@@ -244,7 +268,13 @@ export async function POST(request: NextRequest) {
         capsulationOrder: {
           select: {
             processIssues: true,
-            qualityNotes: true
+            qualityNotes: true,
+            worklogs: {
+              select: {
+                id: true
+              }
+            },
+            completionDate: true
           }
         }
       }
@@ -311,7 +341,13 @@ export async function POST(request: NextRequest) {
               select: {
                 id: true,
                 processIssues: true,
-                qualityNotes: true
+                qualityNotes: true,
+                worklogs: {
+                  select: {
+                    id: true
+                  }
+                },
+                completionDate: true
               }
             }
           }

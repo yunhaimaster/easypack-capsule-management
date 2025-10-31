@@ -574,16 +574,45 @@ export function WorkOrderTable({
                     {/* Linked Encapsulation Orders */}
                     <td className="py-3 px-3 text-sm align-top hidden xl:table-cell">
                       {workOrder.productionOrders && workOrder.productionOrders.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 items-center">
-                          {workOrder.productionOrders.slice(0, 2).map(order => (
-                            <OrderLinkBadge
-                              key={order.id}
-                              type="encapsulation-order"
-                              orderId={order.id}
-                              label={order.productName}
-                              size="sm"
-                            />
-                          ))}
+                        <div className="flex flex-col gap-1.5">
+                          {workOrder.productionOrders.slice(0, 2).map(order => {
+                            // Calculate order status
+                            const hasWorklogs = order.worklogs && order.worklogs.length > 0
+                            const isCompleted = hasWorklogs && order.completionDate
+                            const isInProgress = hasWorklogs && !order.completionDate
+                            const isNotStarted = !hasWorklogs
+                            
+                            const statusBadge = isCompleted ? (
+                              <Badge variant="outline" className="text-xs text-success-700 dark:text-success-400 inline-flex items-center gap-0.5">
+                                <CheckCircle className="h-3 w-3" />
+                                已完成
+                              </Badge>
+                            ) : isInProgress ? (
+                              <Badge variant="outline" className="text-xs text-info-700 dark:text-info-400 inline-flex items-center gap-0.5">
+                                <Timer className="h-3 w-3" />
+                                進行中
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs text-neutral-600 dark:text-neutral-400 inline-flex items-center gap-0.5">
+                                <Square className="h-3 w-3" />
+                                未開始
+                              </Badge>
+                            )
+                            
+                            return (
+                              <div key={order.id}>
+                                <OrderLinkBadge
+                                  type="encapsulation-order"
+                                  orderId={order.id}
+                                  label={order.productName}
+                                  size="sm"
+                                />
+                                <div className="mt-0.5">
+                                  {statusBadge}
+                                </div>
+                              </div>
+                            )
+                          })}
                           {workOrder.productionOrders.length > 2 && (
                             <Badge variant="secondary" className="text-xs">
                               +{workOrder.productionOrders.length - 2}

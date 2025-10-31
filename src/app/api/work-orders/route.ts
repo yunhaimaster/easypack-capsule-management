@@ -292,7 +292,13 @@ export async function GET(request: NextRequest) {
               id: true,
               productName: true,
               customerName: true,
-              productionQuantity: true
+              productionQuantity: true,
+              completionDate: true,
+              worklogs: {
+                select: {
+                  id: true
+                }
+              }
             },
             orderBy: { createdAt: 'desc' },
             take: 5  // Limit for list view
