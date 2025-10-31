@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    const prisma = new PrismaClient()
+    // Use singleton Prisma client from @/lib/prisma
     
     try {
       // 直接執行創建表的 SQL
@@ -180,9 +180,10 @@ export async function POST(request: NextRequest) {
         totalTables: tables.length
       })
 
-    } finally {
-      await prisma.$disconnect()
+    } catch (innerError) {
+      throw innerError
     }
+    // Note: Don't disconnect singleton client
 
   } catch (error) {
     console.error('遷移錯誤:', error)

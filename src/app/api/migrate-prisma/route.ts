@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 export async function POST() {
   try {
-    const prisma = new PrismaClient()
+    // Use singleton Prisma client from @/lib/prisma
     
     try {
       // 檢查表是否存在
@@ -212,9 +212,10 @@ export async function POST() {
         totalTables: finalTables.length
       })
 
-    } finally {
-      await prisma.$disconnect()
+    } catch (innerError) {
+      throw innerError
     }
+    // Note: Don't disconnect singleton client
 
   } catch (error) {
     console.error('遷移錯誤:', error)

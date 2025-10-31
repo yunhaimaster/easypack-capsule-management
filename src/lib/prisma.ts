@@ -4,21 +4,46 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Create a function to get Prisma client with lazy initialization
-function getPrismaClient() {
+// Validate database configuration on startup
+function validateDatabaseConfig() {
   const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
   
-  if (!DATABASE_URL && process.env.NODE_ENV !== 'production') {
-    console.warn('DATABASE_URL is not defined. Database operations will fail.')
+  if (!DATABASE_URL) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('? CRITICAL: DATABASE_URL is not configured in production environment!')
+    }
+    console.warn('??  DATABASE_URL is not defined. Database operations will fail.')
+    console.warn('?? Create a .env.local file with DATABASE_URL to fix this.')
+    return false
   }
+  
+  // Check for placeholder URL (common mistake)
+  if (DATABASE_URL.includes('db.prisma.io')) {
+    throw new Error('? CRITICAL: DATABASE_URL contains placeholder value "db.prisma.io". Please configure a real database URL!')
+  }
+  
+  console.log('? Database configuration validated')
+  return true
+}
+
+// Create a function to get Prisma client with lazy initialization
+function getPrismaClient() {
+  // Validate configuration first
+  validateDatabaseConfig()
   
   // Note: Connection pool parameters should be set in DATABASE_URL environment variable:
   // postgresql://user:password@host:port/db?connection_limit=10&pool_timeout=20&connect_timeout=10
   // Prisma reads the URL from environment variables, not from client options
   
-  return globalForPrisma.prisma ?? new PrismaClient({
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma
+  }
+  
+  const client = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
+  
+  return client
 }
 
 const prismaClient = getPrismaClient()
