@@ -75,36 +75,63 @@ function SkeletonRow() {
  * Check if production has really started (mirrors /orders page logic)
  * Production has started if:
  * - Capsulation order has worklogs AND is not completed
- * - OR work order productionStarted flag is true (for linked production orders without capsulation order)
+ * - OR work order productionStarted flag is true AND is not completed
  */
 function hasProductionStarted(workOrder: WorkOrder): boolean {
+  // Check if work order is completed - production cannot be "started" if already completed
+  const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
+  if (isCompleted) {
+    return false
+  }
+
   // 1) If capsulationOrder exists, check if it has worklogs (mirrors /orders page logic)
   if (workOrder.capsulationOrder) {
     const order = workOrder.capsulationOrder
     const hasWorklog = Array.isArray(order.worklogs) && order.worklogs.length > 0
-    const completed = Boolean(order.completionDate)
-    return hasWorklog && !completed
+    const orderCompleted = Boolean(order.completionDate)
+    return hasWorklog && !orderCompleted
   }
 
-  // 2) If there are linked productionOrders but no capsulation order, use productionStarted flag
-  if (workOrder.productionOrders && workOrder.productionOrders.length > 0) {
-    const isCompleted = workOrder.isCompleted || workOrder.status === 'COMPLETED'
-    return workOrder.productionStarted && !isCompleted
+  // 2) Check productionStarted flag directly (this is the most reliable indicator)
+  // If productionStarted is true, production has started
+  if (workOrder.productionStarted) {
+    return true
   }
 
-  // 3) No related orders - production cannot have started
+  // 3) If there are linked productionOrders but productionStarted flag is false,
+  // we still don't consider production started (flag is authoritative)
   return false
 }
 
 /**
  * Capsule production order status badge component
- * NOTE: Still used in desktop table, but mobile cards use hasProductionStarted() instead
+ * Displays:
+ * 1. Status badge (PAUSED, COMPLETED, CANCELLED) if status is set
+ * 2. "生產中" if production has started and status is null
+ * 3. Nothing if status is null and production hasn't started
  */
 function CapsuleOrderStatusBadge({ workOrder }: { workOrder: WorkOrder }) {
-  // Check if production has really started using same logic as /orders page
+  // First check if there's a set status (PAUSED, COMPLETED, CANCELLED)
+  if (workOrder.status) {
+    const statusVariants: Record<WorkOrderStatus, 'warning' | 'success' | 'danger'> = {
+      PAUSED: 'warning',
+      COMPLETED: 'success',
+      CANCELLED: 'danger'
+    }
+    
+    return (
+      <Badge 
+        variant={statusVariants[workOrder.status]} 
+        className="inline-flex items-center gap-1 text-xs"
+      >
+        {WORK_ORDER_STATUS_LABELS[workOrder.status]}
+      </Badge>
+    )
+  }
+  
+  // If no status is set, check if production has started
   const productionStarted = hasProductionStarted(workOrder)
   
-  // Only show indicator if production has started
   if (productionStarted) {
     return (
       <Badge variant="outline" className="inline-flex items-center gap-1 text-xs text-warning-700 dark:text-warning-400">
@@ -114,7 +141,7 @@ function CapsuleOrderStatusBadge({ workOrder }: { workOrder: WorkOrder }) {
     )
   }
   
-  // Don't show anything if production hasn't started
+  // Show nothing for ongoing work without production started
   return null
 }
 
