@@ -197,7 +197,21 @@ export async function PATCH(
 
     // Parse and validate request body
     const body = await request.json()
-    const validatedData = updateWorkOrderSchema.parse(body)
+    console.log('[API] PATCH /api/work-orders/[id]', { id, body })
+    
+    try {
+      var validatedData = updateWorkOrderSchema.parse(body)
+    } catch (validationError) {
+      console.error('[API] Validation error:', validationError)
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: '驗證失敗',
+          details: validationError instanceof Error ? validationError.message : String(validationError)
+        },
+        { status: 400 }
+      )
+    }
 
     // Check if work order exists
     const existingWorkOrder = await prisma.unifiedWorkOrder.findUnique({

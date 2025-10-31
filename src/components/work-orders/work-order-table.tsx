@@ -238,6 +238,8 @@ export function WorkOrderTable({
       // Convert 'UNASSIGNED' to null for database fields
       const processedValue = value === 'UNASSIGNED' ? null : value
       
+      console.log('[Field Save]', { field, value, processedValue, workOrderId })
+      
       const response = await fetch(`/api/work-orders/${workOrderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -246,11 +248,13 @@ export function WorkOrderTable({
 
       if (!response.ok) {
         const error = await response.json()
+        console.error('[Field Save Error]', { field, processedValue, error })
         throw new Error(error.error || '更新失敗')
       }
 
       await onRefresh?.()
     } catch (error) {
+      console.error('[Field Save Exception]', error)
       showToast({
         title: '更新失敗',
         description: error instanceof Error ? error.message : '未知錯誤',
