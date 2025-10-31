@@ -25,6 +25,7 @@ interface EditableCheckboxCellProps {
   label: string
   onSuccess?: () => void
   onError?: (error: Error) => void
+  onRefresh?: () => void | Promise<void>
 }
 
 export function EditableCheckboxCell({
@@ -33,7 +34,8 @@ export function EditableCheckboxCell({
   currentValue,
   label,
   onSuccess,
-  onError
+  onError,
+  onRefresh
 }: EditableCheckboxCellProps) {
   const [tempValue, setTempValue] = useState(currentValue)
   const queryClient = useQueryClient()
@@ -58,9 +60,13 @@ export function EditableCheckboxCell({
       // Optimistic update
       setTempValue(newValue)
     },
-    onSuccess: () => {
-      // Invalidate and refetch
+    onSuccess: async () => {
+      // Invalidate React Query cache (if used elsewhere)
       queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
+      
+      // Refresh parent component's data (work-orders page uses manual state)
+      await onRefresh?.()
+      
       onSuccess?.()
     },
     onError: (error: Error) => {

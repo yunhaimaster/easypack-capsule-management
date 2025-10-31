@@ -41,6 +41,8 @@ import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS } from '@/types/work-order'
 import { QuickActionsMenu } from './quick-actions-menu'
 import { useToast } from '@/components/ui/toast-provider'
 import { EditableNotesCell } from './editable-notes-cell'
+import { WorkOrderQuickPanel } from './work-order-quick-panel'
+import { WorkOrderInlineEdit } from './work-order-inline-edit'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
@@ -212,6 +214,53 @@ export function WorkOrderTable({
 }: WorkOrderTableProps) {
   const router = useRouter()
   const { showToast } = useToast()
+  
+  // Quick panel state
+  const [quickPanelWorkOrder, setQuickPanelWorkOrder] = useState<WorkOrder | null>(null)
+  const [isQuickPanelOpen, setIsQuickPanelOpen] = useState(false)
+  const [saving, setSaving] = useState<Set<string>>(new Set())
+  
+  // Open quick panel from row click
+  const handleRowClick = (workOrder: WorkOrder) => {
+    setQuickPanelWorkOrder(workOrder)
+    setIsQuickPanelOpen(true)
+  }
+  
+  // Handle field save from quick panel
+  const handleFieldSave = async (
+    workOrderId: string,
+    field: string,
+    value: string | number | boolean | null
+  ) => {
+    setSaving(prev => new Set(prev).add(workOrderId))
+    
+    try {
+      const response = await fetch(`/api/work-orders/${workOrderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '更新失敗')
+      }
+
+      await onRefresh?.()
+    } catch (error) {
+      showToast({
+        title: '更新失敗',
+        description: error instanceof Error ? error.message : '未知錯誤',
+        variant: 'destructive'
+      })
+    } finally {
+      setSaving(prev => {
+        const next = new Set(prev)
+        next.delete(workOrderId)
+        return next
+      })
+    }
+  }
 
   const handleToggleProductionStarted = async (workOrderId: string, value: boolean) => {
     try {
@@ -390,42 +439,58 @@ export function WorkOrderTable({
                     <tr
                       key={workOrder.id}
                       className={`border-b border-neutral-200 dark:border-neutral-700 hover:bg-surface-secondary/30 dark:hover:bg-elevation-2 transition-colors cursor-pointer`}
-                      onClick={() => router.push(`/work-orders/${workOrder.id}`)}
+                      onClick={() => handleRowClick(workOrder)}
                     >
                     {/* Customer / Job / Status / Description / VIP / Urgent */}
-                    <td className="py-3 px-3 text-sm align-top max-w-md">
+                    <td className="py-3 px-3 text-sm align-top max-w-md" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col gap-1">
-                        {/* Customer name - Clickable with visual indicators */}
-                        <div className="flex items-center gap-2 group">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              router.push(`/work-orders/${workOrder.id}`)
-                            }}
-                            className="font-semibold text-neutral-900 dark:text-white/95 text-base hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer underline decoration-dotted underline-offset-4 transition-colors text-left flex items-center gap-1.5"
-                            title={`點擊查看 ${workOrder.customerName} 的詳細信息`}
-                          >
-                            {workOrder.customerName}
-                            <ExternalLink className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </button>
-                        </div>
-                        
-                        {/* Job number */}
+                        {/* Customer name - Inline editable */}
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-neutral-500 dark:text-white/65">
-                            {workOrder.jobNumber || '無編號'}
-                          </span>
+                          <WorkOrderInlineEdit
+                            workOrderId={workOrder.id}
+                            field="customerName"
+                            value={workOrder.customerName}
+                            type="text"
+                            canEdit={true}
+                            onSave={async (value) => {
+                              await handleFieldSave(workOrder.id, 'customerName', value)
+                            }}
+                            isLoading={saving.has(workOrder.id)}
+                            className="flex-1 font-semibold text-base"
+                          />
                         </div>
                         
-                        {/* Work description (truncated to 1 line) */}
-                        {workOrder.workDescription && (
-                          <div
-                            className="text-xs text-neutral-500 dark:text-white/65 truncate max-w-full"
-                            title={workOrder.workDescription}
-                          >
-                            {workOrder.workDescription}
-                          </div>
-                        )}
+                        {/* Job number - Inline editable */}
+                        <div className="flex items-center gap-2">
+                          <WorkOrderInlineEdit
+                            workOrderId={workOrder.id}
+                            field="jobNumber"
+                            value={workOrder.jobNumber || ''}
+                            type="text"
+                            canEdit={true}
+                            onSave={async (value) => {
+                              await handleFieldSave(workOrder.id, 'jobNumber', value)
+                            }}
+                            isLoading={saving.has(workOrder.id)}
+                            className="text-xs"
+                          />
+                        </div>
+                        
+                        {/* Work description - Inline editable */}
+                        <div>
+                          <WorkOrderInlineEdit
+                            workOrderId={workOrder.id}
+                            field="workDescription"
+                            value={workOrder.workDescription || ''}
+                            type="textarea"
+                            canEdit={true}
+                            onSave={async (value) => {
+                              await handleFieldSave(workOrder.id, 'workDescription', value)
+                            }}
+                            isLoading={saving.has(workOrder.id)}
+                            className="text-xs"
+                          />
+                        </div>
                         
                         {/* VIP and urgent markers */}
                         <div className="flex items-center gap-1 flex-wrap">
@@ -461,13 +526,25 @@ export function WorkOrderTable({
                     </td>
 
                     {/* Person in Charge */}
-                    <td className="py-3 px-3 text-sm align-top">
-                      <div className="flex items-center gap-2">
-                        <UserIcon className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55 flex-shrink-0" />
-                        <span className="text-neutral-900 dark:text-white/95 font-medium">
-                          {workOrder.personInCharge?.nickname || workOrder.personInCharge?.phoneE164 || '未指定'}
-                        </span>
-                      </div>
+                    <td className="py-3 px-3 text-sm align-top" onClick={(e) => e.stopPropagation()}>
+                      <WorkOrderInlineEdit
+                        workOrderId={workOrder.id}
+                        field="personInChargeId"
+                        value={workOrder.personInChargeId || 'UNASSIGNED'}
+                        type="select"
+                        canEdit={true}
+                        options={[
+                          { value: 'UNASSIGNED', label: '未指定' },
+                          ...users.map(user => ({ 
+                            value: user.id, 
+                            label: user.nickname || user.phoneE164 
+                          }))
+                        ]}
+                        onSave={async (value) => {
+                          await handleFieldSave(workOrder.id, 'personInChargeId', value)
+                        }}
+                        isLoading={saving.has(workOrder.id)}
+                      />
                     </td>
 
                     {/* Capsule Order Status */}
@@ -483,6 +560,7 @@ export function WorkOrderTable({
                       <EditableNotesCell
                         workOrderId={workOrder.id}
                         currentNotes={workOrder.notes}
+                        onRefresh={onRefresh}
                       />
                     </td>
 
@@ -634,7 +712,7 @@ export function WorkOrderTable({
               <div
                 key={workOrder.id}
                 className="p-4 bg-surface-primary rounded-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-shadow cursor-pointer mobile-card"
-                onClick={() => router.push(`/work-orders/${workOrder.id}`)}
+                onClick={() => handleRowClick(workOrder)}
               >
                 {/* Header Section */}
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -787,6 +865,17 @@ export function WorkOrderTable({
           )}
         </div>
       </div>
+
+      {/* Quick Panel */}
+      <WorkOrderQuickPanel
+        isOpen={isQuickPanelOpen}
+        onClose={() => setIsQuickPanelOpen(false)}
+        workOrder={quickPanelWorkOrder}
+        users={users}
+        canEdit={true}
+        onSave={handleFieldSave}
+        saving={saving}
+      />
     </div>
   )
 }

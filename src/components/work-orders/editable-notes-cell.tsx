@@ -25,13 +25,15 @@ interface EditableNotesCellProps {
   currentNotes: string | null | undefined
   onSuccess?: () => void
   onError?: (error: Error) => void
+  onRefresh?: () => void | Promise<void>
 }
 
 export function EditableNotesCell({ 
   workOrderId, 
   currentNotes, 
   onSuccess,
-  onError 
+  onError,
+  onRefresh
 }: EditableNotesCellProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [tempNotes, setTempNotes] = useState(currentNotes || '')
@@ -59,10 +61,14 @@ export function EditableNotesCell({
 
       return response.json()
     },
-    onSuccess: () => {
-      // Invalidate and refetch work orders
+    onSuccess: async () => {
+      // Invalidate React Query cache (if used elsewhere)
       queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setIsEditing(false)
+      
+      // Refresh parent component's data (work-orders page uses manual state)
+      await onRefresh?.()
+      
       onSuccess?.()
     },
     onError: (error: Error) => {

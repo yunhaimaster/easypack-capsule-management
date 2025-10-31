@@ -25,6 +25,7 @@ interface EditableStatusCellProps {
   currentStatus: WorkOrderStatus | null
   onSuccess?: () => void
   onError?: (error: Error) => void
+  onRefresh?: () => void | Promise<void>
 }
 
 // Status to badge variant mapping
@@ -38,7 +39,8 @@ export function EditableStatusCell({
   workOrderId, 
   currentStatus, 
   onSuccess,
-  onError 
+  onError,
+  onRefresh
 }: EditableStatusCellProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [tempStatus, setTempStatus] = useState(currentStatus)
@@ -61,10 +63,14 @@ export function EditableStatusCell({
 
       return response.json()
     },
-    onSuccess: () => {
-      // Invalidate and refetch work orders
+    onSuccess: async () => {
+      // Invalidate React Query cache (if used elsewhere)
       queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setIsEditing(false)
+      
+      // Refresh parent component's data (work-orders page uses manual state)
+      await onRefresh?.()
+      
       onSuccess?.()
     },
     onError: (error: Error) => {
