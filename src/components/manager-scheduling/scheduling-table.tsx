@@ -47,6 +47,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [quickViewEntry, setQuickViewEntry] = useState<ManagerSchedulingEntry | null>(null)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [isReordering, setIsReordering] = useState(false)
   
   const toggleExpand = useCallback((entryId: string) => {
     setExpandedRows(prev => {
@@ -113,6 +114,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
   }, [entries, onEntriesChange, showToast])
 
   const handleReorder = useCallback(async (updates: Array<{ id: string; priority: number }>) => {
+    setIsReordering(true)
     try {
       const response = await fetch('/api/manager-scheduling/reorder', {
         method: 'PATCH',
@@ -142,8 +144,59 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
         description: error instanceof Error ? error.message : '未知錯誤',
         variant: 'destructive'
       })
+      // Revert local state on error
+      const reloadResponse = await fetch('/api/manager-scheduling', {
+        credentials: 'include',
+        cache: 'no-store'
+      })
+      if (reloadResponse.ok) {
+        const data = await reloadResponse.json()
+        onEntriesChange(data.data?.entries || [])
+      }
+    } finally {
+      setIsReordering(false)
     }
   }, [onEntriesChange, showToast])
+
+  const handleMoveUp = useCallback(async (entryId: string, currentIndex: number) => {
+    if (currentIndex === 0 || isReordering || !canEditPriority) return
+    
+    const newEntries: ManagerSchedulingEntry[] = [...entries]
+    // Swap entries
+    const temp = newEntries[currentIndex - 1]
+    newEntries[currentIndex - 1] = newEntries[currentIndex]
+    newEntries[currentIndex] = temp
+    
+    // Recalculate priorities
+    const updates = newEntries.map((entry: ManagerSchedulingEntry, idx: number) => ({
+      id: entry.id,
+      priority: idx + 1
+    }))
+    
+    // Update local state immediately for better UX
+    onEntriesChange(newEntries)
+    await handleReorder(updates)
+  }, [entries, onEntriesChange, handleReorder, isReordering, canEditPriority])
+
+  const handleMoveDown = useCallback(async (entryId: string, currentIndex: number) => {
+    if (currentIndex === entries.length - 1 || isReordering || !canEditPriority) return
+    
+    const newEntries: ManagerSchedulingEntry[] = [...entries]
+    // Swap entries
+    const temp = newEntries[currentIndex]
+    newEntries[currentIndex] = newEntries[currentIndex + 1]
+    newEntries[currentIndex + 1] = temp
+    
+    // Recalculate priorities
+    const updates = newEntries.map((entry: ManagerSchedulingEntry, idx: number) => ({
+      id: entry.id,
+      priority: idx + 1
+    }))
+    
+    // Update local state immediately for better UX
+    onEntriesChange(newEntries)
+    await handleReorder(updates)
+  }, [entries, onEntriesChange, handleReorder, isReordering, canEditPriority])
 
   // Drag and drop handlers for @hello-pangea/dnd
   const handleBeforeDragStart = useCallback((start: any) => {
@@ -295,9 +348,11 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                     <TableCell className="w-16 bg-surface-primary dark:bg-surface-primary">
                       <div className="flex items-center gap-2">
                         <GripVertical className="h-4 w-4 text-neutral-400" />
-                        <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                          {entry.priority}
-                        </span>
+                        <div className="flex flex-col items-center gap-1.5">
+                          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                            {entry.priority}
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
                   )}
@@ -363,7 +418,7 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                     <TableRow>
                       <TableHead className="w-10"></TableHead>
                       {canEdit && (
-                        <TableHead className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20 w-16">
+                        <TableHead className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20 w-20">
                           次序
                         </TableHead>
                       )}
@@ -425,9 +480,45 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                         <TableCell className="sticky left-10 bg-surface-primary dark:bg-surface-primary shadow-[4px_0_8px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_8px_rgba(0,0,0,0.25)] z-20">
                           <div className="flex items-center gap-2">
                             <GripVertical className="h-4 w-4 text-neutral-400" />
-                            <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                              {entry.priority}
-                            </span>
+                            <div className="flex flex-col items-center gap-1.5">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={index === 0 || isReordering}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleMoveUp(entry.id, index)
+                                }}
+                                className="h-6 w-6 p-0"
+                                aria-label="向上移動"
+                              >
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronUp className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                              <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                                {entry.priority}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={index === entries.length - 1 || isReordering}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleMoveDown(entry.id, index)
+                                }}
+                                className="h-6 w-6 p-0"
+                                aria-label="向下移動"
+                              >
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronDown className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                            </div>
                           </div>
                         </TableCell>
                       )}
@@ -781,10 +872,52 @@ export function SchedulingTable({ entries, onEntriesChange, canEdit, canEditSync
                                     </div>
                                   )}
                                   
-                                  {/* Priority */}
-                                  <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
-                                    #{entry.priority}
-                                  </span>
+                                  {/* Priority with Arrow Buttons */}
+                                  {canEditPriority ? (
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={index === 0 || isReordering}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleMoveUp(entry.id, index)
+                                        }}
+                                        className="h-11 w-11 p-0 touch-manipulation"
+                                        aria-label="向上移動"
+                                      >
+                                        {isReordering ? (
+                                          <Loader2 className="h-5 w-5 animate-spin" />
+                                        ) : (
+                                          <ChevronUp className="h-5 w-5" />
+                                        )}
+                                      </Button>
+                                      <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap min-w-[2rem] text-center">
+                                        #{entry.priority}
+                                      </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={index === entries.length - 1 || isReordering}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleMoveDown(entry.id, index)
+                                        }}
+                                        className="h-11 w-11 p-0 touch-manipulation"
+                                        aria-label="向下移動"
+                                      >
+                                        {isReordering ? (
+                                          <Loader2 className="h-5 w-5 animate-spin" />
+                                        ) : (
+                                          <ChevronDown className="h-5 w-5" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
+                                      #{entry.priority}
+                                    </span>
+                                  )}
                                   
                                   {/* Expand Toggle */}
                                   <Button
