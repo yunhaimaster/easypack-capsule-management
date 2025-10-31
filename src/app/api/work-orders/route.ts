@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { Prisma, AuditAction } from '@prisma/client'
-import { prisma } from '@/lib/prisma'
+import { prisma, executeWithRetry, isConnectionError } from '@/lib/prisma'
 import { createWorkOrderSchema, searchFiltersSchema } from '@/lib/validations/work-order-schemas'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/middleware/work-order-auth'
@@ -232,9 +232,9 @@ export async function GET(request: NextRequest) {
             [validatedFilters.sortBy]: validatedFilters.sortOrder
           }
 
-    // Execute query with count
+    // Execute query with count - using retry wrapper for connection errors
     const [workOrders, total] = await Promise.all([
-      prisma.unifiedWorkOrder.findMany({
+      executeWithRetry(() => prisma.unifiedWorkOrder.findMany({
         where,
         skip,
         take,
@@ -299,8 +299,8 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           updatedAt: true
         }
-      }),
-      prisma.unifiedWorkOrder.count({ where })
+      })),
+      executeWithRetry(() => prisma.unifiedWorkOrder.count({ where }))
     ])
 
     // Map to include first order for backward compatibility
@@ -330,7 +330,27 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('[API] GET /api/work-orders error:', error)
+    // Log error details (without sensitive data)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const isConnError = isConnectionError(error)
+    
+    console.error('[API] GET /api/work-orders error:', {
+      message: errorMessage,
+      isConnectionError: isConnError,
+      errorCode: error && typeof error === 'object' && 'code' in error ? (error as any).code : undefined
+    })
+    
+    // Return user-friendly error message
+    if (isConnError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: '數據庫連接失敗，請稍後重試'
+        },
+        { status: 503 } // Service Unavailable
+      )
+    }
+    
     return NextResponse.json(
       {
         success: false,
