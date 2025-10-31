@@ -154,6 +154,7 @@ export default function EditOrderPage() {
             verificationToken={verificationToken}
             onPasswordRequired={() => setShowPasswordVerifyDialog(true)}
             needsPasswordVerification={checkPasswordRequired() || false}
+            allowEditProductName={true}
           />
         </div>
       </div>

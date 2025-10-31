@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Info, Loader2, Upload, ArrowLeft, History } from 'lucide-react'
 import { FieldTranslator } from '@/components/ui/field-translator'
 import { SmartRecipeImport } from '@/components/forms/smart-recipe-import'
-import { formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight, copyToClipboard } from '@/lib/utils'
+import { formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight, copyToClipboard, cn } from '@/lib/utils'
 import { calculateWorkUnits } from '@/lib/worklog'
 import { useRouter } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -514,61 +514,28 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
     return units
   }
 
-  if (isSubmitting) {
-    return (
-      <div className="space-y-6 skeleton-stagger">
-          {/* Basic Info Skeleton */}
-          <Card className="liquid-glass-card liquid-glass-card-subtle">
-            <CardHeader>
-              <div className="skeleton skeleton-title"></div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="skeleton skeleton-text-sm"></div>
-                  <div className="skeleton skeleton-form-field"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="skeleton skeleton-text-sm"></div>
-                  <div className="skeleton skeleton-form-field"></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Capsule Specs Skeleton */}
-          <Card className="liquid-glass-card liquid-glass-card-subtle">
-            <CardHeader>
-              <div className="skeleton skeleton-title"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="skeleton skeleton-form-field"></div>
-                <div className="skeleton skeleton-form-field"></div>
-                <div className="skeleton skeleton-form-field"></div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Ingredients Skeleton */}
-          <Card className="liquid-glass-card liquid-glass-card-subtle">
-            <CardHeader>
-              <div className="skeleton skeleton-title"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="skeleton skeleton-form-field"></div>
-                <div className="skeleton skeleton-form-field"></div>
-                <div className="skeleton skeleton-form-field"></div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-    )
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-32">
+    <div className="relative">
+      {/* Loading overlay - appears when saving */}
+      {isSubmitting && (
+        <div className="absolute inset-0 bg-surface-primary/70 dark:bg-elevation-0/85 backdrop-blur-md flex items-center justify-center z-[100] rounded-xl">
+          <div className="liquid-glass-card liquid-glass-card-elevated p-8 shadow-apple-lg border border-neutral-200/60 dark:border-neutral-700/50">
+            <div className="flex flex-col items-center gap-4 min-w-[200px]">
+              <Loader2 className="h-10 w-10 text-primary-600 dark:text-primary-400 animate-spin" />
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-neutral-800 dark:text-white/95">
+                  正在儲存訂單
+                </p>
+                <p className="text-xs text-neutral-600 dark:text-white/75">
+                  請稍候，請勿關閉頁面
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit(onSubmit)} className={cn("space-y-6 pb-32", isSubmitting && "pointer-events-none opacity-70 transition-opacity duration-300")}>
       {/* 基本資訊 */}
         <div className="liquid-glass-card liquid-glass-card-brand liquid-glass-card-refraction">
           <div className="liquid-glass-content">
@@ -1547,5 +1514,6 @@ export function ProductionOrderForm({ initialData, orderId, verificationToken, o
       />
       {drawer}
     </form>
+    </div>
   )
 }
