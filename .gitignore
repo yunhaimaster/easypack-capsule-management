@@ -67,3 +67,4 @@ init.sql
 # OS
 Thumbs.db
 mcp-config.json
+.env.local
