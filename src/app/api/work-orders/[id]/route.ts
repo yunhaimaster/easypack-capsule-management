@@ -114,44 +114,10 @@ export async function GET(
       )
     }
 
-    // Serialize Date fields for JSON response
+    // For backward compatibility, also include first order as productionOrder
     const serializedWorkOrder = {
       ...workOrder,
-      // Serialize Date fields
-      createdAt: workOrder.createdAt.toISOString(),
-      updatedAt: workOrder.updatedAt.toISOString(),
-      markedDate: workOrder.markedDate.toISOString(),
-      statusUpdatedAt: workOrder.statusUpdatedAt?.toISOString() || null,
-      expectedProductionMaterialsDate: workOrder.expectedProductionMaterialsDate?.toISOString() || null,
-      expectedPackagingMaterialsDate: workOrder.expectedPackagingMaterialsDate?.toISOString() || null,
-      requestedDeliveryDate: workOrder.requestedDeliveryDate?.toISOString() || null,
-      internalExpectedDate: workOrder.internalExpectedDate?.toISOString() || null,
-      notifiedDate: workOrder.notifiedDate?.toISOString() || null,
-      paymentReceivedDate: workOrder.paymentReceivedDate?.toISOString() || null,
-      shippedDate: workOrder.shippedDate?.toISOString() || null,
-      // Serialize nested capsulationOrder dates
-      capsulationOrder: workOrder.capsulationOrder ? {
-        ...workOrder.capsulationOrder,
-        createdAt: workOrder.capsulationOrder.createdAt.toISOString(),
-        updatedAt: workOrder.capsulationOrder.updatedAt.toISOString(),
-        completionDate: workOrder.capsulationOrder.completionDate?.toISOString() || null,
-        worklogs: workOrder.capsulationOrder.worklogs?.map(log => ({
-          ...log,
-          workDate: log.workDate.toISOString(),
-          createdAt: log.createdAt.toISOString(),
-          updatedAt: log.updatedAt.toISOString()
-        })) || []
-      } : null,
-      // Serialize productionOrders dates
-      productionOrders: workOrder.productionOrders?.map(order => ({
-        ...order,
-        createdAt: order.createdAt.toISOString()
-      })) || [],
-      // For backward compatibility, also include first order as productionOrder
-      productionOrder: workOrder.productionOrders?.[0] ? {
-        ...workOrder.productionOrders[0],
-        createdAt: workOrder.productionOrders[0].createdAt.toISOString()
-      } : null
+      productionOrder: workOrder.productionOrders?.[0] || null  // First order for compatibility
     }
 
     // Get audit context

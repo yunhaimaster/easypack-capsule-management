@@ -201,9 +201,15 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
   const idFields = ['sourceId', 'targetId', 'orderId', 'workOrderId', 'productionOrderId', 'worklogId', 'recipeId', 'previousLink', 'userId', 'id']
   
   // High-priority name fields (shown first, and hide their corresponding IDs)
+  // Order matters: most important fields first
   const nameFields = [
-    'customerName', 'productName', 'jobNumber', 'personInChargeName', 
-    'sourceName', 'targetName', 'workDescription'
+    'jobNumber',           // Always show (critical identifier)
+    'customerName',        // Always show (critical identifier)
+    'personInChargeName',  // Always show if available
+    'productName',         // Show if available
+    'sourceName',         // Link-related
+    'targetName',         // Link-related
+    'workDescription'      // Optional description
   ]
   
   // Status and type fields
@@ -213,17 +219,37 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
   const countFields = ['quantity', 'productionQuantity', 'ingredientCount', 'worklogCount', 'productionOrderCount', 'orderCount', 'headcount']
 
   // First pass: Process high-priority name fields
+  // Always show critical fields (jobNumber, customerName, personInChargeName) even if empty
+  // Show other fields if they have values
   nameFields.forEach(nameField => {
-    if (metadata[nameField] !== undefined && metadata[nameField] !== null) {
+    if (metadata[nameField] !== undefined) {
       const value = metadata[nameField]
       let label = fieldLabels[nameField] || nameField
-      let displayValue = String(value)
+      let displayValue: string
+      
+      // Determine if this is a critical field that should always be shown
+      const isCriticalField = nameField === 'jobNumber' || nameField === 'customerName' || nameField === 'personInChargeName'
+      
+      // Handle null/empty values
+      if (value === null || value === '' || (typeof value === 'string' && value.trim() === '')) {
+        // For critical fields, always show placeholder even if empty
+        // For other fields, skip if empty (they're optional)
+        if (isCriticalField) {
+          displayValue = '（空）'
+        } else {
+          // Skip optional fields that are null/empty
+          processed.add(nameField)
+          return
+        }
+      } else {
+        displayValue = String(value).trim()
+      }
       
       // Special formatting for source/target in link actions
       if ((nameField === 'sourceName' || nameField === 'targetName') && metadata[`${nameField.replace('Name', 'Type')}`]) {
         const type = metadata[`${nameField.replace('Name', 'Type')}`]
         label = nameField === 'sourceName' ? '來源' : '目標'
-        displayValue = `${typeLabels[type] || type}：${value}`
+        displayValue = `${typeLabels[type] || type}：${displayValue}`
       }
       
       result.push({ label, value: displayValue })
@@ -242,14 +268,27 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
       } else if (nameField === 'jobNumber') {
         processed.add('workOrderId')
       }
+    } else if (nameField === 'customerName' || nameField === 'personInChargeName') {
+      // Even if not in metadata, show placeholder for critical fields to ensure visibility
+      // This ensures these fields always appear in audit logs
+      result.push({ label: fieldLabels[nameField] || nameField, value: '（空）' })
+      processed.add(nameField)
     }
   })
 
   // Second pass: Process status and type fields
+  // Status should always be shown (even if null, show placeholder)
   statusFields.forEach(field => {
-    if (metadata[field] !== undefined && metadata[field] !== null && !processed.has(field)) {
+    if (metadata[field] !== undefined && !processed.has(field)) {
       const value = metadata[field]
-      let displayValue = String(value)
+      let displayValue: string
+      
+      if (value === null || value === '') {
+        // Show placeholder for status fields if null
+        displayValue = '未設定'
+      } else {
+        displayValue = String(value)
+      }
       
       // Format type fields
       if (field.endsWith('Type') && typeLabels[displayValue]) {
@@ -262,11 +301,16 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
   })
 
   // Third pass: Process count and quantity fields
+  // Show count fields even if 0, as 0 is meaningful information
   countFields.forEach(field => {
     if (metadata[field] !== undefined && metadata[field] !== null && !processed.has(field)) {
       const value = metadata[field]
       const displayValue = typeof value === 'number' ? value.toLocaleString('zh-HK') : String(value)
       result.push({ label: fieldLabels[field] || field, value: displayValue })
+      processed.add(field)
+    } else if (metadata[field] === 0 && !processed.has(field)) {
+      // Show 0 for count fields (0 is meaningful - means no items)
+      result.push({ label: fieldLabels[field] || field, value: '0' })
       processed.add(field)
     }
   })
@@ -274,15 +318,30 @@ function formatMetadata(metadata: Record<string, any>, action: string): Array<{ 
   // Fourth pass: Process remaining meaningful fields (excluding all IDs)
   Object.entries(metadata).forEach(([key, value]) => {
     if (processed.has(key)) return
-    if (value === null || value === undefined) return
+    // Skip undefined, but allow null for important fields with fallback
+    if (value === undefined) return
     // NEVER show system IDs
     if (idFields.includes(key)) return
+    
+    // For null values, only show if it's a meaningful field that should be displayed
+    if (value === null) {
+      // Only show null for critical fields that users expect to see
+      if (['workDescription', 'productName'].includes(key)) {
+        // These will be handled below with a placeholder
+      } else {
+        // Skip other null fields
+        return
+      }
+    }
     
     let label = fieldLabels[key] || key
     let displayValue: string
 
     // Format value based on type
-    if (typeof value === 'object') {
+    if (value === null) {
+      // Show placeholder for null values in important fields
+      displayValue = '（空）'
+    } else if (typeof value === 'object') {
       displayValue = JSON.stringify(value)
     } else if (typeof value === 'number') {
       displayValue = value.toLocaleString('zh-HK')
