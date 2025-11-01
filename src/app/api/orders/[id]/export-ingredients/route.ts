@@ -5,12 +5,30 @@ import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
 import { exportToXLSX, STANDARD_EXPORT_HEADERS, createContentDisposition } from '@/lib/export/export-utils'
+import { hasPermission } from '@/lib/middleware/work-order-auth'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Authentication check
+    const session = await getSessionFromCookie()
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: '未授權' },
+        { status: 401 }
+      )
+    }
+
+    // Authorization check - EXPORT permission required
+    if (!hasPermission(session.user.role, 'EXPORT')) {
+      return NextResponse.json(
+        { success: false, error: '權限不足' },
+        { status: 403 }
+      )
+    }
+
     const { id } = await params
     
     // Get order with ingredients
