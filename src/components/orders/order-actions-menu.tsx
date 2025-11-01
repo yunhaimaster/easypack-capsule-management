@@ -17,6 +17,7 @@ import {
   Trash2,
   MoreVertical,
   Loader2,
+  Download,
 } from 'lucide-react'
 import { ProductionOrder } from '@/types'
 import { useToast } from '@/components/ui/toast-provider'
@@ -61,6 +62,42 @@ export function OrderActionsMenu({
     }
   }
 
+  const handleExportIngredients = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/orders/${order.id}/export-ingredients`)
+      
+      if (!response.ok) {
+        const error = await response.json()
+        showToast({ title: error.error || '導出失敗', variant: 'destructive' })
+        return
+      }
+
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition')
+      const filename = contentDisposition 
+        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+        : `${order.customerName}_${order.productName}_原料明細.xlsx`
+
+      // Convert response to blob and download
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      showToast({ title: '導出成功' })
+    } catch (error) {
+      showToast({ title: '導出失敗，請稍後重試', variant: 'destructive' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -94,6 +131,15 @@ export function OrderActionsMenu({
           >
             <Edit className="mr-2 h-4 w-4" />
             <span>編輯</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={async (e) => {
+              e.stopPropagation()
+              await handleExportIngredients()
+            }}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            <span>導出原料明細</span>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

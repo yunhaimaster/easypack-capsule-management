@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Edit, Download, Brain, BookmarkPlus, Lock, Unlock, Link2 } from 'lucide-react'
+import { ArrowLeft, Edit, Download, Brain, BookmarkPlus, Lock, Unlock, Link2, Loader2 } from 'lucide-react'
 import { formatDateOnly, formatNumber, formatIngredientWeight, convertWeight, calculateBatchWeight } from '@/lib/utils'
 import { ProductionOrder, OrderWorklog, RecipeLibraryItem } from '@/types'
 import { OrderAIAssistant } from '@/components/ai/order-ai-assistant'
@@ -48,6 +48,7 @@ export default function OrderDetailPage() {
   const [lockDialogMode, setLockDialogMode] = useState<'set' | 'change' | 'verify'>('set')
   const [linkModalOpen, setLinkModalOpen] = useState(false)
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
+  const [isExportingIngredients, setIsExportingIngredients] = useState(false)
 
   useEffect(() => {
     const id = params?.id as string | undefined
@@ -195,6 +196,44 @@ export default function OrderDetailPage() {
     
     // 直接跳轉編輯頁 - 密碼驗證在編輯頁面內處理
     router.push(`/orders/${order.id}/edit`)
+  }
+
+  const handleExportIngredients = async () => {
+    if (!order) return
+    
+    setIsExportingIngredients(true)
+    try {
+      const response = await fetch(`/api/orders/${order.id}/export-ingredients`)
+      
+      if (!response.ok) {
+        const error = await response.json()
+        showToast({ title: error.error || '導出失敗', variant: 'destructive' })
+        return
+      }
+
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition')
+      const filename = contentDisposition 
+        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+        : `${order.customerName}_${order.productName}_原料明細.xlsx`
+
+      // Convert response to blob and download
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      showToast({ title: '導出成功' })
+    } catch (error) {
+      showToast({ title: '導出失敗，請稍後重試', variant: 'destructive' })
+    } finally {
+      setIsExportingIngredients(false)
+    }
   }
 
   const handlePasswordVerifySuccess = (password?: string) => {
@@ -371,6 +410,18 @@ export default function OrderDetailPage() {
               </>
             )}
             
+            <Button
+              onClick={handleExportIngredients}
+              disabled={isExportingIngredients}
+              className="ripple-effect btn-micro-hover touch-target text-sm sm:text-base px-3 sm:px-4"
+            >
+              {isExportingIngredients ? (
+                <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 sm:mr-2" />
+              )}
+              <span className="hidden sm:inline">導出原料明細</span>
+            </Button>
             <Button
               onClick={handleEditClick}
               className="ripple-effect btn-micro-hover bg-primary-600 hover:bg-primary-700 touch-target text-sm sm:text-base px-3 sm:px-4"
