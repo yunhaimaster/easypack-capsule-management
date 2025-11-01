@@ -112,6 +112,7 @@ export interface SearchFilters {
   minQuantity?: number
   maxQuantity?: number
   isCompleted?: boolean
+  status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
   page?: number
   limit?: number
   sortBy?: 'createdAt' | 'productionQuantity' | 'customerName' | 'productName' | 'completionDate'

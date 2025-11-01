@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ProductionOrder } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,7 +29,9 @@ const DEFAULT_FILTERS = {
   page: 1,
   limit: 25,
   sortBy: 'completionDate',
-  sortOrder: 'desc'
+  sortOrder: 'desc',
+  isCompleted: undefined as boolean | undefined,
+  status: undefined as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | undefined
 }
 
 const STATUS_ORDER = {
@@ -70,6 +73,7 @@ const sortOrdersByStatus = (orders: ProductionOrder[]) =>
 
 export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: ResponsiveOrdersListProps) {
   const { showToast } = useToast()
+  const searchParams = useSearchParams()
   const abortControllerRef = useRef<AbortController | null>(null)
   const [orders, setOrders] = useState<ProductionOrder[]>(initialOrders)
   const [statusMessage, setStatusMessage] = useState('')
@@ -88,7 +92,18 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
   // Modal hooks
   const deleteConfirmModal = useLiquidGlassModal()
   
-  const [filters, setFilters] = useState(DEFAULT_FILTERS)
+  // Initialize filters from URL params if available
+  const [filters, setFilters] = useState(() => {
+    const urlIsCompleted = searchParams?.get('isCompleted')
+    const urlStatus = searchParams?.get('status')
+    return {
+      ...DEFAULT_FILTERS,
+      isCompleted: urlIsCompleted !== null ? urlIsCompleted === 'true' : undefined,
+      status: urlStatus as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | undefined,
+      page: parseInt(searchParams?.get('page') || '1'),
+      limit: parseInt(searchParams?.get('limit') || '25')
+    }
+  })
   
   // Dropdown options
   const [customerOptions, setCustomerOptions] = useState<Array<{value: string, label: string}>>([])
@@ -182,6 +197,35 @@ export function ResponsiveOrdersList({ initialOrders = [], initialPagination }: 
     }
   }, [])
 
+  // Sync filters from URL when URL changes
+  useEffect(() => {
+    const urlIsCompleted = searchParams?.get('isCompleted')
+    const urlStatus = searchParams?.get('status')
+    const urlPage = searchParams?.get('page')
+    const urlLimit = searchParams?.get('limit')
+    
+    const urlFilters = {
+      ...filters,
+      ...(urlIsCompleted !== null && urlIsCompleted !== undefined && { isCompleted: urlIsCompleted === 'true' }),
+      ...(urlStatus && (urlStatus === 'NOT_STARTED' || urlStatus === 'IN_PROGRESS' || urlStatus === 'COMPLETED') && { 
+        status: urlStatus as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' 
+      }),
+      ...(urlPage && { page: parseInt(urlPage) }),
+      ...(urlLimit && { limit: parseInt(urlLimit) })
+    }
+    
+    // Only update if filters actually changed to avoid infinite loops
+    const filtersChanged = 
+      filters.isCompleted !== urlFilters.isCompleted ||
+      filters.status !== urlFilters.status ||
+      filters.page !== urlFilters.page ||
+      filters.limit !== urlFilters.limit
+    
+    if (filtersChanged) {
+      setFilters(urlFilters)
+    }
+  }, [searchParams])
+  
   useEffect(() => {
     fetchOrders(filters)
     fetchOptions()

@@ -140,6 +140,16 @@ function WorkOrdersContent() {
   const [error, setError] = useState<Error | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   
+  // Statistics state
+  const [stats, setStats] = useState<{
+    total: number
+    completed: number
+    paused: number
+    cancelled: number
+    ongoing: number
+  } | null>(null)
+  const [isLoadingStats, setIsLoadingStats] = useState(true)
+  
   // Keep filters in ref to ensure fetchWorkOrders always uses latest values
   // This fixes intermittent refresh issues where stale filters were used
   const filtersRef = useRef<WorkOrderSearchFilters>(filters)
@@ -332,7 +342,24 @@ function WorkOrdersContent() {
       }
     }
     
+    const fetchStats = async () => {
+      try {
+        setIsLoadingStats(true)
+        const response = await fetch('/api/work-orders/stats')
+        const data = await response.json()
+        if (data.success && data.data) {
+          setStats(data.data)
+        }
+      } catch (error) {
+        console.error('Error fetching work order statistics:', error)
+        setStats(null)
+      } finally {
+        setIsLoadingStats(false)
+      }
+    }
+    
     checkAuth()
+    fetchStats()
     return () => {
       abortControllerRef.current?.abort()
     }
@@ -424,6 +451,62 @@ function WorkOrdersContent() {
       sortOrder: 'desc' as 'asc' | 'desc',
       isCompleted: false
     }
+    setFilters(newFilters)
+    syncFiltersToURL(newFilters)
+    fetchWorkOrders(newFilters)
+  }
+
+  // Handle stats badge click to filter work orders
+  const handleStatClick = (type: 'total' | 'completed' | 'ongoing' | 'paused' | 'cancelled') => {
+    // Reset to page 1 and clear existing filters
+    setSearchKeyword('')
+    setSelectedStatuses([])
+    setSelectedWorkTypes([])
+    setSelectedPersons([])
+    setDateFrom('')
+    setDateTo('')
+    setVipOnly(false)
+    setLinkedOnly(undefined)
+    setActiveSmartFilter(null)
+    
+    let newFilters: WorkOrderSearchFilters = {
+      page: 1,
+      limit: 25,
+      sortBy: 'markedDate' as SortField,
+      sortOrder: 'desc' as 'asc' | 'desc'
+    }
+    
+    switch (type) {
+      case 'total':
+        // Show all work orders
+        newFilters.isCompleted = undefined // showCompleted = true
+        setShowCompleted(true)
+        break
+      case 'completed':
+        // Show completed work orders
+        newFilters.isCompleted = undefined // showCompleted = true, matches "已出貨" smart filter
+        setShowCompleted(true)
+        break
+      case 'ongoing':
+        // Show ongoing work orders (not completed, not paused, not cancelled)
+        newFilters.isCompleted = false
+        newFilters.status = [null] // null status = ongoing
+        setShowCompleted(false)
+        break
+      case 'paused':
+        // Show paused work orders
+        newFilters.status = ['PAUSED']
+        newFilters.isCompleted = false
+        setShowCompleted(false)
+        break
+      case 'cancelled':
+        // Show cancelled work orders
+        newFilters.status = ['CANCELLED']
+        newFilters.isCompleted = false
+        setShowCompleted(false)
+        break
+    }
+    
     setFilters(newFilters)
     syncFiltersToURL(newFilters)
     fetchWorkOrders(newFilters)
@@ -644,9 +727,48 @@ function WorkOrdersContent() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
-              <span className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 dark:text-primary-400 text-sm font-medium leading-none">
-                完整追蹤
-              </span>
+              {/* Statistics Badges */}
+              {isLoadingStats ? (
+                <span className="px-3.5 py-1.5 rounded-full bg-neutral-500/15 border border-neutral-300/40 text-neutral-700 dark:text-neutral-300 text-xs font-medium leading-none">載入中...</span>
+              ) : stats ? (
+                <>
+                  <button
+                    onClick={() => handleStatClick('total')}
+                    className="px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-300/40 text-primary-700 dark:text-primary-400 text-xs font-medium leading-none hover:bg-primary-500/25 transition-apple cursor-pointer touch-feedback"
+                    title="點擊查看所有工作單"
+                  >
+                    總計: {stats.total}
+                  </button>
+                  <button
+                    onClick={() => handleStatClick('completed')}
+                    className="px-3.5 py-1.5 rounded-full bg-success-500/15 border border-success-300/40 text-success-700 dark:text-success-400 text-xs font-medium leading-none hover:bg-success-500/25 transition-apple cursor-pointer touch-feedback"
+                    title="點擊查看已完成的工作單"
+                  >
+                    完成: {stats.completed}
+                  </button>
+                  <button
+                    onClick={() => handleStatClick('ongoing')}
+                    className="px-3.5 py-1.5 rounded-full bg-warning-500/15 border border-warning-300/40 text-warning-700 dark:text-warning-400 text-xs font-medium leading-none hover:bg-warning-500/25 transition-apple cursor-pointer touch-feedback"
+                    title="點擊查看進行中的工作單"
+                  >
+                    進行中: {stats.ongoing}
+                  </button>
+                  <button
+                    onClick={() => handleStatClick('paused')}
+                    className="px-3.5 py-1.5 rounded-full bg-info-500/15 border border-info-300/40 text-info-700 dark:text-info-400 text-xs font-medium leading-none hover:bg-info-500/25 transition-apple cursor-pointer touch-feedback"
+                    title="點擊查看已暫停的工作單"
+                  >
+                    已暫停: {stats.paused}
+                  </button>
+                  <button
+                    onClick={() => handleStatClick('cancelled')}
+                    className="px-3.5 py-1.5 rounded-full bg-neutral-500/15 border border-neutral-300/40 text-neutral-700 dark:text-neutral-300 text-xs font-medium leading-none hover:bg-neutral-500/25 transition-apple cursor-pointer touch-feedback"
+                    title="點擊查看已取消的工作單"
+                  >
+                    已取消: {stats.cancelled}
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
         </section>

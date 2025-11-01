@@ -80,7 +80,7 @@ export function AdminPageClient() {
         {/* Tabs */}
         <Card className="liquid-glass-card liquid-glass-card-elevated w-full min-w-0">
           <div className="liquid-glass-content p-4 min-w-0">
-            <div className="flex gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide min-w-0 w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide min-w-0 w-full justify-center" style={{ WebkitOverflowScrolling: 'touch' }}>
               <button
                 onClick={() => setActiveTab('users')}
                 className={`flex items-center justify-center gap-2 px-2.5 sm:px-3 md:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 text-xs sm:text-sm md:text-base ${

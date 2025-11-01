@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { OrdersPageClient } from '@/components/orders/orders-page-client'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
@@ -17,5 +18,9 @@ export const metadata: Metadata = {
 }
 
 export default function OrdersPage() {
-  return <OrdersPageClient />
+  return (
+    <Suspense fallback={<div>載入中...</div>}>
+      <OrdersPageClient />
+    </Suspense>
+  )
 }

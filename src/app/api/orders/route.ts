@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Prisma, AuditAction } from '@prisma/client'
+import { Prisma, AuditAction, ProductionOrderStatus } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { productionOrderSchema, searchFiltersSchema, worklogSchema } from '@/lib/validations'
 import { SearchFilters } from '@/types'
@@ -19,6 +19,12 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl
     
+    const statusParam = searchParams.get('status')
+    // Only include status if it's a valid enum value
+    const validStatus = statusParam && (statusParam === 'NOT_STARTED' || statusParam === 'IN_PROGRESS' || statusParam === 'COMPLETED')
+      ? statusParam as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
+      : undefined
+    
     const filters: SearchFilters = {
       customerName: searchParams.get('customerName') || undefined,
       productName: searchParams.get('productName') || undefined,
@@ -28,6 +34,7 @@ export async function GET(request: NextRequest) {
       minQuantity: searchParams.get('minQuantity') ? parseInt(searchParams.get('minQuantity')!) : undefined,
       maxQuantity: searchParams.get('maxQuantity') ? parseInt(searchParams.get('maxQuantity')!) : undefined,
       isCompleted: searchParams.get('isCompleted') ? searchParams.get('isCompleted') === 'true' : undefined,
+      ...(validStatus && { status: validStatus }), // Only include if valid
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '25'),
       sortBy: (searchParams.get('sortBy') as any) || 'createdAt',
@@ -101,7 +108,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (validatedFilters.isCompleted !== undefined) {
+    // Status filter (takes priority over isCompleted if both are set)
+    if (validatedFilters.status) {
+      where.status = validatedFilters.status as ProductionOrderStatus
+    } else if (validatedFilters.isCompleted !== undefined) {
+      // Fallback to isCompleted filter if status is not specified
       if (validatedFilters.isCompleted) {
         where.completionDate = { not: null }
       } else {

@@ -9,8 +9,6 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
@@ -92,13 +90,13 @@ function ManagerSchedulingContent() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
           <div className="flex items-center justify-center min-h-[60vh]">
             <LoadingSpinner size="lg" />
           </div>
-        </main>
+        </div>
         <LiquidGlassFooter />
       </div>
     )
@@ -106,49 +104,51 @@ function ManagerSchedulingContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
-          <Card className="liquid-glass-card liquid-glass-card-elevated">
-            <CardContent className="p-6">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+          <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
+            <div className="liquid-glass-content">
               <div className="flex items-center gap-3 text-danger-600">
                 <IconContainer icon={AlertCircle} variant="danger" size="md" />
                 <p className="text-lg font-semibold">
                   錯誤：{error}
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        </main>
+            </div>
+          </section>
+        </div>
         <LiquidGlassFooter />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+    <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
       
-      <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
         {/* Hero Section */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <IconContainer icon={Calendar} variant="primary" size="lg" />
-            <div>
-              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-                經理排單表（膠囊）
-              </h1>
-              <p className="text-neutral-600 dark:text-neutral-400 mt-1">
-                管理膠囊生產工作單的優先順序和生產計劃
-              </p>
+        <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
+          <div className="liquid-glass-content flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <IconContainer icon={Calendar} variant="primary" size="md" className="shadow-[0_12px_30px_rgba(59,130,246,0.25)]" />
+              <div>
+                <h1 className="text-lg md:text-lg font-semibold text-neutral-800 dark:text-white/95 tracking-tight">
+                  經理排單表（膠囊）
+                </h1>
+                <p className="text-xs md:text-xs text-neutral-600 dark:text-white/75">
+                  管理膠囊生產工作單的優先順序和生產計劃
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Table Section */}
         {entries.length === 0 ? (
-          <Card className="liquid-glass-card liquid-glass-card-elevated">
-            <CardContent className="p-12 text-center">
+          <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
+            <div className="liquid-glass-content p-12 text-center">
               <IconContainer icon={Calendar} variant="neutral" size="xl" className="mx-auto mb-4" />
               <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-2">
                 排單表目前為空
@@ -158,8 +158,8 @@ function ManagerSchedulingContent() {
                   ? '您可以在工作單頁面將工作單加入排單表'
                   : '請聯繫經理或管理員新增工作單到排單表'}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         ) : (
           <SchedulingTable
             entries={entries}
@@ -179,7 +179,7 @@ function ManagerSchedulingContent() {
             entries={entries}
           />
         )}
-      </main>
+      </div>
 
       <LiquidGlassFooter />
     </div>
@@ -189,13 +189,13 @@ function ManagerSchedulingContent() {
 export default function ManagerSchedulingPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
           <div className="flex items-center justify-center min-h-[60vh]">
             <LoadingSpinner size="lg" />
           </div>
-        </main>
+        </div>
         <LiquidGlassFooter />
       </div>
     }>
