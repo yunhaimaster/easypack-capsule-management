@@ -4,7 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
 import { AuditAction } from '@prisma/client'
-import { exportToXLSX, STANDARD_EXPORT_HEADERS } from '@/lib/export/export-utils'
+import { exportToXLSX, STANDARD_EXPORT_HEADERS, createContentDisposition } from '@/lib/export/export-utils'
 
 export async function GET(
   request: NextRequest,
@@ -64,11 +64,11 @@ export async function GET(
       })
     })
 
-    // Generate filename
-    const filename = `${order.customerName}_${order.productName}_原料明細`
+    // Generate filename with date
+    const filename = `${order.customerName}_${order.productName}_原料明細_${exportDate}.xlsx`
     
     // Create XLSX buffer with Chinese support
-    const buffer = exportToXLSX(data, filename, '原料明細')
+    const buffer = exportToXLSX(data, filename.replace('.xlsx', ''), '原料明細')
 
     // Audit logging
     const context = await getUserContextFromRequest(request)
@@ -87,12 +87,12 @@ export async function GET(
       }
     })
 
-    // Return XLSX file with proper headers
+    // Return XLSX file with proper headers and Chinese filename support
     return new NextResponse(buffer as never, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}_${exportDate}.xlsx"`,
+        'Content-Disposition': createContentDisposition(filename),
         'Content-Length': buffer.length.toString(),
         ...STANDARD_EXPORT_HEADERS
       }

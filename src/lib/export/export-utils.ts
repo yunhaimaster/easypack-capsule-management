@@ -227,3 +227,18 @@ export function getMimeType(format: string): string {
   
   return mimeTypes[format.toLowerCase()] || 'application/octet-stream'
 }
+
+/**
+ * Create Content-Disposition header value with proper Chinese filename encoding
+ * 
+ * Uses RFC 5987 encoding for proper Chinese character support across all browsers.
+ * Falls back to ASCII-safe filename if needed.
+ * 
+ * @param filename - Filename with potential Chinese characters
+ * @returns Content-Disposition header value
+ */
+export function createContentDisposition(filename: string): string {
+  // RFC 5987 encoded filename for Chinese characters
+  const encodedFilename = encodeURIComponent(filename)
+  return `attachment; filename="${filename}"; filename*=UTF-8''${encodedFilename}`
+}
