@@ -212,10 +212,23 @@ export default function OrderDetailPage() {
       }
 
       // Get filename from Content-Disposition header
+      // Header format: attachment; filename="encoded"; filename*=UTF-8''encoded
       const contentDisposition = response.headers.get('Content-Disposition')
-      const filename = contentDisposition 
-        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
-        : `${order.customerName}_${order.productName}_原料明細.xlsx`
+      let filename = `${order.customerName}_${order.productName}_原料明細.xlsx`
+      
+      if (contentDisposition) {
+        // Try to extract from filename*=UTF-8'' (RFC 5987, preferred for UTF-8)
+        const utf8Match = contentDisposition.match(/filename\*=UTF-8''(.+?)(?:;|$)/)
+        if (utf8Match && utf8Match[1]) {
+          filename = decodeURIComponent(utf8Match[1])
+        } else {
+          // Fall back to filename="..." (extract quoted value)
+          const quotedMatch = contentDisposition.match(/filename="([^"]+)"/)
+          if (quotedMatch && quotedMatch[1]) {
+            filename = decodeURIComponent(quotedMatch[1])
+          }
+        }
+      }
 
       // Convert response to blob and download
       const blob = await response.blob()
