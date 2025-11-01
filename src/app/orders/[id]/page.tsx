@@ -96,8 +96,10 @@ export default function OrderDetailPage() {
         return
       }
       
-      const data = await response.json()
-      setOrder(data)
+      const result = await response.json()
+      // Handle both old format (direct object) and new format ({ success: true, data: {...} })
+      const orderData = result.success && result.data ? result.data : result
+      setOrder(orderData)
     } catch (error) {
       console.error('載入訂單錯誤:', error)
       setError('載入訂單失敗')

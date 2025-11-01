@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Prisma, AuditAction, ProductionOrderStatus } from '@prisma/client'
-import { prisma } from '@/lib/prisma'
+import { prisma, executeWithRetry, isConnectionError } from '@/lib/prisma'
 import { productionOrderSchema, searchFiltersSchema, worklogSchema } from '@/lib/validations'
 import { SearchFilters } from '@/types'
 import { calculateWorkUnits } from '@/lib/worklog'
@@ -17,10 +17,31 @@ export const revalidate = 300 // 5 minutes
 
 export async function GET(request: NextRequest) {
   try {
+    // Authentication check
+    const session = await getSessionFromCookie()
+    if (!session) {
+      return jsonError(401, {
+        code: 'UNAUTHORIZED',
+        message: '未授權'
+      })
+    }
+
     const { searchParams } = request.nextUrl
     
+    // Support array-based status filter
+    const statusParams = searchParams.getAll('status')
+    const validStatuses = statusParams.filter(s => 
+      s === 'NOT_STARTED' || s === 'IN_PROGRESS' || s === 'COMPLETED'
+    ) as ('NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED')[]
+    
+    // Support array-based customerServiceId filter
+    const customerServiceIds = searchParams.getAll('customerServiceId')
+    
+    // Support keyword search (cross-field)
+    const keyword = searchParams.get('keyword') || undefined
+    
+    // Single status param for backward compatibility
     const statusParam = searchParams.get('status')
-    // Only include status if it's a valid enum value
     const validStatus = statusParam && (statusParam === 'NOT_STARTED' || statusParam === 'IN_PROGRESS' || statusParam === 'COMPLETED')
       ? statusParam as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
       : undefined
@@ -34,7 +55,7 @@ export async function GET(request: NextRequest) {
       minQuantity: searchParams.get('minQuantity') ? parseInt(searchParams.get('minQuantity')!) : undefined,
       maxQuantity: searchParams.get('maxQuantity') ? parseInt(searchParams.get('maxQuantity')!) : undefined,
       isCompleted: searchParams.get('isCompleted') ? searchParams.get('isCompleted') === 'true' : undefined,
-      ...(validStatus && { status: validStatus }), // Only include if valid
+      ...(validStatus && { status: validStatus }), // Only include if valid (backward compatibility)
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '25'),
       sortBy: (searchParams.get('sortBy') as any) || 'createdAt',
@@ -47,6 +68,24 @@ export async function GET(request: NextRequest) {
 
     const searchConditions: Prisma.ProductionOrderWhereInput[] = []
 
+    // Enhanced keyword search (searches across multiple fields)
+    if (keyword) {
+      const keywordTrimmed = keyword.trim()
+      const keywordConditions: Prisma.ProductionOrderWhereInput[] = [
+        { customerName: { contains: keywordTrimmed, mode: 'insensitive' } },
+        { productName: { contains: keywordTrimmed, mode: 'insensitive' } },
+        {
+          ingredients: {
+            some: {
+              materialName: { contains: keywordTrimmed, mode: 'insensitive' }
+            }
+          }
+        }
+      ]
+      searchConditions.push({ OR: keywordConditions })
+    }
+
+    // Individual field filters (only if keyword not provided, or as additional filters)
     if (validatedFilters.customerName) {
       searchConditions.push({
         customerName: {
@@ -87,6 +126,11 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Array-based customerServiceId filter
+    if (customerServiceIds.length > 0) {
+      where.customerServiceId = { in: customerServiceIds }
+    }
+
     if (searchConditions.length > 0) {
       where.AND = searchConditions
     }
@@ -108,8 +152,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Status filter (takes priority over isCompleted if both are set)
-    if (validatedFilters.status) {
+    // Status filter - support array-based filtering
+    if (validStatuses.length > 0) {
+      where.status = { in: validStatuses }
+    } else if (validatedFilters.status) {
+      // Single status filter for backward compatibility
       where.status = validatedFilters.status as ProductionOrderStatus
     } else if (validatedFilters.isCompleted !== undefined) {
       // Fallback to isCompleted filter if status is not specified
@@ -178,7 +225,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [orders, total] = await Promise.all([
-      prisma.productionOrder.findMany({
+      executeWithRetry(() => prisma.productionOrder.findMany({
         where,
         include: {
           ingredients: true,
@@ -205,8 +252,8 @@ export async function GET(request: NextRequest) {
         orderBy,
         take: validatedFilters.limit,
         skip
-      }),
-      prisma.productionOrder.count({ where })
+      })),
+      executeWithRetry(() => prisma.productionOrder.count({ where }))
     ])
 
     const serializedOrders = orders.map(order => ({
@@ -232,11 +279,24 @@ export async function GET(request: NextRequest) {
         total,
         totalPages: Math.ceil(total / validatedFilters.limit)
       }
+    }, {
+      headers: {
+        'Cache-Control': 'private, max-age=30'
+      }
     })
   } catch (error) {
     logger.error('載入訂單錯誤', {
       error: error instanceof Error ? error.message : error
     })
+    
+    // Handle connection errors with 503 status
+    if (isConnectionError(error)) {
+      return jsonError(503, {
+        code: 'DATABASE_UNAVAILABLE',
+        message: '數據庫連接失敗，請稍後重試'
+      })
+    }
+    
     return jsonError(500, {
       code: 'ORDERS_FETCH_FAILED',
       message: '載入訂單失敗',
@@ -247,8 +307,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get current user for audit logging
+    // Authentication check
     const session = await getSessionFromCookie()
+    if (!session) {
+      return jsonError(401, {
+        code: 'UNAUTHORIZED',
+        message: '未授權'
+      })
+    }
+    
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
     
@@ -258,16 +325,16 @@ export async function POST(request: NextRequest) {
     
     // Verify work order exists if workOrderId provided
     if (workOrderId) {
-      const workOrderExists = await prisma.unifiedWorkOrder.findUnique({
+      const workOrderExists = await executeWithRetry(() => prisma.unifiedWorkOrder.findUnique({
         where: { id: workOrderId },
         select: { id: true }
-      })
+      }))
       
       if (!workOrderExists) {
-        return NextResponse.json(
-          { success: false, error: '指定的工作單不存在' },
-          { status: 400 }
-        )
+        return jsonError(400, {
+          code: 'WORK_ORDER_NOT_FOUND',
+          message: '指定的工作單不存在'
+        })
       }
     }
     
@@ -296,7 +363,7 @@ export async function POST(request: NextRequest) {
     })
     
     // Create order and link in same transaction
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await executeWithRetry(() => prisma.$transaction(async (tx) => {
       const newOrder = await tx.productionOrder.create({
         data: {
           ...orderData,
@@ -360,7 +427,7 @@ export async function POST(request: NextRequest) {
       })
       
       return newOrder
-    })
+    }))
 
     logger.info('Order created successfully', {
       orderId: order.id,
@@ -415,6 +482,14 @@ export async function POST(request: NextRequest) {
       message: error instanceof Error ? error.message : '未知錯誤',
       stack: error instanceof Error ? error.stack : undefined,
     })
+
+    // Handle connection errors with 503 status
+    if (isConnectionError(error)) {
+      return jsonError(503, {
+        code: 'DATABASE_UNAVAILABLE',
+        message: '數據庫連接失敗，請稍後重試'
+      })
+    }
 
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return jsonError(409, {

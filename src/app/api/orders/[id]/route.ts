@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma, executeWithRetry, isConnectionError } from '@/lib/prisma'
 import { productionOrderSchema, worklogSchema } from '@/lib/validations'
 import { calculateWorkUnits } from '@/lib/worklog'
 import { DateTime } from 'luxon'
 import { logger } from '@/lib/logger'
+import { jsonSuccess, jsonError } from '@/lib/api-response'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
 import { getUserContextFromRequest } from '@/lib/audit-context'
@@ -25,13 +26,20 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get current user for audit logging
+    // Authentication check
     const session = await getSessionFromCookie()
+    if (!session) {
+      return jsonError(401, {
+        code: 'UNAUTHORIZED',
+        message: '未授權'
+      })
+    }
+    
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
     
     const { id } = await params
-    const order = await prisma.productionOrder.findUnique({
+    const order = await executeWithRetry(() => prisma.productionOrder.findUnique({
       where: { id },
       include: {
         ingredients: true,
@@ -55,13 +63,13 @@ export async function GET(
           }
         }
       }
-    })
+    }))
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      )
+      return jsonError(404, {
+        code: 'ORDER_NOT_FOUND',
+        message: '訂單不存在'
+      })
     }
 
     // Audit log for viewing order
@@ -93,15 +101,25 @@ export async function GET(
       }))
     }
 
-    return NextResponse.json(serializedOrder)
+    return jsonSuccess(serializedOrder)
   } catch (error) {
     logger.error('載入訂單錯誤', {
       error: error instanceof Error ? error.message : String(error)
     })
-    return NextResponse.json(
-      { error: '載入訂單失敗' },
-      { status: 500 }
-    )
+    
+    // Handle connection errors with 503 status
+    if (isConnectionError(error)) {
+      return jsonError(503, {
+        code: 'DATABASE_UNAVAILABLE',
+        message: '數據庫連接失敗，請稍後重試'
+      })
+    }
+    
+    return jsonError(500, {
+      code: 'ORDER_FETCH_FAILED',
+      message: '載入訂單失敗',
+      details: error instanceof Error ? error.message : String(error)
+    })
   }
 }
 
@@ -110,8 +128,15 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get current user for audit logging
+    // Authentication check
     const session = await getSessionFromCookie()
+    if (!session) {
+      return jsonError(401, {
+        code: 'UNAUTHORIZED',
+        message: '未授權'
+      })
+    }
+    
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const userAgent = request.headers.get('user-agent') || null
     
@@ -121,7 +146,7 @@ export async function PUT(
     const validatedData = productionOrderSchema.parse(orderData)
     
     // 檢查訂單是否有密碼鎖且是否修改了客戶指定的原料
-    const existingOrder = await prisma.productionOrder.findUnique({
+    const existingOrder = await executeWithRetry(() => prisma.productionOrder.findUnique({
       where: { id },
       select: { 
         lockPassword: true, 
@@ -134,13 +159,13 @@ export async function PUT(
           }
         }
       }
-    })
+    }))
     
     if (!existingOrder) {
-      return NextResponse.json(
-        { success: false, error: '訂單不存在' },
-        { status: 404 }
-      )
+      return jsonError(404, {
+        code: 'ORDER_NOT_FOUND',
+        message: '訂單不存在'
+      })
     }
     
     // 檢查是否實際修改了客戶指定的原料
@@ -189,10 +214,10 @@ export async function PUT(
     // 只有在實際修改了受保護字段時才需要密碼驗證
     if (hasModifiedProtectedIngredients()) {
       if (!verificationPassword) {
-        return NextResponse.json(
-          { success: false, error: '需要密碼驗證' },
-          { status: 403 }
-        )
+        return jsonError(403, {
+          code: 'PASSWORD_REQUIRED',
+          message: '需要密碼驗證'
+        })
       }
       
       const isValid = timingSafeEqual(
@@ -201,10 +226,10 @@ export async function PUT(
       )
       
       if (!isValid) {
-        return NextResponse.json(
-          { success: false, error: '密碼錯誤' },
-          { status: 403 }
-        )
+        return jsonError(403, {
+          code: 'INVALID_PASSWORD',
+          message: '密碼錯誤'
+        })
       }
     }
     
@@ -246,7 +271,7 @@ export async function PUT(
       completionDate: completionDateValue
     })
 
-    const order = await prisma.productionOrder.update({
+    const order = await executeWithRetry(() => prisma.productionOrder.update({
       where: { id },
       data: {
         customerName: orderPayload.customerName,
@@ -293,7 +318,7 @@ export async function PUT(
           orderBy: { workDate: 'asc' }
         }
       }
-    })
+    }))
 
     // Audit log for updating order
     await logAudit({
@@ -323,21 +348,33 @@ export async function PUT(
           order.completionDate) : null
     }
 
-    return NextResponse.json(serializedOrder)
+    return jsonSuccess(serializedOrder)
   } catch (error) {
     logger.error('更新訂單錯誤', {
       error: error instanceof Error ? error.message : String(error)
     })
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { success: false, error: '驗證失敗', message: error.message, details: error.message },
-        { status: 400 }
-      )
+    
+    // Handle connection errors with 503 status
+    if (isConnectionError(error)) {
+      return jsonError(503, {
+        code: 'DATABASE_UNAVAILABLE',
+        message: '數據庫連接失敗，請稍後重試'
+      })
     }
-    return NextResponse.json(
-      { success: false, error: '更新訂單失敗', message: error instanceof Error ? error.message : '未知錯誤' },
-      { status: 500 }
-    )
+    
+    if (error instanceof Error && error.name === 'ZodError') {
+      return jsonError(400, {
+        code: 'VALIDATION_FAILED',
+        message: '驗證失敗',
+        details: error.message
+      })
+    }
+    
+    return jsonError(500, {
+      code: 'ORDER_UPDATE_FAILED',
+      message: '更新訂單失敗',
+      details: error instanceof Error ? error.message : String(error)
+    })
   }
 }
 
@@ -346,31 +383,40 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Authentication check
+    const session = await getSessionFromCookie()
+    if (!session) {
+      return jsonError(401, {
+        code: 'UNAUTHORIZED',
+        message: '未授權'
+      })
+    }
+    
     const { id } = await params
 
     // Get order details before deletion for audit log
-    const order = await prisma.productionOrder.findUnique({
+    const order = await executeWithRetry(() => prisma.productionOrder.findUnique({
       where: { id },
       select: {
         customerName: true,
         productName: true
       }
-    })
+    }))
 
     if (!order) {
-      return NextResponse.json(
-        { success: false, error: '訂單不存在' },
-        { status: 404 }
-      )
+      return jsonError(404, {
+        code: 'ORDER_NOT_FOUND',
+        message: '訂單不存在'
+      })
     }
 
     // Get user context for audit logging
     const context = await getUserContextFromRequest(request)
 
     // Delete the order
-    await prisma.productionOrder.delete({
+    await executeWithRetry(() => prisma.productionOrder.delete({
       where: { id }
-    })
+    }))
 
     // Log order deletion
     await logAudit({
@@ -386,14 +432,24 @@ export async function DELETE(
       }
     })
 
-    return NextResponse.json({ success: true, message: '訂單刪除成功' })
+    return jsonSuccess({ message: '訂單刪除成功' })
   } catch (error) {
     logger.error('刪除訂單錯誤', {
       error: error instanceof Error ? error.message : String(error)
     })
-    return NextResponse.json(
-      { success: false, error: '刪除訂單失敗' },
-      { status: 500 }
-    )
+    
+    // Handle connection errors with 503 status
+    if (isConnectionError(error)) {
+      return jsonError(503, {
+        code: 'DATABASE_UNAVAILABLE',
+        message: '數據庫連接失敗，請稍後重試'
+      })
+    }
+    
+    return jsonError(500, {
+      code: 'ORDER_DELETE_FAILED',
+      message: '刪除訂單失敗',
+      details: error instanceof Error ? error.message : String(error)
+    })
   }
 }

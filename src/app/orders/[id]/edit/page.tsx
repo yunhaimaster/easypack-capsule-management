@@ -46,12 +46,14 @@ export default function EditOrderPage() {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
           console.error('[Edit Page] Failed to fetch order:', errorData)
-          throw new Error(errorData.error || '載入訂單失敗')
+          throw new Error(errorData.error?.message || errorData.error || '載入訂單失敗')
         }
         
-        const data = await response.json()
+        const result = await response.json()
         console.log('[Edit Page] Order loaded successfully')
-        setOrder(data)
+        // Handle both old format (direct object) and new format ({ success: true, data: {...} })
+        const orderData = result.success && result.data ? result.data : result
+        setOrder(orderData)
       } catch (error) {
         clearTimeout(timeoutId)
         console.error('[Edit Page] Error fetching order:', error)
@@ -136,7 +138,7 @@ export default function EditOrderPage() {
               customerServiceId: (order.customerService as any)?.id || 'UNASSIGNED',
               actualProductionQuantity: order.actualProductionQuantity ?? undefined,
               materialYieldQuantity: order.materialYieldQuantity ?? undefined,
-              ingredients: order.ingredients.map((ingredient) => ({
+              ingredients: (order.ingredients || []).map((ingredient) => ({
                 ...ingredient,
                 isCustomerProvided: ingredient.isCustomerProvided ?? true,
                 isCustomerSupplied: ingredient.isCustomerSupplied ?? true
