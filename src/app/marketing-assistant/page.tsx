@@ -277,7 +277,7 @@ export default function MarketingAssistantPage() {
       <LiquidGlassNav />
       
       <main className="flex-1">
-        <div className="pt-24 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 pb-8 max-w-6xl mx-auto w-full">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 pb-8 max-w-6xl mx-auto w-full">
           {/* 頁面標題 */}
           <div className="text-center mb-6 space-y-3">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-info-500/15 border border-violet-300/40 text-xs font-medium text-info-700">

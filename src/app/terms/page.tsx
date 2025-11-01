@@ -42,7 +42,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
-      <main className="flex-1 pt-28 sm:pt-24 px-4 sm:px-6 md:px-12 lg:px-20 space-y-10 floating-combined pb-16">
+      <main className="flex-1 page-content-padding-top px-4 sm:px-6 md:px-12 lg:px-20 space-y-10 floating-combined pb-16">
         <section className="text-center space-y-4">
           <div className="flex justify-center">
             <Badge variant="secondary" className="inline-flex items-center gap-2">

@@ -623,7 +623,7 @@ function WorkOrdersContent() {
         </div>
       )}
       
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined">
         {/* Hero Section */}
         <section className="liquid-glass-card liquid-glass-card-refraction liquid-glass-card-interactive p-6 md:p-8">
           <div className="liquid-glass-content flex flex-col md:flex-row md:items-center md:justify-between gap-6">

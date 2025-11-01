@@ -192,6 +192,9 @@
     --nav-bg: rgba(255, 255, 255, 0.15);
     --nav-border: rgba(255, 255, 255, 0.2);
     
+    /* Dynamic Navigation Height (with fallbacks for SSR/initial render) */
+    --nav-height: 7rem; /* Mobile default (pt-28) */
+    
     /* Elevation System (Light Mode) */
     --elevation-0: #ffffff;
     --elevation-1: #f9fafb;
@@ -476,10 +479,21 @@
 
 /* 頁面內容間距 */
 .page-content-spacing {
-  padding-top: 7rem; /* pt-28 for mobile */
+  padding-top: calc(var(--nav-height, 7rem) + 1rem); /* Use dynamic nav height + spacing with fallback for mobile */
   padding-left: 1rem; /* px-4 for mobile */
   padding-right: 1rem; /* px-4 for mobile */
   padding-bottom: 2rem; /* pb-8 */
+}
+
+/* Dynamic page content padding top - adapts to actual navigation height with spacing */
+.page-content-padding-top {
+  padding-top: calc(var(--nav-height, 7rem) + 1rem); /* Nav height + 1rem spacing for mobile */
+}
+
+@media (min-width: 640px) {
+  .page-content-padding-top {
+    padding-top: calc(var(--nav-height, 6rem) + 1.5rem); /* Nav height + 1.5rem spacing for tablet+ */
+  }
 }
 
 /* 響應式文字大小 - 標題 */
@@ -754,8 +768,12 @@
 }
 
 @media (min-width: 640px) {
+  :root {
+    --nav-height: 6rem; /* Tablet+ default (pt-24) */
+  }
+  
   .page-content-spacing {
-    padding-top: 6rem; /* pt-24 for sm and up */
+    padding-top: calc(var(--nav-height, 6rem) + 1.5rem); /* Use dynamic nav height + spacing with fallback */
     padding-left: 1.5rem; /* px-6 for sm and up */
     padding-right: 1.5rem; /* px-6 for sm and up */
   }

@@ -355,7 +355,7 @@ export default function OrderDetailPage() {
       <LiquidGlassNav />
 
       {/* Main Content */}
-      <main className="flex-1 w-full pt-20 sm:pt-24 pb-16">
+      <main className="flex-1 w-full page-content-padding-top pb-16">
         <div className="mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24">
           {/* 操作按鈕 */}
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3 relative z-[2000]">

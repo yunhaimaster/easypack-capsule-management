@@ -98,7 +98,7 @@ function NewOrderContent() {
       <LiquidGlassNav />
       
       {/* Main Content with padding for fixed nav and sticky action bar */}
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined content-with-sticky-actions">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined content-with-sticky-actions">
         <section className="liquid-glass-card liquid-glass-card-refraction p-6 md:p-8">
           <div className="liquid-glass-content flex items-center gap-4">
             <IconContainer icon={Plus} variant="danger" size="md" />

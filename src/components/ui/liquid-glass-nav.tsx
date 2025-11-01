@@ -63,6 +63,35 @@ export function LiquidGlassNav({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Dynamic navigation height measurement for responsive padding
+  useEffect(() => {
+    if (!navRef.current) return
+
+    const updateNavHeight = () => {
+      const height = navRef.current?.offsetHeight || 0
+      if (height > 0) {
+        document.documentElement.style.setProperty('--nav-height', `${height}px`)
+      }
+    }
+
+    // Initial measurement after a small delay to ensure DOM is ready
+    const initialTimeout = setTimeout(updateNavHeight, 0)
+
+    // Monitor size changes (mobile menu, font scaling, rotation, etc.)
+    const resizeObserver = new ResizeObserver(() => {
+      updateNavHeight()
+    })
+    resizeObserver.observe(navRef.current)
+
+    // Also handle window resize events
+    window.addEventListener('resize', updateNavHeight, { passive: true })
+
+    return () => {
+      clearTimeout(initialTimeout)
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateNavHeight)
+    }
+  }, [isMobileMenuOpen]) // Re-measure when mobile menu toggles
 
   // Mobile menu toggle
   const handleMobileMenuToggle = () => {

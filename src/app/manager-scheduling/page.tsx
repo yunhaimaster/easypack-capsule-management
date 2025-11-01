@@ -94,7 +94,7 @@ function ManagerSchedulingContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl pt-28 sm:pt-24">
+        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
           <div className="flex items-center justify-center min-h-[60vh]">
             <LoadingSpinner size="lg" />
           </div>
@@ -108,7 +108,7 @@ function ManagerSchedulingContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl pt-28 sm:pt-24">
+        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
           <Card className="liquid-glass-card liquid-glass-card-elevated">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 text-danger-600">
@@ -129,7 +129,7 @@ function ManagerSchedulingContent() {
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
       <LiquidGlassNav />
       
-      <main className="container mx-auto px-4 py-8 max-w-7xl pt-28 sm:pt-24">
+      <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
         {/* Hero Section */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
@@ -191,7 +191,7 @@ export default function ManagerSchedulingPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
         <LiquidGlassNav />
-        <main className="container mx-auto px-4 py-8 max-w-7xl pt-28 sm:pt-24">
+        <main className="container mx-auto px-4 py-8 max-w-7xl page-content-padding-top">
           <div className="flex items-center justify-center min-h-[60vh]">
             <LoadingSpinner size="lg" />
           </div>

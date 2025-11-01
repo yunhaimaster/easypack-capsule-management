@@ -122,7 +122,7 @@ export function HomePageClient() {
       <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
 
-        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14">
           {/* Page Title */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-neutral-900 dark:text-white/95">

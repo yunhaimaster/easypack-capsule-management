@@ -347,7 +347,7 @@ export function ResponsiveWorklogsList() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 dark:text-white/55">工時日期</p>
-                    <h3 className="text-base font-semibold text-neutral-900">
+                    <h3 className="text-base font-semibold text-neutral-900 dark:text-white/95">
                       {formatWorkDate(worklog.workDate)}
                     </h3>
                   </div>

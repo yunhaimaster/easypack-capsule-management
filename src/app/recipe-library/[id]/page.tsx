@@ -435,7 +435,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
       <LiquidGlassNav />
 
       <main className="flex-1">
-        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 pb-8">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 pb-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <Link href="/recipe-library">

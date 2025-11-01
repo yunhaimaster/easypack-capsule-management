@@ -46,7 +46,7 @@ export default function SetupPage() {
     <div className="min-h-screen brand-logo-pattern-bg">
       <LiquidGlassNav />
       
-      <div className="container mx-auto px-4 pt-28 pb-8">
+      <div className="container mx-auto px-4 page-content-padding-top pb-8">
         <div className="max-w-4xl mx-auto">
           {/* 頁面標題 */}
           <div className="text-center mb-8">

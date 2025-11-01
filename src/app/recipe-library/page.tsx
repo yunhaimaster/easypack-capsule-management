@@ -634,7 +634,7 @@ export default function RecipeLibraryPage() {
       <LiquidGlassNav />
 
       <main className="flex-1">
-        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 space-y-8 pb-8">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 pb-8">
           {/* Page Header */}
           <div className="text-center mb-6 space-y-3">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-info-500/15 border border-violet-300/40 text-xs font-medium text-info-700">

@@ -192,7 +192,7 @@ export default function EditWorkOrderPage() {
     return (
       <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
-        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 floating-combined flex-1">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 floating-combined flex-1">
           <div className="max-w-4xl mx-auto">
             <Card className="liquid-glass-card transition-apple">
               <CardContent className="p-8 sm:p-12">
@@ -213,7 +213,7 @@ export default function EditWorkOrderPage() {
     return (
       <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
-        <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 floating-combined flex-1">
+        <div className="page-content-padding-top px-4 sm:px-6 md:px-8 floating-combined flex-1">
           <div className="max-w-4xl mx-auto">
             <Card className="liquid-glass-card border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-900/20 transition-apple">
               <CardContent className="pt-6">
@@ -230,7 +230,7 @@ export default function EditWorkOrderPage() {
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-8 pb-12 sm:pb-16 space-y-8 floating-combined">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 pb-12 sm:pb-16 space-y-8 floating-combined">
         <div className="max-w-4xl mx-auto">{/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">

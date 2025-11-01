@@ -116,7 +116,7 @@ export default function EditOrderPage() {
       <LiquidGlassNav />
       
       {/* Main Content with padding for fixed nav and sticky action bar */}
-      <div className="pt-28 sm:pt-24 px-4 sm:px-6 md:px-16 lg:px-20 xl:px-24 space-y-8 floating-combined content-with-sticky-actions">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-16 lg:px-20 xl:px-24 space-y-8 floating-combined content-with-sticky-actions">
         {/* Form Card */}
         <div className="max-w-5xl mx-auto w-full px-2 sm:px-4 md:px-0">
           <ProductionOrderForm 

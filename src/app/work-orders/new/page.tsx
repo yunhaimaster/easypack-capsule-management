@@ -141,7 +141,7 @@ export default function CreateWorkOrderPage() {
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
-      <div className="pt-28 sm:pt-24 px-3 sm:px-4 lg:px-6 pb-12 sm:pb-16 floating-combined">
+      <div className="page-content-padding-top px-3 sm:px-4 lg:px-6 pb-12 sm:pb-16 floating-combined">
         <div className="max-w-5xl mx-auto">
       {/* Header - Responsive but not cramped on either platform */}
       <div className="mb-6 sm:mb-8">
