@@ -45,6 +45,10 @@ export function TabsList({ children, className }: TabsListProps) {
     <div
       className={cn(
         'inline-flex h-10 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800/30 p-1 text-neutral-600 dark:text-white/75',
+        // Mobile: allow horizontal scrolling if tabs overflow
+        'overflow-x-auto overflow-y-hidden scrollbar-hide',
+        // Prevent wrapping on mobile
+        'flex-nowrap',
         className
       )}
       role="tablist"

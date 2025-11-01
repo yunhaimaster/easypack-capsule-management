@@ -72,65 +72,65 @@ export function AdminPageClient() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
+        <div className="flex gap-2 mb-6 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           <button
             onClick={() => setActiveTab('users')}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeTab === 'users'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Users className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none">用戶管理</span>
+            <span className="leading-none text-sm sm:text-base">用戶管理</span>
           </button>
           
           <button
             onClick={() => setActiveTab('sessions')}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeTab === 'sessions'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Monitor className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none">活躍會話</span>
+            <span className="leading-none text-sm sm:text-base">活躍會話</span>
           </button>
 
           <button
             onClick={() => setActiveTab('devices')}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeTab === 'devices'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <Smartphone className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none">受信任設備</span>
+            <span className="leading-none text-sm sm:text-base">受信任設備</span>
           </button>
           
           <button
             onClick={() => setActiveTab('logs')}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeTab === 'logs'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <FileText className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none">審計日誌</span>
+            <span className="leading-none text-sm sm:text-base">審計日誌</span>
           </button>
 
           <button
             onClick={() => setActiveTab('errors')}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeTab === 'errors'
                 ? 'bg-primary-500 text-white shadow-md'
                 : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
             }`}
           >
             <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none">錯誤監控</span>
+            <span className="leading-none text-sm sm:text-base">錯誤監控</span>
           </button>
         </div>
 

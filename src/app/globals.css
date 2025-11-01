@@ -585,6 +585,15 @@
   scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
 .table-scroll-container::-webkit-scrollbar {
   height: 8px;
 }
