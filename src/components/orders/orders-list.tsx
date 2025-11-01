@@ -5,7 +5,7 @@ import { ProductionOrder } from '@/types'
 import { Button } from '@/components/ui/button'
 import { LinkedFilter } from '@/components/ui/linked-filter'
 import { Search, Filter, Download, Eye, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
-import { formatDateOnly } from '@/lib/utils'
+import { formatDateOnly, safeRemoveElement } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast-provider'
 import { LiquidGlassConfirmModal, useLiquidGlassModal } from '@/components/ui/liquid-glass-modal'
 import { fetchWithTimeout } from '@/lib/api-client'
@@ -302,7 +302,7 @@ export function OrdersList({ initialOrders = [], initialPagination }: OrdersList
       a.download = `production-orders-${new Date().toISOString().split('T')[0]}.${format}`
       document.body.appendChild(a)
       a.click()
-      document.body.removeChild(a)
+      safeRemoveElement(a)
       window.URL.revokeObjectURL(url)
       showToast({
         title: '匯出完成',

@@ -120,7 +120,8 @@ export function copyToClipboard(text: string): Promise<void> {
     document.body.appendChild(textArea)
     textArea.select()
     document.execCommand('copy')
-    document.body.removeChild(textArea)
+    // Safely remove the element
+    safeRemoveElement(textArea)
     return Promise.resolve()
   }
 }
@@ -164,8 +165,30 @@ export function downloadFile(source: Blob | string, filename: string, mimeType?:
   }
   document.body.appendChild(link)
   link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(url)
+  // Safely remove the element
+  safeRemoveElement(link)
+  // Only revoke URL if it was created from a Blob
+  if (typeof source !== 'string') {
+    window.URL.revokeObjectURL(url)
+  }
+}
+
+/**
+ * Safely remove a DOM element from its parent
+ * Prevents "removeChild" errors when element is not a child or already removed
+ * @param element - The element to remove
+ */
+export function safeRemoveElement(element: Node | null | undefined): void {
+  if (!element || !element.parentNode) {
+    return
+  }
+  
+  // Check if element is still a child of its parent before removing
+  if (element.parentNode === document.body && element.parentNode.contains(element)) {
+    document.body.removeChild(element)
+  } else if (element.parentNode.contains(element)) {
+    element.parentNode.removeChild(element)
+  }
 }
 
 export function debounce<T extends (...args: any[]) => any>(
