@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma, isConnectionError, reconnectPrisma } from '@/lib/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/middleware/manager-scheduling-auth'
 
@@ -46,10 +46,69 @@ export async function GET(
     const { workOrderId } = await context.params
 
     // Check if work order exists in scheduling table
-    const entry = await prisma.managerSchedulingEntry.findUnique({
-      where: { workOrderId },
-      select: { id: true }
-    })
+    // Use retry logic with connection error handling
+    let entry = null
+    try {
+      entry = await prisma.managerSchedulingEntry.findUnique({
+        where: { workOrderId },
+        select: { id: true }
+      })
+    } catch (dbError) {
+      // Check if it's a connection error
+      if (isConnectionError(dbError)) {
+        console.warn('[API] Database connection error, attempting to reconnect...')
+        
+        // Try to reconnect
+        const reconnected = await reconnectPrisma()
+        
+        if (reconnected) {
+          // Retry the query once
+          try {
+            entry = await prisma.managerSchedulingEntry.findUnique({
+              where: { workOrderId },
+              select: { id: true }
+            })
+          } catch (retryError) {
+            console.error('[API] Retry failed after reconnection:', retryError)
+            // Return graceful default instead of crashing
+            return NextResponse.json(
+              {
+                success: true,
+                data: {
+                  isInScheduling: false,
+                  entryId: null
+                }
+              },
+              {
+                headers: {
+                  'Cache-Control': 'private, max-age=10'
+                }
+              }
+            )
+          }
+        } else {
+          console.error('[API] Reconnection failed, returning safe default')
+          // Connection failed - return safe default
+          return NextResponse.json(
+            {
+              success: true,
+              data: {
+                isInScheduling: false,
+                entryId: null
+              }
+            },
+            {
+              headers: {
+                'Cache-Control': 'private, max-age=10'
+              }
+            }
+          )
+        }
+      } else {
+        // Not a connection error, rethrow
+        throw dbError
+      }
+    }
 
     return NextResponse.json(
       {

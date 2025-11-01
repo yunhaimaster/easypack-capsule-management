@@ -79,16 +79,25 @@ export function QuickActionsMenu({
     try {
       const response = await fetch(`/api/manager-scheduling/check/${workOrder.id}`, {
         credentials: 'include',
-        cache: 'no-store'
+        cache: 'no-store',
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(5000)
       })
       
       if (response.ok) {
         const data = await response.json()
         setIsInScheduling(data.data?.isInScheduling || false)
         setSchedulingEntryId(data.data?.entryId || null)
+      } else {
+        // Non-ok response - don't fail silently, but don't crash page
+        console.warn(`Scheduling status check failed: ${response.status}`)
+        setIsInScheduling(false)
       }
     } catch (error) {
-      console.error('Failed to check scheduling status:', error)
+      // Silently fail for scheduling status - don't block the page
+      // This is a nice-to-have feature, not critical
+      console.warn('Failed to check scheduling status:', error instanceof Error ? error.message : 'Unknown error')
+      setIsInScheduling(false)
     }
   }
 

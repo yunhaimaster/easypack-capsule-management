@@ -35,7 +35,13 @@ if (process.env.NODE_ENV !== 'production') {
 export function isConnectionError(error: unknown): boolean {
   if (error && typeof error === 'object') {
     const err = error as any
-    // Prisma connection errors
+    // Prisma connection error codes
+    if (err.code === 'P1001' || err.code === 'P1017') {
+      // P1001: Can't reach database server
+      // P1017: Server has closed the connection
+      return true
+    }
+    // Prisma connection errors (legacy)
     if (err.cause?.kind === 'Closed' || err.message?.includes('Connection closed')) {
       return true
     }
@@ -46,8 +52,14 @@ export function isConnectionError(error: unknown): boolean {
     // Error message patterns
     if (typeof err.message === 'string') {
       const message = err.message.toLowerCase()
-      return message.includes('connection') && 
-             (message.includes('closed') || message.includes('terminated') || message.includes('lost'))
+      const connectionKeywords = ['connection', 'reach', 'connect', 'timeout', 'closed', 'terminated', 'lost']
+      const hasConnectionKeyword = connectionKeywords.some(keyword => message.includes(keyword))
+      const hasCanReachPattern = message.includes("can't") || message.includes('cannot')
+      
+      // Match patterns like "Can't reach database server" or "Connection refused"
+      if (hasConnectionKeyword && (hasCanReachPattern || message.includes('refused') || message.includes('unreachable'))) {
+        return true
+      }
     }
   }
   return false
