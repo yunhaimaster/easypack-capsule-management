@@ -191,6 +191,21 @@
     /* Navigation (Light Mode) */
     --nav-bg: rgba(255, 255, 255, 0.15);
     --nav-border: rgba(255, 255, 255, 0.2);
+    
+    /* Elevation System (Light Mode) */
+    --elevation-0: #ffffff;
+    --elevation-1: #f9fafb;
+    --elevation-2: #f3f4f6;
+    --elevation-3: #e5e7eb;
+    --elevation-4: #d1d5db;
+    
+    /* Surface Colors (Light Mode) */
+    --surface-primary: #ffffff;          /* White for cards */
+    --surface-primary-hover: #f9fafb;    /* Light grey on hover */
+    --surface-secondary: #f9fafb;        /* Light grey */
+    --surface-secondary-hover: #f3f4f6;  /* Slightly darker on hover */
+    --surface-elevated: #f3f4f6;         /* Elevated cards */
+    --surface-elevated-hover: #e5e7eb;   /* Slightly darker on hover */
   }
 
   .dark {
