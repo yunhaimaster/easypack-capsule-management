@@ -275,7 +275,8 @@ export function WorkOrderQuickPanel({
                    '未指派'}
                 </div>
               </div>
-              {workOrder.productionQuantity && (
+              {/* Only show production quantity if applicable */}
+              {hasProductionMaterials(workOrder.workType) && workOrder.productionQuantity && (
                 <div>
                   <span className="text-neutral-500 dark:text-neutral-400">生產數量</span>
                   <div className="font-medium text-neutral-900 dark:text-white mt-1">
@@ -283,7 +284,8 @@ export function WorkOrderQuickPanel({
                   </div>
                 </div>
               )}
-              {workOrder.packagingQuantity && (
+              {/* Only show packaging quantity if applicable */}
+              {hasPackagingMaterials(workOrder.workType) && workOrder.packagingQuantity && (
                 <div>
                   <span className="text-neutral-500 dark:text-neutral-400">包裝數量</span>
                   <div className="font-medium text-neutral-900 dark:text-white mt-1">
@@ -376,34 +378,40 @@ export function WorkOrderQuickPanel({
 
           {/* Quantities */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="productionQuantity" className="text-sm font-medium mb-2 block">
-                生產數量
-              </Label>
-              <Input
-                id="productionQuantity"
-                type="number"
-                value={editedFields.productionQuantity || ''}
-                onChange={(e) => handleFieldChange('productionQuantity', e.target.value)}
-                disabled={!canEdit}
-                className="transition-apple"
-                placeholder="0"
-              />
-            </div>
-            <div>
-              <Label htmlFor="packagingQuantity" className="text-sm font-medium mb-2 block">
-                包裝數量
-              </Label>
-              <Input
-                id="packagingQuantity"
-                type="number"
-                value={editedFields.packagingQuantity || ''}
-                onChange={(e) => handleFieldChange('packagingQuantity', e.target.value)}
-                disabled={!canEdit}
-                className="transition-apple"
-                placeholder="0"
-              />
-            </div>
+            {/* Only show production quantity input if applicable */}
+            {hasProductionMaterials(workOrder.workType) && (
+              <div>
+                <Label htmlFor="productionQuantity" className="text-sm font-medium mb-2 block">
+                  生產數量
+                </Label>
+                <Input
+                  id="productionQuantity"
+                  type="number"
+                  value={editedFields.productionQuantity || ''}
+                  onChange={(e) => handleFieldChange('productionQuantity', e.target.value)}
+                  disabled={!canEdit}
+                  className="transition-apple"
+                  placeholder="0"
+                />
+              </div>
+            )}
+            {/* Only show packaging quantity input if applicable */}
+            {hasPackagingMaterials(workOrder.workType) && (
+              <div>
+                <Label htmlFor="packagingQuantity" className="text-sm font-medium mb-2 block">
+                  包裝數量
+                </Label>
+                <Input
+                  id="packagingQuantity"
+                  type="number"
+                  value={editedFields.packagingQuantity || ''}
+                  onChange={(e) => handleFieldChange('packagingQuantity', e.target.value)}
+                  disabled={!canEdit}
+                  className="transition-apple"
+                  placeholder="0"
+                />
+              </div>
+            )}
           </div>
 
           {/* Delivery Dates */}

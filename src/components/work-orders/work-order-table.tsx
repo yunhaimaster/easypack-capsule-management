@@ -723,17 +723,20 @@ export function WorkOrderTable({
                     {/* Quantity */}
                     <td className="py-3 px-3 text-sm align-top">
                       <div className="flex flex-col gap-0.5">
-                        {workOrder.productionQuantity ? (
+                        {/* Only show production quantity for PRODUCTION and PRODUCTION_PACKAGING */}
+                        {hasProductionMaterials(workOrder.workType) && workOrder.productionQuantity ? (
                           <div className="text-neutral-900 dark:text-white/95">
                             生產: {workOrder.productionQuantity}{workOrder.productionQuantityStat || '個'}
                           </div>
                         ) : null}
-                        {workOrder.packagingQuantity ? (
+                        {/* Only show packaging quantity for PACKAGING and PRODUCTION_PACKAGING */}
+                        {hasPackagingMaterials(workOrder.workType) && workOrder.packagingQuantity ? (
                           <div className="text-neutral-700 dark:text-white/85 text-xs">
                             包裝: {workOrder.packagingQuantity}{workOrder.packagingQuantityStat || '個'}
                           </div>
                         ) : null}
-                        {!workOrder.productionQuantity && !workOrder.packagingQuantity && (
+                        {/* Show "-" only if no applicable quantities at all */}
+                        {!hasProductionMaterials(workOrder.workType) && !hasPackagingMaterials(workOrder.workType) && (
                           <span className="text-neutral-500 dark:text-white/65 text-xs">-</span>
                         )}
                       </div>
@@ -742,8 +745,8 @@ export function WorkOrderTable({
                     {/* Material Status */}
                     <td className="py-3 px-3 text-sm align-top">
                       <div className="flex flex-col gap-1">
-                        {/* Production materials */}
-                        {hasProductionMaterials(workOrder.workType) ? (
+                        {/* Production materials - only show if applicable */}
+                        {hasProductionMaterials(workOrder.workType) && (
                           <div className="flex items-center gap-1.5">
                             {workOrder.productionMaterialsReady ? (
                               <>
@@ -757,15 +760,10 @@ export function WorkOrderTable({
                               </>
                             )}
                           </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
-                            <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
-                          </div>
                         )}
                         
-                        {/* Packaging materials */}
-                        {hasPackagingMaterials(workOrder.workType) ? (
+                        {/* Packaging materials - only show if applicable */}
+                        {hasPackagingMaterials(workOrder.workType) && (
                           <div className="flex items-center gap-1.5">
                             {workOrder.packagingMaterialsReady ? (
                               <>
@@ -778,11 +776,6 @@ export function WorkOrderTable({
                                 <span className="text-xs text-neutral-500 dark:text-white/65">包裝物料未齊</span>
                               </>
                             )}
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
-                            <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
                           </div>
                         )}
                       </div>
@@ -1017,8 +1010,8 @@ export function WorkOrderTable({
                         </div>
                       )}
                       
-                      {/* Production Materials Status */}
-                      {hasProductionMaterials(workOrder.workType) ? (
+                      {/* Production Materials Status - only show if applicable */}
+                      {hasProductionMaterials(workOrder.workType) && (
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
                           <div className="flex items-center gap-1 text-xs">
@@ -1035,15 +1028,10 @@ export function WorkOrderTable({
                             )}
                           </div>
                         </div>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
-                          <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
-                        </div>
                       )}
                       
-                      {/* Packaging Materials Status */}
-                      {hasPackagingMaterials(workOrder.workType) ? (
+                      {/* Packaging Materials Status - only show if applicable */}
+                      {hasPackagingMaterials(workOrder.workType) && (
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
                           <div className="flex items-center gap-1 text-xs">
@@ -1059,11 +1047,6 @@ export function WorkOrderTable({
                               </>
                             )}
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
-                          <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
                         </div>
                       )}
                     </div>
@@ -1095,20 +1078,26 @@ export function WorkOrderTable({
                                 : '-'}
                             </div>
                           </div>
-                          <div>
-                            <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">生產數量</span>
-                            <div className="font-medium text-neutral-900 dark:text-white">
-                              {workOrder.productionQuantity || 0}
-                              {workOrder.productionQuantityStat || '個'}
+                          {/* Only show production quantity if applicable */}
+                          {hasProductionMaterials(workOrder.workType) && (
+                            <div>
+                              <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">生產數量</span>
+                              <div className="font-medium text-neutral-900 dark:text-white">
+                                {workOrder.productionQuantity || 0}
+                                {workOrder.productionQuantityStat || '個'}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">包裝數量</span>
-                            <div className="font-medium text-neutral-900 dark:text-white">
-                              {workOrder.packagingQuantity || 0}
-                              {workOrder.packagingQuantityStat || '個'}
+                          )}
+                          {/* Only show packaging quantity if applicable */}
+                          {hasPackagingMaterials(workOrder.workType) && (
+                            <div>
+                              <span className="text-neutral-500 dark:text-neutral-400 block text-xs mb-1">包裝數量</span>
+                              <div className="font-medium text-neutral-900 dark:text-white">
+                                {workOrder.packagingQuantity || 0}
+                                {workOrder.packagingQuantityStat || '個'}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
 
                         {/* Work Description - Editable (Always Show) */}

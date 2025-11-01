@@ -179,102 +179,102 @@ export function WorkOrderPopup({ workOrder, children, side = 'right' }: WorkOrde
               <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
 
               {/* Quantities Section */}
-              <div className="space-y-1">
-                <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
-                  數量信息
+              {(hasProductionMaterials(workOrder.workType) || hasPackagingMaterials(workOrder.workType) || workOrder.capsulationOrder) && (
+                <div className="space-y-1">
+                  <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                    數量信息
+                  </div>
+                  {/* Only show production quantity if applicable */}
+                  {hasProductionMaterials(workOrder.workType) && (
+                    <InfoRow 
+                      icon={Factory} 
+                      label="生產數量" 
+                      value={workOrder.productionQuantity 
+                        ? `${workOrder.productionQuantity}${workOrder.productionQuantityStat || '個'}` 
+                        : '-'
+                      } 
+                    />
+                  )}
+                  {/* Only show packaging quantity if applicable */}
+                  {hasPackagingMaterials(workOrder.workType) && (
+                    <InfoRow 
+                      icon={Package} 
+                      label="包裝數量" 
+                      value={workOrder.packagingQuantity 
+                        ? `${workOrder.packagingQuantity}${workOrder.packagingQuantityStat || '個'}` 
+                        : '-'
+                      } 
+                    />
+                  )}
+                  {workOrder.capsulationOrder && (
+                    <>
+                      {workOrder.capsulationOrder.productName && (
+                        <InfoRow 
+                          icon={Box} 
+                          label="產品名稱" 
+                          value={workOrder.capsulationOrder.productName} 
+                        />
+                      )}
+                      {workOrder.capsulationOrder.capsuleSize && (
+                        <InfoRow 
+                          icon={Box} 
+                          label="膠囊規格" 
+                          value={workOrder.capsulationOrder.capsuleSize} 
+                        />
+                      )}
+                      {workOrder.capsulationOrder.capsuleColor && (
+                        <InfoRow 
+                          icon={Box} 
+                          label="膠囊顏色" 
+                          value={workOrder.capsulationOrder.capsuleColor} 
+                        />
+                      )}
+                      {workOrder.capsulationOrder.capsuleType && (
+                        <InfoRow 
+                          icon={Box} 
+                          label="膠囊類型" 
+                          value={workOrder.capsulationOrder.capsuleType} 
+                        />
+                      )}
+                    </>
+                  )}
                 </div>
-                <InfoRow 
-                  icon={Factory} 
-                  label="生產數量" 
-                  value={workOrder.productionQuantity 
-                    ? `${workOrder.productionQuantity}${workOrder.productionQuantityStat || '個'}` 
-                    : '-'
-                  } 
-                />
-                <InfoRow 
-                  icon={Package} 
-                  label="包裝數量" 
-                  value={workOrder.packagingQuantity 
-                    ? `${workOrder.packagingQuantity}${workOrder.packagingQuantityStat || '個'}` 
-                    : '-'
-                  } 
-                />
-                {workOrder.capsulationOrder && (
-                  <>
-                    {workOrder.capsulationOrder.productName && (
-                      <InfoRow 
-                        icon={Box} 
-                        label="產品名稱" 
-                        value={workOrder.capsulationOrder.productName} 
-                      />
-                    )}
-                    {workOrder.capsulationOrder.capsuleSize && (
-                      <InfoRow 
-                        icon={Box} 
-                        label="膠囊規格" 
-                        value={workOrder.capsulationOrder.capsuleSize} 
-                      />
-                    )}
-                    {workOrder.capsulationOrder.capsuleColor && (
-                      <InfoRow 
-                        icon={Box} 
-                        label="膠囊顏色" 
-                        value={workOrder.capsulationOrder.capsuleColor} 
-                      />
-                    )}
-                    {workOrder.capsulationOrder.capsuleType && (
-                      <InfoRow 
-                        icon={Box} 
-                        label="膠囊類型" 
-                        value={workOrder.capsulationOrder.capsuleType} 
-                      />
-                    )}
-                  </>
-                )}
-              </div>
+              )}
 
               <div className="border-t border-neutral-200/50 dark:border-neutral-700/50 my-2" />
 
               {/* Material Status Section */}
-              <div className="space-y-1">
-                <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
-                  物料狀態
-                </div>
-                {/* Production materials */}
-                {hasProductionMaterials(workOrder.workType) ? (
+              {(hasProductionMaterials(workOrder.workType) || hasPackagingMaterials(workOrder.workType)) && (
+                <div className="space-y-1">
+                  <div className="text-xs text-neutral-600 dark:text-white/75 font-semibold uppercase tracking-wide mb-2">
+                    物料狀態
+                  </div>
+                  {/* Production materials - only show if applicable */}
+                  {hasProductionMaterials(workOrder.workType) && (
+                    <div className="flex items-center gap-2 py-1.5">
+                      <StatusIcon checked={workOrder.productionMaterialsReady} />
+                      <span className="text-xs text-neutral-700 dark:text-white/85">
+                        生產物料{workOrder.productionMaterialsReady ? '已齊全' : '未齊全'}
+                      </span>
+                    </div>
+                  )}
+                  {/* Packaging materials - only show if applicable */}
+                  {hasPackagingMaterials(workOrder.workType) && (
+                    <div className="flex items-center gap-2 py-1.5">
+                      <StatusIcon checked={workOrder.packagingMaterialsReady} />
+                      <span className="text-xs text-neutral-700 dark:text-white/85">
+                        包裝物料{workOrder.packagingMaterialsReady ? '已齊全' : '未齊全'}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 py-1.5">
-                    <StatusIcon checked={workOrder.productionMaterialsReady} />
+                    <StatusIcon checked={workOrder.productionStarted} />
                     <span className="text-xs text-neutral-700 dark:text-white/85">
-                      生產物料{workOrder.productionMaterialsReady ? '已齊全' : '未齊全'}
+                      {workOrder.productionStarted ? '已開始生產' : '未開始生產'}
                     </span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2 py-1.5">
-                    <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
-                    <span className="text-xs text-neutral-400 dark:text-neutral-600">生產物料不適用</span>
-                  </div>
-                )}
-                {/* Packaging materials */}
-                {hasPackagingMaterials(workOrder.workType) ? (
-                  <div className="flex items-center gap-2 py-1.5">
-                    <StatusIcon checked={workOrder.packagingMaterialsReady} />
-                    <span className="text-xs text-neutral-700 dark:text-white/85">
-                      包裝物料{workOrder.packagingMaterialsReady ? '已齊全' : '未齊全'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 py-1.5">
-                    <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
-                    <span className="text-xs text-neutral-400 dark:text-neutral-600">包裝物料不適用</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2 py-1.5">
-                  <StatusIcon checked={workOrder.productionStarted} />
-                  <span className="text-xs text-neutral-700 dark:text-white/85">
-                    {workOrder.productionStarted ? '已開始生產' : '未開始生產'}
-                  </span>
                 </div>
-              </div>
+              )}
 
               {/* Expected Dates Section */}
               {(workOrder.expectedProductionMaterialsDate || workOrder.expectedPackagingMaterialsDate || workOrder.requestedDeliveryDate || workOrder.internalExpectedDate) && (
