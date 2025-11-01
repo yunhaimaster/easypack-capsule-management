@@ -129,12 +129,9 @@ export function QuickActionsMenu({
     
     // If scheduling status was provided via props (batched mode), don't fetch individually
     // Only fetch if status is truly undefined (not yet loaded)
-    if (schedulingStatus !== undefined) {
-      return
+    if (schedulingStatus === undefined) {
+      checkSchedulingStatus()
     }
-    
-    // Otherwise, fetch individually (fallback for edge cases)
-    checkSchedulingStatus()
   }, [workOrder.id, workOrder.workType, isManager, isAdmin, schedulingStatus, checkSchedulingStatus])
 
   const handleAddToScheduling = async () => {
@@ -491,44 +488,50 @@ export function QuickActionsMenu({
           </DropdownMenuSub>
         )}
 
-        {/* Material Readiness Toggles */}
-        <DropdownMenuItem
-          onClick={async (e) => {
-            e.stopPropagation()
-            await handleAction(
-              'toggle-production-materials',
-              () => handleToggle('productionMaterialsReady', workOrder.productionMaterialsReady),
-              '' // Message returned from handleToggle
-            )
-          }}
-          disabled={isLoading}
-          className="h-12 lg:h-auto"
-        >
-          <Package className="mr-2 h-4 w-4" />
-          <span>{workOrder.productionMaterialsReady ? '取消生產物料齊' : '標記生產物料齊'}</span>
-          {loadingAction === 'toggle-production-materials' && (
-            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-          )}
-        </DropdownMenuItem>
+        {/* Material Readiness Toggles - Only show for applicable work types */}
+        {/* Production materials - only for PRODUCTION and PRODUCTION_PACKAGING */}
+        {(workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING) && (
+          <DropdownMenuItem
+            onClick={async (e) => {
+              e.stopPropagation()
+              await handleAction(
+                'toggle-production-materials',
+                () => handleToggle('productionMaterialsReady', workOrder.productionMaterialsReady),
+                '' // Message returned from handleToggle
+              )
+            }}
+            disabled={isLoading}
+            className="h-12 lg:h-auto"
+          >
+            <Package className="mr-2 h-4 w-4" />
+            <span>{workOrder.productionMaterialsReady ? '取消生產物料齊' : '標記生產物料齊'}</span>
+            {loadingAction === 'toggle-production-materials' && (
+              <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+            )}
+          </DropdownMenuItem>
+        )}
 
-        <DropdownMenuItem
-          onClick={async (e) => {
-            e.stopPropagation()
-            await handleAction(
-              'toggle-packaging-materials',
-              () => handleToggle('packagingMaterialsReady', workOrder.packagingMaterialsReady),
-              ''
-            )
-          }}
-          disabled={isLoading}
-          className="h-12 lg:h-auto"
-        >
-          <Package2 className="mr-2 h-4 w-4" />
-          <span>{workOrder.packagingMaterialsReady ? '取消包裝物料齊' : '標記包裝物料齊'}</span>
-          {loadingAction === 'toggle-packaging-materials' && (
-            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-          )}
-        </DropdownMenuItem>
+        {/* Packaging materials - only for PACKAGING and PRODUCTION_PACKAGING */}
+        {(workOrder.workType === WorkType.PACKAGING || workOrder.workType === WorkType.PRODUCTION_PACKAGING) && (
+          <DropdownMenuItem
+            onClick={async (e) => {
+              e.stopPropagation()
+              await handleAction(
+                'toggle-packaging-materials',
+                () => handleToggle('packagingMaterialsReady', workOrder.packagingMaterialsReady),
+                ''
+              )
+            }}
+            disabled={isLoading}
+            className="h-12 lg:h-auto"
+          >
+            <Package2 className="mr-2 h-4 w-4" />
+            <span>{workOrder.packagingMaterialsReady ? '取消包裝物料齊' : '標記包裝物料齊'}</span>
+            {loadingAction === 'toggle-packaging-materials' && (
+              <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+            )}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 
@@ -725,4 +728,3 @@ export function QuickActionsMenu({
   </>
   )
 }
-

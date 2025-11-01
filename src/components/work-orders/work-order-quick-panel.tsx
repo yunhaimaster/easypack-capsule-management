@@ -190,6 +190,14 @@ export function WorkOrderQuickPanel({
     return editedValue !== originalValue
   })
 
+  // Check if production materials are applicable for this work type
+  const hasProductionMaterials = (workType: WorkType) => 
+    workType === WorkType.PRODUCTION || workType === WorkType.PRODUCTION_PACKAGING
+
+  // Check if packaging materials are applicable for this work type
+  const hasPackagingMaterials = (workType: WorkType) =>
+    workType === WorkType.PACKAGING || workType === WorkType.PRODUCTION_PACKAGING
+
   return (
     <QuickViewDrawer
       isOpen={isOpen}
@@ -520,29 +528,35 @@ export function WorkOrderQuickPanel({
               </Label>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="productionMaterialsReady"
-                checked={editedFields.productionMaterialsReady}
-                onCheckedChange={(checked) => handleFieldChange('productionMaterialsReady', checked)}
-                disabled={!canEdit}
-              />
-              <Label htmlFor="productionMaterialsReady" className="text-sm font-medium cursor-pointer">
-                生產物料齊
-              </Label>
-            </div>
+            {/* Production materials - only for PRODUCTION and PRODUCTION_PACKAGING */}
+            {hasProductionMaterials(workOrder.workType) && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="productionMaterialsReady"
+                  checked={editedFields.productionMaterialsReady}
+                  onCheckedChange={(checked) => handleFieldChange('productionMaterialsReady', checked)}
+                  disabled={!canEdit}
+                />
+                <Label htmlFor="productionMaterialsReady" className="text-sm font-medium cursor-pointer">
+                  生產物料齊
+                </Label>
+              </div>
+            )}
             
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="packagingMaterialsReady"
-                checked={editedFields.packagingMaterialsReady}
-                onCheckedChange={(checked) => handleFieldChange('packagingMaterialsReady', checked)}
-                disabled={!canEdit}
-              />
-              <Label htmlFor="packagingMaterialsReady" className="text-sm font-medium cursor-pointer">
-                包裝物料齊
-              </Label>
-            </div>
+            {/* Packaging materials - only for PACKAGING and PRODUCTION_PACKAGING */}
+            {hasPackagingMaterials(workOrder.workType) && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="packagingMaterialsReady"
+                  checked={editedFields.packagingMaterialsReady}
+                  onCheckedChange={(checked) => handleFieldChange('packagingMaterialsReady', checked)}
+                  disabled={!canEdit}
+                />
+                <Label htmlFor="packagingMaterialsReady" className="text-sm font-medium cursor-pointer">
+                  包裝物料齊
+                </Label>
+              </div>
+            )}
           </div>
 
           {/* Work Description */}

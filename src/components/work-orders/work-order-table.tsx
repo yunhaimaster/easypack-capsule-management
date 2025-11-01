@@ -116,6 +116,22 @@ function hasProductionStarted(workOrder: WorkOrder): boolean {
 }
 
 /**
+ * Check if production materials are applicable for this work type
+ * Production materials only needed for PRODUCTION and PRODUCTION_PACKAGING
+ */
+function hasProductionMaterials(workType: WorkType): boolean {
+  return workType === WorkType.PRODUCTION || workType === WorkType.PRODUCTION_PACKAGING
+}
+
+/**
+ * Check if packaging materials are applicable for this work type
+ * Packaging materials only needed for PACKAGING and PRODUCTION_PACKAGING
+ */
+function hasPackagingMaterials(workType: WorkType): boolean {
+  return workType === WorkType.PACKAGING || workType === WorkType.PRODUCTION_PACKAGING
+}
+
+/**
  * Capsule production order status badge component
  * Displays:
  * 1. Status badge (PAUSED, COMPLETED, CANCELLED) if status is set
@@ -727,34 +743,48 @@ export function WorkOrderTable({
                     <td className="py-3 px-3 text-sm align-top">
                       <div className="flex flex-col gap-1">
                         {/* Production materials */}
-                        <div className="flex items-center gap-1.5">
-                          {workOrder.productionMaterialsReady ? (
-                            <>
-                              <CheckCircle className="h-3.5 w-3.5 text-success-600 dark:text-success-400" />
-                              <span className="text-xs text-success-700 dark:text-success-400">生產物料齊</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55" />
-                              <span className="text-xs text-neutral-500 dark:text-white/65">生產物料未齊</span>
-                            </>
-                          )}
-                        </div>
+                        {hasProductionMaterials(workOrder.workType) ? (
+                          <div className="flex items-center gap-1.5">
+                            {workOrder.productionMaterialsReady ? (
+                              <>
+                                <CheckCircle className="h-3.5 w-3.5 text-success-600 dark:text-success-400" />
+                                <span className="text-xs text-success-700 dark:text-success-400">生產物料齊</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55" />
+                                <span className="text-xs text-neutral-500 dark:text-white/65">生產物料未齊</span>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
+                            <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
+                          </div>
+                        )}
                         
                         {/* Packaging materials */}
-                        <div className="flex items-center gap-1.5">
-                          {workOrder.packagingMaterialsReady ? (
-                            <>
-                              <CheckCircle className="h-3.5 w-3.5 text-success-600 dark:text-success-400" />
-                              <span className="text-xs text-success-700 dark:text-success-400">包裝物料齊</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55" />
-                              <span className="text-xs text-neutral-500 dark:text-white/65">包裝物料未齊</span>
-                            </>
-                          )}
-                        </div>
+                        {hasPackagingMaterials(workOrder.workType) ? (
+                          <div className="flex items-center gap-1.5">
+                            {workOrder.packagingMaterialsReady ? (
+                              <>
+                                <CheckCircle className="h-3.5 w-3.5 text-success-600 dark:text-success-400" />
+                                <span className="text-xs text-success-700 dark:text-success-400">包裝物料齊</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-3.5 w-3.5 text-neutral-400 dark:text-white/55" />
+                                <span className="text-xs text-neutral-500 dark:text-white/65">包裝物料未齊</span>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-600">-</span>
+                            <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
+                          </div>
+                        )}
                       </div>
                     </td>
 
@@ -988,40 +1018,54 @@ export function WorkOrderTable({
                       )}
                       
                       {/* Production Materials Status */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
-                        <div className="flex items-center gap-1 text-xs">
-                          {workOrder.productionMaterialsReady ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
-                              <span className="text-success-700 dark:text-success-400">已齊</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
-                              <span className="text-neutral-500 dark:text-white/65">未齊</span>
-                            </>
-                          )}
+                      {hasProductionMaterials(workOrder.workType) ? (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
+                          <div className="flex items-center gap-1 text-xs">
+                            {workOrder.productionMaterialsReady ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
+                                <span className="text-success-700 dark:text-success-400">已齊</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
+                                <span className="text-neutral-500 dark:text-white/65">未齊</span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500">生產物料</span>
+                          <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
+                        </div>
+                      )}
                       
                       {/* Packaging Materials Status */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
-                        <div className="flex items-center gap-1 text-xs">
-                          {workOrder.packagingMaterialsReady ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
-                              <span className="text-success-700 dark:text-success-400">已齊</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
-                              <span className="text-neutral-500 dark:text-white/65">未齊</span>
-                            </>
-                          )}
+                      {hasPackagingMaterials(workOrder.workType) ? (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
+                          <div className="flex items-center gap-1 text-xs">
+                            {workOrder.packagingMaterialsReady ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 text-success-600 dark:text-success-400" />
+                                <span className="text-success-700 dark:text-success-400">已齊</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-3 w-3 text-neutral-400 dark:text-white/55" />
+                                <span className="text-neutral-500 dark:text-white/65">未齊</span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500 dark:text-neutral-500">包裝物料</span>
+                          <span className="text-xs text-neutral-400 dark:text-neutral-600">不適用</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Badges Row */}
