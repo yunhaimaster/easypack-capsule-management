@@ -422,7 +422,8 @@ export function WorkOrderTable({
       const response = await fetch(`/api/work-orders/${workOrderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ status: newStatus }),
+        cache: 'no-store' // Ensure fresh data
       })
 
       if (!response.ok) {
@@ -430,9 +431,25 @@ export function WorkOrderTable({
         throw new Error(errorData.error || 'Status update failed')
       }
 
+      // Wait for the response to be fully processed
+      await response.json()
+      
       showToast({ title: '狀態已更新' })
-      await onRefresh?.()
+      
+      // Add a small delay to ensure DB transaction is committed before refresh
+      // This fixes intermittent refresh issues where refresh happens before DB commit completes
+      await new Promise((resolve) => setTimeout(resolve, 150))
+      
+      // Refresh to ensure UI shows updated status
+      // The delay ensures the database change is visible when we fetch
+      if (onRefresh) {
+        await onRefresh()
+      }
     } catch (error) {
+      // On error, refresh to get correct state from server
+      if (onRefresh) {
+        await onRefresh()
+      }
       showToast({ 
         title: '更新失敗',
         description: error instanceof Error ? error.message : '未知錯誤',

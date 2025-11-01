@@ -140,6 +140,15 @@ function WorkOrdersContent() {
   const [error, setError] = useState<Error | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   
+  // Keep filters in ref to ensure fetchWorkOrders always uses latest values
+  // This fixes intermittent refresh issues where stale filters were used
+  const filtersRef = useRef<WorkOrderSearchFilters>(filters)
+  
+  // Update ref whenever filters change
+  useEffect(() => {
+    filtersRef.current = filters
+  }, [filters])
+  
   // Scroll position preservation
   const scrollPositionRef = useRef<number>(0)
   const isSelectOpenRef = useRef<boolean>(false)
@@ -197,7 +206,11 @@ function WorkOrdersContent() {
   }, [])
 
   // Manual fetch function with scroll position preservation
-  const fetchWorkOrders = useCallback(async (newFilters = filters) => {
+  // Uses filtersRef to always get the latest filters, preventing stale closure issues
+  const fetchWorkOrders = useCallback(async (newFilters?: WorkOrderSearchFilters) => {
+    // Use provided filters or fall back to current filters from ref
+    // This ensures we always use the latest filters even if callback was created earlier
+    const filtersToUse = newFilters ?? filtersRef.current
     // Store current scroll position before fetching
     const savedScroll = window.scrollY
     
@@ -215,7 +228,7 @@ function WorkOrdersContent() {
 
       // Build query params
       const params = new URLSearchParams()
-      Object.entries(newFilters).forEach(([key, value]) => {
+      Object.entries(filtersToUse).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           if (Array.isArray(value)) {
             value.forEach(v => params.append(key, String(v)))
@@ -286,7 +299,7 @@ function WorkOrdersContent() {
         }, 10)
       })
     }
-  }, [filters])
+  }, []) // Empty deps - uses ref for filters to avoid stale closures
 
 
   // Check authentication on mount
