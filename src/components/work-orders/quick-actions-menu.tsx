@@ -55,6 +55,8 @@ interface QuickActionsMenuProps {
   onToggleMaterialReady?: (id: string, field: 'production' | 'packaging', value: boolean) => Promise<void>
   onToggleProductionStarted?: (id: string, value: boolean) => Promise<void>
   onRefresh?: () => Promise<void>  // Fixed: should be async
+  // Optional: Pre-fetched scheduling status (used when batching)
+  schedulingStatus?: { isInScheduling: boolean; entryId: string | null }
 }
 
 export function QuickActionsMenu({
@@ -63,7 +65,8 @@ export function QuickActionsMenu({
   onStatusChange,
   onToggleMaterialReady,
   onToggleProductionStarted,
-  onRefresh
+  onRefresh,
+  schedulingStatus
 }: QuickActionsMenuProps) {
   const router = useRouter()
   const { showToast } = useToast()
@@ -71,8 +74,13 @@ export function QuickActionsMenu({
   const [isLoading, setIsLoading] = useState(false)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [linkModalOpen, setLinkModalOpen] = useState(false)
-  const [isInScheduling, setIsInScheduling] = useState<boolean | null>(null)
-  const [schedulingEntryId, setSchedulingEntryId] = useState<string | null>(null)
+  // Use pre-fetched status if available, otherwise fetch individually
+  const [isInScheduling, setIsInScheduling] = useState<boolean | null>(
+    schedulingStatus?.isInScheduling ?? null
+  )
+  const [schedulingEntryId, setSchedulingEntryId] = useState<string | null>(
+    schedulingStatus?.entryId ?? null
+  )
 
   // Check if work order is in scheduling table
   const checkSchedulingStatus = async () => {
@@ -102,12 +110,18 @@ export function QuickActionsMenu({
   }
 
   // Check on mount and when work order changes
+  // Skip if status was pre-fetched (batched mode)
   useEffect(() => {
+    // If scheduling status was provided via props, don't fetch individually
+    if (schedulingStatus !== undefined) {
+      return
+    }
+    
     if ((isManager || isAdmin) && 
         (workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING)) {
       checkSchedulingStatus()
     }
-  }, [workOrder.id, isManager, isAdmin])
+  }, [workOrder.id, isManager, isAdmin, schedulingStatus])
 
   const handleAddToScheduling = async () => {
     setIsLoading(true)

@@ -15,7 +15,7 @@ import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { WorkOrder, User } from '@/types/work-order'
-import { WorkOrderStatus } from '@prisma/client'
+import { WorkOrderStatus, WorkType } from '@prisma/client'
 import { Badge } from '@/components/ui/badge'
 import { Text } from '@/components/ui/text'
 import { TableWrapper } from '@/components/ui/table-wrapper'
@@ -50,6 +50,8 @@ import { useToast } from '@/components/ui/toast-provider'
 import { EditableNotesCell } from './editable-notes-cell'
 import { WorkOrderQuickPanel } from './work-order-quick-panel'
 import { WorkOrderInlineEdit } from './work-order-inline-edit'
+import { useSchedulingStatus } from '@/hooks/use-scheduling-status'
+import { useAuth } from '@/components/auth/auth-provider'
 
 interface WorkOrderTableProps {
   workOrders: WorkOrder[]
@@ -221,6 +223,7 @@ export function WorkOrderTable({
 }: WorkOrderTableProps) {
   const router = useRouter()
   const { showToast } = useToast()
+  const { isManager, isAdmin } = useAuth()
   
   // Quick panel state
   const [quickPanelWorkOrder, setQuickPanelWorkOrder] = useState<WorkOrder | null>(null)
@@ -229,6 +232,19 @@ export function WorkOrderTable({
   
   // Expandable state for mobile cards
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  
+  // Batch fetch scheduling status for all PRODUCTION work orders
+  // Only fetch if user is Manager or Admin
+  const productionWorkOrderIds = useMemo(() => {
+    if (!isManager && !isAdmin) return []
+    return workOrders
+      .filter(wo => wo.workType === WorkType.PRODUCTION || wo.workType === WorkType.PRODUCTION_PACKAGING)
+      .map(wo => wo.id)
+  }, [workOrders, isManager, isAdmin])
+  
+  const { status: schedulingStatus } = useSchedulingStatus(productionWorkOrderIds, {
+    enabled: productionWorkOrderIds.length > 0
+  })
   
   const toggleExpand = useCallback((workOrderId: string, event?: React.MouseEvent<HTMLButtonElement>) => {
     // Store scroll position BEFORE state update (like Select fix)
@@ -762,6 +778,7 @@ export function WorkOrderTable({
                         onToggleMaterialReady={handleToggleMaterialReady}
                         onToggleProductionStarted={handleToggleProductionStarted}
                         onRefresh={onRefresh}
+                        schedulingStatus={schedulingStatus[workOrder.id]}
                       />
                     </td>
                   </tr>
@@ -873,6 +890,7 @@ export function WorkOrderTable({
                           onToggleMaterialReady={handleToggleMaterialReady}
                           onToggleProductionStarted={handleToggleProductionStarted}
                           onRefresh={onRefresh}
+                          schedulingStatus={schedulingStatus[workOrder.id]}
                         />
                       </div>
                     </div>
