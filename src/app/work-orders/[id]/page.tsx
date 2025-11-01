@@ -15,6 +15,7 @@ import { OrderLinkBadge } from '@/components/ui/order-link-badge'
 import { LinkOrderModal } from '@/components/orders/link-order-modal'
 import { ArrowLeft, Edit, Trash2, CheckCircle, XCircle, Clock, Link2, Plus } from 'lucide-react'
 import { WORK_TYPE_LABELS, WORK_ORDER_STATUS_LABELS, CapsulationIngredient } from '@/types/work-order'
+import { WorkType } from '@prisma/client'
 import { useToast } from '@/components/ui/toast-provider'
 
 export default function WorkOrderDetailPage() {
@@ -92,6 +93,14 @@ export default function WorkOrderDetailPage() {
       day: '2-digit'
     })
   }
+
+  // Check if production materials are applicable for this work type
+  const hasProductionMaterials = (workType: WorkType) => 
+    workType === WorkType.PRODUCTION || workType === WorkType.PRODUCTION_PACKAGING
+
+  // Check if packaging materials are applicable for this work type
+  const hasPackagingMaterials = (workType: WorkType) =>
+    workType === WorkType.PACKAGING || workType === WorkType.PRODUCTION_PACKAGING
 
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
@@ -210,91 +219,109 @@ export default function WorkOrderDetailPage() {
           </CardContent>
         </Card>
 
-        {/* 物料到齊狀態 */}
-        <Card className="card-interactive-apple transition-apple">
-          <CardHeader>
-            <CardTitle>物料到齊狀態</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-5">
-            <div>
-              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
-                預計生產物料到齊日期
-              </Text.Tertiary>
-              <Text.Primary className="text-sm sm:text-base">
-                {formatDate(workOrder.expectedProductionMaterialsDate)}
-              </Text.Primary>
-            </div>
-            <div>
-              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
-                預計包裝物料到齊日期
-              </Text.Tertiary>
-              <Text.Primary className="text-sm sm:text-base">
-                {formatDate(workOrder.expectedPackagingMaterialsDate)}
-              </Text.Primary>
-            </div>
-            <div className="flex items-center gap-4 sm:gap-6">
-              <div className="flex items-center gap-2">
-                {workOrder.productionMaterialsReady ? (
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
-                ) : (
-                  <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
-                )}
-                <Text.Primary 
-                  as="span" 
-                  className={`text-xs sm:text-sm ${
-                    workOrder.productionMaterialsReady ? 'text-success-600' : ''
-                  }`}
-                >
-                  生產物料齊
-                </Text.Primary>
-              </div>
-              <div className="flex items-center gap-2">
-                {workOrder.packagingMaterialsReady ? (
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
-                ) : (
-                  <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
-                )}
-                <Text.Primary 
-                  as="span" 
-                  className={`text-xs sm:text-sm ${
-                    workOrder.packagingMaterialsReady ? 'text-success-600' : ''
-                  }`}
-                >
-                  包裝物料齊
-                </Text.Primary>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 物料到齊狀態 - only show if there are applicable materials */}
+        {(hasProductionMaterials(workOrder.workType) || hasPackagingMaterials(workOrder.workType)) && (
+          <Card className="card-interactive-apple transition-apple">
+            <CardHeader>
+              <CardTitle>物料到齊狀態</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-5">
+              {/* Only show production materials if applicable */}
+              {hasProductionMaterials(workOrder.workType) && (
+                <>
+                  <div>
+                    <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
+                      預計生產物料到齊日期
+                    </Text.Tertiary>
+                    <Text.Primary className="text-sm sm:text-base">
+                      {formatDate(workOrder.expectedProductionMaterialsDate)}
+                    </Text.Primary>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {workOrder.productionMaterialsReady ? (
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
+                    )}
+                    <Text.Primary 
+                      as="span" 
+                      className={`text-xs sm:text-sm ${
+                        workOrder.productionMaterialsReady ? 'text-success-600' : ''
+                      }`}
+                    >
+                      生產物料齊
+                    </Text.Primary>
+                  </div>
+                </>
+              )}
+              {/* Only show packaging materials if applicable */}
+              {hasPackagingMaterials(workOrder.workType) && (
+                <>
+                  <div>
+                    <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
+                      預計包裝物料到齊日期
+                    </Text.Tertiary>
+                    <Text.Primary className="text-sm sm:text-base">
+                      {formatDate(workOrder.expectedPackagingMaterialsDate)}
+                    </Text.Primary>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {workOrder.packagingMaterialsReady ? (
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 dark:text-neutral-600" />
+                    )}
+                    <Text.Primary 
+                      as="span" 
+                      className={`text-xs sm:text-sm ${
+                        workOrder.packagingMaterialsReady ? 'text-success-600' : ''
+                      }`}
+                    >
+                      包裝物料齊
+                    </Text.Primary>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-        {/* 數量信息 */}
-        <Card className="card-interactive-apple transition-apple">
-          <CardHeader>
-            <CardTitle>數量信息</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-5">
-            <div>
-              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
-                生產數量
-              </Text.Tertiary>
-              <Text.Primary className="text-sm sm:text-base">
-                {workOrder.productionQuantity 
-                  ? `${workOrder.productionQuantity.toLocaleString()}${workOrder.productionQuantityStat ? ` ${workOrder.productionQuantityStat}` : ''}`
-                  : '-'}
-              </Text.Primary>
-            </div>
-            <div>
-              <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
-                包裝數量
-              </Text.Tertiary>
-              <Text.Primary className="text-sm sm:text-base">
-                {workOrder.packagingQuantity 
-                  ? `${workOrder.packagingQuantity.toLocaleString()}${workOrder.packagingQuantityStat ? ` ${workOrder.packagingQuantityStat}` : ''}`
-                  : '-'}
-              </Text.Primary>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 數量信息 - only show if there are applicable quantities */}
+        {(hasProductionMaterials(workOrder.workType) || hasPackagingMaterials(workOrder.workType)) && (
+          <Card className="card-interactive-apple transition-apple">
+            <CardHeader>
+              <CardTitle>數量信息</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-5">
+              {/* Only show production quantity if applicable */}
+              {hasProductionMaterials(workOrder.workType) && (
+                <div>
+                  <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
+                    生產數量
+                  </Text.Tertiary>
+                  <Text.Primary className="text-sm sm:text-base">
+                    {workOrder.productionQuantity 
+                      ? `${workOrder.productionQuantity.toLocaleString()}${workOrder.productionQuantityStat ? ` ${workOrder.productionQuantityStat}` : ''}`
+                      : '-'}
+                  </Text.Primary>
+                </div>
+              )}
+              {/* Only show packaging quantity if applicable */}
+              {hasPackagingMaterials(workOrder.workType) && (
+                <div>
+                  <Text.Tertiary as="label" className="text-xs sm:text-sm font-medium block mb-1.5">
+                    包裝數量
+                  </Text.Tertiary>
+                  <Text.Primary className="text-sm sm:text-base">
+                    {workOrder.packagingQuantity 
+                      ? `${workOrder.packagingQuantity.toLocaleString()}${workOrder.packagingQuantityStat ? ` ${workOrder.packagingQuantityStat}` : ''}`
+                      : '-'}
+                  </Text.Primary>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* 交貨期信息 */}
         <Card className="card-interactive-apple transition-apple">

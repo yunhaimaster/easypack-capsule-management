@@ -32,6 +32,7 @@ import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { LiquidGlassFooter } from '@/components/ui/liquid-glass-footer'
 import { ArrowLeft, Save } from 'lucide-react'
 import type { CreateWorkOrderPayload, User } from '@/types/work-order'
+import { WorkType } from '@prisma/client'
 
 export default function CreateWorkOrderPage() {
   const router = useRouter()
@@ -125,6 +126,17 @@ export default function CreateWorkOrderPage() {
       setErrorMessage(message)
     }
   }
+
+  // Watch workType to conditionally show fields
+  const workType = form.watch('workType')
+
+  // Check if production materials are applicable for this work type
+  const hasProductionMaterials = (workType: WorkType) => 
+    workType === WorkType.PRODUCTION || workType === WorkType.PRODUCTION_PACKAGING
+
+  // Check if packaging materials are applicable for this work type
+  const hasPackagingMaterials = (workType: WorkType) =>
+    workType === WorkType.PACKAGING || workType === WorkType.PRODUCTION_PACKAGING
 
   return (
     <div className="min-h-screen logo-bg-animation flex flex-col">
@@ -315,170 +327,192 @@ export default function CreateWorkOrderPage() {
               </div>
             </div>
 
-            {/* Material Ready Status Section */}
-            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
-              <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
-                物料到齊狀態
-              </Text.Primary>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-4 sm:mb-5">
-                <div>
-                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
-                    預計生產物料到齊的日期
-                  </Text.Primary>
-                  <Input
-                    type="date"
-                    {...form.register('expectedProductionMaterialsDate')}
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
-                </div>
-                <div>
-                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
-                    預計包裝物料到齊的日期
-                  </Text.Primary>
-                  <Input
-                    type="date"
-                    {...form.register('expectedPackagingMaterialsDate')}
-                    className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="productionMaterialsReady"
-                    checked={form.watch('productionMaterialsReady')}
-                    onCheckedChange={(checked) => form.setValue('productionMaterialsReady', checked as boolean)}
-                    className="transition-apple"
-                  />
-                  <label 
-                    htmlFor="productionMaterialsReady" 
-                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
-                  >
-                    生產物料齊
-                  </label>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="packagingMaterialsReady"
-                    checked={form.watch('packagingMaterialsReady')}
-                    onCheckedChange={(checked) => form.setValue('packagingMaterialsReady', checked as boolean)}
-                    className="transition-apple"
-                  />
-                  <label 
-                    htmlFor="packagingMaterialsReady" 
-                    className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
-                  >
-                    包裝物料齊
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Quantities Section */}
-            <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
-              <div className="mb-4 sm:mb-5">
-                <Text.Primary as="h3" className="text-base sm:text-lg font-semibold inline">
-                  數量
+            {/* Material Ready Status Section - only show if there are applicable materials */}
+            {(hasProductionMaterials(workType) || hasPackagingMaterials(workType)) && (
+              <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+                <Text.Primary as="h3" className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
+                  物料到齊狀態
                 </Text.Primary>
-                <Text.Tertiary as="span" className="text-xs sm:text-sm ml-2 sm:ml-3">
-                  （可選，不同單位：如包裝用瓶數、生產用粒數）
-                </Text.Tertiary>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-                <div>
-                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
-                    生產數量
-                  </Text.Primary>
-                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
-                    <Input
-                      type="number"
-                      {...form.register('productionQuantity', { 
-                        setValueAs: v => v === '' || v === null ? null : parseInt(v)
-                      })}
-                      placeholder="例如: 10000"
-                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                    />
-                    <Controller
-                      name="productionQuantityStat"
-                      control={form.control}
-                      render={({ field }) => (
-                        <Select value={field.value || ''} onValueChange={field.onChange}>
-                          <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
-                            <SelectValue placeholder="單位" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="粒">粒</SelectItem>
-                            <SelectItem value="瓶">瓶</SelectItem>
-                            <SelectItem value="盒">盒</SelectItem>
-                            <SelectItem value="袋">袋</SelectItem>
-                            <SelectItem value="包">包</SelectItem>
-                            <SelectItem value="排">排</SelectItem>
-                            <SelectItem value="公斤">公斤</SelectItem>
-                            <SelectItem value="克">克</SelectItem>
-                            <SelectItem value="個">個</SelectItem>
-                            <SelectItem value="其他">其他</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-                  {form.formState.errors.productionQuantity && (
-                    <Text.Danger className="text-xs sm:text-sm mt-1.5">
-                      {form.formState.errors.productionQuantity.message}
-                    </Text.Danger>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-4 sm:mb-5">
+                  {/* Only show production material date if applicable */}
+                  {hasProductionMaterials(workType) && (
+                    <div>
+                      <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                        預計生產物料到齊的日期
+                      </Text.Primary>
+                      <Input
+                        type="date"
+                        {...form.register('expectedProductionMaterialsDate')}
+                        className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                      />
+                    </div>
                   )}
-                  <Text.Tertiary className="text-xs mt-1">
-                    提示：生產通常用「粒」計算
-                  </Text.Tertiary>
+                  {/* Only show packaging material date if applicable */}
+                  {hasPackagingMaterials(workType) && (
+                    <div>
+                      <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                        預計包裝物料到齊的日期
+                      </Text.Primary>
+                      <Input
+                        type="date"
+                        {...form.register('expectedPackagingMaterialsDate')}
+                        className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
-                    包裝數量
-                  </Text.Primary>
-                  <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
-                    <Input
-                      type="number"
-                      {...form.register('packagingQuantity', {
-                        setValueAs: v => v === '' || v === null ? null : parseInt(v)
-                      })}
-                      placeholder="例如: 5000"
-                      className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
-                    />
-                    <Controller
-                      name="packagingQuantityStat"
-                      control={form.control}
-                      render={({ field }) => (
-                        <Select value={field.value || ''} onValueChange={field.onChange}>
-                          <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
-                            <SelectValue placeholder="單位" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="粒">粒</SelectItem>
-                            <SelectItem value="瓶">瓶</SelectItem>
-                            <SelectItem value="盒">盒</SelectItem>
-                            <SelectItem value="袋">袋</SelectItem>
-                            <SelectItem value="包">包</SelectItem>
-                            <SelectItem value="排">排</SelectItem>
-                            <SelectItem value="公斤">公斤</SelectItem>
-                            <SelectItem value="克">克</SelectItem>
-                            <SelectItem value="個">個</SelectItem>
-                            <SelectItem value="其他">其他</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-                  {form.formState.errors.packagingQuantity && (
-                    <Text.Danger className="text-xs sm:text-sm mt-1.5">
-                      {form.formState.errors.packagingQuantity.message}
-                    </Text.Danger>
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Only show production materials checkbox if applicable */}
+                  {hasProductionMaterials(workType) && (
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="productionMaterialsReady"
+                        checked={form.watch('productionMaterialsReady')}
+                        onCheckedChange={(checked) => form.setValue('productionMaterialsReady', checked as boolean)}
+                        className="transition-apple"
+                      />
+                      <label 
+                        htmlFor="productionMaterialsReady" 
+                        className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
+                      >
+                        生產物料齊
+                      </label>
+                    </div>
                   )}
-                  <Text.Tertiary className="text-xs mt-1">
-                    提示：包裝通常用「瓶」、「盒」等計算
-                  </Text.Tertiary>
+                  {/* Only show packaging materials checkbox if applicable */}
+                  {hasPackagingMaterials(workType) && (
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="packagingMaterialsReady"
+                        checked={form.watch('packagingMaterialsReady')}
+                        onCheckedChange={(checked) => form.setValue('packagingMaterialsReady', checked as boolean)}
+                        className="transition-apple"
+                      />
+                      <label 
+                        htmlFor="packagingMaterialsReady" 
+                        className="text-sm sm:text-base font-medium leading-none cursor-pointer transition-apple hover:text-success-600 text-neutral-800 dark:text-white/95"
+                      >
+                        包裝物料齊
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Quantities Section - only show if there are applicable quantities */}
+            {(hasProductionMaterials(workType) || hasPackagingMaterials(workType)) && (
+              <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
+                <div className="mb-4 sm:mb-5">
+                  <Text.Primary as="h3" className="text-base sm:text-lg font-semibold inline">
+                    數量
+                  </Text.Primary>
+                  <Text.Tertiary as="span" className="text-xs sm:text-sm ml-2 sm:ml-3">
+                    （可選，不同單位：如包裝用瓶數、生產用粒數）
+                  </Text.Tertiary>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+                  {/* Only show production quantity input if applicable */}
+                  {hasProductionMaterials(workType) && (
+                    <div>
+                      <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                        生產數量
+                      </Text.Primary>
+                      <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                        <Input
+                          type="number"
+                          {...form.register('productionQuantity', { 
+                            setValueAs: v => v === '' || v === null ? null : parseInt(v)
+                          })}
+                          placeholder="例如: 10000"
+                          className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                        />
+                        <Controller
+                          name="productionQuantityStat"
+                          control={form.control}
+                          render={({ field }) => (
+                            <Select value={field.value || ''} onValueChange={field.onChange}>
+                              <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                                <SelectValue placeholder="單位" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="粒">粒</SelectItem>
+                                <SelectItem value="瓶">瓶</SelectItem>
+                                <SelectItem value="盒">盒</SelectItem>
+                                <SelectItem value="袋">袋</SelectItem>
+                                <SelectItem value="包">包</SelectItem>
+                                <SelectItem value="排">排</SelectItem>
+                                <SelectItem value="公斤">公斤</SelectItem>
+                                <SelectItem value="克">克</SelectItem>
+                                <SelectItem value="個">個</SelectItem>
+                                <SelectItem value="其他">其他</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </div>
+                      {form.formState.errors.productionQuantity && (
+                        <Text.Danger className="text-xs sm:text-sm mt-1.5">
+                          {form.formState.errors.productionQuantity.message}
+                        </Text.Danger>
+                      )}
+                      <Text.Tertiary className="text-xs mt-1">
+                        提示：生產通常用「粒」計算
+                      </Text.Tertiary>
+                    </div>
+                  )}
+                  {/* Only show packaging quantity input if applicable */}
+                  {hasPackagingMaterials(workType) && (
+                    <div>
+                      <Text.Primary as="label" className="block text-sm sm:text-base font-medium mb-2">
+                        包裝數量
+                      </Text.Primary>
+                      <div className="grid grid-cols-[1fr,auto] gap-2 sm:gap-3">
+                        <Input
+                          type="number"
+                          {...form.register('packagingQuantity', {
+                            setValueAs: v => v === '' || v === null ? null : parseInt(v)
+                          })}
+                          placeholder="例如: 5000"
+                          className="transition-apple h-10 sm:h-11 text-sm sm:text-base"
+                        />
+                        <Controller
+                          name="packagingQuantityStat"
+                          control={form.control}
+                          render={({ field }) => (
+                            <Select value={field.value || ''} onValueChange={field.onChange}>
+                              <SelectTrigger className="w-[100px] sm:w-[120px] h-10 sm:h-11 text-sm sm:text-base transition-apple">
+                                <SelectValue placeholder="單位" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="粒">粒</SelectItem>
+                                <SelectItem value="瓶">瓶</SelectItem>
+                                <SelectItem value="盒">盒</SelectItem>
+                                <SelectItem value="袋">袋</SelectItem>
+                                <SelectItem value="包">包</SelectItem>
+                                <SelectItem value="排">排</SelectItem>
+                                <SelectItem value="公斤">公斤</SelectItem>
+                                <SelectItem value="克">克</SelectItem>
+                                <SelectItem value="個">個</SelectItem>
+                                <SelectItem value="其他">其他</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </div>
+                      {form.formState.errors.packagingQuantity && (
+                        <Text.Danger className="text-xs sm:text-sm mt-1.5">
+                          {form.formState.errors.packagingQuantity.message}
+                        </Text.Danger>
+                      )}
+                      <Text.Tertiary className="text-xs mt-1">
+                        提示：包裝通常用「瓶」、「盒」等計算
+                      </Text.Tertiary>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Delivery Dates Section */}
             <div className="border-t border-neutral-200 dark:border-neutral-700 pt-6 sm:pt-8 transition-apple">
