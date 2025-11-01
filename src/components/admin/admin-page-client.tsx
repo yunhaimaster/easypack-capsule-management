@@ -60,13 +60,13 @@ export function AdminPageClient() {
   }
 
   return (
-    <div className="min-h-screen logo-bg-animation flex flex-col">
+    <div className="min-h-screen logo-bg-animation flex flex-col w-full overflow-x-hidden">
       <LiquidGlassNav />
       
-      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14 max-w-7xl mx-auto">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14 max-w-7xl mx-auto w-full min-w-0">
         {/* Header */}
-        <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-refraction">
-          <div className="liquid-glass-content p-6">
+        <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-refraction w-full min-w-0">
+          <div className="liquid-glass-content p-6 min-w-0">
             <div className="flex items-center gap-4 mb-2">
               <IconContainer icon={Shield} variant="primary" size="md" />
               <div>
