@@ -16,7 +16,8 @@ export function useSchedulingStatus(
   options?: { enabled?: boolean; skip?: boolean }
 ) {
   const { enabled = true, skip = false } = options || {}
-  const [status, setStatus] = useState<SchedulingStatus>({})
+  // Start with undefined to indicate not loaded yet
+  const [status, setStatus] = useState<SchedulingStatus | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -47,7 +48,7 @@ export function useSchedulingStatus(
     } catch (err) {
       console.warn('Failed to batch fetch scheduling status:', err)
       setError(err instanceof Error ? err : new Error('Unknown error'))
-      // Don't crash - return empty status
+      // Set empty object on error to signal "attempted but failed"
       setStatus({})
     } finally {
       setIsLoading(false)

@@ -117,15 +117,24 @@ export function QuickActionsMenu({
   // Check on mount and when work order changes
   // Skip if status was pre-fetched (batched mode)
   useEffect(() => {
-    // If scheduling status was provided via props, don't fetch individually
+    // Skip if not a PRODUCTION type (scheduling only applies to production orders)
+    if (workOrder.workType !== WorkType.PRODUCTION && workOrder.workType !== WorkType.PRODUCTION_PACKAGING) {
+      return
+    }
+    
+    // Skip if not Manager or Admin
+    if (!isManager && !isAdmin) {
+      return
+    }
+    
+    // If scheduling status was provided via props (batched mode), don't fetch individually
+    // Only fetch if status is truly undefined (not yet loaded)
     if (schedulingStatus !== undefined) {
       return
     }
     
-    if ((isManager || isAdmin) && 
-        (workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING)) {
-      checkSchedulingStatus()
-    }
+    // Otherwise, fetch individually (fallback for edge cases)
+    checkSchedulingStatus()
   }, [workOrder.id, workOrder.workType, isManager, isAdmin, schedulingStatus, checkSchedulingStatus])
 
   const handleAddToScheduling = async () => {

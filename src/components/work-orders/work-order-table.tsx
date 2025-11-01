@@ -778,7 +778,7 @@ export function WorkOrderTable({
                         onToggleMaterialReady={handleToggleMaterialReady}
                         onToggleProductionStarted={handleToggleProductionStarted}
                         onRefresh={onRefresh}
-                        schedulingStatus={schedulingStatus[workOrder.id]}
+                        schedulingStatus={schedulingStatus?.[workOrder.id]}
                       />
                     </td>
                   </tr>
@@ -890,7 +890,7 @@ export function WorkOrderTable({
                           onToggleMaterialReady={handleToggleMaterialReady}
                           onToggleProductionStarted={handleToggleProductionStarted}
                           onRefresh={onRefresh}
-                          schedulingStatus={schedulingStatus[workOrder.id]}
+                          schedulingStatus={schedulingStatus?.[workOrder.id]}
                         />
                       </div>
                     </div>
