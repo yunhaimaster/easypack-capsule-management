@@ -80,11 +80,12 @@ export function OrderActionsMenu({
       
       if (contentDisposition) {
         // Try to extract from filename*=UTF-8'' (RFC 5987, preferred for UTF-8)
-        const utf8Match = contentDisposition.match(/filename\*=UTF-8''(.+?)(?:;|$)/)
+        // Pattern matches: filename*=UTF-8''<encoded> until end of string or semicolon
+        const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/)
         if (utf8Match && utf8Match[1]) {
           filename = decodeURIComponent(utf8Match[1])
         } else {
-          // Fall back to filename="..." (extract quoted value)
+          // Fall back to filename="..." (extract quoted value between quotes)
           const quotedMatch = contentDisposition.match(/filename="([^"]+)"/)
           if (quotedMatch && quotedMatch[1]) {
             filename = decodeURIComponent(quotedMatch[1])
