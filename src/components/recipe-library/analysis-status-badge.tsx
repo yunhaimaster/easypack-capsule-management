@@ -17,7 +17,7 @@ export function AnalysisStatusBadge({ status, onRetry, className }: AnalysisStat
       <Badge 
         variant="outline" 
         className={cn(
-          "flex items-center gap-1.5 bg-success-50 text-success-700 border-success-200",
+          "flex items-center gap-1.5 bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-success-200 dark:border-success-700",
           className
         )}
       >
@@ -32,7 +32,7 @@ export function AnalysisStatusBadge({ status, onRetry, className }: AnalysisStat
       <Badge 
         variant="outline" 
         className={cn(
-          "flex items-center gap-1.5 bg-warning-50 text-warning-700 border-warning-200",
+          "flex items-center gap-1.5 bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 border-warning-200 dark:border-warning-700",
           className
         )}
       >
@@ -48,7 +48,7 @@ export function AnalysisStatusBadge({ status, onRetry, className }: AnalysisStat
         <Badge 
           variant="outline" 
           className={cn(
-            "flex items-center gap-1.5 bg-danger-50 text-danger-700 border-danger-200",
+            "flex items-center gap-1.5 bg-danger-50 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-danger-200 dark:border-danger-700",
             className
           )}
         >
@@ -78,7 +78,7 @@ export function AnalysisStatusBadge({ status, onRetry, className }: AnalysisStat
     <Badge 
       variant="outline" 
       className={cn(
-        "flex items-center gap-1.5 bg-neutral-50 text-neutral-600 dark:text-white/75 border-neutral-200",
+        "flex items-center gap-1.5 bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-white/90 border-neutral-200 dark:border-neutral-700",
         className
       )}
     >

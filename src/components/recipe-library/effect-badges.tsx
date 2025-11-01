@@ -109,7 +109,7 @@ export function EffectBadges({ effectsAnalysis, maxBadges = 3, onFilterClick, cl
       {remainingCount > 0 && (
         <Badge 
           variant="outline" 
-          className="text-xs bg-neutral-50 text-neutral-600 dark:text-white/75 border-neutral-200"
+          className="text-xs bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-white/90 border-neutral-200 dark:border-neutral-700"
         >
           +{remainingCount}
         </Badge>

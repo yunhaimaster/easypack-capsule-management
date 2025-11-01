@@ -10,7 +10,6 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { IconContainer } from '@/components/ui/icon-container'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   Dialog,
   DialogContent,
@@ -689,24 +688,63 @@ export default function RecipeLibraryPage() {
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'production' | 'template')}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="production" className="flex items-center justify-center gap-2">
-                <Package className="h-4 w-4" />
-                <span className="hidden sm:inline">生產配方</span>
-                <span className="sm:hidden">生產</span>
-                <Badge variant="secondary" className="ml-2">{productionCount}</Badge>
-              </TabsTrigger>
-              <TabsTrigger value="template" className="flex items-center justify-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                <span className="hidden sm:inline">模板配方</span>
-                <span className="sm:hidden">模板</span>
-                <Badge variant="secondary" className="ml-2">{templateCount}</Badge>
-              </TabsTrigger>
-            </TabsList>
+          <Card className="liquid-glass-card liquid-glass-card-elevated">
+            <div className="liquid-glass-content p-4">
+              <div className="flex gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide justify-center">
+                <button
+                  onClick={() => setActiveTab('production')}
+                  className={`flex items-center justify-center gap-2 px-4 sm:px-5 md:px-6 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                    activeTab === 'production'
+                      ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                      : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                  }`}
+                >
+                  <Package className="h-4 w-4 flex-shrink-0" />
+                  <span className="leading-none text-sm sm:text-base hidden sm:inline">生產配方</span>
+                  <span className="leading-none text-sm sm:text-base sm:hidden">生產</span>
+                  <Badge 
+                    variant="secondary"
+                    className={`ml-2 flex-shrink-0 ${
+                      activeTab === 'production' 
+                        ? 'bg-white/20 text-white border-white/30' 
+                        : ''
+                    }`}
+                  >
+                    {productionCount}
+                  </Badge>
+                </button>
+                
+                <button
+                  onClick={() => setActiveTab('template')}
+                  className={`flex items-center justify-center gap-2 px-4 sm:px-5 md:px-6 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                    activeTab === 'template'
+                      ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                      : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                  }`}
+                >
+                  <Sparkles className="h-4 w-4 flex-shrink-0" />
+                  <span className="leading-none text-sm sm:text-base hidden sm:inline">模板配方</span>
+                  <span className="leading-none text-sm sm:text-base sm:hidden">模板</span>
+                  <Badge 
+                    variant="secondary"
+                    className={`ml-2 flex-shrink-0 ${
+                      activeTab === 'template' 
+                        ? 'bg-white/20 text-white border-white/30' 
+                        : ''
+                    }`}
+                  >
+                    {templateCount}
+                  </Badge>
+                </button>
+              </div>
+            </div>
+          </Card>
 
+          {/* Tab Content */}
+          <div className="space-y-6">
             {/* Production Tab */}
-            <TabsContent value="production" className="space-y-6">
+            {activeTab === 'production' && (
+              <div className="space-y-6">
               {/* Search & Actions */}
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
@@ -859,10 +897,12 @@ export default function RecipeLibraryPage() {
                   onPageChange={setPage}
                 />
               )}
-            </TabsContent>
+              </div>
+            )}
 
             {/* Template Tab */}
-            <TabsContent value="template" className="space-y-6">
+            {activeTab === 'template' && (
+              <div className="space-y-6">
               {/* Search & Actions */}
               <Card className="liquid-glass-card liquid-glass-card-elevated">
                 <div className="liquid-glass-content">
@@ -1037,8 +1077,9 @@ export default function RecipeLibraryPage() {
                   onPageChange={setPage}
                 />
               )}
-            </TabsContent>
-          </Tabs>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
