@@ -123,6 +123,7 @@ export async function GET(request: NextRequest) {
     const skip = (validatedFilters.page - 1) * validatedFilters.limit
 
     // Check if using default sort (no custom filters, default sortBy)
+    // Only apply special status-based sorting when no filters are applied
     const isDefaultSort = 
       validatedFilters.sortBy === 'completionDate' &&
       validatedFilters.sortOrder === 'desc' &&
@@ -130,7 +131,11 @@ export async function GET(request: NextRequest) {
       !validatedFilters.productName &&
       !validatedFilters.ingredientName &&
       !validatedFilters.capsuleType &&
-      validatedFilters.isCompleted === undefined
+      !validatedFilters.dateTo &&
+      validatedFilters.minQuantity === undefined &&
+      validatedFilters.maxQuantity === undefined &&
+      validatedFilters.isCompleted === undefined &&
+      validatedFilters.status === undefined
 
     const orderBy: Prisma.ProductionOrderOrderByWithRelationInput[] = []
 
