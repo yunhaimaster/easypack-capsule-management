@@ -307,7 +307,7 @@ export function LinkedFilter({
             key={option.value}
             type="button"
             onClick={() => onSelect(option.value, option.label)}
-            className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-elevation-2 focus:bg-neutral-100 dark:focus:bg-elevation-2 focus:outline-none min-h-[44px] sm:min-h-0 flex items-center"
+            className="w-full text-left px-3 py-2 text-sm text-neutral-900 dark:text-white/95 hover:bg-neutral-100 dark:hover:bg-elevation-2 focus:bg-neutral-100 dark:focus:bg-elevation-2 focus:outline-none min-h-[44px] sm:min-h-0 flex items-center"
           >
             {option.label}
           </button>
