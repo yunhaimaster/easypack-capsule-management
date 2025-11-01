@@ -109,6 +109,7 @@ model User {
   sessions           Session[]
   devices            TrustedDevice[]
   auditLogs          AuditLog[]
+  errorLogs          ErrorLog[]
   workOrdersInCharge UnifiedWorkOrder[] @relation("WorkOrderPersonInCharge")
   capsulationOrders  CapsulationOrder[] @relation("CapsulationOrderCustomerService")
   productionOrders   ProductionOrder[]  @relation("ProductionOrderCustomerService")
@@ -163,6 +164,34 @@ model AuditLog {
   @@index([createdAt])
   @@index([action, createdAt])
   @@map("audit_logs")
+}
+
+enum ErrorSeverity {
+  WARNING
+  ERROR
+}
+
+model ErrorLog {
+  id        String        @id @default(cuid())
+  userId    String?
+  user      User?         @relation(fields: [userId], references: [id])
+  severity  ErrorSeverity @default(ERROR)
+  message   String        @db.Text
+  stack     String?       @db.Text
+  pageUrl   String?       @db.VarChar(500)
+  apiRoute  String?       @db.VarChar(200)
+  httpStatus Int?
+  userAgent String?       @db.Text
+  ip        String?       @db.VarChar(45)
+  metadata  Json?
+  resolved  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+
+  @@index([createdAt])
+  @@index([severity, createdAt])
+  @@index([userId, createdAt])
+  @@index([resolved, createdAt])
+  @@map("error_logs")
 }
 
 model OtpAttempt {

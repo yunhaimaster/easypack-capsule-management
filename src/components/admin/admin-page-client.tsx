@@ -3,16 +3,17 @@
 import { useState } from 'react'
 import { LiquidGlassNav } from '@/components/ui/liquid-glass-nav'
 import { Card } from '@/components/ui/card'
-import { Users, Monitor, FileText, Shield, Smartphone } from 'lucide-react'
+import { Users, Monitor, FileText, Shield, Smartphone, AlertTriangle } from 'lucide-react'
 import { IconContainer } from '@/components/ui/icon-container'
 import { UserManagement } from './user-management'
 import { SessionManagement } from './session-management'
 import { TrustedDeviceManagement } from './trusted-device-management'
 import { AuditLogViewer } from './audit-log-viewer'
+import { ErrorLogViewer } from './error-log-viewer'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'users' | 'sessions' | 'devices' | 'logs'
+type Tab = 'users' | 'sessions' | 'devices' | 'logs' | 'errors'
 
 export function AdminPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('users')
@@ -119,6 +120,18 @@ export function AdminPageClient() {
             <FileText className="h-4 w-4 flex-shrink-0" />
             <span className="leading-none">審計日誌</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('errors')}
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] ${
+              activeTab === 'errors'
+                ? 'bg-primary-500 text-white shadow-md'
+                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+            }`}
+          >
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            <span className="leading-none">錯誤監控</span>
+          </button>
         </div>
 
         {/* Content */}
@@ -145,6 +158,12 @@ export function AdminPageClient() {
           )}
           {activeTab === 'logs' && (
             <AuditLogViewer 
+              selectedUserId={selectedUserId}
+              onClearFilter={() => setSelectedUserId(null)}
+            />
+          )}
+          {activeTab === 'errors' && (
+            <ErrorLogViewer 
               selectedUserId={selectedUserId}
               onClearFilter={() => setSelectedUserId(null)}
             />
