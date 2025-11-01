@@ -111,34 +111,54 @@ export async function GET(request: NextRequest) {
 
     const skip = (validatedFilters.page - 1) * validatedFilters.limit
 
-    const orderBy: Prisma.ProductionOrderOrderByWithRelationInput[] = [
-      { completionDate: 'asc' },
-      { worklogs: { _count: 'desc' } }
-    ]
+    // Check if using default sort (no custom filters, default sortBy)
+    const isDefaultSort = 
+      validatedFilters.sortBy === 'completionDate' &&
+      validatedFilters.sortOrder === 'desc' &&
+      !validatedFilters.customerName &&
+      !validatedFilters.productName &&
+      !validatedFilters.ingredientName &&
+      !validatedFilters.capsuleType &&
+      validatedFilters.isCompleted === undefined
 
-    const sortOrder: Prisma.SortOrder = validatedFilters.sortOrder
+    const orderBy: Prisma.ProductionOrderOrderByWithRelationInput[] = []
 
-    switch (validatedFilters.sortBy) {
-      case 'customerName':
-        orderBy.push({ customerName: sortOrder })
-        break
-      case 'productName':
-        orderBy.push({ productName: sortOrder })
-        break
-      case 'productionQuantity':
-        orderBy.push({ productionQuantity: sortOrder })
-        break
-      case 'completionDate':
-        orderBy.push({ completionDate: sortOrder })
-        break
-      case 'createdAt':
-      default:
-        orderBy.push({ createdAt: sortOrder })
-        break
-    }
-
-    if (validatedFilters.sortBy !== 'createdAt') {
+    // For default sort, prioritize by status: IN_PROGRESS -> NOT_STARTED -> COMPLETED
+    if (isDefaultSort) {
+      // Sort by completionDate DESC (in PostgreSQL, nulls come first in DESC order)
+      // This puts IN_PROGRESS and NOT_STARTED (null completionDate) before COMPLETED
+      orderBy.push({ completionDate: 'desc' })
+      // Then by worklog count descending (IN_PROGRESS has worklogs, NOT_STARTED doesn't)
+      // This distinguishes IN_PROGRESS (has worklogs) from NOT_STARTED (no worklogs)
+      orderBy.push({ worklogs: { _count: 'desc' } })
+      // Finally by createdAt descending as tiebreaker
       orderBy.push({ createdAt: 'desc' })
+    } else {
+      // For custom sorts, use the requested sorting
+      const sortOrder: Prisma.SortOrder = validatedFilters.sortOrder
+
+      switch (validatedFilters.sortBy) {
+        case 'customerName':
+          orderBy.push({ customerName: sortOrder })
+          break
+        case 'productName':
+          orderBy.push({ productName: sortOrder })
+          break
+        case 'productionQuantity':
+          orderBy.push({ productionQuantity: sortOrder })
+          break
+        case 'completionDate':
+          orderBy.push({ completionDate: sortOrder })
+          break
+        case 'createdAt':
+        default:
+          orderBy.push({ createdAt: sortOrder })
+          break
+      }
+
+      if (validatedFilters.sortBy !== 'createdAt') {
+        orderBy.push({ createdAt: 'desc' })
+      }
     }
 
     const [orders, total] = await Promise.all([
