@@ -223,9 +223,11 @@ export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManage
           })}
         </div>
         {sessions.length === 0 && (
-          <Card className="p-8 text-center">
-            <Monitor className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
-            <p className="text-neutral-600 dark:text-white/75">暫無活躍會話</p>
+          <Card className="liquid-glass-card liquid-glass-card-elevated">
+            <div className="liquid-glass-content p-8 text-center">
+              <Monitor className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
+              <p className="text-neutral-600 dark:text-white/75">暫無活躍會話</p>
+            </div>
           </Card>
         )}
       </div>
@@ -292,9 +294,11 @@ export function DeviceManagement({ selectedUserId, onClearFilter }: DeviceManage
           })}
         </div>
         {devices.length === 0 && (
-          <Card className="p-8 text-center">
-            <Smartphone className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-            <p className="text-neutral-600 dark:text-white/75">暫無受信任設備</p>
+          <Card className="liquid-glass-card liquid-glass-card-elevated">
+            <div className="liquid-glass-content p-8 text-center">
+              <Smartphone className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
+              <p className="text-neutral-600 dark:text-white/75">暫無受信任設備</p>
+            </div>
           </Card>
         )}
       </div>

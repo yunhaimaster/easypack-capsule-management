@@ -144,7 +144,7 @@ export function HomePageClient() {
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={ClipboardList} variant="primary" size="md" />
@@ -164,7 +164,7 @@ export function HomePageClient() {
               </div>
             </Card>
 
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-particles group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={Calendar} variant="info" size="md" />
@@ -184,7 +184,7 @@ export function HomePageClient() {
               </div>
             </Card>
 
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={FileText} variant="primary" size="md" />
@@ -204,7 +204,7 @@ export function HomePageClient() {
               </div>
             </Card>
 
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-particles group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={Clock} variant="warning" size="md" />
@@ -234,7 +234,7 @@ export function HomePageClient() {
             <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={Library} variant="info" size="md" />
@@ -254,7 +254,7 @@ export function HomePageClient() {
               </div>
             </Card>
 
-            <Card className="liquid-glass-card liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
+            <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive liquid-glass-card-refraction floating-orbs group">
               <div className="liquid-glass-content flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <IconContainer icon={Sparkles} variant="secondary" size="md" />

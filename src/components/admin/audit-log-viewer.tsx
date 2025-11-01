@@ -532,9 +532,11 @@ export function AuditLogViewer({ selectedUserId, onClearFilter }: AuditLogViewer
       </div>
 
       {logs.length === 0 && (
-        <Card className="p-12 text-center">
-          <FileText className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
-          <p className="text-neutral-600 dark:text-white/75">暫無審計日誌</p>
+        <Card className="liquid-glass-card liquid-glass-card-elevated">
+          <div className="liquid-glass-content p-12 text-center">
+            <FileText className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
+            <p className="text-neutral-600 dark:text-white/75">暫無審計日誌</p>
+          </div>
         </Card>
       )}
 

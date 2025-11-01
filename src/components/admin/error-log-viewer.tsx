@@ -328,9 +328,11 @@ export function ErrorLogViewer({ selectedUserId, onClearFilter }: ErrorLogViewer
       </div>
 
       {errors.length === 0 && (
-        <Card className="p-12 text-center">
-          <Bug className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
-          <p className="text-neutral-600 dark:text-white/75">暫無錯誤記錄</p>
+        <Card className="liquid-glass-card liquid-glass-card-elevated">
+          <div className="liquid-glass-content p-12 text-center">
+            <Bug className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
+            <p className="text-neutral-600 dark:text-white/75">暫無錯誤記錄</p>
+          </div>
         </Card>
       )}
 

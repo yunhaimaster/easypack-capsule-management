@@ -260,7 +260,8 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
 
       {/* Add User Form */}
       {showAddForm && (
-        <Card className="p-6">
+        <Card className="liquid-glass-card liquid-glass-card-elevated">
+          <div className="liquid-glass-content p-6">
           <h3 className="text-lg font-semibold text-neutral-800 dark:text-white/95 mb-4">添加新用戶</h3>
           <div className="space-y-4">
             <div>
@@ -308,13 +309,15 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
               </Button>
             </div>
           </div>
+          </div>
         </Card>
       )}
 
       {/* User List */}
       <div className="grid gap-4">
         {users.map((user) => (
-          <Card key={user.id} className="p-4 hover:shadow-md transition-shadow">
+          <Card key={user.id} className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-interactive">
+            <div className="liquid-glass-content p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 {/* Nickname or Phone Display */}
@@ -457,14 +460,17 @@ export function UserManagement({ onSelectUser }: UserManagementProps) {
                 </button>
               </div>
             </div>
+            </div>
           </Card>
         ))}
       </div>
 
       {users.length === 0 && (
-        <Card className="p-12 text-center">
+        <Card className="liquid-glass-card liquid-glass-card-elevated">
+          <div className="liquid-glass-content p-12 text-center">
           <Shield className="h-12 w-12 text-neutral-300 dark:text-white/55 mx-auto mb-4" />
           <p className="text-neutral-600 dark:text-white/75">暫無用戶</p>
+          </div>
         </Card>
       )}
     </div>

@@ -23,7 +23,7 @@ export function AdminPageClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-elevation-0">
+      <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -38,19 +38,21 @@ export function AdminPageClient() {
   // Allow both ADMIN and MANAGER to access
   if (!isAdmin && !isManager) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-elevation-0">
+      <div className="min-h-screen logo-bg-animation flex flex-col">
         <LiquidGlassNav />
         <div className="flex items-center justify-center py-20">
-          <Card className="max-w-md p-8 text-center">
-            <IconContainer icon={Shield} variant="danger" size="lg" className="mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95 mb-2">需要管理權限</h2>
-            <p className="text-neutral-600 dark:text-white/75 mb-6">此頁面僅限管理員或經理訪問</p>
-            <button
-              onClick={() => router.push('/')}
-              className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
-            >
-              返回首頁
-            </button>
+          <Card className="liquid-glass-card liquid-glass-card-elevated max-w-md p-8 text-center">
+            <div className="liquid-glass-content">
+              <IconContainer icon={Shield} variant="danger" size="lg" className="mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-neutral-800 dark:text-white/95 mb-2">需要管理權限</h2>
+              <p className="text-neutral-600 dark:text-white/75 mb-6">此頁面僅限管理員或經理訪問</p>
+              <button
+                onClick={() => router.push('/')}
+                className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+              >
+                返回首頁
+              </button>
+            </div>
           </Card>
         </div>
       </div>
@@ -58,84 +60,92 @@ export function AdminPageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-elevation-0">
+    <div className="min-h-screen logo-bg-animation flex flex-col">
       <LiquidGlassNav />
       
-      <div className="container mx-auto px-4 sm:px-6 page-content-padding-top pb-8 max-w-7xl">
+      <div className="page-content-padding-top px-4 sm:px-6 md:px-8 space-y-8 floating-combined pb-14 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <IconContainer icon={Shield} variant="primary" size="md" />
-            <h1 className="text-2xl font-bold text-neutral-800 dark:text-white/95">系統管理</h1>
+        <Card className="liquid-glass-card liquid-glass-card-elevated liquid-glass-card-refraction">
+          <div className="liquid-glass-content p-6">
+            <div className="flex items-center gap-4 mb-2">
+              <IconContainer icon={Shield} variant="primary" size="md" />
+              <div>
+                <h1 className="text-2xl font-bold text-neutral-800 dark:text-white/95">系統管理</h1>
+                <p className="text-sm text-neutral-600 dark:text-white/75 mt-1">管理用戶帳號、監控登入會話、查看系統審計日誌</p>
+              </div>
+            </div>
           </div>
-          <p className="text-neutral-600 dark:text-white/75">管理用戶帳號、監控登入會話、查看系統審計日誌</p>
-        </div>
+        </Card>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
-              activeTab === 'users'
-                ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
-            }`}
-          >
-            <Users className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none text-sm sm:text-base">用戶管理</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveTab('sessions')}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
-              activeTab === 'sessions'
-                ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
-            }`}
-          >
-            <Monitor className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none text-sm sm:text-base">活躍會話</span>
-          </button>
+        <Card className="liquid-glass-card liquid-glass-card-elevated">
+          <div className="liquid-glass-content p-4">
+            <div className="flex gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide">
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                  activeTab === 'users'
+                    ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                    : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                }`}
+              >
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="leading-none text-sm sm:text-base">用戶管理</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('sessions')}
+                className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                  activeTab === 'sessions'
+                    ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                    : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                }`}
+              >
+                <Monitor className="h-4 w-4 flex-shrink-0" />
+                <span className="leading-none text-sm sm:text-base">活躍會話</span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('devices')}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
-              activeTab === 'devices'
-                ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
-            }`}
-          >
-            <Smartphone className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none text-sm sm:text-base">受信任設備</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveTab('logs')}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
-              activeTab === 'logs'
-                ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
-            }`}
-          >
-            <FileText className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none text-sm sm:text-base">審計日誌</span>
-          </button>
+              <button
+                onClick={() => setActiveTab('devices')}
+                className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                  activeTab === 'devices'
+                    ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                    : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                }`}
+              >
+                <Smartphone className="h-4 w-4 flex-shrink-0" />
+                <span className="leading-none text-sm sm:text-base">受信任設備</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('logs')}
+                className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                  activeTab === 'logs'
+                    ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                    : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                }`}
+              >
+                <FileText className="h-4 w-4 flex-shrink-0" />
+                <span className="leading-none text-sm sm:text-base">審計日誌</span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('errors')}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
-              activeTab === 'errors'
-                ? 'bg-primary-500 text-white shadow-md'
-                : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
-            }`}
-          >
-            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-            <span className="leading-none text-sm sm:text-base">錯誤監控</span>
-          </button>
-        </div>
+              <button
+                onClick={() => setActiveTab('errors')}
+                className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap min-h-[44px] flex-shrink-0 ${
+                  activeTab === 'errors'
+                    ? 'bg-primary-500 text-white shadow-md hover:bg-primary-600'
+                    : 'bg-surface-primary dark:bg-elevation-1 text-neutral-700 dark:text-white/85 hover:bg-neutral-50 dark:hover:bg-elevation-2'
+                }`}
+              >
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                <span className="leading-none text-sm sm:text-base">錯誤監控</span>
+              </button>
+            </div>
+          </div>
+        </Card>
 
         {/* Content */}
-        <div className="mt-6">
+        <div>
           {activeTab === 'users' && (
             <UserManagement 
               onSelectUser={(userId) => {
