@@ -266,8 +266,24 @@ function WorkOrdersContent() {
       abortControllerRef.current = null
       
       // Restore scroll position after render completes
+      // Use both RAF and setTimeout to handle different render timings
       requestAnimationFrame(() => {
-        window.scrollTo(0, savedScroll)
+        window.scrollTo({
+          top: savedScroll,
+          left: 0,
+          behavior: 'instant' as ScrollBehavior
+        })
+        
+        // Double-check after a short delay to handle async renders
+        setTimeout(() => {
+          if (window.scrollY !== savedScroll) {
+            window.scrollTo({
+              top: savedScroll,
+              left: 0,
+              behavior: 'instant' as ScrollBehavior
+            })
+          }
+        }, 10)
       })
     }
   }, [filters])
