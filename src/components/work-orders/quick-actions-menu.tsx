@@ -10,7 +10,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
@@ -83,14 +83,19 @@ export function QuickActionsMenu({
   )
 
   // Check if work order is in scheduling table
-  const checkSchedulingStatus = async () => {
+  const checkSchedulingStatus = useCallback(async () => {
     try {
+      // Create manual timeout using AbortController
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000)
+      
       const response = await fetch(`/api/manager-scheduling/check/${workOrder.id}`, {
         credentials: 'include',
         cache: 'no-store',
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(5000)
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
       
       if (response.ok) {
         const data = await response.json()
@@ -107,7 +112,7 @@ export function QuickActionsMenu({
       console.warn('Failed to check scheduling status:', error instanceof Error ? error.message : 'Unknown error')
       setIsInScheduling(false)
     }
-  }
+  }, [workOrder.id])
 
   // Check on mount and when work order changes
   // Skip if status was pre-fetched (batched mode)
@@ -121,7 +126,7 @@ export function QuickActionsMenu({
         (workOrder.workType === WorkType.PRODUCTION || workOrder.workType === WorkType.PRODUCTION_PACKAGING)) {
       checkSchedulingStatus()
     }
-  }, [workOrder.id, isManager, isAdmin, schedulingStatus])
+  }, [workOrder.id, workOrder.workType, isManager, isAdmin, schedulingStatus, checkSchedulingStatus])
 
   const handleAddToScheduling = async () => {
     setIsLoading(true)
