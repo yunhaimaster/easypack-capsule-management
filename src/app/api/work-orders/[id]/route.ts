@@ -227,7 +227,8 @@ export async function PATCH(
       where: { id },
       select: { 
         id: true, 
-        status: true, 
+        status: true,
+        isCompleted: true,  // Required for sync function
         jobNumber: true,
         customerName: true,
         personInCharge: {
@@ -378,10 +379,18 @@ export async function PATCH(
         workOrderUpdateData.statusUpdatedBy = session.userId
       }
 
+      // Sync completion status to ensure consistency between status and isCompleted
+      const { prepareCompletionSync } = await import('@/lib/work-orders/sync-completion-status')
+      const syncedUpdateData = prepareCompletionSync(
+        workOrderUpdateData,
+        existingWorkOrder,
+        session.userId
+      )
+
       // Update unified work order
       const updated = await tx.unifiedWorkOrder.update({
         where: { id },
-        data: workOrderUpdateData,
+        data: syncedUpdateData,
         include: {
           personInCharge: {
             select: {

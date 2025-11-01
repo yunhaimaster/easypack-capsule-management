@@ -6,10 +6,14 @@ const globalForPrisma = globalThis as unknown as {
 
 // Create a function to get Prisma client with lazy initialization
 function getPrismaClient() {
-  const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
-  
-  if (!DATABASE_URL && process.env.NODE_ENV !== 'production') {
-    console.warn('DATABASE_URL is not defined. Database operations will fail.')
+  // Only check DATABASE_URL on server-side (not in browser)
+  // This prevents warnings when Prisma code is accidentally bundled for client
+  if (typeof window === 'undefined') {
+    const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
+    
+    if (!DATABASE_URL && process.env.NODE_ENV !== 'production') {
+      console.warn('DATABASE_URL is not defined. Database operations will fail.')
+    }
   }
   
   // Note: Connection pool parameters should be set in DATABASE_URL environment variable:

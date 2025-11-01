@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { getClientErrorLogger } from '@/lib/error-logger'
+import { getClientErrorLogger } from '@/lib/client-error-logger'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { AlertTriangle } from 'lucide-react'

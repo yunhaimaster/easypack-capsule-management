@@ -210,14 +210,19 @@ function SortableHeader({
   field: string
   currentSort?: string
   currentOrder?: 'asc' | 'desc'
-  onSort: (field: string) => void
+  onSort: (field: string, event?: React.MouseEvent) => void
 }) {
   const isSorted = currentSort === field
   const Icon = isSorted ? (currentOrder === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown
 
   return (
     <button
-      onClick={() => onSort(field)}
+      onClick={(e) => {
+        if (e.currentTarget instanceof HTMLButtonElement) {
+          e.currentTarget.blur()
+        }
+        onSort(field, e)
+      }}
       className="inline-flex items-center gap-1 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
     >
       {label}
@@ -328,6 +333,9 @@ export function WorkOrderTable({
     field: string,
     value: string | number | boolean | null
   ) => {
+    // Store scroll position BEFORE save (prevent page jump)
+    const savedScroll = window.scrollY
+    
     setSaving(prev => new Set(prev).add(workOrderId))
     
     try {
@@ -349,12 +357,42 @@ export function WorkOrderTable({
       }
 
       await onRefresh?.()
+      
+      // Restore scroll position after refresh completes
+      // Use requestAnimationFrame to ensure it happens after browser's focus scroll
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: savedScroll,
+          left: 0,
+          behavior: 'instant' as ScrollBehavior
+        })
+        
+        // Double-check after a short delay (in case browser scroll happens later)
+        setTimeout(() => {
+          if (window.scrollY !== savedScroll) {
+            window.scrollTo({
+              top: savedScroll,
+              left: 0,
+              behavior: 'instant' as ScrollBehavior
+            })
+          }
+        }, 10)
+      })
     } catch (error) {
       console.error('[Field Save Exception]', error)
       showToast({
         title: '更新失敗',
         description: error instanceof Error ? error.message : '未知錯誤',
         variant: 'destructive'
+      })
+      
+      // Even on error, restore scroll position
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: savedScroll,
+          left: 0,
+          behavior: 'instant' as ScrollBehavior
+        })
       })
     } finally {
       setSaving(prev => {

@@ -221,7 +221,12 @@ export function SmartFilters({ activePreset, onPresetSelect, onClearPreset }: Sm
           return (
             <button
               key={preset.id}
-              onClick={() => onPresetSelect(preset)}
+              onClick={(e) => {
+                if (e.currentTarget instanceof HTMLButtonElement) {
+                  e.currentTarget.blur()
+                }
+                onPresetSelect(preset)
+              }}
               className={`
                 p-3 sm:p-4 rounded-lg border-2 text-left transition-all
                 ${isActive 

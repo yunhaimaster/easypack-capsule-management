@@ -358,7 +358,12 @@ function WorkOrdersContent() {
   }, [workOrders])
 
   // Handle basic search
-  const handleSearch = () => {
+  const handleSearch = (event?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent) => {
+    // Prevent focus-based scrolling
+    if (event?.currentTarget instanceof HTMLButtonElement || event?.currentTarget instanceof HTMLInputElement) {
+      event.currentTarget.blur()
+    }
+    
     const newFilters = {
       ...filters,
       keyword: searchKeyword.trim() || undefined,
@@ -370,7 +375,12 @@ function WorkOrdersContent() {
   }
 
   // Apply advanced filters
-  const handleApplyAdvancedFilters = () => {
+  const handleApplyAdvancedFilters = (event?: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent focus-based scrolling
+    if (event?.currentTarget instanceof HTMLButtonElement) {
+      event.currentTarget.blur()
+    }
+    
     const newFilters = {
       ...filters,
       status: selectedStatuses.length > 0 ? selectedStatuses : undefined,
@@ -391,7 +401,12 @@ function WorkOrdersContent() {
   }
 
   // Clear all filters
-  const handleClearAllFilters = () => {
+  const handleClearAllFilters = (event?: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent focus-based scrolling
+    if (event?.currentTarget instanceof HTMLButtonElement) {
+      event.currentTarget.blur()
+    }
+    
     setSearchKeyword('')
     setSelectedStatuses([])
     setSelectedWorkTypes([])
@@ -487,7 +502,12 @@ function WorkOrdersContent() {
   }
 
   // Handle sort
-  const handleSort = (field: string) => {
+  const handleSort = (field: string, event?: React.MouseEvent) => {
+    // Prevent focus-based scrolling
+    if (event?.currentTarget instanceof HTMLElement) {
+      event.currentTarget.blur()
+    }
+    
     const newSortOrder: 'asc' | 'desc' = filters.sortBy === field && filters.sortOrder === 'asc' ? 'desc' : 'asc'
     const newFilters = {
       ...filters,
@@ -501,7 +521,12 @@ function WorkOrdersContent() {
   }
 
   // Handle pagination
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number, event?: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent focus-based scrolling
+    if (event?.currentTarget instanceof HTMLButtonElement) {
+      event.currentTarget.blur()
+    }
+    
     const newFilters = { ...filters, page: newPage }
     setFilters(newFilters)
     syncFiltersToURL(newFilters)
@@ -510,6 +535,7 @@ function WorkOrdersContent() {
 
   // Handle limit change
   const handleLimitChange = (newLimit: number) => {
+    // Note: Limit change is via Select component, scroll preservation handled by handleSelectOpenChange
     const newFilters = { ...filters, limit: newLimit, page: 1 }
     setFilters(newFilters)
     syncFiltersToURL(newFilters)
@@ -679,7 +705,7 @@ function WorkOrdersContent() {
                 className="flex-1 transition-apple text-sm"
                 title="支援部分匹配搜尋，例如：只記得客戶名稱的一部分也可以找到"
               />
-              <Button onClick={handleSearch} variant="default" className="transition-apple" size="sm">
+              <Button onClick={(e) => handleSearch(e)} variant="default" className="transition-apple" size="sm">
                 <Search className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">搜尋</span>
               </Button>
@@ -890,6 +916,7 @@ function WorkOrdersContent() {
                       id="showCompleted"
                       checked={showCompleted}
                       onCheckedChange={(checked) => {
+                        // Checkbox changes don't need blur, but ensure scroll is preserved
                         setShowCompleted(checked as boolean)
                         const newFilters = {
                           ...filters,
@@ -914,13 +941,13 @@ function WorkOrdersContent() {
 
               {/* Filter Actions */}
               <div className="flex gap-2 pt-2">
-                <Button onClick={handleApplyAdvancedFilters} variant="default" className="transition-apple flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-auto" size="sm">
+                <Button onClick={(e) => handleApplyAdvancedFilters(e)} variant="default" className="transition-apple flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-auto" size="sm">
                   <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   套用篩選
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={handleClearAllFilters}
+                  onClick={(e) => handleClearAllFilters(e)}
                   className="transition-apple text-xs sm:text-sm h-9 sm:h-auto"
                   size="sm"
                 >
@@ -939,7 +966,10 @@ function WorkOrdersContent() {
                 <Badge variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   關鍵字: {filters.keyword}
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      if (e.currentTarget instanceof HTMLButtonElement) {
+                        e.currentTarget.blur()
+                      }
                       setSearchKeyword('')
                       const newFilters = { ...filters, keyword: undefined, page: 1 }
                       setFilters(newFilters)
@@ -958,7 +988,10 @@ function WorkOrdersContent() {
                 <Badge key={status || 'null'} variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {status ? WORK_ORDER_STATUS_LABELS[status] : '進行中'}
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      if (e.currentTarget instanceof HTMLButtonElement) {
+                        e.currentTarget.blur()
+                      }
                       setSelectedStatuses(prev => prev.filter(s => s !== status))
                       const newFilters = {
                         ...filters,
@@ -981,7 +1014,10 @@ function WorkOrdersContent() {
                 <Badge key={type} variant="success" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {WORK_TYPE_LABELS[type]}
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      if (e.currentTarget instanceof HTMLButtonElement) {
+                        e.currentTarget.blur()
+                      }
                       setSelectedWorkTypes(prev => prev.filter(t => t !== type))
                       const newFilters = {
                         ...filters,
@@ -1004,7 +1040,10 @@ function WorkOrdersContent() {
                 <Badge variant="warning" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   VIP 訂單
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      if (e.currentTarget instanceof HTMLButtonElement) {
+                        e.currentTarget.blur()
+                      }
                       setVipOnly(false)
                       const newFilters = { ...filters, isVip: undefined, page: 1 }
                       setFilters(newFilters)
@@ -1023,7 +1062,10 @@ function WorkOrdersContent() {
                 <Badge variant="info" className="inline-flex items-center gap-1 sm:gap-2 transition-apple hover:scale-105 text-xs">
                   {filters.hasLinkedCapsulation ? '已關聯訂單' : '未關聯訂單'}
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      if (e.currentTarget instanceof HTMLButtonElement) {
+                        e.currentTarget.blur()
+                      }
                       setLinkedOnly(undefined)
                       const newFilters = { ...filters, hasLinkedCapsulation: undefined, page: 1 }
                       setFilters(newFilters)
@@ -1095,7 +1137,7 @@ function WorkOrdersContent() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handlePageChange(1)}
+              onClick={(e) => handlePageChange(1, e)}
               disabled={pagination.page === 1}
               className="hidden sm:flex"
             >
@@ -1103,7 +1145,7 @@ function WorkOrdersContent() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => handlePageChange(pagination.page - 1)}
+              onClick={(e) => handlePageChange(pagination.page - 1, e)}
               disabled={pagination.page === 1}
               className="h-12 min-w-[88px] lg:h-auto lg:min-w-0"
             >
@@ -1114,7 +1156,7 @@ function WorkOrdersContent() {
             </span>
             <Button
               variant="outline"
-              onClick={() => handlePageChange(pagination.page + 1)}
+              onClick={(e) => handlePageChange(pagination.page + 1, e)}
               disabled={pagination.page === pagination.totalPages}
               className="h-12 min-w-[88px] lg:h-auto lg:min-w-0"
             >
@@ -1123,7 +1165,7 @@ function WorkOrdersContent() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handlePageChange(pagination.totalPages)}
+              onClick={(e) => handlePageChange(pagination.totalPages, e)}
               disabled={pagination.page === pagination.totalPages}
               className="hidden sm:flex"
             >

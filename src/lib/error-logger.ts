@@ -14,6 +14,10 @@ interface LogErrorParams {
   metadata?: Record<string, any>
 }
 
+/**
+ * Server-only function to log errors to database
+ * Must only be used in API routes or server components
+ */
 export async function logError(params: LogErrorParams): Promise<void> {
   try {
     await prisma.errorLog.create({
@@ -33,26 +37,6 @@ export async function logError(params: LogErrorParams): Promise<void> {
   } catch (error) {
     // Fallback to console if DB logging fails
     console.error('[ErrorLogger] Failed to log error:', error)
-  }
-}
-
-export function getClientErrorLogger() {
-  return async (error: Error, context?: Record<string, any>) => {
-    try {
-      await fetch('/api/errors/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: error.message,
-          stack: error.stack,
-          pageUrl: window.location.href,
-          userAgent: navigator.userAgent,
-          metadata: context
-        })
-      })
-    } catch (logError) {
-      console.error('[ClientErrorLogger] Failed:', logError)
-    }
   }
 }
 

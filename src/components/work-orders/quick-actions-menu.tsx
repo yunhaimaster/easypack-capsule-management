@@ -83,19 +83,17 @@ export function QuickActionsMenu({
   )
 
   // Check if work order is in scheduling table
-  const checkSchedulingStatus = useCallback(async () => {
+  const checkSchedulingStatus = useCallback(async (signal?: AbortSignal) => {
+    // Create default abort controller if not provided
+    const controller = signal ? undefined : new AbortController()
+    const abortSignal = signal || controller!.signal
+    
     try {
-      // Create manual timeout using AbortController
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000)
-      
       const response = await fetch(`/api/manager-scheduling/check/${workOrder.id}`, {
         credentials: 'include',
         cache: 'no-store',
-        signal: controller.signal
+        signal: abortSignal
       })
-      
-      clearTimeout(timeoutId)
       
       if (response.ok) {
         const data = await response.json()
@@ -107,6 +105,13 @@ export function QuickActionsMenu({
         setIsInScheduling(false)
       }
     } catch (error) {
+      // Don't log AbortError - this is expected when component unmounts or request is cancelled
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Silently ignore abort errors - they're expected during cleanup
+        return
+      }
+      
+      // Only log non-abort errors
       // Silently fail for scheduling status - don't block the page
       // This is a nice-to-have feature, not critical
       console.warn('Failed to check scheduling status:', error instanceof Error ? error.message : 'Unknown error')
@@ -130,7 +135,22 @@ export function QuickActionsMenu({
     // If scheduling status was provided via props (batched mode), don't fetch individually
     // Only fetch if status is truly undefined (not yet loaded)
     if (schedulingStatus === undefined) {
-      checkSchedulingStatus()
+      // Create abort controller for this effect lifecycle
+      const controller = new AbortController()
+      
+      // Set up timeout to abort after 5 seconds
+      const timeoutId = setTimeout(() => controller.abort(), 5000)
+      
+      // Start the check with abort signal
+      checkSchedulingStatus(controller.signal).finally(() => {
+        clearTimeout(timeoutId)
+      })
+      
+      // Cleanup: abort in-flight request when component unmounts or dependencies change
+      return () => {
+        clearTimeout(timeoutId)
+        controller.abort()
+      }
     }
   }, [workOrder.id, workOrder.workType, isManager, isAdmin, schedulingStatus, checkSchedulingStatus])
 
@@ -239,7 +259,10 @@ export function QuickActionsMenu({
     })
 
     if (!response.ok) {
-      throw new Error('Toggle failed')
+      // Get error details from API response
+      const errorData = await response.json().catch(() => ({ error: 'Toggle failed' }))
+      const errorMessage = errorData.error || errorData.message || 'Toggle failed'
+      throw new Error(errorMessage)
     }
 
     // Return field-specific success message
@@ -555,24 +578,28 @@ export function QuickActionsMenu({
           )}
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={async (e) => {
-            e.stopPropagation()
-            await handleAction(
-              'toggle-completed',
-              () => handleToggle('isCompleted', workOrder.isCompleted),
-              ''
-            )
-          }}
-          disabled={isLoading}
-          className="h-12 lg:h-auto"
-        >
-          <CheckCircle className="mr-2 h-4 w-4" />
-          <span>{workOrder.isCompleted ? '標記未完成' : '標記已完成'}</span>
-          {loadingAction === 'toggle-completed' && (
-            <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-          )}
-        </DropdownMenuItem>
+        {/* Only show completed toggle if status is not already COMPLETED */}
+        {/* If status is COMPLETED, isCompleted should always be true - use status menu to change */}
+        {workOrder.status !== 'COMPLETED' && (
+          <DropdownMenuItem
+            onClick={async (e) => {
+              e.stopPropagation()
+              await handleAction(
+                'toggle-completed',
+                () => handleToggle('isCompleted', workOrder.isCompleted),
+                ''
+              )
+            }}
+            disabled={isLoading}
+            className="h-12 lg:h-auto"
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            <span>{workOrder.isCompleted ? '標記未完成' : '標記已完成'}</span>
+            {loadingAction === 'toggle-completed' && (
+              <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+            )}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

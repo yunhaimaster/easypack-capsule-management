@@ -474,44 +474,9 @@ export function WorkOrderQuickPanel({
             </div>
           </div>
 
-          {/* Status Flags */}
+          {/* Status Flags - Reordered by workflow logic */}
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isUrgent"
-                checked={editedFields.isUrgent}
-                onCheckedChange={(checked) => handleFieldChange('isUrgent', checked)}
-                disabled={!canEdit}
-              />
-              <Label htmlFor="isUrgent" className="text-sm font-medium cursor-pointer">
-                客人要求加急
-              </Label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="productionStarted"
-                checked={editedFields.productionStarted}
-                onCheckedChange={(checked) => handleFieldChange('productionStarted', checked)}
-                disabled={!canEdit}
-              />
-              <Label htmlFor="productionStarted" className="text-sm font-medium cursor-pointer">
-                已開生產線
-              </Label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isCompleted"
-                checked={editedFields.isCompleted}
-                onCheckedChange={(checked) => handleFieldChange('isCompleted', checked)}
-                disabled={!canEdit}
-              />
-              <Label htmlFor="isCompleted" className="text-sm font-medium cursor-pointer">
-                已經完成
-              </Label>
-            </div>
-            
+            {/* Group 1: VIP & Priority Flags (First) */}
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="isCustomerServiceVip"
@@ -536,6 +501,19 @@ export function WorkOrderQuickPanel({
               </Label>
             </div>
             
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isUrgent"
+                checked={editedFields.isUrgent}
+                onCheckedChange={(checked) => handleFieldChange('isUrgent', checked)}
+                disabled={!canEdit}
+              />
+              <Label htmlFor="isUrgent" className="text-sm font-medium cursor-pointer">
+                客人要求加急
+              </Label>
+            </div>
+            
+            {/* Group 2: Material Ready Status */}
             {/* Production materials - only for PRODUCTION and PRODUCTION_PACKAGING */}
             {hasProductionMaterials(workOrder.workType) && (
               <div className="flex items-center space-x-2">
@@ -562,6 +540,35 @@ export function WorkOrderQuickPanel({
                 />
                 <Label htmlFor="packagingMaterialsReady" className="text-sm font-medium cursor-pointer">
                   包裝物料齊
+                </Label>
+              </div>
+            )}
+            
+            {/* Group 3: Work Progress */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="productionStarted"
+                checked={editedFields.productionStarted}
+                onCheckedChange={(checked) => handleFieldChange('productionStarted', checked)}
+                disabled={!canEdit}
+              />
+              <Label htmlFor="productionStarted" className="text-sm font-medium cursor-pointer">
+                已開生產線
+              </Label>
+            </div>
+            
+            {/* Group 4: Final Status (Last) */}
+            {/* Only show completed toggle if status is not already COMPLETED */}
+            {workOrder.status !== 'COMPLETED' && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="isCompleted"
+                  checked={editedFields.isCompleted}
+                  onCheckedChange={(checked) => handleFieldChange('isCompleted', checked)}
+                  disabled={!canEdit}
+                />
+                <Label htmlFor="isCompleted" className="text-sm font-medium cursor-pointer">
+                  已經完成
                 </Label>
               </div>
             )}

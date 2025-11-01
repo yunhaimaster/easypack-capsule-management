@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { Prisma, AuditAction } from '@prisma/client'
+import { Prisma, AuditAction, WorkOrderStatus } from '@prisma/client'
 import { prisma, executeWithRetry, isConnectionError } from '@/lib/prisma'
 import { createWorkOrderSchema, searchFiltersSchema } from '@/lib/validations/work-order-schemas'
 import { getSessionFromCookie } from '@/lib/auth/session'
@@ -155,7 +155,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Status filter - handle null values for ongoing work
-    if (validatedFilters.status && validatedFilters.status.length > 0) {
+    const hasExplicitStatusFilter = validatedFilters.status && validatedFilters.status.length > 0
+    
+    if (hasExplicitStatusFilter && validatedFilters.status) {
+      // User explicitly set status filter - respect it
       const statuses = validatedFilters.status.filter(s => s !== null) as any[]
       const hasNull = validatedFilters.status.includes(null)
       
@@ -169,7 +172,25 @@ export async function GET(request: NextRequest) {
         // Only null (ongoing work)
         where.status = null
       }
+    } else if (validatedFilters.isCompleted === false) {
+      // Default behavior: When showCompleted is false (default), exclude status = 'COMPLETED'
+      // Explicitly include: null (ongoing), PAUSED, and CANCELLED
+      // This handles data inconsistency where status = 'COMPLETED' but isCompleted = false
+      // Note: We only exclude COMPLETED, not CANCELLED (cancelled orders may still need to be visible)
+      // Use OR condition because Prisma doesn't allow null in the 'in' array
+      // We'll add this to searchConditions which gets combined with where.AND
+      searchConditions.push({
+        OR: [
+          { status: null },
+          { status: 'PAUSED' },
+          { status: 'CANCELLED' }
+        ]
+      })
     }
+    // If isCompleted === undefined (showCompleted checkbox checked), show ALL orders including:
+    // - Orders with isCompleted = true
+    // - Orders with status = 'COMPLETED' (handles data inconsistency)
+    // No additional status filter needed - isCompleted filter is already undefined
 
     // Date range filter (expectedCompletionDate)
     if (validatedFilters.dateFrom || validatedFilters.dateTo) {
@@ -455,6 +476,20 @@ export async function POST(request: NextRequest) {
 
     // Create work order in transaction
     const workOrder = await prisma.$transaction(async (tx) => {
+      // Prepare initial data
+      // Note: createWorkOrderSchema doesn't include status field - default to null (ongoing)
+      const initialStatus: WorkOrderStatus | null = null
+      const initialIsCompleted = validatedData.isCompleted ?? false
+      
+      // Sync completion status to ensure consistency
+      // If isCompleted = true, automatically set status = 'COMPLETED'
+      const { syncCompletionStatus } = await import('@/lib/work-orders/sync-completion-status')
+      const syncResult = syncCompletionStatus({
+        currentStatus: initialStatus,
+        currentIsCompleted: initialIsCompleted,
+        userId: session.userId
+      })
+      
       // Create unified work order
       const newWorkOrder = await tx.unifiedWorkOrder.create({
         data: {
@@ -463,6 +498,11 @@ export async function POST(request: NextRequest) {
           personInChargeId: validatedData.personInChargeId,
           workType: validatedData.workType,
           workDescription: validatedData.workDescription,
+          
+          // Status (with sync applied - if isCompleted = true, status becomes 'COMPLETED')
+          status: syncResult.updates.status !== undefined ? syncResult.updates.status : initialStatus,
+          statusUpdatedAt: syncResult.updates.statusUpdatedAt,
+          statusUpdatedBy: syncResult.updates.statusUpdatedBy,
           
           // VIP標記
           isCustomerServiceVip: validatedData.isCustomerServiceVip ?? false,
@@ -482,10 +522,10 @@ export async function POST(request: NextRequest) {
           requestedDeliveryDate: validatedData.requestedDeliveryDate ? new Date(validatedData.requestedDeliveryDate) : null,
           internalExpectedDate: validatedData.internalExpectedDate ? new Date(validatedData.internalExpectedDate) : null,
           
-          // 狀態標記
+          // 狀態標記 (with sync applied)
           isUrgent: validatedData.isUrgent ?? false,
           productionStarted: validatedData.productionStarted ?? false,
-          isCompleted: validatedData.isCompleted ?? false,
+          isCompleted: syncResult.updates.isCompleted !== undefined ? syncResult.updates.isCompleted : initialIsCompleted,
           
           createdBy: session.userId
         },

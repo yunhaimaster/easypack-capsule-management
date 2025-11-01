@@ -15,6 +15,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { logAudit } from '@/lib/audit'
 import { AuditAction } from '@prisma/client'
 import { z } from 'zod'
+import { prepareCompletionSync } from '@/lib/work-orders/sync-completion-status'
 
 const toggleSchema = z.object({
   field: z.enum([
@@ -58,17 +59,42 @@ export async function PATCH(
     const params = await context.params
     const workOrderId = params.id
 
+    // Get current work order to check existing status
+    const existingWorkOrder = await prisma.unifiedWorkOrder.findUnique({
+      where: { id: workOrderId },
+      select: { 
+        id: true,
+        status: true,
+        isCompleted: true
+      }
+    })
+
+    if (!existingWorkOrder) {
+      return NextResponse.json(
+        { success: false, error: '工作單不存在' },
+        { status: 404 }
+      )
+    }
+
     // Prepare update data
-    const updateData: any = {
+    let updateData: any = {
       [field]: value
     }
 
     // Auto-trigger COMPLETED status when isCompleted is checked
-    if (field === 'isCompleted' && value === true) {
+    // Only set status if it's not already COMPLETED to avoid invalid transitions
+    if (field === 'isCompleted' && value === true && existingWorkOrder.status !== 'COMPLETED') {
       updateData.status = 'COMPLETED'
       updateData.statusUpdatedAt = new Date()
       updateData.statusUpdatedBy = session.userId
     }
+    
+    // If unchecking isCompleted and status is COMPLETED, don't change status
+    // (COMPLETED is a final state - let user use status change menu if they want to change it)
+    // Just update the isCompleted flag
+
+    // Sync completion status to ensure consistency
+    updateData = prepareCompletionSync(updateData, existingWorkOrder, session.userId)
 
     // Update work order
     const updatedWorkOrder = await prisma.unifiedWorkOrder.update({
